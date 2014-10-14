@@ -1,4 +1,5 @@
 from lxml import etree
+import pprint
 import sys
 
 tree = etree.parse(sys.argv[1])
@@ -7,15 +8,28 @@ print tree
 
 title = tree.xpath('/act/cover/title')[0].text
 
+def process_paragraph(paragraph):
+	results = {'text': paragraph.xpath('para/text')[0].text}
+	if len(paragraph.xpath('label')):
+		results['number'] = paragraph.xpath('label')[0].text
+	return results
+
+
 def process_subprovision(subprovision):
-	return
+	results = {
+		'number': subprovision.xpath('label')[0].text,
+		'paragraphs': map(process_paragraph, subprovision.xpath('para/label-para | para/def-para'))
+	}
+	if len(subprovision.xpath('text')):
+		results['text'] = subprovision.xpath('text')[0].text
+	return results
 
 
 def process_provision(provision):
 	return {
 		'title': provision.xpath('heading')[0].text,
-		'subprovision': process_subprovision(provision.xpath('prov.body/subprov')),
-		'number':  provision.xpath('label')[0].text or '1'
+		'subprovision': map(process_subprovision, provision.xpath('prov.body/subprov')),
+		'number':  provision.xpath('label')[0].text
 	}
 
 def process_section(section):
@@ -27,5 +41,6 @@ def process_section(section):
 
 
 parts = map(process_section, tree.xpath('/act/body/part'))
-print parts
 
+pp = pprint.PrettyPrinter()
+pp.pprint(parts)
