@@ -12,6 +12,7 @@ def process_paragraph(paragraph):
 	results = {'text': paragraph.xpath('para/text')[0].text}
 	if len(paragraph.xpath('label')):
 		results['number'] = paragraph.xpath('label')[0].text
+	results['subparagraphs'] =  map(process_paragraph, paragraph.xpath('para/label-para | para/def-para'))
 	return results
 
 
@@ -20,8 +21,8 @@ def process_subprovision(subprovision):
 		'number': subprovision.xpath('label')[0].text,
 		'paragraphs': map(process_paragraph, subprovision.xpath('para/label-para | para/def-para'))
 	}
-	if len(subprovision.xpath('text')):
-		results['text'] = subprovision.xpath('text')[0].text
+	if len(subprovision.xpath('para/text')):
+		results['text'] = subprovision.xpath('para/text')[0].text
 	return results
 
 
