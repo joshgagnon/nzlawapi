@@ -10,6 +10,8 @@ tree = etree.parse(sys.argv[1])
 title = tree.xpath('/act/cover/title')[0].text
 
 
+def full_string(element):
+	return tostring(element , method="text" , encoding='utf8')
 
 def process_paragraph(paragraph):
 	results = {'text': tostring(paragraph.xpath('para/text')[0] , method="text" , encoding='utf8'),
@@ -49,7 +51,34 @@ def process_section(section):
 	}
 
 
+def find(tree, section, prov=None, para=None):
+	label = 'Section %s' % section
+	sel = '//prov[label = "%s"]' % section
+	node = tree.xpath(sel)[0]
+	if prov:
+		label = '%s(%s)' % (label, prov)
+		sel = './/subprov[label = "%s"]' % prov
+		node = node.xpath(sel)[0]
+		result = [full_string(node.xpath('.//text')[0])]
+	else:
+		sel = './/subprov'
+		node = node.xpath(sel)[0]
+		result = [full_string(node.xpath('.//para/text')[0])]
 
+	if para:
+		label = '%s(%s)' % (label, para)
+		sel = './/label-para[label = "%s"]//text' % para
+		node = node.xpath(sel)[0]
+		result.append(full_string(node))
+	return [label, result]
+
+
+
+print find(tree, 41, para='b')
+print find(tree, 107, 1)
+print find(tree, 107, 1, 'c')
+
+"""
 doc = map(process_section, tree.xpath('/act/body/prov | /act/body/part'))
 sections = list(chain.from_iterable(filter(lambda x: x, map(lambda x: x.get('children', []), doc))))
 pp = pprint.PrettyPrinter()
@@ -97,3 +126,4 @@ pp.pprint(find(sections, 373, 4, 'aaa'))
 pp.pprint(find(sections, 222))
 pp.pprint(find(sections, 373, 4, 'aaaa'))
 pp.pprint(find(sections, 52))
+"""
