@@ -3,6 +3,7 @@ import pprint
 import sys
 from lxml.etree import tostring
 from itertools import chain
+import time
 
 tree = etree.parse(sys.argv[1])
 
@@ -27,7 +28,7 @@ def process_subprovision(subprovision):
 		'id': subprovision.attrib.get('id')
 	}
 	if len(subprovision.xpath('para/text')):
-		results['text'] = subprovision.xpath('para/text')[0].text
+		results['text'] = tostring(subprovision.xpath('para/text')[0] , method="text" , encoding='utf8')
 	return results
 
 
@@ -53,22 +54,46 @@ doc = map(process_section, tree.xpath('/act/body/prov | /act/body/part'))
 sections = list(chain.from_iterable(filter(lambda x: x, map(lambda x: x.get('children', []), doc))))
 pp = pprint.PrettyPrinter()
 
-
-
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print '%s function took %0.3f ms' % (f.func_name, (time2-time1)*1000.0)
+        return ret
+    return wrap
 
 
 def find(sections, *args):
-	args = list(args)
-	arg = args[0]
-	if len(sections) == 1:
-		sec = sections[0]
-	else:
-		sec = filter(lambda s: s.get('number') == str(arg), sections)[0]
-		args.pop(0)
-	if len(args):
-		sec = find(sec.get('children'), *args)
-	return sec
+	result = []
+	try:
+		def _find(sections, *args):
+			args = list(args)
+			arg = args[0]
+			if len(sections) == 1:
+				sec = sections[0]
+			else:
+				sec = filter(lambda s: s.get('number') == str(arg), sections)[0]
+				args.pop(0)
+			if sec.get('text'):
+				if not len(result):
+					result.append('%s' %  sec.get('text'))
+				else:
+					result.append('(%s) %s' % (sec.get('number'), sec.get('text')))
+			elif not len(args):
+				result.append('(%s) %s' % (sec.get('number'), sec.get('title')))
+			if len(args):
+				sec = _find(sec.get('children'), *args)
+			return sec
+		_find(sections, *args)
+	except IndexError:
+		return ['no result found']
+	return result
+
 
 pp.pprint(find(sections, 41, 'b'))
 pp.pprint(find(sections, 107, 1, 'c'))
+pp.pprint(find(sections, 373, 4, 'aaa'))
 pp.pprint(find(sections, 222))
+pp.pprint(find(sections, 373, 4, 'aaaa'))
+pp.pprint(find(sections, 52))
