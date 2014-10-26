@@ -1,0 +1,40 @@
+div {
+clear:left;
+}
+
+.label, .heading, .para{
+	font-weight:bold;
+
+}
+.text{
+}
+.label{
+	margin-right:8px;
+}
+.text{
+	font-weight:normal;
+
+}
+.label_para{
+	clear:left;
+}
+
+
+.cf, .notes{
+	display:none;
+}
+
+ul {
+   list-style: none;
+   margin-left: 0;
+   padding-left: 1em;
+   text-indent: -1em;
+}
+
+.label-para{
+	padding: 0;
+margin: 0;
+margin-left: 3em;
+clear: left;
+}
+
