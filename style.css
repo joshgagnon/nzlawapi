@@ -6,35 +6,48 @@ clear:left;
 	font-weight:bold;
 
 }
-.text{
-}
-.label{
-	margin-right:8px;
-}
+
 .text{
 	font-weight:normal;
 
 }
-.label_para{
-	clear:left;
+
+ul{
+	list-style:none;
+	padding-left:1em;
+	padding-top:0;
+	margin-top:0;
 }
-
-
-.cf, .notes{
+.notes{
 	display:none;
 }
 
-ul {
-   list-style: none;
-   margin-left: 0;
-   padding-left: 1em;
-   text-indent: -1em;
+.heading{
+	margin-left:1em;
 }
 
-.label-para{
+.subprov .label{
+	float: left;
+margin-left: -1.5em;
+padding-right: 0.5em;
+}
+
+.prov_body{
 	padding: 0;
-margin: 0;
-margin-left: 3em;
-clear: left;
+	margin: 0;
+	margin-left: 1.5em;
+	clear: left;
 }
 
+.subprov .label:before,
+.para .label:after{
+	content: '(';
+}
+.subprov .label:after,
+.para .label:after{
+	content: ')';
+}
+
+.subprov > ul{
+	margin-left:0;
+}
