@@ -1,0 +1,101 @@
+<prov id="DLM321175" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+    <label auto.number="no" denominator="yes">232</label>
+    <heading xml:lang="en-NZ">Powers of court</heading>
+    <prov.body>
+        <subprov skeleton="no" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">1</label>
+            <para xml:lang="en-NZ">
+                <text>
+                    On the application of the proponent or the company, the court may—
+                </text>
+                <label-para skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">a</label>
+                    <para xml:lang="en-NZ">
+                        <text>
+                            give directions in relation to a procedural requirement imposed by this Part, or waive or vary any such requirement, if satisfied that it would be just to do so; or
+                        </text>
+                    </para>
+                </label-para>
+                <label-para skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">b</label>
+                    <para xml:lang="en-NZ">
+                        <text>
+                            order that, during a period specified in the order, beginning not earlier than the date on which notice was given of the proposed compromise and ending not later than 10 working days after the date on which notice was given of the result of the voting on it,—
+                        </text>
+                        <label-para skeleton="no" xml:lang="en-NZ">
+                            <label auto.number="no" denominator="yes">i</label>
+                            <para xml:lang="en-NZ">
+                                <text>
+                                    proceedings in relation to a debt owing by the company be stayed; or
+                                </text>
+                            </para>
+                        </label-para>
+                        <label-para skeleton="no" xml:lang="en-NZ">
+                            <label auto.number="no" denominator="yes">ii</label>
+                            <para xml:lang="en-NZ">
+                                <text>
+                                    a creditor refrain from taking any other measure to enforce payment of a debt owing by the company.
+                                </text>
+                            </para>
+                        </label-para>
+                    </para>
+                </label-para>
+            </para>
+        </subprov>
+        <subprov skeleton="no" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">2</label>
+            <para xml:lang="en-NZ">
+                <text>
+                    Nothing in subsection (1)(b) affects the right of a secured creditor during that period to take possession of, realise, or otherwise deal with, property of the company over which that creditor has a charge.
+                </text>
+            </para>
+        </subprov>
+        <subprov skeleton="no" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">3</label>
+            <para xml:lang="en-NZ">
+                <text>
+                    If the court is satisfied, on the application of a creditor of a company who was entitled to vote on a compromise that—
+                </text>
+                <label-para skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">a</label>
+                    <para xml:lang="en-NZ">
+                        <text>
+                            insufficient notice of the meeting or of the matter required to be notified under
+                            <citation jurisdiction="nz">
+                                <intref href="DLM321172">section 229</intref>
+                            </citation>
+                            was given to that creditor; or
+                        </text>
+                    </para>
+                </label-para>
+                <label-para skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">b</label>
+                    <para xml:lang="en-NZ">
+                        <text>
+                            there was some other material irregularity in obtaining approval of the compromise; or
+                        </text>
+                    </para>
+                </label-para>
+                <label-para skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">c</label>
+                    <para xml:lang="en-NZ">
+                        <text>
+                            in the case of a creditor who voted against the compromise, the compromise is unfairly prejudicial to that creditor, or to the class of creditors to which that creditor belongs,—
+                        </text>
+                    </para>
+                </label-para>
+                <text>
+                    the court may order that the creditor is not bound by the compromise or make such other order as it thinks fit.
+                </text>
+            </para>
+        </subprov>
+        <subprov skeleton="no" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">4</label>
+            <para xml:lang="en-NZ">
+                <text>
+                    An application under subsection (3) must be made not later than 10 working days after the date on which notice of the result of the voting was given to the creditor.
+                </text>
+            </para>
+        </subprov>
+    </prov.body>
+</prov>

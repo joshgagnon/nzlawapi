@@ -9,11 +9,11 @@ tree = etree.parse(sys.argv[1])
 
 title = tree.xpath('/act/cover/title')[0].text
 
-
 def full_string(element):
     return tostring(element , method="text" , encoding='utf8')
 
 xml_map  = {
+    'prov': 'div',
     'label': 'span',
     'heading': 'span',
     'text': 'span',
@@ -36,9 +36,12 @@ def tohtml(tree):
         tree.attrib.clear()
         tree.set('class', class_name)
         tree.tag = xml_map.get(class_name, 'div')
-    fix(tree)
-    map(fix, tree.iter())
-    return tostring(tree)
+#fix(tree)
+    #map(fix, tree.iter())
+    xslt = etree.parse('transform.xslt')
+    transform = etree.XSLT(xslt)
+
+    return tostring(transform(tree))
 
 def parent_text(tree):
     node = tree
@@ -55,7 +58,7 @@ def parent_text(tree):
 
 
 def validate(key):
-    return (key == 'validate' or len(key) < 4) and len(key)
+    return (key == 'schedule' or len(key) < 4) and len(key)
 
 def pluck_tree(tree, keys):
     try:
@@ -69,7 +72,8 @@ def pluck_tree(tree, keys):
             else:
                 tree = tree.xpath(".//*[label='%s']" % a)[0]
         return tohtml(parent_text(tree))
-    except:
+    except Exception, e:
+        print e
         return """Could not process request"""
 
 def read_css():
