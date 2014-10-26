@@ -18,12 +18,14 @@ xml_map  = {
     'heading': 'span',
     'text': 'span',
     'para': 'span',
-    'prov_body': 'div',
+    'prov_body': 'ul',
     'label_para': 'li',
     'para': 'ul',
     'prov': 'ul',
     'citation': 'span',
-    'intref': 'span'
+    'intref': 'span',
+    'subprov': 'div',
+    'insertwords': 'span'
 }
 
 
@@ -52,15 +54,23 @@ def parent_text(tree):
     return node
 
 
-def pluck_tree(tree, keys):
-    tree = etree.fromstring(tostring(tree))
-    for a in keys:
-        if a == 'schedule':
-            tree = tree.xpath('.//schedule')[0]
-        else:
-            tree = tree.xpath(".//*[label='%s']" % a)[0]
-    return tohtml(parent_text(tree))
+def validate(key):
+    return (key == 'validate' or len(key) < 4) and len(key)
 
+def pluck_tree(tree, keys):
+    try:
+        tree = etree.fromstring(tostring(tree))
+        keys = filter(validate, keys)
+        if not len(keys):
+            return 'Too short'
+        for a in keys:
+            if a == 'schedule':
+                tree = tree.xpath('.//schedule')[0]
+            else:
+                tree = tree.xpath(".//*[label='%s']" % a)[0]
+        return tohtml(parent_text(tree))
+    except:
+        return """Could not process request"""
 
 def read_css():
     with open('style.css') as f:
@@ -74,7 +84,6 @@ app = Flask(__name__)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def hello_world(path):
-    print path.split('/')[1:]
     return pluck_tree(tree, (path.split('/')[1:]))  + read_css()
 
 
