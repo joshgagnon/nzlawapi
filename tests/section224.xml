@@ -1,0 +1,82 @@
+<prov id="DLM321152" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">224</label>
+<heading xml:lang="en-NZ">Certificate of amalgamation</heading>
+<prov.body>
+<subprov skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">1</label>
+<para xml:lang="en-NZ">
+<text>
+Forthwith after receipt of the documents required under
+<citation jurisdiction="nz">
+<intref href="DLM321151">section 223</intref>
+</citation>
+, the Registrar must,—
+</text>
+<label-para skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">a</label>
+<para xml:lang="en-NZ">
+<text>
+if the amalgamated company is the same as one of the amalgamating companies, issue a certificate of amalgamation
+<struckoutwords/>
+; or
+</text>
+</para>
+</label-para>
+<label-para skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">b</label>
+<para xml:lang="en-NZ">
+<text>if the amalgamated company is a new company,—</text>
+<label-para skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">i</label>
+<para xml:lang="en-NZ">
+<text>
+enter particulars of the company on the New Zealand register; and
+</text>
+</para>
+</label-para>
+<label-para skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">ii</label>
+<para xml:lang="en-NZ">
+<text>
+issue a certificate of amalgamation together with a certificate of incorporation.
+</text>
+</para>
+</label-para>
+</para>
+</label-para>
+</para>
+</subprov>
+<subprov skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">2</label>
+<para xml:lang="en-NZ">
+<text>
+If an amalgamation proposal specifies a date on which the amalgamation is intended to become effective, and that date is the same as, or later than, the date on which the Registrar receives the documents, the certificate of amalgamation, and any certificate of incorporation must be expressed to have effect on the date specified in the amalgamation proposal.
+</text>
+</para>
+</subprov>
+</prov.body>
+<notes>
+<history>
+<history-note id="DLM321153">
+<amended-provision>Section 224(1)(a)</amended-provision>
+:
+<amending-operation>amended</amending-operation>
+, on
+<amendment-date>1 July 1994</amendment-date>
+, by section 26(1) of the
+<amending-leg>Companies Act 1993 Amendment Act 1994</amending-leg>
+(1994 No 6).
+</history-note>
+<history-note id="DLM321154">
+<amended-provision>Section 224(1)(b)(ii)</amended-provision>
+:
+<amending-operation>replaced</amending-operation>
+, on
+<amendment-date>1 July 1994</amendment-date>
+, by section 26(2) of the
+<amending-leg>Companies Act 1993 Amendment Act 1994</amending-leg>
+(1994 No 6).
+</history-note>
+</history>
+</notes>
+</prov>

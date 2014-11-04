@@ -1,0 +1,52 @@
+<prov id="DLM320157" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">43</label>
+<heading xml:lang="en-NZ">Notice of share issue</heading>
+<prov.body>
+<subprov skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">1</label>
+<para xml:lang="en-NZ">
+<text>
+The board of a company must deliver to the Registrar for registration, within 10 working days of the issue of shares under
+<citation jurisdiction="nz">
+<intref href="DLM320154">section 41(b)</intref>
+or
+<intref href="DLM320156">section 42</intref>
+<insertwords>
+or
+<intref href="DLM320484">section 107(2)</intref>
+</insertwords>
+</citation>
+, a notice in the prescribed form of the issue of the shares by the company.
+</text>
+</para>
+</subprov>
+<subprov skeleton="no" xml:lang="en-NZ">
+<label auto.number="no" denominator="yes">2</label>
+<para xml:lang="en-NZ">
+<text>
+If the board of a company fails to comply with subsection (1), every director of the company commits an offence and is liable on conviction to the penalty set out in
+<citation jurisdiction="nz">
+<intref href="DLM323235">section 374(2)</intref>
+</citation>
+.
+</text>
+</para>
+</subprov>
+</prov.body>
+<notes>
+<history>
+<history-note id="DLM320158">
+<amended-provision>Section 43(1)</amended-provision>
+:
+<amending-operation>amended</amending-operation>
+, on
+<amendment-date>30 June 1997</amendment-date>
+, by
+<amending-provision href="DLM409541">section 3</amending-provision>
+of the
+<amending-leg>Companies Act 1993 Amendment Act 1997</amending-leg>
+(1997 No 27).
+</history-note>
+</history>
+</notes>
+</prov>
