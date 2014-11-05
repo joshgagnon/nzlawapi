@@ -5,9 +5,9 @@ from lxml.etree import tostring
 from itertools import chain
 import time
 
-tree = etree.parse(sys.argv[1])
+#tree = etree.parse(sys.argv[1])
 
-title = tree.xpath('/act/cover/title')[0].text
+#title = tree.xpath('/act/cover/title')[0].text
 
 def full_string(element):
     return tostring(element , method="text" , encoding='utf8')
@@ -91,8 +91,8 @@ def hello_world(path):
     return pluck_tree(tree, (path.split('/')[1:]))  + read_css()
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+#if __name__ == '__main__':
+#    app.run(debug=True)
 
 #print find(tree, 332, para='b')
 #print find(tree, 41, para='b')
@@ -100,3 +100,13 @@ if __name__ == '__main__':
 #print find(tree, 107, 1, 'c')
 #print find(tree, 83, 5, 'b')
 #print find(tree, 85, 1, 'c', 'ii')
+
+import os
+xslt = etree.parse('transform.xslt')
+transform = etree.XSLT(xslt)
+for f in [f for f in os.listdir('tests') if f.endswith('47.xml')]:
+    tree = etree.parse(os.path.join('tests', f))
+    output_file = os.path.join('tests', f.replace('.xml', '.html'))
+    print tostring(transform(tree))
+    break
+
