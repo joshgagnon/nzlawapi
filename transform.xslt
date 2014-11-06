@@ -21,7 +21,7 @@
             <ul class="prov">
                 <li>
                     <xsl:apply-templates select="prov.body/subprov"/>
-                     <xsl:apply-templates select="../../notes/history/history-note"/>
+                     <xsl:apply-templates select="notes/history/history-note"/>
                 </li>
             </ul>
         </div>
@@ -52,9 +52,7 @@
     <xsl:template match="label">
         <p class="labelled label">
             <span class="label">
-                (
-                <xsl:value-of select="."/>
-                )
+                (<xsl:value-of select="."/>)
             </span>
             <span class="spc"></span>
             <xsl:value-of select="../para/text"/>
