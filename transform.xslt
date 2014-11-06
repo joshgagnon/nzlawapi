@@ -19,38 +19,45 @@
                 <xsl:value-of select="heading"/>
             </h5>
             <ul class="prov">
+                <li>
                 <xsl:apply-templates select="prov.body/subprov"/>
-
+            </li>
             </ul>
         </div>
     </xsl:template>
 
     <xsl:template match='prov.body/subprov'>
-        <li>
+     
             <div class="subprov">
-                <p class="class">
-                    <xsl:value-of select="para/text"/>
-                </p>
+               <xsl:apply-templates select="label"/>
                 <xsl:apply-templates select="para/label-para"/>
             </div>
             <xsl:apply-templates select="../../notes/history/history-note"/>
-        </li>
+     
     </xsl:template>
 
     <xsl:template match="para/label-para">
         <ul class="label-para">
             <li>
-                <p class="labelled label">
-                    <span class="label">
-                        (<xsl:value-of select="label"/>)
-                    </span>
-                    <span class="spc"></span>
-                    <xsl:value-of select="para/text"/>
-                </p>
+                
+                    <xsl:apply-templates select="label"/>
+           
+                    <xsl:apply-templates select="para/label-para"/>
+  
             </li>
         </ul>
     </xsl:template>
 
+
+    <xsl:template match="label">
+        <p class="labelled label">
+                    <span class="label">
+                        (<xsl:value-of select="."/>)
+                    </span>
+                    <span class="spc"></span>
+                        <xsl:value-of select="../para/text"/>
+                   </p>
+    </xsl:template>
     <xsl:template match="notes/history/history-note">
         <p class="history-note">
             <xsl:attribute name="id">

@@ -104,7 +104,7 @@ def hello_world(path):
 import os
 xslt = etree.parse('transform.xslt')
 transform = etree.XSLT(xslt)
-for f in [f for f in os.listdir('tests') if f.endswith('41.xml')]:
+for f in [f for f in os.listdir('tests') if f.endswith('43.xml')]:
     tree = etree.parse(os.path.join('tests', f))
     output_file = os.path.join('tests', f.replace('.xml', '.html'))
     print tostring(transform(tree))
