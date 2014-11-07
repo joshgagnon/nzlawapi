@@ -1,45 +1,5331 @@
-
-.label, .heading, .para{
-	font-weight:bold;
-
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    border: 0;
+    vertical-align: baseline;
+    font: inherit;
+    font-size: 100%
 }
-
-.text{
-	font-weight:normal;
-
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block
 }
-
-ul{
-	list-style:none;
-	padding-left:1.5em;
-	padding-top:0;
-	margin-top:0;
+body {
+    line-height: 1
 }
-.notes, .crosshead{
-	display:none;
+ol, ul {
+    list-style: none
 }
-
-.heading{
-	margin-left:1em;
+blockquote, q {
+    quotes: none
 }
-
-.subprov .label{
-	float: left;
-margin-left: -1.5em;
-padding-right: 0.5em;
+blockquote:before, blockquote:after {
+    content: '';
+    content: none
 }
-
-
-
-.subprov .label:before,
-.para .label:after{
-	content: '(';
+q:before, q:after {
+    content: '';
+    content: none
 }
-.subprov .label:after,
-.para .label:after{
-	content: ')';
+:focus {
+    outline: none
 }
-
-.subprov > ul{
-	margin-left:0;
+a:focus {
+    outline: 1px dotted #000
+}
+ins {
+    background: #f5f7cd;
+    text-decoration: none
+}
+del {
+    text-decoration: line-through
+}
+table {
+    border-spacing: 0;
+    border-collapse: collapse
+}
+body, select, input, textarea {
+    font-family: Arial, Helvetica, sans-serif
+}
+#body {
+    width: 100%;
+    background: url("../images/body-bg.png") 0px 164px repeat-x #fff
+}
+strong, b {
+    font-weight: bold
+}
+em, i {
+    font-style: italic
+}
+#contentContainer div.wrapper {
+    margin: 7px auto 0 auto;
+    width: 986px;
+    color: #333;
+    font-size: 0.8em;
+    line-height: 1.5em
+}
+#contentContainer div.wrapper div.wrapper {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    color: inherit;
+    font-size: 1em;
+    line-height: inherit
+}
+#contentFooter {
+    clear: both;
+    height: 25px
+}
+#content {
+    margin: 0 15px 0 30px;
+    padding: 0 0 10px 0
+}
+#content strong {
+    font-weight: bold
+}
+#content em, #content i {
+    font-style: italic
+}
+#content h2, #content h3, #content h4, #content h5, #content h6 {
+    padding-left: 12px
+}
+#content p {
+    margin: 0.2em 0 0.9em 0;
+    padding-left: 12px
+}
+#content p.list {
+    margin: 0.2em 0 0 0
+}
+#content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+    font-weight: normal;
+    line-height: 1em
+}
+#content h1, #content h2, #content h3 {
+    font-family: "Times New Roman", Times, serif
+}
+#content h1 {
+    margin-right: 180px;
+    padding-top: 1.1em;
+    padding-bottom: 0.4em;
+    color: #7a3f3f;
+    font-size: 2.5em;
+    line-height: 1.1em
+}
+#content h1 span {
+    color: #002c66;
+    font-style: italic
+}
+#content h2 {
+    margin: 0 0 0.4em 0;
+    padding-top: 1em;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #ccc;
+    color: #7a3f3f;
+    font-size: 1.9em
+}
+#content h2 a {
+    color: #7a3f3f
+}
+#content h3 {
+    margin: 0 0 0.4em 0;
+    padding-top: 1em;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #ccc;
+    color: #056da9;
+    font-size: 1.8em
+}
+#content span.helpLink {
+    float: left;
+    width: 20px
+}
+#content span.helpLink a {
+    position: absolute;
+    z-index: 2;
+    overflow: hidden;
+    width: 20px;
+    height: 20px;
+    color: #247d84;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer
+}
+#content span.helpLink a:hover {
+    text-decoration: underline
+}
+#content span.helpLink a.overlay {
+    position: absolute;
+    z-index: 3;
+    padding: 0;
+    background: url("../images/help.jpg") 0 0 no-repeat
+}
+#content span.helpLink a.overlay:hover {
+    background-position: 0 -20px
+}
+#content #content-header h3 {
+    float: left;
+    margin: 0;
+    padding-top: 1em;
+    padding-bottom: 7px;
+    border-bottom: none;
+    color: #7a3f3f;
+    font-size: 2.5em
+}
+#content #content-header h3 a {
+    color: #7a3f3f
+}
+#content #content-header p.searchSummary {
+    display: none;
+    clear: left;
+    margin: 0 0 1.5em 0;
+    padding: 0;
+    font-size: 1.4em
+}
+#content #content-header div {
+    padding: 3.3em 0 0 0;
+    font-size: 1.1em;
+    line-height: 1em
+}
+#content #content-header a:visited {
+    color: #056da9
+}
+#content #content-header span {
+    float: left;
+    margin: 0 0 0 1em
+}
+#content #content-header span.helpLink {
+    margin: -2px 0 0 0.3em;
+    padding: 0
+}
+#content h4 {
+    padding-top: 0.5em;
+    font-weight: bold
+}
+#content h4 a {
+    color: #056da9
+}
+#content h5, #content h6 {
+    padding-top: 0.5em;
+    font-weight: bold
+}
+#content h4 {
+    font-size: 1.2em
+}
+#content h5 {
+    color: #7a3f3f
+}
+#content a {
+    color: #056da9;
+    text-decoration: none
+}
+#content a:visited {
+    color: #552288
+}
+#content a:hover {
+    text-decoration: underline
+}
+#content a[href^="http:"], #content a[href^="https:"], #content a.externallink {
+    margin-right: 4px;
+    padding-right: 15px;
+    background: url("../images/external-link.gif") no-repeat right center
+}
+#content hr {
+    clear: left;
+    padding-top: 5px;
+    height: 1px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    color: #fff
+}
+#content ul, #content ol {
+    margin: 0 0 1em 12px
+}
+#content ul li, #content ol li {
+    margin: 0 0 0 18px
+}
+#content ul li {
+    list-style: disc
+}
+#content ol li {
+    list-style: decimal
+}
+#content ul.subscriptions li, #content ul.links li {
+    margin: 0.3em 0 0.5em 0;
+    border-bottom: 1px solid #fff;
+    list-style-type: none
+}
+#content ul.subscriptions li a {
+    display: block;
+    padding: 0 0 2px 24px;
+    background: url("../images/legislation-options.png") top left no-repeat
+}
+#content ul.links {
+    margin: 0;
+    padding: 0
+}
+#content ul.links a {
+    color: #333;
+    font-weight: bold
+}
+#content ul.links a:hover {
+    color: #056da9
+}
+#content ul.headlines li {
+    margin: 0;
+    padding: 0.8em 0 0.8em 0;
+    border-top: 1px solid #ccc;
+    font-weight: bold
+}
+#content ul.headlines li:first-child {
+    padding: 0.2em 0 0.8em 0;
+    border-top: none
+}
+#content ul.headlines span {
+    white-space: nowrap;
+    font-weight: normal
+}
+#content ul.headlines a {
+    font-weight: normal
+}
+#content table.links {
+    width: 100%;
+    border-top: 2px solid #ccc
+}
+#content table.links th {
+    padding: 0.8em 0 0.2em 0;
+    color: #7a3f3f;
+    text-align: left;
+    font-size: 1.4em;
+    font-family: "Times New Roman", Times, serif
+}
+#content table.links td a {
+    color: #333;
+    font-weight: bold
+}
+#content table.links td a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#content p.sectionFooter {
+    margin: 0.3em 0 0.4em 0;
+    padding: 0.8em 0 0 0;
+    border-top: 1px solid #ccc
+}
+#content input, #content select, #content textarea {
+    font-size: 1.1em;
+    line-height: 1.3em
+}
+#content input[type=text], #content textarea {
+    padding: 0 0 0 3px;
+    border-top: 1px solid #adacac;
+    border-right: 1px solid #adacac;
+    border-bottom: 1px solid #e6e6e6;
+    border-left: 1px solid #e6e6e6
+}
+#content input[type=checkbox], #content input[type=radio] {
+    border: none
+}
+#content .contentHeader {
+    padding: 20px 0 0 0;
+    background: url("../images/homepage-bg.png") top left repeat-x
+}
+#content .topContentMenu {
+    clear: both;
+    margin: 0 74px 0 74px;
+    padding: 1em 0 1em 0
+}
+#content .topContentMenu ul {
+    margin: 0;
+    padding: 0
+}
+#content .topContentMenu ul.leftMenu, #content .topContentMenu ul.rightMenu {
+    width: 261px
+}
+#content .topContentMenu ul.leftMenu {
+    float: left;
+    width: 261px
+}
+#content .topContentMenu ul.rightMenu {
+    margin: 0 0 0 278px
+}
+#content .topContentMenu li {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
+    list-style-type: none
+}
+#content .topContentMenu li:first-child {
+    border-top: none
+}
+#content .topContentMenu a {
+    display: block;
+    padding: 2px 0 3px 30px;
+    background: url("../images/content-topmenu-li.gif") top left no-repeat;
+    color: #333
+}
+#content .topContentMenu a:hover {
+    color: #056da9
+}
+#content .contentBodyWithMenu {
+    float: right;
+    width: 690px
+}
+#content .contentMenu {
+    margin: 0 0 20px 0;
+    padding: 28px 0 94px 0;
+    width: 220px;
+    background: url("../images/content-menu-footer.jpg") bottom right no-repeat
+}
+#content .contentMenu h5 {
+    padding: 42px 0 5px 18px;
+    border-bottom: 1px solid #ccc;
+    background: url("../images/content-menu-header.jpg") top right no-repeat;
+    color: #0072b6;
+    text-transform: uppercase
+}
+#content .contentMenu ul {
+    margin: 0;
+    padding: 0
+}
+#content .contentMenu li {
+    margin: 0;
+    padding: 0.5em 0 0.5em 0;
+    border-bottom: 1px solid #ccc;
+    background: url("../images/content-menu-bg.jpg") top right repeat-y;
+    list-style-type: none
+}
+#content .contentMenu li a {
+    padding: 0 0 0 18px;
+    color: #666;
+    font-weight: bold
+}
+#content .contentMenu li a:hover {
+    color: #0072b6 !important;
+    text-decoration: none
+}
+#content .contentMenu li li {
+    padding: 0.5em 0 0.5em 18px;
+    border-bottom: none
+}
+#content .contentMenu li li a {
+    font-weight: normal
+}
+#content .contentMenu li.selected {
+    background: url("../images/content-menu-selected-bg.jpg") top right repeat-y
+}
+#content .contentMenu li.selected a {
+    color: #333;
+    font-weight: bold
+}
+#content .newsDate {
+    position: relative;
+    top: -0.4em;
+    color: #666;
+    font-weight: bold
+}
+#content div.alert, #content div.taggedDownloadWait, #content div.taggedDownloadError {
+    clear: left;
+    margin: 0 0 10px 0;
+    padding: 0.7em 1em 0.8em 0.3em;
+    border: 1px dashed #f2a24c;
+    background: #fefae4
+}
+#content div.alert ul, #content div.taggedDownloadWait ul, #content div.taggedDownloadError ul {
+    margin-bottom: 0
+}
+#content div.alert li, #content div.taggedDownloadWait li, #content div.taggedDownloadError li {
+    margin: 0 0 1px 24px;
+    min-height: 20px
+}
+#content div.alert li.importantAlert, #content div.taggedDownloadWait li.importantAlert, #content div.taggedDownloadError li.importantAlert {
+    margin-left: 0;
+    padding: 2px 0 0 25px;
+    background: url("../images/amends-notify.gif") top left no-repeat;
+    list-style-type: none
+}
+#content div.taggedDownloadWait span, #content div.taggedDownloadError span {
+    display: block;
+    margin: 0 0 0.3em 10px;
+    padding: 8px 0 10px 40px;
+    background: url("../images/tagged-docs.gif") 0 2px no-repeat
+}
+#content div.downloadStatus div.taggedDownloadWait, #content div.downloadStatus div.taggedDownloadError {
+    padding: 0;
+    border: none;
+    background: none
+}
+#content div.downloadStatus div.taggedDownloadWait span, #content div.downloadStatus div.taggedDownloadError span {
+    display: block;
+    margin: 0 0 0.3em 10px;
+    padding: 8px 0 10px 40px;
+    background: url("../images/tagged-docs.gif") 0 2px no-repeat
+}
+#content div.taggedDownloadError span {
+    background-position: 0 -78px
+}
+#content div.taggedDownload li {
+    clear: left;
+    margin-left: 2px;
+    list-style: none
+}
+#content div.taggedDownload li a {
+    float: left;
+    padding: 8px 0 10px 40px;
+    background: url("../images/tagged-docs.gif") 0 -156px no-repeat
+}
+#content div.taggedDownload li a.docDownload {
+    background-position: 0 -230px
+}
+#content div.taggedDownload p {
+    clear: left;
+    margin-bottom: 0;
+    padding-top: 1em
+}
+#content div.taggedDownload p.returnToDoc {
+    margin: 0;
+    padding: 2em 0 5em 0
+}
+#content div.taggedDownload p.returnToDoc a {
+    float: left;
+    margin: 0 0 0 13px;
+    padding: 4px 0 10px 40px;
+    background: url("../images/tagged-docs.gif") 0 -309px no-repeat
+}
+#content .validation-error {
+    background: #fefae4 !important
+}
+#content .validation-error input {
+    border: 1px solid #e2534d !important
+}
+#content a.disabled-link {
+    color: #767474
+}
+#content div.pageOptions {
+    position: absolute;
+    top: 180px;
+    margin: 0 0 0 600px;
+    width: 340px;
+    text-align: right
+}
+#content div.pageOptions ul {
+    margin: 0;
+    padding: 0
+}
+#content div.pageOptions li {
+    float: right;
+    clear: both;
+    margin: 0;
+    list-style-type: none
+}
+#content div.pageOptions li a {
+    background: url("../images/legislation-options.png") right top no-repeat
+}
+#content div.pageOptions li.printOnDemand a {
+    background-position: right -110px
+}
+#content div.pageOptions li.removeAllTags a {
+    background-position: right -163px
+}
+#content div.pageOptions a {
+    display: block;
+    padding: 1px 24px 8px 0;
+    color: #666;
+    font-size: 0.9em
+}
+#content div.pageOptions a:visited {
+    color: #666
+}
+#content div.pageOptions a:hover {
+    color: #056da9;
+    cursor: pointer
+}
+#atom-builder {
+    clear: left
+}
+.not-visible {
+    display: none
+}
+.ui-widget {
+    font-size: 1.1em
+}
+.ui-widget-overlay {
+    filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=80);
+    opacity: 0.8;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #eee
+}
+.ui-dialog {
+    position: absolute;
+    overflow: hidden;
+    padding: 0.2em;
+    width: 300px;
+    border: 1px solid #b5b4b4;
+    background: #fff
+}
+.ui-dialog .ui-dialog-titlebar {
+    padding: 0.7em 1em;
+    border: 1px solid #b5b4b4;
+    background: url("../images/header-bg.jpg") top left repeat #002b68;
+    color: #fff;
+    font-size: 1.2em
+}
+.ui-dialog .ui-dialog-titlebar-close {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+    position: absolute;
+    right: 13px;
+    border: none
+}
+.ui-dialog .ui-dialog-content {
+    position: relative;
+    overflow: auto;
+    margin: 2px 1px;
+    padding: 1em;
+    border: 1px solid #ddd;
+    background: none;
+    zoom: 1
+}
+.ui-widget-header .ui-icon {
+    float: right;
+    overflow: hidden;
+    width: 18px;
+    height: 18px;
+    background: url("../images/icons.png") top left;
+    text-indent: -99999px;
+    cursor: pointer
+}
+.ui-widget-header .ui-icon:hover, .ui-widget-header .ui-icon:focus {
+    background-position: top right;
+    cursor: pointer
+}
+.ui-corner-all {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px
+}
+.ui-helper-hidden-accessible {
+    display: none
+}
+.homepage #content .ui-dialog li {
+    margin-left: 18px;
+    list-style-type: disc
+}
+#content div.searchReturn {
+    position: relative;
+    top: 15px;
+    height: 10px
+}
+#content div.searchReturn a {
+    position: absolute;
+    z-index: 50;
+    color: #666;
+    font-size: 0.9em
+}
+#content div.searchReturn a:visited {
+    color: #666
+}
+#content div.searchReturn a:hover {
+    color: #056da9
+}
+#content div.legislationSearch {
+    border-top: 1px solid #fff
+}
+#content div.legislationSearchText, #content div.legislationSearchSubmit {
+    float: left;
+    height: 24px
+}
+#content div.legislationSearch label {
+    position: relative;
+    padding: 0 5px 0 0;
+    color: #7a3f3f;
+    font-size: 19px;
+    font-family: "Times New Roman", Times, serif;
+    line-height: 19px
+}
+#content div.legislationSearchText input {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 3px;
+    width: 215px;
+    height: 22px;
+    outline: 0;
+    font-size: 1em;
+    line-height: 22px
+}
+#content div.legislationSearchText input:focus {
+    background: #ffffdf
+}
+#content div.legislationSearchSubmit {
+    width: 51px
+}
+#content div.legislationSearchSubmit input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 51px;
+    height: 24px;
+    outline: 0;
+    border: 0;
+    background: url("../images/quicksearch-submit.png") 0px 0px repeat-x #1d827f;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 10px
+}
+#content div.legislationSearchSubmit input:hover {
+    background: url("../images/quicksearch-submit.png") 0px -24px repeat-x #3f7d9b;
+    cursor: pointer
+}
+#content div.legislationView {
+    clear: both;
+    padding: 20px 0 0 0
+}
+#content div.legislationView ul {
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+#content div.legislationView li {
+    float: left;
+    margin: 0 2px 0 0;
+    height: 38px;
+    list-style-type: none
+}
+#content div.legislationView li a {
+    display: block;
+    margin: 0;
+    padding: 11px 0 0 16px;
+    height: 27px;
+    background: url("../images/legislation-views-bg.jpg") 0px 0px no-repeat #f7f7f7;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px
+}
+#content div.legislationView li a.selected {
+    background-color: #314664;
+    color: #fff;
+    font-weight: bold
+}
+#content div.legislationView li a:hover {
+    background-color: #588096;
+    background-position: 0px -76px
+}
+#content div.legislationView li.sections {
+    width: 200px
+}
+#content div.legislationView li.whole {
+    width: 180px
+}
+#content div.legislationView li.whole a {
+    background-position: -200px 0px
+}
+#content div.legislationView li.versions {
+    width: 215px
+}
+#content div.legislationView li.versions a {
+    background-position: -380px 0px
+}
+#content div.legislationView li a.selected {
+    background-position: 0px -38px
+}
+#content div.legislationView li.whole a:hover {
+    background-position: -200px -76px
+}
+#content div.legislationView li.versions a:hover {
+    background-position: -380px -76px
+}
+#content div.legislationView li.whole a.selected {
+    background-position: -200px -38px
+}
+#content div.legislationView li.versions a.selected {
+    background-position: -380px -38px
+}
+#content div.legislationView li.download {
+    float: right;
+    padding: 0;
+    width: auto;
+    text-align: right
+}
+#content div.legislationView li.download a {
+    position: relative;
+    top: 4px;
+    padding: 7px 45px 0 0;
+    background: url("../images/legislation-download.png") 100% 0px no-repeat #fff !important
+}
+#content div.legislationView li.download a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#content div.legislationView li.download input {
+    overflow: visible;
+    padding: 7px 85px 5px 2px;
+    border: none;
+    background: url("../images/legislation-download.png") 100% -49px no-repeat #fff;
+    color: #666;
+    font-size: 14px
+}
+#content div.legislationView li.download input:hover {
+    color: #056da9;
+    text-decoration: underline;
+    cursor: pointer
+}
+#content div.legislationActions ul {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 938px;
+    height: 50px;
+    background: url("../images/legislation-actions-bg.png") 0px -200px no-repeat #eeeef6;
+    list-style: none
+}
+#content div.legislationActions li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 50px;
+    background: #333;
+    background: url("../images/legislation-actions-bg.png") 0px -150px no-repeat #eeeef6;
+    list-style-type: none
+}
+#content div.legislationActions li.contents {
+    width: 238px
+}
+#content div.legislationActions li.previousSection {
+    width: 147px;
+    background-position: -238px -150px
+}
+#content div.legislationActions li.nextSection {
+    width: 122px;
+    background-position: -385px -150px
+}
+#content div.legislationActions li.tag {
+    width: 116px;
+    background-position: -507px -150px
+}
+#content div.legislationActions li.tagRemove {
+    width: 116px;
+    background-position: -939px -150px
+}
+#content div.legislationActions li.remove {
+    width: 98px;
+    background-position: -623px -150px
+}
+#content div.legislationActions li.previousHit {
+    width: 119px;
+    background-position: -721px -150px
+}
+#content div.legislationActions li.nextHit {
+    width: 98px;
+    background-position: -840px -150px
+}
+#content div.legislationActions li a {
+    display: block;
+    padding: 19px 0 0 8px;
+    height: 31px;
+    background: url("../images/legislation-actions-bg.png") top left no-repeat #eee;
+    color: #333;
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 15px;
+    cursor: pointer
+}
+#content div.legislationActions li a:hover {
+    text-decoration: none
+}
+#content div.legislationActions li a:visited {
+    color: #333
+}
+#content div.legislationActions li.contents a {
+    padding-left: 37px
+}
+#content div.legislationActions li.contents a:hover {
+    background-color: #d9dce6;
+    background-position: 0px -100px
+}
+#content div.legislationActions li.contents a.selected {
+    background-position: 0px -50px
+}
+#content div.legislationActions li.contents a.selected:hover {
+    background-position: 0px -100px
+}
+#content div.legislationActions li.contents a.disabled {
+    background-position: 0px -50px;
+    cursor: default
+}
+#content div.legislationActions li.previousSection a {
+    padding-left: 42px;
+    background-position: -238px 0px
+}
+#content div.legislationActions li.previousSection a:hover {
+    background-position: -238px -100px
+}
+#content div.legislationActions li.previousSection a.disabled {
+    background-position: -238px -50px;
+    cursor: default
+}
+#content div.legislationActions li.nextSection a {
+    padding-right: 40px;
+    padding-left: 0px;
+    background-position: -385px 0px;
+    text-align: right
+}
+#content div.legislationActions li a.disabled {
+    color: #999;
+    cursor: default
+}
+#content div.legislationActions li.nextSection a:hover {
+    background-position: -385px -100px
+}
+#content div.legislationActions li.nextSection a.disabled {
+    background-position: -385px -50px;
+    cursor: default
+}
+#content div.legislationActions li.tag a {
+    padding-left: 32px;
+    background-position: -507px 0px
+}
+#content div.legislationActions li.tag a:hover {
+    background-position: -507px -100px
+}
+#content div.legislationActions li.tag a.disabled {
+    background-position: -507px -50px
+}
+#content div.legislationActions li.tagRemove a {
+    padding-left: 32px;
+    background-position: -939px 0px
+}
+#content div.legislationActions li.tagRemove a:hover {
+    background-position: -939px -100px
+}
+#content div.legislationActions li.tagRemove a.disabled {
+    background-position: -939px -50px
+}
+#content div.legislationActions li.remove a {
+    padding-left: 32px;
+    background-position: -623px 0px
+}
+#content div.legislationActions li.remove a:hover {
+    background-position: -623px -100px
+}
+#content div.legislationActions li.remove a.disabled {
+    background-position: -623px -50px
+}
+#content div.legislationActions li.previousHit a {
+    padding-left: 42px;
+    background-position: -721px 0px
+}
+#content div.legislationActions li.previousHit a:hover {
+    background-position: -721px -100px
+}
+#content div.legislationActions li.previousHit a.disabled {
+    background-position: -721px -50px
+}
+#content div.legislationActions li.nextHit a {
+    padding-right: 42px;
+    padding-left: 0px;
+    background-position: -840px 0px;
+    text-align: right
+}
+#content div.legislationActions li.nextHit a:hover {
+    background-position: -840px -100px
+}
+#content div.legislationActions li.nextHit a.disabled {
+    background-position: -840px -50px
+}
+#content div.legislationContainer {
+    clear: both;
+    margin: 0 0 40px 0;
+    width: 938px;
+    border: 1px solid #314664;
+    background: #ccc
+}
+#content #legislationContents {
+    float: left;
+    margin: 0;
+    padding: 60px 0 0 0;
+    width: 238px;
+    border-bottom: 1px solid #d6d6d6;
+    background: url("../images/legislation-contents-bg.png") top left repeat-y #f7f7f7;
+    font-size: 0.9em
+}
+#content #legislationContents ul {
+    margin: 0;
+    padding: 0 0 10px 0
+}
+#content #legislationContents li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none
+}
+#content #legislationContents li.selected {
+    background: url("../images/legislation-contents-selected.png") top left repeat-y #dedede
+}
+#content #legislationContents h5 {
+    padding: 5px 15px 0 10px;
+    color: #333;
+    line-height: 1.4em
+}
+#content #legislationContents a {
+    display: block;
+    color: #333
+}
+#content #legislationContents a:visited {
+    color: #333
+}
+#content #legislationContents a:hover {
+    background: #dae6f4;
+    text-decoration: none
+}
+#content #legislationContents h5 {
+    border-top: 1px solid #ccc;
+    font-weight: bold
+}
+#content #legislationContents h6 {
+    padding: 5px 15px 0 10px;
+    color: #333;
+    font-weight: normal;
+    line-height: 1.4em
+}
+#content #legislationContents span.number {
+    float: left;
+    width: 22px
+}
+#content #legislationContents span.title {
+    float: left;
+    width: 190px
+}
+#content #legislationContents div.clear {
+    clear: left;
+    height: 5px
+}
+#content div.legislationWrapper {
+    margin: 0 auto 0 auto;
+    padding-top: 50px;
+    background: #fff
+}
+#content div.legislationWithContents {
+    float: right;
+    width: 700px;
+    font-size: 0.8em
+}
+#content #legislation {
+    overflow: hidden;
+    margin: 0 auto 0 auto;
+    padding: 1.5em 1.5em 2em 0;
+    width: 840px;
+    font-size: 1.3em
+}
+#content div.legislationWithContents #legislation {
+    width: 630px
+}
+#content div.legislationFooter {
+    clear: both
+}
+#content div.taggedSections {
+    padding-top: 0 !important
+}
+#content span.hit {
+    background: #FFFF00;
+    color: #000;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: inherit
+}
+#content .not-highlighted span.hit {
+    border: 0;
+    background: none;
+    color: inherit
+}
+#content span.current-hit {
+    background: #fc0 !important;
+    color: #000 !important
+}
+#content .legislationContainer h3.searchWithinTitle {
+    padding: 0 0 0 15px;
+    height: 40px;
+    border: none;
+    background: url("../images/versions-header-bg.png") top left no-repeat #eff4fa;
+    color: #666;
+    color: #056da9;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1em;
+    line-height: 40px
+}
+#content #VersionsAndAmendments, #content .taggedToc {
+    padding: 15px 0;
+    background: #fff
+}
+#content #VersionsAndAmendments div, #content .taggedToc div {
+    margin: 0 15px 15px 15px;
+    border-bottom: 1px solid #ccc
+}
+#content #VersionsAndAmendments div div, #content .taggedToc div div {
+    margin: 0;
+    border-bottom: none
+}
+#content #VersionsAndAmendments div.content, #content .taggedToc div.content {
+    margin: 0 15px;
+    border-bottom: none
+}
+#content #VersionsAndAmendments h3, #content .taggedToc h3 {
+    padding: 0 0 0 15px;
+    height: 40px;
+    border: none;
+    background: url("../images/versions-header-bg.png") top left no-repeat #eff4fa;
+    color: #666;
+    color: #056da9;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1em;
+    line-height: 40px
+}
+#content #VersionsAndAmendments h3 span, #content .taggedToc h3 span {
+    padding-left: 2em;
+    color: #4c4c4c;
+    font-weight: normal
+}
+#content #VersionsAndAmendments h3 span a, #content .taggedToc h3 span a {
+    color: #4c4c4c
+}
+#content #VersionsAndAmendments h3 span a:hover, #content .taggedToc h3 span a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#content #VersionsAndAmendments h3 span.helpLink, #content .taggedToc h3 span.helpLink {
+    position: absolute;
+    padding: 10px 0 0 1em
+}
+#content #VersionsAndAmendments h3 span.helpLink a.overlay, #content .taggedToc h3 span.helpLink a.overlay {
+    background-position: 0 -120px
+}
+#content #VersionsAndAmendments h3 span.helpLink a.overlay:hover, #content .taggedToc h3 span.helpLink a.overlay:hover {
+    background-position: 0 -140px
+}
+#content #VersionsAndAmendments h4, #content .taggedToc h4 {
+    margin: 0.5em 0;
+    padding-left: 0;
+    font-size: 1em
+}
+#content #VersionsAndAmendments table, #content .taggedToc table {
+    width: 100%
+}
+#content #VersionsAndAmendments table td, #content .taggedToc table td {
+    padding: 10px 15px;
+    text-align: left
+}
+#content #VersionsAndAmendments table td.versionsDate, #content .taggedToc table td.versionsDate {
+    width: 35%
+}
+#content #VersionsAndAmendments table td.versionsPdf, #content .taggedToc table td.versionsPdf {
+    width: 10%
+}
+#content #VersionsAndAmendments table td.versionsPdf a, #content .taggedToc table td.versionsPdf a {
+    display: block;
+    padding: 2px 28px 0 0;
+    min-height: 20px;
+    background: url("../images/pdf-icon.gif") right center no-repeat;
+    text-align: right;
+    white-space: nowrap
+}
+#content #VersionsAndAmendments table a.versionsTitle, #content .taggedToc table a.versionsTitle {
+    color: #333;
+    font-weight: bold
+}
+#content #VersionsAndAmendments table a.versionsTitle:hover, #content .taggedToc table a.versionsTitle:hover {
+    color: #056da9
+}
+#content #VersionsAndAmendments table.relatedSops td, #content .taggedToc table.relatedSops td {
+    white-space: nowrap
+}
+#content #VersionsAndAmendments table.relatedSops td.versionsDate, #content .taggedToc table.relatedSops td.versionsDate {
+    white-space: normal
+}
+#content #VersionsAndAmendments table.relatedSops td span.currentVersionAsterix, #content .taggedToc table.relatedSops td span.currentVersionAsterix {
+    padding-left: 0
+}
+#content #VersionsAndAmendments .resultsEven, #content .taggedToc .resultsEven {
+    background: #f3f3f3
+}
+#content #VersionsAndAmendments .selectedVersion, #content .taggedToc .selectedVersion {
+    background: #FEFAE4
+}
+#content #VersionsAndAmendments .currentVersionAsterix, #content .taggedToc .currentVersionAsterix {
+    padding-left: 5px;
+    color: #cc0000
+}
+#content #VersionsAndAmendments div.versionsFooter, #content .taggedToc div.versionsFooter {
+    margin: 0 0 20px 0;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 2px solid #ccc
+}
+#content #VersionsAndAmendments div.sopFooter, #content .taggedToc div.sopFooter {
+    margin: 0 0 20px 0;
+    border-top: 1px solid #ccc
+}
+#content #VersionsAndAmendments div.contentNotes, #content .taggedToc div.contentNotes {
+    margin: 0 0 0 15px
+}
+#content #VersionsAndAmendments .inForceOutstanding span, #content #VersionsAndAmendments .notInForceOutstanding span, #content #VersionsAndAmendments .proposedOutstanding span, #content .taggedToc .inForceOutstanding span, #content .taggedToc .notInForceOutstanding span, #content .taggedToc .proposedOutstanding span {
+    padding: 3px 0px 3px 40px
+}
+#content #VersionsAndAmendments .inForceOutstanding span, #content .taggedToc .inForceOutstanding span {
+    background: url("../images/amends-notify.gif") 10px 0px no-repeat
+}
+#content #VersionsAndAmendments .inForceOutstanding ul, #content .taggedToc .inForceOutstanding ul {
+    margin: 0 0 1em 0;
+    padding: 0
+}
+#content #VersionsAndAmendments .notInForceOutstanding ul, #content #VersionsAndAmendments .proposedOutstanding ul, #content .taggedToc .notInForceOutstanding ul, #content .taggedToc .proposedOutstanding ul {
+    margin: 0 0 1em 0;
+    padding: 0
+}
+#content #VersionsAndAmendments .inForceOutstanding li, #content #VersionsAndAmendments .notInForceOutstanding li, #content #VersionsAndAmendments .proposedOutstanding li, #content .taggedToc .inForceOutstanding li, #content .taggedToc .notInForceOutstanding li, #content .taggedToc .proposedOutstanding li {
+    margin: 0 0 0 40px;
+    list-style-type: none
+}
+#content #VersionsAndAmendments .inForceOutstanding a, #content #VersionsAndAmendments .notInForceOutstanding a, #content #VersionsAndAmendments .proposedOutstanding a, #content .taggedToc .inForceOutstanding a, #content .taggedToc .notInForceOutstanding a, #content .taggedToc .proposedOutstanding a {
+    color: #333;
+    font-weight: bold
+}
+#content #VersionsAndAmendments .inForceOutstanding a:hover, #content #VersionsAndAmendments .notInForceOutstanding a:hover, #content #VersionsAndAmendments .proposedOutstanding a:hover, #content .taggedToc .inForceOutstanding a:hover, #content .taggedToc .notInForceOutstanding a:hover, #content .taggedToc .proposedOutstanding a:hover {
+    color: #056da9
+}
+#content #VersionsAndAmendments a.plusIcon, #content #VersionsAndAmendments a.minusIcon, #content .taggedToc a.plusIcon, #content .taggedToc a.minusIcon {
+    display: block;
+    margin-left: 15px;
+    padding: 2px 0 0 16px;
+    background: url("../images/versions-show.png") left center no-repeat
+}
+#content #VersionsAndAmendments a.plusIcon:visited, #content .taggedToc a.plusIcon:visited {
+    color: #056da9
+}
+#content #VersionsAndAmendments a.minusIcon, #content .taggedToc a.minusIcon {
+    background: url("../images/versions-hide.png") left center no-repeat
+}
+#content #VersionsAndAmendments a.minusIcon:visited, #content .taggedToc a.minusIcon:visited {
+    color: #056da9
+}
+#content .taggedToc {
+    padding: 15px 0 0 0
+}
+#content .legislationContainer .headContainer {
+    padding: 15px 0 0 0;
+    background: #fff
+}
+#content .legislationContainer .headActions {
+    margin: 0px 15px
+}
+#content .legislationContainer .headActions li.resultsReturned {
+    width: 710px
+}
+#content .legislationContainer h3.searchWithinTitle {
+    position: relative;
+    left: 15px;
+    margin: 0 0 8px 0;
+    width: 893px
+}
+#content .legislationContainer .search-results-pagination {
+    position: relative;
+    top: -30px;
+    margin: 0
+}
+#content #searchWithinResults {
+    position: relative;
+    top: -30px;
+    margin: 0 15px;
+    padding: 0 0 10px 0
+}
+#content #searchWithinResults ul {
+    margin: 0
+}
+#content #searchWithinResults li {
+    margin: 0;
+    list-style-type: none;
+    font-weight: bold
+}
+#content #searchWithinResults li li {
+    margin-left: 20px;
+    font-weight: normal;
+    font-size: 0.8em;
+    line-height: 2em
+}
+#content #searchWithinResults li a {
+    display: block;
+    padding: 0.8em 15px;
+    border: 1px solid #fff;
+    color: #333
+}
+#content #searchWithinResults li a h2, #content #searchWithinResults li a h3, #content #searchWithinResults li a h4, #content #searchWithinResults li a h5, #content #searchWithinResults li a h6, #content #searchWithinResults li a span.heading {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-size: 1.3em
+}
+#content #searchWithinResults li a cite {
+    display: block;
+    margin: 0.25em 0 0 25px;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1.5em
+}
+#content #searchWithinResults li a:hover {
+    border: 1px solid #eee;
+    background: #fcfcff;
+    text-decoration: none
+}
+#content #searchWithinResults li a:hover h2, #content #searchWithinResults li a:hover h3, #content #searchWithinResults li a:hover h4, #content #searchWithinResults li a:hover h5, #content #searchWithinResults li a:hover h6, #content #searchWithinResults li a:hover span.heading {
+    color: #056da9;
+    text-decoration: underline
+}
+#content #deemedRegContent {
+    padding: 0 0 3em 0;
+    background: #fff
+}
+#content #deemedRegContent div.content {
+    margin: 0 15px
+}
+#content #deemedRegContent ul {
+    margin: 0 0 2em 24px
+}
+#content #deemedRegContent ul li {
+    font-weight: bold
+}
+#content #deemedRegContent ul li a {
+    font-weight: normal
+}
+#content #deemedRegContent p {
+    margin: 0 0 0.2em 30px;
+    color: #787676;
+    font-weight: bold
+}
+#content #deemedRegContent p span {
+    padding-right: 5px;
+    color: #333;
+    font-weight: normal
+}
+#content div.deemedRegDisclaimer {
+    padding: 1px 0 2em 0;
+    background: #fff
+}
+#content div.deemedRegDisclaimer div {
+    margin: 0 1px;
+    padding: 0.9em 0 1em 0;
+    border: 3px solid #dce5f4
+}
+#content div.deemedRegDisclaimer div p {
+    margin: 0 25px
+}
+#header {
+    height: 149px;
+    background: url("../images/header-bg.jpg") center top repeat-x #002b68
+}
+#header div.wrapper {
+    margin: 0px auto 0px auto;
+    width: 986px;
+    height: 149px;
+    background: url("../images/header.jpg") 0px 0px no-repeat
+}
+#header h2 {
+    margin: 0 0 0 178px;
+    padding: 32px 0 0 0;
+    color: #fff;
+    font-weight: normal;
+    font-size: 1.4em;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+#header h2 a {
+    color: #fff;
+    text-decoration: none
+}
+#menus {
+    margin: 0px auto 0px auto;
+    width: 990px
+}
+#primaryMenu {
+    position: absolute;
+    top: 112px;
+    z-index: 99
+}
+#primaryMenu ul {
+    margin: 0 0 0 25px;
+    padding: 0;
+    list-style: none
+}
+#primaryMenu li {
+    float: left;
+    margin: 0 0 0 2px;
+    height: 45px;
+    text-align: center
+}
+#primaryMenu li a {
+    display: block;
+    padding: 12px 0 0 0;
+    height: 33px;
+    background: url("../images/primary-menu-bg.jpg") 0px 0px no-repeat #063665;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px
+}
+#primaryMenu li a.selected {
+    background-color: #fff;
+    color: #003068
+}
+#primaryMenu li a:hover {
+    background-color: #2b5a82
+}
+#primaryMenu li.home {
+    width: 81px
+}
+#primaryMenu li.search {
+    width: 171px
+}
+#primaryMenu li.browse {
+    width: 98px
+}
+#primaryMenu li.about {
+    width: 154px
+}
+#primaryMenu li.search a {
+    background-position: -81px 0px
+}
+#primaryMenu li.browse a {
+    background-position: -252px 0px
+}
+#primaryMenu li.about a {
+    background-position: -350px 0px
+}
+#primaryMenu li.home a:hover {
+    background-position: 0px -100px
+}
+#primaryMenu li.search a:hover {
+    background-position: -81px -100px
+}
+#primaryMenu li.browse a:hover {
+    background-position: -252px -100px
+}
+#primaryMenu li.about a:hover {
+    background-position: -350px -100px
+}
+#primaryMenu li.home a.selected {
+    background-position: 0px -50px
+}
+#primaryMenu li.search a.selected {
+    background-position: -81px -50px
+}
+#primaryMenu li.browse a.selected {
+    background-position: -252px -50px
+}
+#primaryMenu li.about a.selected {
+    background-position: -350px -50px
+}
+#resourcesMenu {
+    position: absolute;
+    top: 0px;
+    z-index: 50;
+    width: 980px;
+    font-size: 0.8em
+}
+#resourcesMenu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+#resourcesMenu li {
+    float: right;
+    padding: 13px 5px 0px 3px;
+    height: 29px;
+    background: url("../images/resources-menu.png") 0px 0px no-repeat #2b5a82
+}
+#resourcesMenu li a {
+    background: url("../images/resources-menu.png") 0px 0px no-repeat;
+    color: #fff;
+    text-decoration: none
+}
+#resourcesMenu li a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#resourcesMenu li.printOnDemand {
+    background-position: 0px -43px
+}
+#resourcesMenu li.printOnDemand a {
+    padding: 3px 5px 4px 29px;
+    background-position: 0px -270px
+}
+#resourcesMenu li.taggedSections a {
+    padding: 3px 5px 4px 28px;
+    background-position: -1px -141px
+}
+#resourcesMenu li.webFeeds, #resourcesMenu li.webFeedsUnsaved {
+    background-position: 100% -86px
+}
+#resourcesMenu li.webFeeds a, #resourcesMenu li.webFeedsUnsaved a {
+    padding: 3px 4px 4px 28px;
+    background-position: -3px -184px
+}
+#resourcesMenu li.webFeedsUnsaved a {
+    background-position: -3px -227px
+}
+#quickSearch {
+    position: absolute;
+    top: 0px;
+    z-index: 49;
+    width: 986px;
+    font-size: 0.8em
+}
+#quickSearch div.wrapper {
+    margin: 58px 0 0 auto;
+    padding: 8px 0 0 0;
+    width: 423px;
+    height: 83px;
+    background: url("../images/quicksearch-bg.jpg") top left no-repeat #8d2e2a
+}
+#quickSearch h4 {
+    position: absolute;
+    margin: 0 0 0 20px;
+    padding: 4px 0 8px 0;
+    width: 250px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold
+}
+#quickSearch span.helpLink {
+    float: right;
+    margin: 0;
+    width: 33px
+}
+#quickSearch span.helpLink a {
+    position: absolute;
+    z-index: 70;
+    padding: 0 0 2px 0;
+    width: 20px;
+    color: #fff;
+    text-align: right;
+    text-decoration: none;
+    font-size: 12px;
+    cursor: pointer
+}
+#quickSearch span.helpLink a:hover {
+    text-decoration: underline
+}
+#quickSearch span.helpLink a.overlay {
+    z-index: 71;
+    padding: 0;
+    height: 20px;
+    background: url("../images/help.jpg") 0 -80px no-repeat
+}
+#quickSearch span.helpLink a.overlay:hover {
+    background-position: 0 -100px
+}
+#quickSearch #quickSearchForm {
+    margin: 0 0 0 18px;
+    padding: 27px 0 0 0
+}
+#quickSearch div.searchType, #quickSearch div.searchText, #quickSearch div.searchSubmit {
+    float: left
+}
+#quickSearch div.searchType label, #quickSearch div.searchText label {
+    display: none
+}
+#quickSearch div.searchType {
+    clear: left;
+    margin: 2px 8px 0 0
+}
+#quickSearch div.searchType select {
+    width: 100px;
+    outline: 0;
+    border: 1px solid #eee;
+    background: url("../images/quicksearch-select.png") top left repeat-x #fff;
+    font-size: 1em;
+    line-height: 1em
+}
+#quickSearch div.searchText input {
+    margin: 0;
+    padding: 0 0 0 5px;
+    width: 215px;
+    height: 24px;
+    outline: 0;
+    border: 0;
+    background: url("../images/quicksearch-search.png") 0px 0px no-repeat #fff;
+    font-size: 1em;
+    line-height: 24px
+}
+#quickSearch div.searchText input:focus {
+    background-color: #ffffdf;
+    background-position: 0px -50px
+}
+#quickSearch div.searchSubmit {
+    width: 51px
+}
+#quickSearch div.searchSubmit input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 51px;
+    height: 24px;
+    outline: 0;
+    border: 0;
+    background: url("../images/quicksearch-submit.png") 0px 0px repeat-x #1d827f;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 10px
+}
+#quickSearch div.searchSubmit input:hover {
+    background: url("../images/quicksearch-submit.png") 0px -24px repeat-x #3f7d9b;
+    cursor: pointer
+}
+#quickSearch ul.ui-autocomplete {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+    position: absolute;
+    margin: 0;
+    padding: 2px;
+    width: 300px !important;
+    border: 1px solid #ddd;
+    background: #fff;
+    background: #fff;
+    list-style: none;
+    font-size: 0.9em;
+    cursor: default
+}
+#quickSearch ul.ui-autocomplete li {
+    float: left;
+    clear: left;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    zoom: 1
+}
+#quickSearch ul.ui-autocomplete a {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+    display: block;
+    padding: 0.2em 0.4em;
+    color: #444;
+    text-decoration: none;
+    line-height: 1.5;
+    zoom: 1
+}
+#quickSearch ul.ui-autocomplete a.ui-state-hover, #quickSearch ul.ui-autocomplete a.ui-state-focus {
+    margin: -1px;
+    border: 1px solid #0073ea;
+    background: #0073ea;
+    color: #fff
+}
+#quickSearch div.searchOptions {
+    clear: both;
+    padding: 8px 0 0 0
+}
+#quickSearch div.searchOptions div {
+    display: inline;
+    margin: 0 20px 0 0;
+    padding: 0;
+    line-height: 1em
+}
+#quickSearch div.searchOptions div.not-visible {
+    display: none
+}
+#quickSearch div.searchOptions label {
+    margin: 0 0 0 2px;
+    padding: 0;
+    color: #fff
+}
+#quickSearch div.searchOptions input {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    height: 13px;
+    outline: 0;
+    border: 0;
+    vertical-align: bottom;
+    *overflow: hidden
+}
+#quickSearch div.searchOptions span.helpLink {
+    position: relative;
+    left: -12px;
+    float: none;
+    width: 20px
+}
+#quickSearch div.searchHistory {
+    position: relative;
+    top: -1.1em;
+    right: -200px;
+    margin: 0 25px 0 0;
+    width: 200px;
+    text-align: right;
+    line-height: 1em
+}
+#quickSearch div.searchHistory a {
+    display: block;
+    padding: 0 15px 0 0;
+    background: url("../images/quicksearch-downarrow.jpg") right center no-repeat;
+    color: #fff;
+    text-decoration: none
+}
+#quickSearch div.searchHistory a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#quickSearch div#recentSearches {
+    position: relative;
+    top: 3px;
+    left: -100px;
+    z-index: 100;
+    width: 300px;
+    text-align: left
+}
+#quickSearch div#recentSearches ul {
+    position: absolute;
+    z-index: 150;
+    margin: 0;
+    width: 300px;
+    border: 1px solid #666;
+    background: #fff
+}
+#quickSearch div#recentSearches li {
+    width: 300px;
+    background: #fff;
+    line-height: 1.3em
+}
+#quickSearch div#recentSearches a {
+    position: relative;
+    padding: 0.5em 7px 0.5em 9px;
+    width: 284px;
+    background: #fff;
+    color: #333
+}
+#quickSearch div#recentSearches a:hover {
+    background: #0092ff !important;
+    text-decoration: none
+}
+#quickSearch div#recentSearches strong {
+    font-weight: bold
+}
+#printLogo div {
+    margin: 0px auto 0px auto;
+    padding: 0;
+    width: 986px
+}
+#printLogo div a {
+    position: absolute;
+    top: 0px;
+    z-index: 90;
+    display: block;
+    width: 520px;
+    height: 100px;
+    background: url("../images/header.jpg") 0px 0px no-repeat
+}
+#printLogo img {
+    display: none
+}
+#accessKeys {
+    height: 8px;
+    background: url("../images/accesskeys-bg.png") top left repeat-x #8d2e2a
+}
+#accessKeys div.wrapper {
+    overflow: hidden;
+    margin: 0 auto 0 auto;
+    padding: 8px 0 0 0;
+    width: 986px;
+    height: 0px;
+    background: url("../images/accesskeys-bg.png") top left repeat-x #8d2e2a
+}
+#accessKeys h5 {
+    display: none
+}
+#accessKeys ul {
+    margin-left: 200px
+}
+#accessKeys li {
+    width: 500px;
+    list-style-type: none
+}
+#accessKeys a {
+    color: #fff
+}
+#accessKeys a:hover {
+    color: #af1e2d
+}
+#accessKeys a:focus {
+    filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=90);
+    opacity: 0.9;
+    position: absolute;
+    top: 125px;
+    z-index: 100;
+    padding: 20px 0px 20px 0px;
+    width: 500px;
+    outline: 0;
+    border: 1px solid #000;
+    background: #03111c;
+    text-align: center;
+    font-size: 1.8em
+}
+#footer {
+    height: 120px;
+    background: url("../images/footer-bg.jpg") top left repeat-x #fff;
+    font-size: 0.8em
+}
+#footer div.wrapper {
+    margin: 0 auto 0 auto;
+    padding: 20px 0 0 0;
+    width: 986px;
+    height: 100px;
+    background: url("../images/footer-bg.jpg") top left repeat-x #fff
+}
+#footer ul {
+    padding: 0;
+    list-style: none
+}
+#footer div.firstLevel li {
+    float: right
+}
+#footer div.firstLevel li a {
+    display: block;
+    height: 55px;
+    text-indent: -3000px
+}
+#footer div.firstLevel li.pco a {
+    margin: 0 0 0 5px;
+    width: 155px;
+    background: url("../images/footer-pco.png") top left no-repeat
+}
+#footer div.firstLevel li.nzgovernment a {
+    width: 149px;
+    background: url("../images/footer-nzgovernment.png") top left no-repeat
+}
+#footer div.firstLevel a {
+    color: #333;
+    text-decoration: none
+}
+#footer div.secondLevel {
+    position: absolute;
+    margin: 0 0 0 10px
+}
+#footer div.secondLevel a {
+    color: #333;
+    text-decoration: none
+}
+#footer div.thirdLevel {
+    position: absolute;
+    margin: 0 0 0 10px
+}
+#footer div.secondLevel a:hover, #footer div.thirdLevel a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#footer div.secondLevel ul, #footer div.thirdLevel ul {
+    margin: 0 0 0 20px
+}
+#footer div.secondLevel li, #footer div.thirdLevel li {
+    float: left;
+    padding: 0 7px 0 9px
+}
+#footer div.secondLevel a, #footer div.thirdLevel a {
+    position: relative;
+    z-index: 50
+}
+#footer div.secondLevel li {
+    background: url("../images/footer-secondlevel.png") bottom left no-repeat
+}
+#footer div.secondLevel li:first-child {
+    padding: 0 7px 0 0;
+    background: none
+}
+#footer div.thirdLevel {
+    padding: 2em 0 0 0
+}
+#footer div.thirdLevel li {
+    background: url("../images/footer-thirdlevel.png") bottom left no-repeat
+}
+#footer div.thirdLevel li:first-child {
+    padding: 0 7px 0 0;
+    background: none
+}
+#footer div.thirdLevel a {
+    color: #787676;
+    text-decoration: none
+}
+body.homepage #body {
+    background: url("../images/homepage-bg.png") 0px 332px repeat-x #fff
+}
+body.homepage div#contentContainer {
+    background: url("../images/homepage-sidebar-bg.gif") top center repeat-y
+}
+body.homepage #contentContainer div.wrapper {
+    background: url("../images/homepage-sidebar.gif") top right repeat-y
+}
+.homepage #content h2, .homepage #content h3, .homepage #content h4, .homepage #content h5, .homepage #content h6, .homepage #content p {
+    padding-left: 0
+}
+.homepage #content h2 {
+    padding-top: 20px
+}
+.homepage #content h3 {
+    padding-top: 40px
+}
+.homepage #content ul {
+    margin-bottom: 0;
+    margin-left: 0
+}
+.homepage #content li {
+    margin-left: 0;
+    list-style-type: none
+}
+#content div.homepageWelcome, #content div.homepageStart, #content div.homepageContent {
+    margin: 0 auto;
+    width: 540px
+}
+#content div.homepageWelcome {
+    float: left
+}
+.homepage #content div.homepageStart, .homepage #content div.homepageContent {
+    float: left
+}
+#content div.homepageSidebar, #content div.homepageInfo {
+    margin: 0 0 0 600px;
+    width: 340px
+}
+#content div.homepageWelcome h1, #content div.homepageWelcome h3, #content div.homepageWelcome div.overlay {
+    position: absolute;
+    width: 540px
+}
+#content div.homepageWelcome h1 {
+    z-index: 80;
+    overflow: hidden;
+    padding: 28px 0 0 0;
+    height: 90px;
+    font-size: 36px !important
+}
+#content div.homepageWelcome h3 {
+    position: absolute;
+    top: 287px;
+    overflow: hidden;
+    padding: 0;
+    height: 40px;
+    border-bottom: none;
+    color: #333;
+    font-size: 23px !important;
+    line-height: 1.3em
+}
+#content div.homepageWelcome div.overlay {
+    z-index: 81;
+    height: 119px;
+    background: url("../images/homepage-welcome.png") top left no-repeat
+}
+#content div.homepageInfo {
+    margin: 175px 0 25px 600px;
+    color: #666;
+    font-size: 0.85em;
+    line-height: 1.3em
+}
+#content div.homepageInfo a {
+    margin: 0;
+    padding: 0;
+    background: none;
+    color: #333
+}
+#content div.homepageInfo a:hover {
+    color: #056da9
+}
+.homepage #content div.homepageStart {
+    padding-top: 170px
+}
+#content div.homepageStart h2 {
+    border-bottom: none
+}
+#content div.homepageStart ul {
+    margin: 0;
+    padding: 0;
+    width: 540px;
+    height: 148px;
+    background: url("../images/homepage-start-bg.png") top left no-repeat #f1f1f1
+}
+#content div.homepageStart li {
+    float: left;
+    margin: 10px 0 0 10px;
+    padding: 0;
+    list-style-type: none;
+    text-align: center
+}
+#content div.homepageStart li a {
+    display: block;
+    padding: 78px 20px 0 20px;
+    width: 120px;
+    height: 50px;
+    background: url("../images/homepage-start.jpg") 0px 0px no-repeat #fff;
+    color: #666;
+    font-size: 12px;
+    line-height: 14px
+}
+#content div.homepageStart li a:hover {
+    background-color: #452b78;
+    background-position: 0px -128px;
+    color: #fff;
+    text-decoration: none
+}
+#content div.homepageStart li.find a {
+    padding: 78px 25px 0 25px;
+    width: 130px;
+    background-position: -160px 0px
+}
+#content div.homepageStart li.find a:hover {
+    background-position: -160px -128px
+}
+#content div.homepageStart li.save a {
+    background-position: -340px 0px
+}
+#content div.homepageStart li.save a:hover {
+    background-position: -340px -128px
+}
+#content div.homepageContent {
+    clear: left
+}
+#content .headActions {
+    padding: 0;
+    border-top: 1px solid #ccc;
+    vertical-align: middle
+}
+#content .headActions a:visited {
+    color: #056da9
+}
+#content .headActions a.selected {
+    font-weight: bold;
+    cursor: default
+}
+#content .headActions a.selected:hover {
+    text-decoration: none
+}
+#content .headActions p {
+    float: left;
+    margin: 0;
+    padding: 0.5em 0 0.5em 15px
+}
+#content .headActions ul {
+    margin: 0;
+    padding: 0
+}
+#content .headActions li {
+    float: right;
+    margin: 0 0 0 15px;
+    padding: 0.5em 15px 0.5em 0;
+    min-height: 20px;
+    border-right: 1px solid #ccc;
+    list-style: none;
+    vertical-align: middle
+}
+#content .headActions li.atom-link {
+    padding-left: 7px;
+    border-left: 1px solid #ccc
+}
+#content .headActions li.atom-link a {
+    display: block;
+    margin: 0 0 0 5px;
+    padding: 0 0 0 25px;
+    min-height: 20px;
+    background: url("../images/legislation-options.png") 0px 0px no-repeat;
+    color: #333
+}
+#content .headActions li.atom-link a.disabled-link {
+    background-position: left -55px;
+    color: #767474
+}
+#content .headActions li.atom-link a.disabled-link:hover {
+    color: #767474;
+    text-decoration: none;
+    cursor: default
+}
+#content .headActions li.atom-link a:hover {
+    color: #056da9;
+    cursor: pointer
+}
+#content .headActions li.atomSelected {
+    position: relative;
+    margin-bottom: -1px;
+    border-top: 1px solid #fff;
+    background: #fff
+}
+#content .headActions li.atomSelected a {
+    position: relative;
+    top: -1px
+}
+#content .headActions li.showResults {
+    border-right: none
+}
+#content .headActions li span {
+    float: left
+}
+#content .headActions li ul {
+    display: inline
+}
+#content .headActions li li {
+    display: inline;
+    float: left;
+    margin: 0;
+    padding: 0;
+    border-right: none;
+    background: url("../images/search-header-divider.png") center left no-repeat
+}
+#content .headActions li li:first-child {
+    background: none
+}
+#content .headActions li li a {
+    display: block;
+    padding: 0 6px
+}
+#content .headActions span.helpLink {
+    margin: 0
+}
+#content .headActions .headActionsFooter {
+    clear: both;
+    padding-bottom: 10px;
+    border-top: 1px solid #ccc
+}
+#content .searchOptions {
+    clear: both;
+    border-top: 1px solid #ccc
+}
+#content .searchOptions a:visited {
+    color: #056da9
+}
+#content .searchOptions ul {
+    margin: 0;
+    padding: 0
+}
+#content .searchOptions li {
+    padding: 8px 0;
+    list-style: none;
+    font-size: 1.1em
+}
+#content .searchOptions li a {
+    padding-left: 24px
+}
+#content .searchOptions li.show a {
+    background: url("../images/search-modify-show.png") left center no-repeat
+}
+#content .searchOptions li.hide a {
+    background: url("../images/search-modify-hide.png") left center no-repeat
+}
+#content .searchResults, #content .taggedToc {
+    clear: both
+}
+#content .searchResults table, #content .taggedToc table {
+    width: 100%;
+    border-spacing: 0px 1px;
+    border-collapse: separate !important
+}
+#content .searchResults tr.authorisingActRow, #content .taggedToc tr.authorisingActRow {
+    background: #F8FAFD;
+    font-size: 1.5em
+}
+#content .searchResults tr.authorisingActRow td, #content .taggedToc tr.authorisingActRow td {
+    padding: 15px 15px 8px 15px;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    border-left: none;
+    color: #747373
+}
+#content .searchResults tr.authorisingActRow td.resultsTitle, #content .taggedToc tr.authorisingActRow td.resultsTitle {
+    font-weight: normal
+}
+#content .searchResults tr.authorisingActRow td a, #content .taggedToc tr.authorisingActRow td a {
+    color: #747373
+}
+#content .searchResults tr.authorisingActRow td a:hover, #content .taggedToc tr.authorisingActRow td a:hover {
+    color: #747373;
+    text-decoration: none
+}
+#content .searchResults tr.categoryRow, #content .taggedToc tr.categoryRow {
+    font-size: 1.2em
+}
+#content .searchResults tr.categoryRow td, #content .taggedToc tr.categoryRow td {
+    padding: 13px 15px 13px 30px;
+    border-right: 1px solid #eee;
+    color: #747373;
+    font-weight: normal
+}
+#content .searchResults tr.categoryRow td a, #content .taggedToc tr.categoryRow td a {
+    color: #747373
+}
+#content .searchResults tr.categoryRow td a:hover, #content .taggedToc tr.categoryRow td a:hover {
+    color: #747373;
+    text-decoration: none
+}
+#content .searchResults tr.categoryRow td.resultsAlerts, #content .taggedToc tr.categoryRow td.resultsAlerts {
+    border-right: none
+}
+#content .searchResults th, #content .taggedToc th {
+    padding: 0 0 0 15px;
+    height: 40px;
+    border-right: 1px solid #ccc;
+    border-left: 2px solid #fff;
+    background: url("../images/search-header.png") -10px 0 repeat-x #eff4fa;
+    color: #666;
+    vertical-align: middle;
+    text-align: left;
+    text-transform: uppercase;
+    font-weight: bold;
+    line-height: 1em
+}
+#content .searchResults th.orderable, #content .taggedToc th.orderable {
+    color: #056da9
+}
+#content .searchResults th.resultsTitle, #content .searchResults th.tocfragTitle, #content .taggedToc th.resultsTitle, #content .taggedToc th.tocfragTitle {
+    border-left: 0;
+    background-position: top left
+}
+#content .searchResults th.resultsType, #content .taggedToc th.resultsType {
+    width: 90px
+}
+#content .searchResults th.resultsHits, #content .taggedToc th.resultsHits {
+    width: 70px
+}
+#content .searchResults th.resultsYear, #content .taggedToc th.resultsYear {
+    width: 100px
+}
+#content .searchResults th.resultsAlerts, #content .searchResults th.tocdocVersion, #content .taggedToc th.resultsAlerts, #content .taggedToc th.tocdocVersion {
+    width: 232px;
+    border-right: 0;
+    background-position: top right
+}
+#content .searchResults th.orderable span, #content .taggedToc th.orderable span {
+    padding-right: 20px;
+    background: url("../images/search-header-sortable.png") right top no-repeat
+}
+#content .searchResults th.selectedOrder span, #content .taggedToc th.selectedOrder span {
+    padding-right: 20px;
+    background: url("../images/search-header-sorted.png") right top no-repeat
+}
+#content .searchResults td, #content .taggedToc td {
+    padding: 15px;
+    border-right: 1px solid #ccc;
+    border-left: 2px solid #fff
+}
+#content .searchResults td.resultsTitle, #content .searchResults td.fragTitle, #content .taggedToc td.resultsTitle, #content .taggedToc td.fragTitle {
+    font-weight: bold
+}
+#content .searchResults td.resultsTitle a, #content .searchResults td.fragTitle a, #content .taggedToc td.resultsTitle a, #content .taggedToc td.fragTitle a {
+    color: #333;
+    text-decoration: none
+}
+#content .searchResults td.resultsTitle a:hover, #content .searchResults td.fragTitle a:hover, #content .taggedToc td.resultsTitle a:hover, #content .taggedToc td.fragTitle a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#content .searchResults td.resultsTitle span, #content .searchResults td.fragTitle span, #content .taggedToc td.resultsTitle span, #content .taggedToc td.fragTitle span {
+    font-weight: normal
+}
+#content .searchResults td.resultsType, #content .taggedToc td.resultsType {
+    text-transform: capitalize
+}
+#content .searchResults td.resultsHits, #content .searchResults td.resultsYear, #content .taggedToc td.resultsHits, #content .taggedToc td.resultsYear {
+    white-space: nowrap
+}
+#content .searchResults td.resultsTitle, #content .taggedToc td.resultsTitle {
+    border-left: 0
+}
+#content .searchResults td.resultsAlerts, #content .searchResults td.tocVersion, #content .taggedToc td.resultsAlerts, #content .taggedToc td.tocVersion {
+    border-right: 0
+}
+#content .searchResults td.resultsAlerts, #content .taggedToc td.resultsAlerts {
+    width: 232px
+}
+#content .searchResults td.fragTitle, #content .taggedToc td.fragTitle {
+    width: 35%
+}
+#content .searchResults td.docTitle, #content .taggedToc td.docTitle {
+    width: 38%
+}
+#content .searchResults td.docTitle a, #content .taggedToc td.docTitle a {
+    margin-right: 4px;
+    padding-right: 19px;
+    background: url("../images/document-link.gif") no-repeat right center;
+    color: #000;
+    text-decoration: none
+}
+#content .searchResults td.docTitle a:hover, #content .taggedToc td.docTitle a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#content .searchResults .resultsEven, #content .taggedToc .resultsEven {
+    background: #f3f3f3
+}
+#content .searchResults .resultsAlertLink, #content .taggedToc .resultsAlertLink {
+    display: block;
+    margin: 0 0 1px 0;
+    padding: 2px 0 0 25px;
+    min-height: 20px;
+    background: url("../images/amends-notify.gif") top left no-repeat
+}
+#content .search-results-pagination {
+    margin: 1.5em 0 0.5em 0;
+    text-align: right
+}
+#content .search-results-pagination a:visited {
+    color: #056da9
+}
+#content .search-results-pagination ul {
+    display: inline;
+    margin: 0;
+    padding: 0
+}
+#content .search-results-pagination li {
+    display: inline;
+    margin: 0;
+    padding: 0 0.3em;
+    list-style: none
+}
+#content .search-results-pagination .active {
+    font-weight: bold
+}
+#content .search-results-pagination .active:hover {
+    text-decoration: none;
+    cursor: default
+}
+#content div.searchTypes {
+    clear: left;
+    margin: 0 0 10px 0;
+    width: 941px;
+    height: 49px;
+    border: none;
+    background: url("../images/search-bg.png") top left no-repeat #f3f3f3
+}
+#content div.searchTypes h4 {
+    float: left;
+    margin: 0 0 0 13px;
+    padding: 0 18px 0 0;
+    border-right: 1px solid #ccc;
+    color: #7A3F3F;
+    font-weight: normal;
+    font-size: 1.4em;
+    font-family: "Times New Roman", Times, serif;
+    line-height: 49px
+}
+#content div.searchTypes ul {
+    margin: 0;
+    padding: 0
+}
+#content div.searchTypes li {
+    float: left;
+    margin: 0;
+    padding: 0 17px 0 10px;
+    height: 49px;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #fff;
+    list-style: none;
+    line-height: 49px
+}
+#content div.searchTypes li span.input {
+    float: left;
+    margin: 0 5px 0 0;
+    height: 49px;
+    vertical-align: middle;
+    line-height: 49px
+}
+#content div.searchTypes li label {
+    float: left;
+    height: 49px;
+    vertical-align: middle;
+    line-height: 49px
+}
+#content div.searchTypes span.button {
+    float: left;
+    margin: 10px 0 0 9px;
+    padding: 2px;
+    width: 84px;
+    height: 24px;
+    background: #fff
+}
+#content div.searchTypes span.button input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 84px;
+    height: 24px;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -87px repeat-x #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 11px;
+    line-height: 24px
+}
+#content div.searchTypes span.button input:hover {
+    background: url("../images/search-buttons.png") 0px -111px repeat-x #1b5273;
+    cursor: pointer
+}
+#content div.searchTypes span.helpLink {
+    margin: 15px 0 0 7px
+}
+#content div.searchTypes span.helpLink a.overlay {
+    background-position: 0 -120px
+}
+#content div.searchTypes span.helpLink a.overlay:hover {
+    background-position: 0 -140px
+}
+#content div.searchFieldSet, #content div.browseForm {
+    clear: left;
+    margin: 0;
+    padding: 15px 0 17px 0;
+    width: 941px;
+    border: none;
+    border-bottom: 1px solid #fff;
+    background: url("../images/search-bg.png") 0px -959px no-repeat #eef1f5
+}
+#content div.searchFieldSet div.deemedRegWarning, #content div.browseForm div.deemedRegWarning {
+    margin: 0 4px 0 150px;
+    border-bottom: 1px solid #eef1f5
+}
+#content div.searchFieldSet div.deemedRegWarning p, #content div.browseForm div.deemedRegWarning p {
+    float: left;
+    padding: 0 0 0 30px;
+    background: url("../images/amends-notify.gif") left center no-repeat;
+    font-weight: bold
+}
+#content div.searchFieldSet div.deemedRegWarning span.helpLink, #content div.browseForm div.deemedRegWarning span.helpLink {
+    float: left;
+    margin: 0.2em 0 3.5em 0.6em
+}
+#content div.browseForm span.helpLink {
+    margin-top: 5px
+}
+#content div.browseForm span.helpLink a.overlay {
+    background-position: 0 -40px
+}
+#content div.browseForm span.helpLink a.overlay:hover {
+    background-position: 0 -60px
+}
+#content div.searchFieldSetCore, #content div.browseForm {
+    padding: 25px 0 17px 0;
+    background: url("../images/search-bg.png") 0px -49px no-repeat #eef1f5
+}
+#content div.searchFieldSet h4 {
+    float: left;
+    margin: 0;
+    padding: 0;
+    font-size: 1.1em;
+    line-height: 1em
+}
+#content div.searchFieldSet h4 span {
+    position: absolute;
+    margin: 0;
+    padding: 0.8em 0 0 18px;
+    line-height: 1.2em
+}
+#content .searchField, #content .searchFieldFooter {
+    clear: left
+}
+#content .browseFooter {
+    clear: left;
+    height: 0px;
+    line-height: 0px
+}
+#content .searchFieldSet ul {
+    margin: 0 0 0 260px;
+    padding: 0
+}
+#content .searchFieldSet ul ul {
+    margin: 0
+}
+#content .searchFieldSet li {
+    margin: 0;
+    list-style: none
+}
+#content .searchFieldSet li li {
+    clear: left;
+    margin: 0 0 0 18px
+}
+#content .searchFieldSet label {
+    float: left;
+    padding: 0.4em 8px 0 0;
+    width: 243px;
+    color: #333;
+    text-align: right;
+    font-weight: bold
+}
+#content .searchFieldSet .searchField {
+    padding: 4px 0
+}
+#content .searchFieldSet .stemmingField label {
+    margin-left: 322px;
+    width: 160px;
+    white-space: nowrap
+}
+#content .searchFieldSet .stemmingField span.checkbox {
+    float: left;
+    margin-top: 5px
+}
+#content div.searchFieldSetCore label {
+    font-weight: normal
+}
+#content .searchFieldSet ul label {
+    float: none;
+    padding: 0 0 0 5px;
+    width: auto;
+    text-align: left;
+    font-weight: normal
+}
+#content div.searchFieldSet span.input, #content div.browseForm span.input {
+    float: left;
+    padding: 2px;
+    background: #fff
+}
+#content div.searchFieldSet input.text, #content div.browseForm input.text {
+    width: 248px !important;
+    border: 1px solid #e6e6e6;
+    border-top: 1px solid #adadad
+}
+#content div.searchFieldSet input.text:focus, #content div.browseForm input.text:focus {
+    background: #ffffdf
+}
+#content div.searchFieldSet span.select, #content div.browseForm span.select {
+    float: left;
+    vertical-align: middle;
+    line-height: 2em
+}
+#content div.searchFieldSet select, #content div.browseForm select {
+    margin: 0 0 0 0.7em;
+    border: 1px solid #eee;
+    font-size: 1em;
+    line-height: 1em
+}
+#content div.searchFieldSet div.exampleText {
+    float: left;
+    padding: 0.4em 0 0 0.8em
+}
+#content .searchFieldSet ul li span, #content .searchFieldSet ul li label {
+    float: left;
+    margin: 0.4em 0 0 0
+}
+#content div.searchFieldSet span.helpLink {
+    margin: 0.4em 0 0 0.6em
+}
+#content div.searchFieldSet span.helpLink a.overlay {
+    background-position: 0 -40px
+}
+#content div.searchFieldSet span.helpLink a.overlay:hover {
+    background-position: 0 -60px
+}
+#content #acts_type_field, #content #bills_type_field, #content #instruments_type_field {
+    float: left;
+    width: 450px
+}
+#content #acts_status_field, #content #bills_status_field, #content #instruments_status_field {
+    float: left;
+    clear: none;
+    width: 480px
+}
+#content #acts_status_field label, #content #bills_status_field label, #content #instruments_status_field label {
+    width: auto
+}
+#content #acts_status_field ul, #content #bills_status_field ul, #content #instruments_status_field ul {
+    margin: 0 0 0 1.9em
+}
+#content #title_field {
+    padding: 0px 0px 1px 0px
+}
+#content div.searchActions {
+    clear: left;
+    margin: 0 0 10px 0;
+    padding: 15px 0 0 0;
+    height: 77px;
+    background: url("../images/search-bg.png") bottom left no-repeat #eef1f5
+}
+#content div.browseActions {
+    clear: left;
+    margin: 0 0 10px 0;
+    padding: 15px 0 0 0;
+    height: 77px;
+    background: url("../images/search-bg.png") bottom left no-repeat #eef1f5;
+    height: 56px
+}
+#content div.searchActions ul {
+    margin: 0;
+    padding: 0
+}
+#content div.searchActions li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+#content div.searchActions span.button {
+    float: left;
+    padding: 2px;
+    width: 70px;
+    height: 29px;
+    background: #fff
+}
+#content div.browseActions span.button {
+    float: left;
+    padding: 2px;
+    width: 70px;
+    height: 29px;
+    background: #fff
+}
+#content div.searchActions span.link {
+    float: left
+}
+#content div.searchActions a {
+    position: absolute;
+    padding: 6px 0 0 0;
+    width: 168px;
+    text-align: right
+}
+#content div.searchActions input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 70px;
+    height: 29px;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px 0px no-repeat #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 29px
+}
+#content div.browseActions input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 70px;
+    height: 29px;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px 0px no-repeat #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 29px
+}
+#content div.searchActions li.searchSubmit span.button {
+    margin: 0 0 0 180px
+}
+#content div.searchActions li.searchReset span.button {
+    margin: 0 0 0 245px
+}
+#content div.browseActions span.button {
+    margin: 0 0 0 65px
+}
+#content div.searchActions li.searchReset input {
+    background: url("../images/search-buttons.png") 0px -29px no-repeat #5b5757
+}
+#content div.searchActions li input:hover {
+    background: url("../images/search-buttons.png") 0px -58px no-repeat #1b5273;
+    cursor: pointer
+}
+#content div.browseActions input:hover {
+    background: url("../images/search-buttons.png") 0px -58px no-repeat #1b5273;
+    cursor: pointer
+}
+#content .deemedRegsResults td.resultsTitle {
+    padding-left: 30px
+}
+#content .taggedToc th {
+    color: #056da9;
+    text-transform: none
+}
+#noResult {
+    clear: both;
+    margin: 0 0 1.5em 0;
+    padding: 0.7em 1em 0.8em 0.3em;
+    border: 1px dashed #F2A24C;
+    background: #FEFAE4
+}
+#content .searchSuggestions {
+    margin: 0 0 0 12px
+}
+#content .searchSuggestions h3, #content .searchSuggestions h4 {
+    padding-left: 0
+}
+#content .searchSuggestions ul {
+    margin-left: 5px
+}
+#content .searchSuggestions h3, #content .searchSuggestions p.sectionFooter, #content .searchSuggestions ul.links, #content .searchSuggestions table.links {
+    margin-left: 0;
+    width: 540px
+}
+#content div.browseHeader {
+    clear: left
+}
+#content div#browseTabs {
+    position: relative;
+    top: 7px;
+    clear: left;
+    height: 45px
+}
+#content div#browseTabs a {
+    float: left;
+    margin: 0 2px 0 0;
+    padding: 5px 5px 0 20px;
+    width: 155px;
+    height: 40px;
+    background: url("../images/browse-tabs.png") 0px 0px no-repeat #f7f7f7;
+    background-position: -180px -45px;
+    color: #717171;
+    text-transform: uppercase;
+    text-transform: none;
+    font-weight: bold;
+    font-weight: normal;
+    font-size: 1.1em;
+    line-height: 37px
+}
+#content div#browseTabs a.active {
+    background-color: #EEF1F5;
+    background-position: -180px 0px;
+    color: #056da9;
+    text-transform: uppercase;
+    font-weight: bold
+}
+#content div#browseTabs a:first-child {
+    background-position: 0px -45px
+}
+#content div#browseTabs a.active:first-child {
+    background-position: 0px 0px
+}
+#content div#browseTabs a:hover {
+    color: #056da9;
+    cursor: pointer
+}
+#content div#browseTabs a.active:hover {
+    text-decoration: none;
+    cursor: default
+}
+#content div.browseType, #content div.browseLetter, #content div.browseYearSelect {
+    float: left;
+    clear: left;
+    padding: 0 0 0 65px
+}
+#content div.browseType {
+    width: 290px
+}
+#content div.browseFilter {
+    float: left;
+    width: 570px
+}
+#content div.browseFilter li {
+    width: 480px
+}
+#content div.browseFilter input.checkbox {
+    float: left
+}
+#content div.browseType ul, #content div.browseFilter ul {
+    position: relative;
+    margin: 0 !important;
+    padding: 0
+}
+#content div.browseType li, #content div.browseFilter li {
+    clear: left;
+    list-style: none
+}
+#content div.browseType li.typeDivider, #content div.browseFilter li.typeDivider {
+    padding: 1em 0 0.5em 0;
+    color: #666;
+    font-weight: bold
+}
+#content div.browseType span.checkbox, #content div.browseFilter span.checkbox {
+    display: block;
+    float: left;
+    margin: 0.4em 0 0 0;
+    line-height: 1.2em
+}
+#content div.browseForm label {
+    float: left;
+    margin: 0.4em 0 0 0;
+    padding: 0 5px 0 5px
+}
+#content div.browseForm span.select {
+    margin-right: 1em
+}
+#content div.browseLetter, #content div.browseYearSelect {
+    padding-top: 1em;
+    width: 800px
+}
+#content div.browseLetter label, #content div.browseYearSelect label {
+    float: left
+}
+#content div.browseLetter span, #content div.browseYearSelect span {
+    float: left;
+    margin: 0.4em 0 0 1em
+}
+#content div.browseLetter span.select, #content div.browseYearSelect span.select {
+    float: left;
+    margin: 0 2em 0 0
+}
+#content div.browseLetter span.input, #content div.browseYearSelect span.input {
+    margin: 0 0 0 0.2em
+}
+#content div.browseLetter span.input input, #content div.browseYearSelect span.input input {
+    width: 80px !important
+}
+div.webFeedClear {
+    clear: both
+}
+#menus div.webFeedsDialog {
+    position: absolute;
+    top: 38px;
+    z-index: 1000;
+    width: 979px
+}
+#menus div.webFeedsDialog div.wrapper {
+    float: right;
+    width: 555px
+}
+#menus div.webFeedsDialog div.webFeedsDialogBox {
+    position: absolute;
+    z-index: 1001;
+    width: 555px;
+    height: 412px;
+    border-bottom: 1px solid #272727;
+    border-left: 1px solid #272727;
+    background: #255786;
+    font-size: 0.8em
+}
+#menus div.webFeedsDialog ul {
+    margin: 7px 0 0 10px;
+    height: 36px
+}
+#menus div.webFeedsDialog ul li {
+    float: left;
+    width: 160px
+}
+#menus div.webFeedsDialog ul li a {
+    display: block;
+    padding: 10px 0 12px 0;
+    color: #d0e5f5;
+    text-align: center;
+    font-size: 15px
+}
+#menus div.webFeedsDialog ul li a:hover {
+    color: #e8f0f6;
+    cursor: pointer
+}
+#menus div.webFeedsDialog ul li a.selected {
+    background: #2e6292;
+    color: #fff
+}
+#menus div.webFeedsDialog ul li a.selected:hover {
+    color: #fff;
+    cursor: default
+}
+#menus div.webFeedsDialog div.wedFeedsDialogActions {
+    padding: 10px 0 0 0;
+    height: 25px;
+    background: #2e6292
+}
+#menus div.webFeedsDialog div.webFeedsDialogMessage {
+    float: left;
+    margin: 0 0 0 10px;
+    width: 390px
+}
+#menus div.webFeedsDialog div.webFeedsDialogMessage p {
+    padding: 0 0 4px 27px;
+    background: url("../images/amends-notify.gif") bottom left no-repeat;
+    color: #eee
+}
+#menus div.webFeedsDialog div.webFeedsDialogReadyMadeText {
+    margin: 0 0 0 26px;
+    color: #eee
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateText {
+    margin: 0 0 0 26px;
+    color: #fff
+}
+#menus div.webFeedsDialog div.webFeedsDialogRemoveAll {
+    margin: 0 10px;
+    text-align: right
+}
+#menus div.webFeedsDialog div.webFeedsDialogRemoveAll a {
+    color: #fff;
+    text-decoration: none
+}
+#menus div.webFeedsDialog div.webFeedsDialogRemoveAll a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedsDialogRemoveAll a.disabled {
+    display: none
+}
+#menus div.webFeedsDialog div.webFeedsDialogContent {
+    margin: 0 2px 2px 1px;
+    border: 1px solid #666;
+    border-top: 1px solid #333;
+    background: #fff
+}
+#menus div.webFeedsDialog div.webFeedsDialogInfo {
+    float: left;
+    margin: 14px 0 0 8px
+}
+#menus div.webFeedsDialog div.webFeedsDialogInfo p {
+    margin: 0 0 14px 0
+}
+#menus div.webFeedsDialog div.webFeedsDialogInfo a {
+    display: block;
+    padding: 2px;
+    color: #666;
+    text-decoration: none;
+    font-size: 12px
+}
+#menus div.webFeedsDialog div.webFeedsDialogInfo a:hover {
+    color: #056da9;
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate {
+    float: right;
+    margin: 23px 8px 7px 0px;
+    width: 165px;
+    height: 30px
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate span.link {
+    float: left;
+    padding: 8px 0 0 0
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate span.link a {
+    color: #056da9
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate span.link a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate span.button {
+    float: right;
+    width: 110px
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate span.button input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 110px;
+    height: 29px !important;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -135px no-repeat #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px !important;
+    line-height: 29px !important
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate span.button input:hover {
+    background: url("../images/search-buttons.png") 0px -164px no-repeat #1b5273;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate div.disabled span.link {
+    float: right;
+    margin-right: 30px
+}
+#menus div.webFeedsDialog div.webFeedDialogGenerate div.disabled span.button {
+    display: none
+}
+#menus div.webFeedsDialog div.webFeedsDialogList, #menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent {
+    clear: left;
+    overflow: auto;
+    height: 255px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    zoom: 1
+}
+#menus div.webFeedsDialog div.webFeedsDialogList div, #menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent div {
+    zoom: 1
+}
+#menus div.webFeedsDialog div.webFeedsDialogList.subscribeOpen, #menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent.subscribeOpen {
+    height: 147px
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table {
+    width: 100%
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table td {
+    padding: 0.6em 10px;
+    border-bottom: 1px solid #DBDBDB;
+    line-height: 1.6em
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table td.docItem {
+    font-size: 1.1em
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table td.removeItem {
+    width: 80px;
+    text-align: right
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table td a {
+    color: #255786
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table td a:hover {
+    color: #056da9;
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table tr.odd td {
+    background: #f7f7f7
+}
+#menus div.webFeedsDialog div.webFeedsDialogList table.emptyList td {
+    height: 230px;
+    border-bottom: none;
+    background: url("../images/webfeeds-empty.png") center center no-repeat;
+    color: #848484;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1.5em
+}
+#menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent ul {
+    margin: 15px 20px 0 35px;
+    height: auto
+}
+#menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent li {
+    float: none;
+    margin-left: 0.4em;
+    padding: 0 0 0.7em 0;
+    width: auto;
+    color: #000;
+    list-style: disc;
+    line-height: 1.7em
+}
+#menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent li a {
+    display: inline;
+    padding: 0;
+    color: #056da9;
+    text-align: left;
+    text-decoration: none;
+    font-size: 13px
+}
+#menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent li a:hover {
+    color: #056da9;
+    text-decoration: underline
+}
+#menus div.webFeedsDialog div.webFeedsDialogReadyMadeContent li a span {
+    position: absolute;
+    overflow: hidden;
+    margin: 2px 0 0 5px;
+    padding: 16px 0 0 0;
+    width: 16px;
+    height: 0px;
+    background: url("../images/legislation-options.png") top left no-repeat
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateFeed div.wedFeedsDialogRecreateIntro {
+    margin: 0 26px;
+    padding: 14px 0 0 0;
+    height: 75px;
+    line-height: 1.8em
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateFeed div.webFeedsDialogRecreateMessage {
+    float: left;
+    padding: 13px 0 0 0;
+    width: 370px;
+    height: 80px
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateFeed div.webFeedsDialogRecreateMessage p {
+    margin: 0 0 0 26px;
+    padding: 3px 0 15px 27px !important;
+    background: url("../images/amends-notify.gif") top left no-repeat
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm, #menus div.webFeedsDialog div.webFeedsDialogRecreateForm {
+    padding: 12px 0 0 0;
+    border-bottom: 1px solid #ccc;
+    background: url("../images/webfeeds-bg.png") 0px 0px no-repeat #eef1f5
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm label, #menus div.webFeedsDialog div.webFeedsDialogRecreateForm label {
+    padding: 0.5em 10px 0 0
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div, #menus div.webFeedsDialog div.webFeedsDialogRecreateForm div {
+    clear: left;
+    padding: 5px 0 0 0
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm {
+    height: 95px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogTitle input {
+    width: 400px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe {
+    clear: none;
+    padding: 5px 0 0 0
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.button {
+    margin: 0 0 0 203px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link {
+    margin: 0 0 0 95px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link a {
+    padding: 10px 0 0 0
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm {
+    height: 155px
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm label {
+    float: left;
+    margin-left: 26px;
+    width: 35px
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogUrl span.input {
+    float: left;
+    padding: 2px;
+    background: #fff
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogUrl span.input input {
+    width: 440px;
+    border: 1px solid #e6e6e6;
+    border-top: 1px solid #adadad;
+    font-size: 1.1em;
+    line-height: 1.3em
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogUrl span.input input:focus {
+    background: #ffffdf
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogUrl span.field-error {
+    background: #f2d653
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogRecreateButton {
+    clear: none
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogRecreateButton span.button {
+    float: left;
+    margin-left: 35px;
+    padding: 2px;
+    width: 110px;
+    height: 29px;
+    background: #fff
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogRecreateButton input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 110px;
+    height: 29px !important;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -135px no-repeat #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px !important;
+    line-height: 29px
+}
+#menus div.webFeedsDialog div.webFeedsDialogRecreateForm div.webFeedsDialogRecreateButton input:hover {
+    background: url("../images/search-buttons.png") 0px -164px no-repeat #1b5273;
+    cursor: pointer
+}
+div.headActions div.webFeedsDialogVisible {
+    border-top: none !important
+}
+div.headActions div.webFeedsDialog {
+    clear: both;
+    border: 1px solid #ccc
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm {
+    margin: 8px 0 0 10px;
+    padding: 1px 0 0 0;
+    height: 36px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm label {
+    padding: 2px 10px 0 0;
+    font-size: 13px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogTitle, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogDays {
+    float: left;
+    padding: 7px 0 0 0
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogTitle input, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogDays input {
+    width: 300px;
+    height: 18px;
+    font-size: 14px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogTitle label {
+    margin-left: 10px;
+    width: auto;
+    text-align: left
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe {
+    padding: 2px 0 0 0
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.button {
+    margin: 0 0 0 195px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link {
+    margin: 0 0 0 85px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link a {
+    padding: 8px 0 0 0;
+    font-size: 13px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogMessage {
+    float: right;
+    margin: 1em 0 10px 0;
+    width: 505px
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogMessage p {
+    margin: 0 !important;
+    padding: 1px 0 0 27px !important;
+    background: url("../images/amends-notify.gif") top left no-repeat
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogInfo {
+    float: left;
+    margin: 0 0 15px 0
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogInfo p {
+    float: none !important;
+    padding: 1em 0 0 20px !important
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogInfo a {
+    padding: 1px 0 0 0;
+    color: #666 !important;
+    text-decoration: none
+}
+div.headActions div.webFeedsDialog div.webFeedsDialogInfo a:hover {
+    color: #056da9;
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm label, div.headActions div.webFeedsDialog div.webFeedsDialogForm label {
+    float: left;
+    width: 100px;
+    text-align: right
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogDays, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogDays {
+    float: left;
+    width: 200px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogDays input, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogDays input {
+    width: 80px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.button, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.button {
+    float: left;
+    padding: 2px;
+    width: 110px;
+    height: 29px;
+    background: #fff
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link {
+    float: left
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link a, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link a {
+    position: absolute;
+    width: 85px;
+    color: #056da9;
+    text-align: right
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link a:hover, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe span.link a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe input, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 110px;
+    height: 29px !important;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -135px no-repeat #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px !important;
+    line-height: 29px
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe input:hover, div.headActions div.webFeedsDialog div.webFeedsDialogForm div.webFeedsDialogSubscribe input:hover {
+    background: url("../images/search-buttons.png") 0px -164px no-repeat #1b5273;
+    cursor: pointer
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm span.input, div.headActions div.webFeedsDialog div.webFeedsDialogForm span.input {
+    float: left;
+    padding: 2px;
+    background: #fff
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm span.input input, div.headActions div.webFeedsDialog div.webFeedsDialogForm span.input input {
+    border: 1px solid #e6e6e6;
+    border-top: 1px solid #adadad;
+    font-size: 1.1em;
+    line-height: 1.3em
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm span.input input:focus, div.headActions div.webFeedsDialog div.webFeedsDialogForm span.input input:focus {
+    background: #ffffdf
+}
+#menus div.webFeedsDialog div.webFeedsDialogForm span.field-error, div.headActions div.webFeedsDialog div.webFeedsDialogForm span.field-error {
+    background: #f2d653
+}
+#content #atom-functions {
+    float: left;
+    width: 550px
+}
+#content #atom-descr {
+    float: right;
+    padding: 0 0 90px 0;
+    width: 370px;
+    background: url("../images/webfeeds-sidebar-bg.png") bottom left no-repeat
+}
+#content #atom-descr div.wrapper {
+    padding: 0.5em 0 0 18px;
+    background: url("../images/webfeeds-desc-bg.png") top left repeat-y
+}
+#content #atom-descr ul {
+    margin-bottom: 0
+}
+#content #atom-descr li {
+    padding: 0 0 0.3em 0;
+    line-height: 1.7em
+}
+#content #atom-descr li span {
+    position: absolute;
+    overflow: hidden;
+    margin: 2px 0 0 5px;
+    padding: 16px 0 0 0;
+    width: 16px;
+    height: 0px;
+    background: url("../images/legislation-options.png") top left no-repeat
+}
+#content div.atom-form-title {
+    margin: 0 0 10px 0;
+    padding: 25px 0 0 0;
+    width: 550px;
+    background: url("../images/webfeeds-bg.png") 0px 0px no-repeat #eef1f5
+}
+#content div.atom-form-title h4 {
+    position: absolute;
+    margin: 5px 0 0 14px;
+    padding: 0;
+    width: 145px;
+    line-height: 1em
+}
+#content div.atom-form-title div.atom-search-description p {
+    margin: 0 0 25px 0px;
+    padding: 2px 0 0 160px
+}
+#content div.atom-form-title label {
+    float: left;
+    padding: 0.4em 10px 0 0;
+    width: 240px;
+    text-align: right
+}
+#content div.atom-form-title span.input {
+    float: left;
+    padding: 2px;
+    background: #fff
+}
+#content div.atom-form-title span.input input {
+    width: 248px;
+    border: 1px solid #e6e6e6;
+    border-top: 1px solid #adadad
+}
+#content div.atom-form-title span.input input:focus {
+    background: #ffffdf
+}
+#content div.atom-form-title span.field-error {
+    background: #f2d653
+}
+#content div.atom-days {
+    clear: left;
+    padding: 5px 0 0 0
+}
+#content .atomFieldFooter {
+    clear: left
+}
+#content .atom-input {
+    clear: left;
+    margin: 0;
+    padding: 15px 0 17px 0;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #fff
+}
+#content div.atom-documents {
+    margin: 4px 0px 25px 0px;
+    padding: 0 20px 0 15px;
+    text-align: right
+}
+#content div.atom-documents input {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #056da9;
+    font-size: 1em;
+    cursor: pointer
+}
+#content div.atom-documents input:hover {
+    text-decoration: underline
+}
+#content div.atom-documents table {
+    margin: 8px 0 0 0;
+    width: 100%
+}
+#content div.atom-documents th {
+    display: none
+}
+#content div.atom-documents tr {
+    background: none !important
+}
+#content div.atom-documents td {
+    padding: 0.4em 8px;
+    border-top: 1px solid #ccc;
+    background: none !important;
+    text-align: left
+}
+#content div.atomActions {
+    clear: left;
+    margin: 0;
+    padding: 15px 0 0 0;
+    height: 77px;
+    background: url("../images/webfeeds-bg.png") bottom left no-repeat #eef1f5
+}
+#content div.atomActions ul {
+    margin: 0;
+    padding: 0
+}
+#content div.atomActions li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+#content div.atomActions span.button {
+    float: left;
+    padding: 2px;
+    width: 70px;
+    height: 29px;
+    background: #fff
+}
+#content div.atomActions span.link {
+    float: left
+}
+#content div.atomActions a {
+    position: absolute;
+    padding: 6px 0 0 0;
+    width: 188px;
+    text-align: right
+}
+#content div.atomActions input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 70px;
+    height: 29px !important;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -135px no-repeat #166e6c;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 29px !important
+}
+#content div.atomActions li.atomSubmit input {
+    width: 110px
+}
+#content div.atomActions li.atomSubmit span.button {
+    margin: 0 0 0 210px;
+    width: 110px
+}
+#content div.atomActions li.atomReset span.button {
+    margin: 0 0 0 75px
+}
+#content div.atomActions li.atomReset input {
+    background: url("../images/search-buttons.png") 0px -29px no-repeat #5b5757
+}
+#content div.atomActions li input:hover {
+    background: url("../images/search-buttons.png") 0px -164px no-repeat #1b5273;
+    cursor: pointer
+}
+#content div.atomActions li.atomReset input:hover {
+    background: url("../images/search-buttons.png") 0px -58px no-repeat #1b5273
+}
+div.printOnDemandClear {
+    clear: both
+}
+#menus div.printOnDemandDialog {
+    position: absolute;
+    top: 38px;
+    z-index: 1000;
+    width: 979px
+}
+#menus div.printOnDemandDialog div.wrapper {
+    float: right;
+    width: 555px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogBox {
+    position: absolute;
+    z-index: 1001;
+    width: 555px;
+    height: 412px;
+    border-bottom: 1px solid #272727;
+    border-left: 1px solid #272727;
+    background: #255786;
+    font-size: 0.8em
+}
+#menus div.printOnDemandDialog h4 {
+    margin: 7px 0 0 10px;
+    padding: 10px 0 0 0;
+    height: 26px;
+    color: #d0e5f5;
+    font-size: 15px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogActions {
+    padding: 10px 0 0 0;
+    height: 25px;
+    background: #2e6292
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogMessage {
+    float: left;
+    margin: 0 0 0 10px;
+    width: 390px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogMessage p {
+    padding: 0 0 4px 27px;
+    background: url("../images/amends-notify.gif") bottom left no-repeat;
+    color: #eee
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogRemoveAll {
+    margin: 0 10px;
+    text-align: right
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogRemoveAll a {
+    color: #fff;
+    text-decoration: none
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogRemoveAll a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogRemoveAll a.disabled {
+    display: none
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogContent {
+    margin: 0 2px 2px 1px;
+    border: 1px solid #666;
+    border-top: 1px solid #333;
+    background: #fff
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogInfo {
+    float: left;
+    margin: 14px 0 0 8px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogInfo p {
+    margin: 0 0 14px 0
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogInfo a {
+    display: block;
+    padding: 2px;
+    color: #666;
+    text-decoration: none;
+    font-size: 12px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogInfo a:hover {
+    color: #056da9;
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote {
+    float: right;
+    margin: 23px 8px 7px 0px;
+    width: 165px;
+    height: 30px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote span.link {
+    float: left;
+    padding: 8px 0 0 0
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote span.link a {
+    color: #056da9
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote span.link a:hover {
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote span.button {
+    float: right;
+    width: 110px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote span.button a {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 110px;
+    height: 29px !important;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -135px no-repeat #166e6c;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px !important;
+    line-height: 29px !important
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote span.button a:hover {
+    background: url("../images/search-buttons.png") 0px -164px no-repeat #1b5273;
+    cursor: pointer
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote div.disabled span.link {
+    float: right;
+    margin-right: 30px
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogQuote div.disabled span.button {
+    display: none
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList {
+    clear: left;
+    overflow: auto;
+    height: 255px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    zoom: 1
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList div {
+    zoom: 1
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table {
+    width: 100%
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table td {
+    padding: 0.6em 10px;
+    border-bottom: 1px solid #DBDBDB;
+    line-height: 1.6em
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table td.docItem {
+    font-size: 1.1em
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table td.removeItem {
+    width: 80px;
+    text-align: right
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table td a {
+    color: #255786
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table td a:hover {
+    color: #056da9;
+    text-decoration: underline;
+    cursor: pointer
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table tr.odd td {
+    background: #f7f7f7
+}
+#menus div.printOnDemandDialog div.printOnDemandDialogList table.emptyList td {
+    height: 230px;
+    border-bottom: none;
+    background: url("../images/printondemand-empty.png") center center no-repeat;
+    color: #848484;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1.5em
+}
+#content div.printondemandActions {
+    margin: 2em 0 10px 0;
+    padding: 25px 0 0 0;
+    width: 550px;
+    background: url("../images/webfeeds-bg.png") 0px 0px no-repeat #eef1f5
+}
+#content div.printondemandActions ul {
+    clear: left;
+    margin: 0;
+    padding: 15px 0 0 0;
+    height: 77px;
+    background: url("../images/webfeeds-bg.png") bottom left no-repeat #eef1f5
+}
+#content div.printondemandActions li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+#content div.printondemandActions p {
+    margin: 0.2em 10px 0.4em 10px
+}
+#content div.printondemandActions a {
+    position: absolute;
+    margin: 0;
+    padding: 6px 0 0 0;
+    width: 188px;
+    text-align: right
+}
+#content div.printondemandActions span.button {
+    float: left;
+    padding: 2px;
+    width: 70px;
+    height: 29px;
+    background: #fff
+}
+#content div.printondemandActions span.button a {
+    padding: 0;
+    width: 70px;
+    height: 29px !important;
+    outline: 0;
+    border: 0;
+    background: url("../images/search-buttons.png") 0px -135px no-repeat #166e6c;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 29px !important
+}
+#content div.printondemandActions span.button a:hover {
+    background: url("../images/search-buttons.png") 0px -164px no-repeat #1b5273;
+    cursor: pointer
+}
+#content div.printondemandActions li.printondemandSubmit span.button {
+    margin: 0 0 0 210px;
+    width: 110px
+}
+#content div.printondemandActions li.printondemandSubmit span.button a {
+    width: 110px
+}
+#content div.printondemandActions li.printondemandReset span.button {
+    margin: 0 0 0 75px
+}
+#content div.printondemandActions li.printondemandReset span.button a {
+    background: url("../images/search-buttons.png") 0px -29px no-repeat #5b5757
+}
+#content div.printondemandActions li.printondemandReset span.button a:hover {
+    background: url("../images/search-buttons.png") 0px -58px no-repeat #1b5273
+}
+#content div.printondemand-detail {
+    float: left;
+    width: 550px
+}
+#content div.printondemand-builder {
+    float: left;
+    width: 550px
+}
+#content div.printondemand-builder div.printondemand-empty {
+    padding: 60px 0 0 0;
+    height: 140px;
+    background: url("../images/printondemand-empty.png") center center no-repeat;
+    text-align: center
+}
+#content div.printondemand-builder div.printondemand-empty p {
+    margin: 0.2em 0 0.4em 0;
+    color: #848484;
+    font-size: 1.4em
+}
+#content div.printondemand-builder div.printondemand-cart {
+    margin: 0;
+    padding: 25px 0 0 0;
+    background: url("../images/webfeeds-bg.png") 0px 0px no-repeat #eef1f5
+}
+#content div.printondemand-builder div.printondemand-cart h4 {
+    position: absolute;
+    margin: 5px 0 0 14px;
+    padding: 0;
+    width: 145px;
+    line-height: 1em
+}
+#content div.printondemand-builder div.printondemand-cart div.printondemandActions {
+    margin: 0 0 10px 0;
+    padding: 0;
+    background: none
+}
+#content div.printondemand-builder div.printondemandDocs {
+    margin: 4px 0px 0 0px;
+    padding: 0 20px 15px 15px;
+    border-bottom: 1px solid #fff;
+    text-align: right
+}
+#content div.printondemand-builder div.printondemandDocs input {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #056da9;
+    font-size: 1em;
+    cursor: pointer
+}
+#content div.printondemand-builder div.printondemandDocs input:hover {
+    text-decoration: underline
+}
+#content div.printondemand-builder div.printondemandDocs table {
+    margin: 8px 0 0 0;
+    width: 100%
+}
+#content div.printondemand-builder div.printondemandDocs th {
+    display: none
+}
+#content div.printondemand-builder div.printondemandDocs tr {
+    background: none !important
+}
+#content div.printondemand-builder div.printondemandDocs td {
+    padding: 0.4em 8px;
+    border-top: 1px solid #ccc;
+    background: none !important;
+    text-align: left
+}
+#content div.printondemand-descr {
+    float: right;
+    padding: 0 0 90px 0;
+    width: 370px;
+    background: url("../images/webfeeds-sidebar-bg.png") bottom left no-repeat
+}
+#content div.printondemand-descr div.wrapper {
+    padding: 0.5em 0 0 18px;
+    background: url("../images/webfeeds-desc-bg.png") top left repeat-y
+}
+#content div.printondemand-descr ul {
+    margin-bottom: 0
+}
+#content div.printondemand-descr li {
+    padding: 0 0 0.3em 0;
+    line-height: 1.7em
+}
+#content div.printondemand-descr h3 {
+    padding-top: 0
+}
+#content div.printondemand-descr p {
+    margin: 0.2em 0 0 0;
+    padding: 0 0 0.9em 12px
+}
+ul.media-and-versions-links {
+    margin: 0.25em 0;
+    background: #eeeeee;
+    color: black;
+    text-indent: 0
+}
+ul.media-and-versions-links li {
+    padding: 0 0.75em
+}
+ul.media-and-versions-links li a {
+    background: #eeeeee;
+    color: #6699cc
+}
+ul.media-and-versions-links li span.disabled-link {
+    background: #eeeeee;
+    color: gray
+}
+ul.document-fragment-navigation li {
+    padding: 0 0.75em
+}
+#fragment-content-header {
+    border-bottom: 1px solid black;
+    text-align: left
+}
+#fragment-content-header h4 {
+    margin: 0;
+    padding: 0.25em 0;
+    background: white;
+    color: #003366;
+    font-weight: bold;
+    font-size: small
+}
+#content ul.ancestor-context {
+    margin: 0;
+    padding: 0 0 0.25em 0
+}
+#content ul.ancestor-context li {
+    display: inline;
+    color: #003366;
+    list-style-type: none;
+    font-weight: bold
+}
+ul.ancestor-context a {
+    color: #003366;
+    font-weight: bold
+}
+div.content-block {
+    padding-bottom: 2em
+}
+div.admin-content-block {
+    padding-bottom: 2em;
+    font-size: small
+}
+div.admin-content-block a {
+    background: transparent
+}
+span.disabled-link {
+    background: white;
+    color: gray
+}
+.accessibility-only {
+    display: none
+}
+.accessibility-only a {
+    display: none
+}
+#otherSearchLinks {
+    padding: 1em 0;
+    font-weight: bold
+}
+#otherSearchLinks ul {
+    margin: 0;
+    padding: 0
+}
+#otherSearchLinks li {
+    margin: 0;
+    padding: 0.5em 0;
+    list-style: none
+}
+#otherSearchLinks h5 {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    font-size: small
+}
+#otherSearchLinks span.guidedSearches {
+    display: inline
+}
+#otherSearchLinks span.guidedSearches span {
+    display: inline;
+    margin: 0.1em 0 0.1em 1em;
+    padding: 0;
+    font-size: x-small
+}
+ul.nowrap-input-item-list label {
+    white-space: nowrap
+}
+table.guided-search-entry td {
+    vertical-align: middle
+}
+table.guided-search-entry td.guided-search-label-column {
+    width: 15em
+}
+.guided-search-entry p {
+    margin: 0.3em 0;
+    font-size: x-small
+}
+.guided-search-entry ul {
+    padding-left: 2em;
+    font-size: x-small
+}
+.guided-search-entry li {
+    list-style-type: disc
+}
+.guided-search-summary table {
+    padding-bottom: 1em
+}
+.guided-search-summary legend {
+    font-weight: normal
+}
+#editSearchLink {
+    text-align: right
+}
+em.validation-error {
+    background: #eeeeee;
+    color: red;
+    font-style: normal
+}
+#content #relatedList {
+    margin: 0;
+    padding: 0 0 50px 0
+}
+#content #relatedList ul {
+    margin: 0;
+    padding: 0
+}
+#content #relatedList li {
+    list-style-type: none
+}
+#content #relatedList ul li ul {
+    margin-left: 1.25em;
+    padding-left: 0;
+    text-indent: 0
+}
+#content #relatedList ul li ul li {
+    list-style-type: disc
+}
+#content #relatedList h4 {
+    margin: 1.5em 0 0 0;
+    padding: 0
+}
+#content #relatedList p {
+    margin: 0;
+    padding: 0
+}
+#content #relatedList table {
+    margin: 0;
+    padding: 0;
+    border: none
+}
+#content #relatedList table th {
+    margin: 0;
+    padding: 0 3em 0 0;
+    text-align: left;
+    font-weight: bold
+}
+#relatedList table td {
+    margin: 0;
+    padding: 0 3em 0 0;
+    text-align: left
+}
+th.document-version, th.pdf-view {
+    padding-left: 2em
+}
+td.document-version, td.pdf-view {
+    padding-left: 2em
+}
+.feedback-form {
+    margin: 1em 0 1em 1em;
+    font-size: 1em
+}
+.feedback-form textarea, .feedback-form input {
+    font-size: 1em;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+.feedback-form .Title {
+    font-weight: bold
+}
+.feedback-form em, .feedback-form dt {
+    font-weight: bold;
+    font-style: normal
+}
+ul.sitemap-a-z {
+    margin: 0 0 0.5em 0;
+    padding: 0
+}
+ul.sitemap-a-z li {
+    display: inline;
+    padding-right: 0.5em;
+    list-style-type: none
+}
+#legislation div, #legislation span, #legislation applet, #legislation object, #legislation iframe, #legislation h1, #legislation h2, #legislation h3, #legislation h4, #legislation h5, #legislation h6, #legislation p, #legislation blockquote, #legislation pre, #legislation a, #legislation abbr, #legislation acronym, #legislation address, #legislation big, #legislation cite, #legislation code, #legislation del, #legislation dfn, #legislation em, #legislation img, #legislation ins, #legislation kbd, #legislation q, #legislation s, #legislation samp, #legislation small, #legislation strike, #legislation strong, #legislation sub, #legislation sup, #legislation tt, #legislation var, #legislation b, #legislation u, #legislation i, #legislation center, #legislation dl, #legislation dt, #legislation dd, #legislation ol, #legislation ul, #legislation li, #legislation fieldset, #legislation form, #legislation label, #legislation legend, #legislation table, #legislation caption, #legislation tbody, #legislation tfoot, #legislation thead, #legislation tr, #legislation th, #legislation td, #legislation article, #legislation aside, #legislation canvas, #legislation details, #legislation figcaption, #legislation figure, #legislation footer, #legislation header, #legislation hgroup, #legislation menu, #legislation nav, #legislation section, #legislation summary, #legislation time, #legislation mark, #legislation audio, #legislation video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline
+}
+#legislation article, #legislation aside, #legislation details, #legislation figcaption, #legislation figure, #legislation footer, #legislation header, #legislation hgroup, #legislation menu, #legislation nav, #legislation section {
+    display: block
+}
+#legislation ol, #legislation ul {
+    list-style: none
+}
+#legislation blockquote, #legislation q {
+    quotes: none
+}
+#legislation blockquote:before, #legislation blockquote:after {
+    content: '';
+    content: none
+}
+#legislation q:before, #legislation q:after {
+    content: '';
+    content: none
+}
+#legislation:focus {
+    outline: none
+}
+#legislation a {
+    text-decoration: underline
+}
+#legislation a[href^="http:"], #legislation a[href^="https:"], #legislation a.externallink {
+    background: none;
+    padding: inherit;
+    margin: inherit
+}
+#legislation a:focus {
+    outline: 1px dotted #000
+}
+#legislation ins {
+    text-decoration: underline;
+    background: none
+}
+#legislation del {
+    text-decoration: line-through
+}
+#legislation table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+#legislation em, #legislation i {
+    font-style: italic
+}
+#legislation strong, #legislation b {
+    font-weight: bold
+}
+#legislation u {
+    text-decoration: underline
+}
+#legislation h1, #legislation h2, #legislation h3, #legislation h4, #legislation h5, #legislation h6, #legislation p, #legislation th, #legislation td, #legislation dl {
+    font-family: "Times New Roman", serif;
+    color: #000;
+    line-height: 1.2em
+}
+#legislation a.intref, #legislation a.extref, #legislation a.toc, #legislation a.term, #legislation a.leg-title, #legislation a.amending-provision {
+    color: blue;
+    background-color: white
+}
+#legislation h1, #legislation h2, #legislation h3, #legislation h4, #legislation h5, #legislation h6 {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    font-weight: normal
+}
+#legislation h1 {
+    font-size: 1.5em
+}
+#legislation h2, #legislation h3, #legislation h4, #legislation h5, #legislation h6 {
+    font-size: 1.2em
+}
+#legislation p {
+    padding: 0;
+    margin: 0;
+    clear: left
+}
+#legislation ul {
+    padding: 0;
+    margin: 0;
+    margin-left: 3em;
+    clear: left
+}
+#legislation ul.history {
+    margin-left: 0
+}
+#legislation ul li {
+    padding: 0;
+    margin: 0;
+    display: block;
+    list-style-type: none
+}
+#legislation q:before, #legislation q:after {
+    content: ""
+}
+#legislation h2.labelled, #legislation h3.labelled, #legislation h4.labelled, #legislation h5.labelled, #legislation h6.labelled {
+    padding-left: 2.5em
+}
+#legislation h2.labelled span.label, #legislation h3.labelled span.label, #legislation h4.labelled span.label, #legislation h5.labelled span.label, #legislation h6.labelled span.label {
+    float: left;
+    margin-left: -2.5em;
+    padding-right: 0.5em
+}
+#legislation p.labelled {
+    margin-right: 1em
+}
+#legislation p.labelled span.label, #legislation p.labelled a.label {
+    float: left;
+    margin-left: -3em;
+    padding-right: 0.5em
+}
+#legislation ins {
+    text-decoration: underline
+}
+#legislation ins span, #legislation ins a {
+    text-decoration: underline
+}
+#legislation del {
+    text-decoration: line-through
+}
+#legislation del span, #legislation del a {
+    text-decoration: line-through
+}
+#legislation span.spc {
+    float: left;
+    margin-left: -3em;
+    text-decoration: none
+}
+#legislation dd {
+    margin-left: 40px
+}
+#legislation ul.list {
+    margin-left: 0em
+}
+#legislation ul.list li {
+    margin-left: 3em
+}
+#legislation ul.list li.bull {
+    list-style-type: disc;
+    display: list-item;
+    margin-left: 1.2em;
+    padding-left: 2em
+}
+#legislation dfn.def-term {
+    font-weight: bold;
+    font-style: normal
+}
+#legislation .deleted {
+    font-weight: normal;
+    font-style: italic;
+    font-size: 0.8em
+}
+#legislation em.emphasis {
+    font-style: normal;
+    text-decoration: none
+}
+#legislation p.cf {
+    font-size: 0.8em;
+    clear: left;
+    padding-top: 0.25em
+}
+#legislation p.history-note {
+    font-size: 0.8em;
+    padding-top: 0.25em
+}
+#legislation p.empowering-prov {
+    font-size: 0.8em;
+    text-align: right;
+    padding: 0;
+    white-space: nowrap
+}
+#legislation p.authorisation {
+    font-size: 0.8em;
+    text-align: center;
+    font-style: italic
+}
+#legislation p.term-list {
+    font-size: 0.8em;
+    padding-top: 0.25em
+}
+#legislation p.eqn-line {
+    text-align: center
+}
+#legislation p.made-at, #legislation p.made-present {
+    text-align: center;
+    margin-top: 2em
+}
+#legislation p.statutory-regulation-number {
+    margin-top: 0;
+    text-align: right;
+    font-weight: bold
+}
+#legislation p.reprint-sr-number, #legislation p.proclamation {
+    text-align: center
+}
+#legislation p.member {
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 1em;
+    padding-top: 1em
+}
+#legislation p.repnote {
+    margin-top: 2em;
+    font-size: 1.5em;
+    text-align: center
+}
+#legislation p.sop-date {
+    margin-top: 1em
+}
+#legislation p.billref {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2em
+}
+#legislation p.schedule-deleted, #legislation p.part-deleted, #legislation p.head1-deleted, #legislation p.schedule-group-deleted, #legislation p.schedule-amendments-group1-deleted {
+    text-align: center
+}
+#legislation p.subpart-deleted, #legislation p.conv-deleted, #legislation p.head2-deleted {
+    text-align: center
+}
+#legislation p.toc-ird-crosshead, #legislation p.toc-head4 {
+    font-weight: bold
+}
+#legislation p.crosshead-deleted, #legislation p.ird-crosshead-deleted, #legislation p.head3-deleted, #legislation p.head4-deleted {
+    text-align: center
+}
+#legislation span.changeable {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.8em
+}
+#legislation span.leader, #legislation span.field {
+    white-space: nowrap
+}
+#legislation span.leader {
+    font-size: 0.8em
+}
+#legislation dt.variable {
+    float: left;
+    clear: left
+}
+#legislation div, #legislation table, #legislation li {
+    clear: left
+}
+#legislation p.footnote {
+    font-size: 0.8em
+}
+#legislation hr.footnotes {
+    float: left;
+    width: 30%
+}
+#legislation sup.footnote-ref {
+    font-size: 0.6em
+}
+#legislation div.readers-notes {
+    font-size: 0.8em;
+    padding-top: 0.25em
+}
+#legislation div.crest {
+    text-align: center
+}
+#legislation img.crest {
+    width: 147px;
+    height: 141px
+}
+#legislation hr {
+    padding: 0;
+    border: none;
+    width: 40%;
+    height: 1px;
+    color: black;
+    background-color: black;
+    margin-top: 2em;
+    border: 0;
+    clear: left
+}
+#legislation blockquote span.q, #legislation cite span.q {
+    font-weight: normal;
+    font-style: normal;
+    letter-spacing: 1px
+}
+#legislation sup, #legislation sub {
+    font-size: 0.6em
+}
+#legislation sup {
+    vertical-align: super;
+    line-height: 1em
+}
+#legislation sub {
+    vertical-align: sub;
+    line-height: 1em
+}
+#legislation span.fraction, #legislation sup.numerator, #legislation sub.denominator {
+    font-size: 0.6em
+}
+#legislation span.fraction sup.numerator, #legislation span.fraction sub.denominator {
+    font-size: 1em
+}
+#legislation div.cover {
+    margin-right: -1.5em
+}
+#legislation h1.title {
+    font-size: 1.7em;
+    font-weight: bold;
+    margin-top: 2em;
+    text-align: center;
+    padding: 0 3em
+}
+#legislation table.cover-properties {
+    text-align: center;
+    width: 100%
+}
+#legislation table.cover-properties td {
+    padding: 0 0.5em;
+    width: 50%;
+    text-align: left
+}
+#legislation table.cover-properties td.date-of-assent, #legislation table.cover-properties td.document-type, #legislation table.cover-properties td.commencement {
+    text-align: right
+}
+#legislation p.reprint-date {
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: bold
+}
+#legislation div.long-title {
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation div.long-title h1, #legislation div.long-title h2, #legislation div.long-title h3, #legislation div.long-title h4, #legislation div.long-title h5, #legislation div.long-title h6 {
+    font-weight: bold
+}
+#legislation div.long-title p.history-note {
+    font-weight: normal
+}
+#legislation p.enactment {
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation h6.cover-reprint-note {
+    font-size: 0.8em;
+    font-weight: bold
+}
+#legislation hr.cover-reprint-note {
+    width: 100%
+}
+#legislation div.cover-reprint-note {
+    font-size: 0.8em
+}
+#legislation p.admin-office {
+    line-height: 100%;
+    font-size: 0.8em
+}
+#legislation div.reprint p.admin-office {
+    font-weight: bold;
+    padding-top: 0.25em
+}
+#legislation p.title-former {
+    text-align: center;
+    margin-top: 0.5em
+}
+#legislation div.example {
+    width: 100%;
+    border-bottom: thin solid black;
+    border-top: thin solid black;
+    margin: 0.5em 0
+}
+#legislation div.example p, #legislation div.example h1, #legislation div.example h2, #legislation div.example h3, #legislation div.example h4, #legislation div.example h5 {
+    font-family: Arial, sans-serif;
+    font-size: 0.8em
+}
+#legislation div.example h6 {
+    font-family: Arial, sans-serif;
+    font-size: 0.8em
+}
+#legislation div.example h6.heading {
+    font-family: Arial, sans-serif;
+    font-weight: bold
+}
+#legislation div.example h6.subheading {
+    font-family: Arial, sans-serif;
+    font-style: italic
+}
+#legislation h2.contents {
+    text-align: center;
+    margin-top: 1em;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0 3em
+}
+#legislation div.contents-note p {
+    text-align: center;
+    font-size: 0.8em;
+    font-style: italic
+}
+#legislation div.contents div.key {
+    text-align: left;
+    margin-top: 0
+}
+#legislation div.external-document {
+    margin-top: 1em
+}
+#legislation div.schedule-forms h4.head4, #legislation div.schedule-amendments h4.head4 {
+    text-align: center;
+    margin-top: 2em;
+    margin-left: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0 3em
+}
+#legislation div.schedule-forms h4.head4, #legislation div.schedule-amendments h4.head4 {
+    font-weight: normal;
+    font-style: normal
+}
+#legislation div.prov ul.prov li p.headless {
+    margin-top: 1em;
+    margin-bottom: 1.5em
+}
+#legislation h2.part, #legislation h2.schedule, #legislation h2.head1, #legislation h2.schedule-group, #legislation h2.schedule-amendments-group1, #legislation h2.sop-part {
+    text-align: center;
+    margin-top: 2em;
+    margin-left: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0 3em
+}
+#legislation h2.schedule-amendments-group1 {
+    font-weight: normal
+}
+#legislation h2.head1 {
+    font-weight: normal;
+    font-style: normal
+}
+#legislation h2.schedule-group {
+    margin-top: 1em
+}
+#legislation h3.subpart, #legislation h3.conv, #legislation h3.head2, #legislation h3.sop-subpart, #legislation h3.heading {
+    text-align: center;
+    margin-top: 1em;
+    padding: 0 3em
+}
+#legislation h3.subpart {
+    font-size: 1.5em
+}
+#legislation div.schedule-provisions h2.part {
+    font-weight: normal
+}
+#legislation div.schedule-provisions h3.subpart {
+    font-style: italic
+}
+#legislation h3.conv {
+    font-weight: bold
+}
+#legislation h3.head2 {
+    font-style: italic
+}
+#legislation h4.preamble {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-top: 1.5em
+}
+#legislation h5.preamble-block {
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation h6.preamble-headlev2 {
+    font-style: italic;
+    margin-top: 0.5em
+}
+#legislation h6.preamble-headlev3 {
+    margin-top: 0.5em
+}
+#legislation h4.crosshead, #legislation h4.ird-crosshead, #legislation h4.head3, #legislation h4.head4 {
+    text-align: center;
+    font-style: italic;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+#legislation div.schedule-provisions h4.crosshead {
+    font-style: normal
+}
+#legislation h4.ird-crosshead, #legislation h4.head4 {
+    font-weight: bold
+}
+#legislation h4.head3, #legislation div.form h4.head4 {
+    font-style: normal
+}
+#legislation ul.label-only, #legislation div.label-only {
+    float: left;
+    margin-top: -1.25em;
+    margin-bottom: 1.25em
+}
+#legislation ul.label-only-last {
+    float: left;
+    margin-top: -1.25em;
+    margin-bottom: 0em
+}
+#legislation h4.form {
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+#legislation h4.form span.label a.label {
+    margin-left: 0;
+    float: none
+}
+#legislation p.headless span.label {
+    float: left;
+    margin-left: -3em;
+    padding-right: 0.5em
+}
+#legislation p.form-deleted {
+    text-align: center
+}
+#legislation h5.prov, #legislation h5.head5, #legislation h5.head6, #legislation h5.schedule-amendments-group2 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation h5.head6 {
+    font-style: italic;
+    font-weight: normal
+}
+#legislation ul.head5 {
+    font-weight: bold
+}
+#legislation h6.subprov-crosshead, #legislation h6.schedule-amendments-group3 {
+    font-style: italic;
+    margin-top: 1em
+}
+#legislation h6.label-para-crosshead {
+    font-style: italic;
+    margin-top: 0.5em
+}
+#legislation h6.figure {
+    text-align: center;
+    font-weight: bold;
+    margin-left: 0;
+    padding: 0 3em;
+    margin-top: 0.5em
+}
+#legislation h6.figure span.label {
+    margin-left: 0;
+    float: none
+}
+#legislation p.figure-deleted, #legislation div.graphic {
+    text-align: center
+}
+#legislation img.graphic-inline {
+    display: inline
+}
+#legislation div.graphic-text, #legislation span.graphic-text {
+    display: none
+}
+#legislation div.table th {
+    vertical-align: bottom;
+    text-align: left;
+    padding: 0 0.1em
+}
+#legislation div.table th[align="center"] {
+    text-align: center
+}
+#legislation div.table th[align="right"] {
+    text-align: right
+}
+#legislation div.table td {
+    vertical-align: top;
+    padding: 0.1em 0.1em
+}
+#legislation div.tableLeft, #legislation div.tableRight, #legislation div.tableCentered, #legislation div.tableFullWidth {
+    margin: 0.6em 0
+}
+#legislation div.tableRight {
+    text-align: right
+}
+#legislation div.tableRight div.tableContainer {
+    text-align: left;
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline
+}
+#legislation div.tableCentered {
+    text-align: center
+}
+#legislation div.tableCentered div.tableContainer {
+    text-align: left;
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline
+}
+#legislation div.tableFullWidth table {
+    width: 100%
+}
+#legislation h6.table {
+    margin-top: 0.5em
+}
+#legislation table.frame-none, #legislation table.frame-default {
+    border-collapse: collapse;
+    border: none
+}
+#legislation table.frame-topbot {
+    border-collapse: collapse;
+    border-top: thin solid black;
+    border-bottom: thin solid black
+}
+#legislation table.frame-top {
+    border-collapse: collapse;
+    border-top: thin solid black
+}
+#legislation table.frame-bottom {
+    border-collapse: collapse;
+    border-bottom: thin solid black
+}
+#legislation table.frame-sides {
+    border-collapse: collapse;
+    border-left: thin solid black;
+    border-right: thin solid black
+}
+#legislation td.rowsep, #legislation th.rowsep {
+    border-bottom: thin solid black
+}
+#legislation div.flush-left-margin-1 {
+    margin-left: -3em
+}
+#legislation div.flush-left-margin-2 {
+    margin-left: -6em
+}
+#legislation div.flush-left-margin-3 {
+    margin-left: -9em
+}
+#legislation div.flush-left-margin-4 {
+    margin-left: -12em
+}
+#legislation blockquote {
+    margin: 0;
+    padding: 0
+}
+#legislation blockquote h6.subprov-crosshead {
+    margin-left: 2.5em
+}
+#legislation blockquote ul h6.subprov-crosshead {
+    margin-left: 0
+}
+#legislation blockquote p.labelled {
+    margin-left: 3em
+}
+#legislation blockquote ul p.labelled {
+    margin-left: 0
+}
+#legislation blockquote.amend-increment-1 {
+    margin-left: 3em
+}
+#legislation blockquote.amend-increment-2 {
+    margin-left: 6em
+}
+#legislation blockquote.amend-increment-3 {
+    margin-left: 9em
+}
+#legislation blockquote.quote-indented {
+    margin-left: 1em
+}
+#legislation blockquote.instrument-amend-default-margin {
+    margin-left: 2.5em;
+    margin-right: 2.5em
+}
+#legislation blockquote.amend h2.first, #legislation blockquote.amend h3.first, #legislation blockquote.amend h4.first, #legislation blockquote.amend h5.first, #legislation blockquote.amend h6.first {
+    margin-top: 0
+}
+#legislation div.commentary blockquote.quote {
+    margin-left: 3em;
+    margin-right: 3em
+}
+#legislation div.assent-block p.para {
+    font-style: italic
+}
+#legislation div.assent-block p.sig-officer {
+    font-size: 0.8em;
+    font-style: italic
+}
+#legislation div.assent-block p.sig-para {
+    font-style: italic;
+    margin-top: 1.5em;
+    line-height: 1.5em
+}
+#legislation div.signature-block p.sig-para {
+    margin-top: 2em
+}
+#legislation p.sig-officer {
+    margin-top: 3em
+}
+#legislation hr.sig-separator {
+    text-align: center;
+    width: 4em;
+    margin-top: 1em
+}
+#legislation h2.leg-history {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+    text-align: left
+}
+#legislation table.leg-history td {
+    vertical-align: top;
+    font-size: 0.8em
+}
+#legislation table.leg-history td.date, #legislation table.leg-history td.date-text {
+    padding-right: 1em
+}
+#legislation h4.reprint-index {
+    font-weight: bold
+}
+#legislation h5.reprint-notes {
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation h6.reprint-note {
+    font-style: italic;
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation p.reprint-amend {
+    font-size: 0.8em
+}
+#legislation table.empowering-prov-layout {
+    width: 100%;
+    margin-top: 2em
+}
+#legislation table.empowering-prov-layout td {
+    vertical-align: top
+}
+#legislation table.header tr {
+    vertical-align: top
+}
+#legislation table.empowering-prov-layout tr td h2, #legislation table.empowering-prov-layout tr td h3, #legislation table.empowering-prov-layout tr td h4, #legislation table.empowering-prov-layout tr td h5, #legislation table.empowering-prov-layout tr td h6 {
+    padding-right: 0;
+    margin-top: 0
+}
+#legislation table.empowering-prov-layout td.empowering-prov {
+    width: 3.5em
+}
+#legislation p.gg {
+    text-align: center;
+    margin-top: 3em
+}
+#legislation div.promulgation {
+    margin-top: 1em
+}
+#legislation div.promulgation p.admin-office {
+    font-size: 0.8em
+}
+#legislation p.issue-authority, #legislation p.gazette-date {
+    font-size: 0.8em
+}
+#legislation h2.made {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2em
+}
+#legislation h2.regulation-type {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation div.pursuant p.para {
+    margin-top: 1em
+}
+#legislation div.end h2.explnote, #legislation div.skeleton-reg-end h2.explnote {
+    margin-top: 1.5em
+}
+#legislation div.ocboxnote {
+    border: thin solid black;
+    margin-top: 0.5em
+}
+#legislation div.ocboxnote p {
+    margin: 1em
+}
+#legislation p.billtype {
+    text-align: center;
+    line-height: 100%;
+    margin-top: 1em
+}
+#legislation h2.explnote {
+    font-size: 1.5em;
+    margin-top: 2em;
+    text-align: center;
+    font-weight: bold
+}
+#legislation h3.explnote-group {
+    margin-top: 1em;
+    text-align: center;
+    font-weight: bold;
+    line-height: 100%
+}
+#legislation h4.explnote-subgroup {
+    margin-top: 1em;
+    text-align: center;
+    font-style: italic
+}
+#legislation h2.explnote-part {
+    margin-top: 1em;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5em
+}
+#legislation h3.explnote-subpart {
+    margin-top: 1em;
+    text-align: center;
+    font-size: 1.5em
+}
+#legislation h4.explnote-crosshead {
+    margin-top: 1em;
+    text-align: center;
+    font-style: italic
+}
+#legislation h4.explnote-ird-crosshead {
+    margin-top: 1em;
+    text-align: center;
+    font-style: italic;
+    font-weight: bold
+}
+#legislation h5.explnote-subhead1 {
+    margin-top: 1em;
+    font-weight: bold
+}
+#legislation h5.explnote-subhead2 {
+    margin-top: 1em;
+    font-style: italic
+}
+#legislation h2.explnote-ris {
+    margin-top: 1em;
+    text-align: center;
+    font-weight: bold;
+    line-height: 100%
+}
+#legislation p.bill-identifier {
+    text-align: center;
+    font-size: 0.8em;
+    line-height: 100%
+}
+#legislation em.intref {
+    font-style: italic
+}
+#legislation h2.billnote {
+    margin-top: 2em;
+    text-align: center
+}
+#legislation h2.commentary {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2em
+}
+#legislation h3.comm-lev1, #legislation h3.comm-appendix {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation h4.comm-lev2 {
+    font-weight: bold;
+    margin-top: 1em
+}
+#legislation h5.comm-lev3 {
+    font-style: italic;
+    margin-top: 1em
+}
+#legislation div.key, #legislation div.key2 {
+    margin-top: 1em;
+    text-align: center
+}
+#legislation div.key1 {
+    margin-top: 1em;
+    text-align: left
+}
+#legislation div.key h2.heading, #legislation div.key1 h2.heading, #legislation div.key2 h2.heading {
+    font-size: 1.5em;
+    font-weight: bold
+}
+#legislation div.key h3.subheading, #legislation div.key1 h3.subheading, #legislation div.key2 h3.subheading {
+    font-weight: bold
+}
+#legislation p.omitted-provs {
+    margin-top: 1em;
+    font-size: 1.7em;
+    text-align: center
+}
+#legislation span.omitted-prov {
+    padding-right: 3em
+}
+#legislation div.commentary blockquote.quote {
+    font-size: 0.8em
+}
+#legislation p.house, #legislation h1.sop-heading, #legislation p.sop-date {
+    text-align: center;
+    font-size: 1.7em;
+    font-weight: bold;
+    line-height: 100%
+}
+#legislation h1.sop-heading {
+    font-size: 1.9em;
+    margin-top: 1em
+}
+#legislation h2.sop-body {
+    text-align: center;
+    font-style: italic
+}
+#legislation p.motion {
+    margin-top: 1em
+}
+#legislation p.clause-ref {
+    margin-top: 1em;
+    font-style: italic
+}
+#legislation div.sop-newenact {
+    margin: 0 2.5em
+}
+#legislation div.sop-newenact p.enactment {
+    margin-top: 0.5em
+}
+#legislation hr.sop-body {
+    width: 6em
+}
+#legislation .taggedheading {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.1em;
+    color: #666;
+    background: #eff4fa;
+    padding: 0.5em 0 0.3em 15px;
+    border-bottom: 1px solid #ccc;
+    margin: 2.5em 0 1em 0
+}
+#legislation div:first-child .taggedheading {
+    margin: 0.5em 0 1em 0
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    #legislation span.spc {
+        float: none;
+        margin: 0;
+        display: none
+    }
+}
+#legislation div.toc-amend {
+    margin-left: 3em
+}
+#legislation div.toc {
+    margin: 0 3em;
+    font-size: 0.9em
+}
+#legislation div.toc p {
+    padding-top: 0
+}
+#legislation div.toc ul {
+    margin-left: 0
+}
+#legislation div.toc p.skeleton-act, #legislation div.toc p.skeleton-reg {
+    margin-top: 1.1em;
+    padding-top: 0;
+    text-align: center;
+    font-weight: bold
+}
+#legislation div.toc p.schedule, #legislation div.toc p.part, #legislation div.toc p.schedule-group, #legislation div.toc p.schedule-amendments-group1, #legislation div.toc p.head1 {
+    text-align: center;
+    margin-top: 0.75em;
+    margin-left: 0;
+    font-weight: bold;
+    padding: 0 3em
+}
+#legislation div.toc p.schedule a.label, #legislation div.toc p.part a.label, #legislation div.toc p.schedule-group a.label, #legislation div.toc p.schedule-amendments-group1 a.label, #legislation div.toc p.head1 a.label {
+    margin-left: 0;
+    float: none
+}
+#legislation div.toc p.schedule-amendments-group1 {
+    font-weight: normal
+}
+#legislation div.toc p.sop-part {
+    font-size: 1.2em
+}
+#legislation div.toc p.subpart, #legislation div.toc p.conv, #legislation div.toc p.head2 {
+    text-align: center;
+    margin-top: 1em;
+    padding: 0 3em
+}
+#legislation div.toc p.subpart a.label, #legislation div.toc p.conv a.label {
+    margin-left: 0;
+    float: none
+}
+#legislation div.toc p.head2 {
+    font-style: italic
+}
+#legislation div.toc p.head2 a.label {
+    margin-left: 0;
+    float: none
+}
+#legislation div.toc p.conv {
+    font-weight: bold
+}
+#legislation div.toc p.preamble {
+    font-weight: normal
+}
+#legislation div.toc p.crosshead, #legislation div.toc p.ird-crosshead, #legislation div.toc p.head3, #legislation div.toc p.head4 {
+    text-align: center;
+    font-style: italic;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+#legislation div.toc p.crosshead a.toc span.spc, #legislation div.toc p.ird-crosshead a.toc span.spc, #legislation div.toc p.head3 a.toc span.spc, #legislation div.toc p.head4 a.toc span.spc {
+    float: none;
+    margin: 0;
+    text-decoration: none
+}
+#legislation div.toc p.ird-crosshead, #legislation div.toc p.head4 {
+    font-weight: bold
+}
+#legislation div.toc p.form {
+    text-align: left;
+    margin-top: 0.5em;
+    margin-left: 0
+}
+#legislation div.toc p.form a.label {
+    float: left;
+    margin-left: -3em;
+    padding-right: 0.5em
+}
+#legislation div.toc p.head6 {
+    font-style: italic;
+    font-weight: normal
+}
+#legislation div.toc p.figure {
+    text-align: center;
+    font-weight: bold;
+    margin-left: 0;
+    padding: 0 3em;
+    margin-top: 0.5em
+}
+#legislation div.toc p.figure a.label {
+    margin-left: 0;
+    float: none
+}
+#legislation div.toc p.leg-history {
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    font-weight: normal;
+    text-align: left
+}
+#legislation div.toc p.omitted-provs {
+    font-weight: bold
+}
+#legislation div.toc p.clause-ref {
+    margin-top: 0;
+    font-style: normal
+}
+#legislation div.toc p.hdr-before {
+    margin-top: 0.5em
+}
+#legislation div.toc-schedule-provisions p.part {
+    font-weight: normal;
+    margin-left: 0;
+    float: none
+}
+#legislation div.toc-schedule-provisions p.subpart {
+    font-style: italic;
+    text-align: center;
+    margin-top: 1em;
+    padding: 0 3em
+}
+#legislation div.toc-schedule-provisions p.crosshead {
+    font-style: normal;
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+@media print {
+    body {
+        font-family: "Times New Roman", Times, serif
+    }
+    #body {
+        background: none
+    }
+    #header {
+        height: auto;
+        background: none
+    }
+    #header div.wrapper {
+        height: auto;
+        width: auto;
+        background: none
+    }
+    #header h2 {
+        color: #000;
+        font-family: "Times New Roman", Times, serif;
+        margin: 0 15px 0 15px;
+        font-size: 1.2em;
+        padding: 110px 0 0 0
+    }
+    #header h2 a {
+        color: #333
+    }
+    #accessKeys, #menus, #footer {
+        display: none
+    }
+    #printLogo div {
+        width: auto
+    }
+    #printLogo div a {
+        background: none;
+        width: auto;
+        height: auto;
+        top: 10px;
+        left: 20px
+    }
+    #printLogo img {
+        display: block
+    }
+    #contentContainer div.wrapper {
+        width: auto;
+        color: #000;
+        margin: 0;
+        padding: 0
+    }
+    #content {
+        margin: 0 15px 0.5em 15px
+    }
+    #content h1 {
+        margin: 0 0 1em 0;
+        padding: 0;
+        color: #000
+    }
+    #content h2, #content h4, #content h5, #content h6 {
+        color: #333
+    }
+    #content h3 {
+        color: #666
+    }
+    #content .contentMenu, #content .contentHeader {
+        display: none
+    }
+    #content .contentBodyWithMenu {
+        width: auto;
+        float: none
+    }
+    #content a {
+        color: #000;
+        text-decoration: underline
+    }
+    #content a[href^="http:"], #content a[href^="https:"], #content a.externallink {
+        padding-right: inherit;
+        margin-right: inherit;
+        background: none
+    }
+    #content ul.subscriptions li, #content ul.links li {
+        list-style-type: disc;
+        margin-left: 18px
+    }
+    #content ul.subscriptions li a {
+        background: none;
+        display: inline;
+        padding: 0
+    }
+    #content div.homepageWelcome {
+        float: none;
+        width: auto;
+        height: auto
+    }
+    #content div.homepageWelcome h1, #content div.homepageWelcome h3 {
+        width: auto;
+        position: static
+    }
+    #content div.homepageWelcome div.overlay {
+        display: none
+    }
+    #content div.homepageWelcome h1 {
+        height: auto;
+        padding: inherit
+    }
+    #content div.homepageSidebar {
+        margin: inherit;
+        width: auto
+    }
+    #content div.homepageInfo {
+        margin: inherit;
+        width: auto;
+        font-size: 1em;
+        margin-top: 3em
+    }
+    #content div.searchReturn, #content div.pageOptions, #content div.legislationSearch, #content div.legislationView {
+        display: none
+    }
+    #content div.legislationActions {
+        display: none
+    }
+    #content div.legislationContainer {
+        background: none;
+        border: none;
+        clear: both;
+        margin: inherit;
+        width: 96%
+    }
+    #content div.legislationWithContents {
+        margin: inherit;
+        width: auto;
+        font-size: inherit;
+        float: none
+    }
+    #content div.legislationWrapper {
+        padding-top: 0
+    }
+    #content div.taggedToc {
+        display: none
+    }
+    #content div.alert {
+        margin-bottom: 2em;
+        background: none;
+        border: 1px solid #999
+    }
+    #content #legislationContents {
+        display: none
+    }
+    #content #legislation {
+        padding: 0;
+        margin: 0;
+        font-size: 1em;
+        width: 98%;
+        border: 1px solid #fff
+    }
+    #content #legislation .taggedheading {
+        color: #fff;
+        background: #333;
+        padding: 0.7em 0 0.7em 15px;
+        border-bottom: none
+    }
+    #content #content-header h3 {
+        padding-left: 0;
+        padding-top: 0;
+        color: #000
+    }
+    #content #content-header p.searchSummary {
+        display: block
+    }
+    #content .searchResults th {
+        background: #eee;
+        border-bottom: 1px solid #666;
+        color: #333
+    }
+    #content #VersionsAndAmendments h3 {
+        background: #eee;
+        border-bottom: 1px solid #666;
+        color: #333
+    }
+    #content #VersionsAndAmendments table {
+        margin-bottom: 2em
+    }
+    #content .searchResults th a, #content .searchResults th span {
+        color: #333;
+        background: none !important
+    }
+    #content .searchResults td {
+        border-bottom: 1px solid #eee
+    }
+    #content #browseTabs, #content .browseHeader, #content .headContainer, #content .search-results-pagination, #content #content-header span, #content span.helpLink, #content .versionsFooter {
+        display: none
+    }
+    #content #searchWithinResults {
+        position: inherit;
+        top: inherit
+    }
+    #content .searchResults th.orderable span {
+        padding-right: 0
+    }
+    #content .searchResults th.resultsType, #content .searchResults th.resultsAlerts {
+        width: auto
+    }
+    #content .searchResults td.resultsAlerts {
+        width: auto
+    }
+    #content #atom-descr {
+        background: none
+    }
+    #content #atom-descr div.wrapper {
+        background: none
+    }
+    body.homepage div#contentContainer {
+        background: none
+    }
+    body.homepage div#contentContainer div.wrapper {
+        background: none
+    }
+    .homepage #content div.homepageStart, .homepage #content div.homepageContent {
+        float: none;
+        width: auto;
+        height: auto
+    }
+    .homepage #content div.homepageStart {
+        display: none
+    }
+    #noResult {
+        margin-bottom: 2em;
+        background: none;
+        border: 1px solid #999
+    }
 }
