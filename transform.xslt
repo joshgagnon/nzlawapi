@@ -80,7 +80,15 @@
             </h5>
             <ul class="prov">
                 <li>
+                    <xsl:choose>
+                <xsl:when test="prov.body != ''">
                     <xsl:apply-templates select="prov.body/subprov"/>
+                </xsl:when>
+                        <xsl:otherwise>
+                        <span class="deleted label-deleted">[Repealed]</span>
+                    </xsl:otherwise>   
+
+                    </xsl:choose>   
                     <xsl:apply-templates select="notes/history/history-note"/>
                 </li>
             </ul>
@@ -88,13 +96,11 @@
     </xsl:template>
 
     <xsl:template match='prov.body/subprov'>
-
-        <div class="subprov">
-            <xsl:apply-templates select="label"/>
-            <xsl:apply-templates select="para/label-para"/>
-            <xsl:apply-templates select="para/def-para"/>å
-        </div>
-       
+                <div class="subprov">
+                    <xsl:apply-templates select="label"/>
+                    <xsl:apply-templates select="para/label-para"/>
+                    <xsl:apply-templates select="para/def-para"/>
+                </div>
 
     </xsl:template>
 
@@ -134,7 +140,7 @@
             </xsl:if>
             <xsl:choose>
             <xsl:when test="../para/text != ''">
-                <xsl:value-of select="../para/text"/>
+                <xsl:apply-templates select="../para/text"/>
             </xsl:when>
             <xsl:otherwise>
                 <span class="deleted label-deleted">[Repealed]</span>
@@ -143,13 +149,42 @@
         </p>
     </xsl:template>
 
+
     <xsl:template match="notes/history/history-note">
         <p class="history-note">
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <xsl:value-of select="."/>
+            <xsl:apply-templates/>
         </p>
+    </xsl:template>
+
+
+    <xsl:template match="admended-provision|amending-operation">
+        <xsl:value-of select="."/>
+    </xsl:template>
+
+    <xsl:template match="emphasis[@style='bold']">
+        &#160;<strong><xsl:value-of select="."/></strong>
+    </xsl:template>
+
+
+
+
+    <xsl:template match="*[@href]">
+        <a>
+        <xsl:attribute name="href">#<xsl:value-of select="@href"/>
+        </xsl:attribute>   
+            <xsl:value-of select="."/>
+        </a>
+    </xsl:template>
+
+   <xsl:template match="para/text">
+         <xsl:apply-templates/>
+    </xsl:template>
+
+    <xsl:template match="*">
+        <xsl:value-of select="."/>
     </xsl:template>
 
 </xsl:stylesheet>
