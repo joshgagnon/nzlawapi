@@ -105,8 +105,8 @@
     <xsl:template match='prov.body/subprov'>
                 <div class="subprov">
                     <xsl:apply-templates select="label"/>
-                    <xsl:apply-templates select="para/label-para"/>
-                    <xsl:apply-templates select="para/def-para"/>
+                    <xsl:apply-templates select="para/*[position() > 1]"/>
+
                 </div>
 
     </xsl:template>
@@ -147,7 +147,7 @@
             </xsl:if>
             <xsl:choose>
             <xsl:when test="../para/text != ''">
-                <xsl:apply-templates select="../para/text"/>
+                <xsl:apply-templates select="../para/text[1]"/>
             </xsl:when>
             <xsl:otherwise>
                 <span class="deleted label-deleted">[Repealed]</span>
