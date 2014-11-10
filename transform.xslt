@@ -3,9 +3,16 @@
     <xsl:strip-space elements="*"/>
 
     <xsl:template match="/">
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="/static/style.css"/>
+            </head>
+            <body>
         <div id="legislation">
             <xsl:apply-templates select="act"/>
         </div>
+    </body>
+</html>
     </xsl:template>
 
     <xsl:template match="act">
@@ -62,7 +69,7 @@
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
             </h2>
-            <xsl:apply-templates select="prov"/> 
+            <xsl:apply-templates select="crosshead|prov"/> 
         </div>
     </xsl:template>
 
@@ -149,6 +156,16 @@
         </p>
     </xsl:template>
 
+
+    <xsl:template match='crosshead'>
+        <h4 class="crosshead">
+             <xsl:attribute name="id">
+                <xsl:value-of select="@id"/>
+            </xsl:attribute>       
+                <xsl:value-of select="."/>
+            </h4>
+        
+    </xsl:template>
 
     <xsl:template match="notes/history/history-note">
         <p class="history-note">

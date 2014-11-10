@@ -4,7 +4,7 @@ import sys
 from lxml.etree import tostring
 from itertools import chain
 import time
-
+from flask import Flask
 tree = etree.parse(sys.argv[1])
 
 title = tree.xpath('/act/cover/title')[0].text
@@ -30,66 +30,61 @@ xml_map  = {
 
 
 def tohtml(tree):
-    def fix(tree):
-        class_name = tree.tag.replace('.', '_').replace('-', '_')
-        id = tree.get('id')
-        tree.attrib.clear()
-        tree.set('class', class_name)
-        tree.tag = xml_map.get(class_name, 'div')
-#fix(tree)
-    #map(fix, tree.iter())
     xslt = etree.parse('transform.xslt')
     transform = etree.XSLT(xslt)
+    return transform(tree)
 
-    return tostring(transform(tree))
-
-def parent_text(tree):
-    return tree
-    node = tree
-    while node.getparent() is not None:
-        parent = node.getparent()
-
-        [parent.remove(n) for n in parent if n != node and n.tag ==node.tag and not n.tag in ['text', 'title']]
-        print parent
-        if parent.xpath('./heading'):
-            return parent
-        node = parent
-
-    return node
 
 
 def validate(key):
     return (key == 'schedule' or len(key) < 4) and len(key)
 
-def pluck_tree(tree, keys):
-    return tohtml(parent_text(tree))
+def pluck_tree(keys):
+    def test_inclusion(node, current):
+        inclusion = node == current or node.tag in ['label', 'heading', 'cover', 'text']
+        if not inclusion and node.tag == 'crosshead':
+            # is the crosshead the first previous one?
+            try:
+                inclusion = node == current.itersiblings(tag='crosshead', preceding=True).next()
+            except StopIteration: pass
+        return inclusion
+
+    def fix_parents(tree, node):
+        while node.getparent() is not None:
+            parent = node.getparent()
+            to_remove = filter(lambda x: not test_inclusion(x, node), parent.getchildren())
+            [parent.remove(x) for x in to_remove]
+            node = parent
+
+        print tostring(tree)
+
     try:
-        tree = etree.fromstring(tostring(tree))
+        tree = node = etree.parse(sys.argv[1])
         keys = filter(validate, keys)
         for a in keys:
-            print a
-            tree = tree.xpath(".//*[label='%s']" % a)[0]
-        return tohtml(parent_text(tree))
+            node = node.xpath(".//*[label='%s']" % a)[0]
+
+        fix_parents(tree, node)
+
+        return tohtml(tree)
     except Exception, e:
         print e
         return """Could not process request"""
 
-def read_css():
-    with open('style.css') as f:
-        return f.read()
 
-from flask import Flask
+
+
+
 app = Flask(__name__)
-
-
 
 @app.route('/act/<path:path>')
 def hello_world(path=''):
-    print path
-    return pluck_tree(tree, (path.split('/')[1:]))  + '<link rel=stylesheet type=text/css href="/static/style.css"/>'
+    result = str(pluck_tree((path.split('/')[1:])))
+    return result
 
 
 if __name__ == '__main__':
+
     app.run(debug=True)
 
 #print find(tree, 332, para='b')
