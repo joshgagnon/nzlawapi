@@ -144,10 +144,9 @@
                 <xsl:attribute name="id">
                         <xsl:value-of select="para/text/def-term/@id"/>
                     </xsl:attribute>
-                    <xsl:value-of select="para/text/def-term"/>                        
-                </dfn>
-                <xsl:value-of select="para/text/text()"/>
-                 <xsl:apply-templates select="para/label-para"/>
+                    <xsl:apply-templates select="para/text/def-term"/>                   
+                </dfn>&#160;
+                 <xsl:apply-templates select="para/text|para/label-para"/>
             </p>
         </div>
     </xsl:template>
@@ -200,17 +199,19 @@
     </xsl:template>
 
 
-
-
     <xsl:template match="*[@href]">
         <a>
-        <xsl:attribute name="href">#<xsl:value-of select="@href"/>
+        <xsl:attribute name="href">/search/<xsl:value-of select="@href"/>
         </xsl:attribute>   
             <xsl:value-of select="."/>
         </a>
     </xsl:template>
 
-   <xsl:template match="para/text">
+   <xsl:template match="para/text|insertwords">
+         <xsl:apply-templates/>
+    </xsl:template>
+
+   <xsl:template match="citation">
          <xsl:apply-templates/>
     </xsl:template>
 
