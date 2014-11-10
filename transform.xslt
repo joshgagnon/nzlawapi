@@ -69,9 +69,23 @@
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
             </h2>
+            <xsl:apply-templates select="subpart|crosshead|prov"/> 
+        </div>
+    </xsl:template>
+
+    <xsl:template match="subpart">
+        <div class="subpart">
+             <xsl:attribute name="id">
+                <xsl:value-of select="@id"/>
+            </xsl:attribute> 
+            <h3 class="subpart">
+                <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
+                <xsl:value-of select="heading"/>
+            </h3>
             <xsl:apply-templates select="crosshead|prov"/> 
         </div>
     </xsl:template>
+
 
 
     <xsl:template match="prov">
