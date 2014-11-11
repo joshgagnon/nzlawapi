@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:strip-space elements="*"/>
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
-    <xsl:variable name="symbols-skip-insert-space">,.;</xsl:variable>
+    <xsl:variable name="symbols-skip-insert-space">,.;:)(</xsl:variable>
 
     <xsl:template match="/">
         <html>
@@ -223,16 +223,12 @@
 
 
     <xsl:template match="text()">
-
-       <!--  <xsl:value-of select="string-length(translate(substring(preceding-sibling::*[1]/text(), $length, 1), $characters-insert-space, ''))"/>
-        <xsl:if test="substring(preceding-sibling::*[1]/text(), $length, 1) !=',' ">
-            &#160; 
-        </xsl:if> -->
         <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
-          <xsl:if test="string-length(preceding-sibling::*[1]/text())">
+          <xsl:if test="string-length(preceding-sibling::*[1]/.)">
                 <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
         </xsl:if>
         <xsl:value-of select="."/>
+
     </xsl:template>
 
     <xsl:template match="schedule.group">
