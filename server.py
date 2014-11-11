@@ -86,14 +86,18 @@ def by_act(act='', path=''):
     return result
 
 
-@app.route('/search/<string:query>')
-def search(query):
+@app.route('/search_id/<string:query>')
+def search_by_id(query):
     try:
         result = str(pluck_tree(find_node_by_id(query)))
     except Exception, e:
         print e
         result  = str(e)
     return result
+
+@app.route('/search/<string:query>')
+def search(query):
+    return 'to do'
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')

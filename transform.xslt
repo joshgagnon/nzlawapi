@@ -205,7 +205,7 @@
 
     <xsl:template match="*[@href]">
         <a>
-        <xsl:attribute name="href">/search/<xsl:value-of select="@href"/>
+        <xsl:attribute name="href">/search_id/<xsl:value-of select="@href"/>
         </xsl:attribute>   
             <xsl:value-of select="."/>
         </a>
