@@ -4,7 +4,6 @@ from lxml.etree import tostring
 from itertools import chain
 from flask import Flask
 
-
 class CustomException(Exception):
     pass
 
@@ -14,6 +13,7 @@ def get_title(tree):
 def tohtml(tree):
     xslt = etree.parse('transform.xslt')
     transform = etree.XSLT(xslt)
+    print tostring(tree)
     return transform(tree)
 
 def pluck_tree(node):
@@ -37,10 +37,17 @@ def pluck_tree(node):
     return tohtml(node.getroottree())
 
 def find_node(tree, keys):
-    node = tree   
+    node = tree
+    # xpath search is depth first, unfortunately, so we add node hints (hopefully doesn't screw us)
+    node_types = {0: 'prov'}
     try:
-        for a in keys:
-            node = node.xpath(".//*[label='%s']" % a)[0]
+        # first, special case for schedule
+        if keys[0] == 'schedule':
+            node = node.xpath(".//schedule[label='%s']" %keys[1])[0]
+            keys = keys[2:]  
+        for i, a in enumerate(keys):
+            if a:
+                node = node.xpath(".//%s[label='%s']" % (node_types.get(i, '*'), a))[0]
         return node
     except Exception, e:
         print e
@@ -89,4 +96,4 @@ def search(query):
     return result
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')

@@ -1,6 +1,8 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:strip-space elements="*"/>
+    <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
+    <xsl:variable name="symbols-skip-insert-space">,.;</xsl:variable>
 
     <xsl:template match="/">
         <html>
@@ -23,6 +25,7 @@
               <xsl:apply-templates select="cover"/>       
                <xsl:apply-templates select="front"/> 
              <xsl:apply-templates select="body"/>       
+             <xsl:apply-templates select="schedule.group"/>               
         </div>
     </xsl:template>
 
@@ -117,12 +120,10 @@
     </xsl:template>
 
     <xsl:template match='prov.body/subprov'>
-                <div class="subprov">
-                    <xsl:apply-templates select="label"/>
-                    <xsl:apply-templates select="para/*[position() > 1]"/>
-
-                </div>
-
+        <div class="subprov">
+            <xsl:apply-templates select="label"/>
+            <xsl:apply-templates select="para/*[position() > 1]"/>
+        </div>
     </xsl:template>
 
     <xsl:template match="para/label-para">
@@ -140,16 +141,19 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>           
             <p class="text">
-                <dfn class="def-term">
-                <xsl:attribute name="id">
-                        <xsl:value-of select="para/text/def-term/@id"/>
-                    </xsl:attribute>
-                    <xsl:apply-templates select="para/text/def-term"/>                   
-                </dfn>&#160;
                  <xsl:apply-templates select="para/text|para/label-para"/>
             </p>
         </div>
     </xsl:template>
+
+    <xsl:template match="def-term">
+             <dfn class="def-term">
+                <xsl:attribute name="id">
+                        <xsl:value-of select="def-term/@id"/>
+                    </xsl:attribute>
+                    <xsl:apply-templates/>           
+                </dfn>
+            </xsl:template>
 
     <xsl:template match="label">
         <p class="labelled label">
@@ -177,7 +181,6 @@
             </xsl:attribute>       
                 <xsl:value-of select="."/>
             </h4>
-        
     </xsl:template>
 
     <xsl:template match="notes/history/history-note">
@@ -193,6 +196,7 @@
     <xsl:template match="admended-provision|amending-operation">
         <xsl:value-of select="."/>
     </xsl:template>
+
 
     <xsl:template match="emphasis[@style='bold']">
         &#160;<strong><xsl:value-of select="."/></strong>
@@ -211,12 +215,61 @@
          <xsl:apply-templates/>
     </xsl:template>
 
+
    <xsl:template match="citation">
          <xsl:apply-templates/>
     </xsl:template>
 
-    <xsl:template match="*">
+
+
+    <xsl:template match="text()">
+
+       <!--  <xsl:value-of select="string-length(translate(substring(preceding-sibling::*[1]/text(), $length, 1), $characters-insert-space, ''))"/>
+        <xsl:if test="substring(preceding-sibling::*[1]/text(), $length, 1) !=',' ">
+            &#160; 
+        </xsl:if> -->
+        <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
+          <xsl:if test="string-length(preceding-sibling::*[1]/text())">
+                <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+        </xsl:if>
         <xsl:value-of select="."/>
+    </xsl:template>
+
+    <xsl:template match="schedule.group">
+      <div class="schedule-group">
+        <xsl:apply-templates select="schedule"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="schedule.provisions">
+      <div class="schedule-provisions">
+        <xsl:apply-templates select="prov"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="schedule">
+        <div class="schedule">
+            <xsl:attribute name="id">
+                <xsl:value-of select="@id"/>
+            </xsl:attribute>
+            <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
+                <tbody><tr>
+                    <td class="header">
+                        <h2 lang="en-NZ" class="schedule">
+                            <span class="label">
+                                <span class="hit">Schedule</span>&#160;<xsl:value-of select="label"/>
+                            </span><br/>
+                            <xsl:value-of select="heading"/>
+                        </h2>
+                    </td>
+                    <td class="empowering-prov">
+                    </td>
+                    </tr>
+                </tbody>
+                
+            </table>
+            <xsl:apply-templates select="schedule.provisions"/>
+        </div>
     </xsl:template>
 
 </xsl:stylesheet>
