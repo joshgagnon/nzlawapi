@@ -10,11 +10,13 @@ class CustomException(Exception):
 def get_title(tree):
     return tree.xpath('/act/cover/title')[0].text
 
+
 def tohtml(tree):
     xslt = etree.parse('transform.xslt')
     transform = etree.XSLT(xslt)
     print tostring(tree)
     return transform(tree)
+
 
 def pluck_tree(node):
     def test_inclusion(node, current):
@@ -36,6 +38,7 @@ def pluck_tree(node):
     fix_parents(node)
     return tohtml(node.getroottree())
 
+
 def find_node(tree, keys):
     node = tree
     # xpath search is depth first, unfortunately, so we add node hints (hopefully doesn't screw us)
@@ -44,7 +47,7 @@ def find_node(tree, keys):
         # first, special case for schedule
         if keys[0] == 'schedule':
             node = node.xpath(".//schedule[label='%s']" %keys[1])[0]
-            keys = keys[2:]  
+            keys = keys[2:]
         for i, a in enumerate(keys):
             if a:
                 node = node.xpath(".//%s[label='%s']" % (node_types.get(i, '*'), a))[0]
@@ -52,6 +55,15 @@ def find_node(tree, keys):
     except Exception, e:
         print e
         raise CustomException("Path not found")
+
+
+def find_definitions(tree, query):
+    try:
+        return tree.xpath(".//def-term[contains(%s)]" %  a)
+    except Exception, e:
+        print e
+        raise CustomException("Path not found")
+
 
 def find_node_by_id(query):
     try:
@@ -76,6 +88,17 @@ def read_file(filename):
 
 app = Flask(__name__)
 
+
+@app.route('/act/<path:act>/definitions/<string:query>')
+def act_definitions(act='', path=''):
+    try:
+        result = str(pluck_tree(find_definitions(read_file(act_to_filename(act)), query)))
+    except Exception, e:
+        print e
+        result  = str(e)
+    return result
+
+
 @app.route('/act/<path:act>/<path:path>')
 def by_act(act='', path=''):
     try:
@@ -98,6 +121,7 @@ def search_by_id(query):
 @app.route('/search/<string:query>')
 def search(query):
     return 'to do'
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
