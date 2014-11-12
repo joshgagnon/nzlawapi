@@ -53,8 +53,10 @@ def find_node(tree, keys):
     try:
         # first, special case for schedule
         if keys[0] == 'schedule':
-            node = node.xpath(".//schedule[label='%s']" % keys[1])[0]
+            node = node.xpath(".//schedule[label='%s']" % keys[1])
             keys = keys[2:]
+            if len(keys):
+                node = node[0]
         else:
             node = node.xpath(".//body")[0]
         for i, a in enumerate(keys):
@@ -70,16 +72,15 @@ def find_node(tree, keys):
                 node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
             if i < len(keys)-1:
                 #get shallowist nodes
-                node = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))[0]
+                node = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))[0][0]
             else:
+                #if last part, get all equally shallow results
                 nodes = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))
                 node = [x[0] for x in nodes if x[1] == nodes[0][1]]
-
         if not len(node):
             raise CustomException("empty")
         return node
     except Exception, e:
-        print e
         raise CustomException("Path not found")
 
 

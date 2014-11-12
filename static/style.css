@@ -1,0 +1,1168 @@
+/*.legislation div, .legislation span, .legislation applet, .legislation object, .legislation iframe, .legislation h1, .legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6, .legislation p, .legislation blockquote, .legislation pre, .legislation a, .legislation abbr, .legislation acronym, .legislation address, .legislation big, .legislation cite, .legislation code, .legislation del, .legislation dfn, .legislation em, .legislation img, .legislation ins, .legislation kbd, .legislation q, .legislation s, .legislation samp, .legislation small, .legislation strike, .legislation strong, .legislation sub, .legislation sup, .legislation tt, .legislation var, .legislation b, .legislation u, .legislation i, .legislation center, .legislation dl, .legislation dt, .legislation dd, .legislation ol, .legislation ul, .legislation li, .legislation fieldset, .legislation form, .legislation label, .legislation legend, .legislation table, .legislation caption, .legislation tbody, .legislation tfoot, .legislation thead, .legislation tr, .legislation th, .legislation td, .legislation article, .legislation aside, .legislation canvas, .legislation details, .legislation figcaption, .legislation figure, .legislation footer, .legislation header, .legislation hgroup, .legislation menu, .legislation nav, .legislation section, .legislation summary, .legislation time, .legislation mark, .legislation audio, .legislation video */
+
+.legislation * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline
+}
+.legislation article, .legislation aside, .legislation details, .legislation figcaption, .legislation figure, .legislation footer, .legislation header, .legislation hgroup, .legislation menu, .legislation nav, .legislation section {
+    display: block
+}
+.legislation ol, .legislation ul {
+    list-style: none
+}
+.legislation blockquote, .legislation q {
+    quotes: none
+}
+.legislation blockquote:before, .legislation blockquote:after {
+    content: '';
+    content: none
+}
+.legislation q:before, .legislation q:after {
+    content: '';
+    content: none
+}
+.legislation:focus {
+    outline: none
+}
+.legislation a {
+    text-decoration: underline
+}
+.legislation a[href^="http:"], .legislation a[href^="https:"], .legislation a.externallink {
+    background: none;
+    padding: inherit;
+    margin: inherit
+}
+.legislation a:focus {
+    outline: 1px dotted #000
+}
+.legislation ins {
+    text-decoration: underline;
+    background: none
+}
+.legislation del {
+    text-decoration: line-through
+}
+.legislation table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+.legislation em, .legislation i {
+    font-style: italic
+}
+.legislation strong, .legislation b {
+    font-weight: bold
+}
+.legislation u {
+    text-decoration: underline
+}
+.legislation h1, .legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6, .legislation p, .legislation th, .legislation td, .legislation dl {
+    font-family: "Times New Roman", serif;
+    color: #000;
+    line-height: 1.2em
+}
+.legislation a.intref, .legislation a.extref, .legislation a.toc, .legislation a.term, .legislation a.leg-title, .legislation a.amending-provision {
+    color: blue;
+    background-color: white
+}
+.legislation h1, .legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6 {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    font-weight: normal
+}
+.legislation h1 {
+    font-size: 1.5em
+}
+.legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6 {
+    font-size: 1.2em
+}
+.legislation p {
+    padding: 0;
+    margin: 0;
+    clear: left
+}
+.legislation ul {
+    padding: 0;
+    margin: 0;
+    margin-left: 3em;
+    clear: left
+}
+.legislation ul.history {
+    margin-left: 0
+}
+.legislation ul li {
+    padding: 0;
+    margin: 0;
+    display: block;
+    list-style-type: none
+}
+.legislation q:before, .legislation q:after {
+    content: ""
+}
+.legislation h2.labelled, .legislation h3.labelled, .legislation h4.labelled, .legislation h5.labelled, .legislation h6.labelled {
+    padding-left: 2.5em
+}
+.legislation h2.labelled span.label, .legislation h3.labelled span.label, .legislation h4.labelled span.label, .legislation h5.labelled span.label, .legislation h6.labelled span.label {
+    float: left;
+    margin-left: -2.5em;
+    padding-right: 0.5em
+}
+.legislation p.labelled {
+    margin-right: 1em
+}
+.legislation p.labelled span.label, .legislation p.labelled a.label {
+    float: left;
+    margin-left: -3em;
+    padding-right: 0.5em
+}
+.legislation ins {
+    text-decoration: underline
+}
+.legislation ins span, .legislation ins a {
+    text-decoration: underline
+}
+.legislation del {
+    text-decoration: line-through
+}
+.legislation del span, .legislation del a {
+    text-decoration: line-through
+}
+.legislation span.spc {
+    float: left;
+    margin-left: -3em;
+    text-decoration: none
+}
+.legislation dd {
+    margin-left: 40px
+}
+.legislation ul.list {
+    margin-left: 0em
+}
+.legislation ul.list li {
+    margin-left: 3em
+}
+.legislation ul.list li.bull {
+    list-style-type: disc;
+    display: list-item;
+    margin-left: 1.2em;
+    padding-left: 2em
+}
+.legislation dfn.def-term {
+    font-weight: bold;
+    font-style: normal
+}
+.legislation .deleted {
+    font-weight: normal;
+    font-style: italic;
+    font-size: 0.8em
+}
+.legislation em.emphasis {
+    font-style: normal;
+    text-decoration: none
+}
+.legislation p.cf {
+    font-size: 0.8em;
+    clear: left;
+    padding-top: 0.25em
+}
+.legislation p.history-note {
+    font-size: 0.8em;
+    padding-top: 0.25em
+}
+.legislation p.empowering-prov {
+    font-size: 0.8em;
+    text-align: right;
+    padding: 0;
+    white-space: nowrap
+}
+.legislation p.authorisation {
+    font-size: 0.8em;
+    text-align: center;
+    font-style: italic
+}
+.legislation p.term-list {
+    font-size: 0.8em;
+    padding-top: 0.25em
+}
+.legislation p.eqn-line {
+    text-align: center
+}
+.legislation p.made-at, .legislation p.made-present {
+    text-align: center;
+    margin-top: 2em
+}
+.legislation p.statutory-regulation-number {
+    margin-top: 0;
+    text-align: right;
+    font-weight: bold
+}
+.legislation p.reprint-sr-number, .legislation p.proclamation {
+    text-align: center
+}
+.legislation p.member {
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 1em;
+    padding-top: 1em
+}
+.legislation p.repnote {
+    margin-top: 2em;
+    font-size: 1.5em;
+    text-align: center
+}
+.legislation p.sop-date {
+    margin-top: 1em
+}
+.legislation p.billref {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2em
+}
+.legislation p.schedule-deleted, .legislation p.part-deleted, .legislation p.head1-deleted, .legislation p.schedule-group-deleted, .legislation p.schedule-amendments-group1-deleted {
+    text-align: center
+}
+.legislation p.subpart-deleted, .legislation p.conv-deleted, .legislation p.head2-deleted {
+    text-align: center
+}
+.legislation p.toc-ird-crosshead, .legislation p.toc-head4 {
+    font-weight: bold
+}
+.legislation p.crosshead-deleted, .legislation p.ird-crosshead-deleted, .legislation p.head3-deleted, .legislation p.head4-deleted {
+    text-align: center
+}
+.legislation span.changeable {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.8em
+}
+.legislation span.leader, .legislation span.field {
+    white-space: nowrap
+}
+.legislation span.leader {
+    font-size: 0.8em
+}
+.legislation dt.variable {
+    float: left;
+    clear: left
+}
+.legislation div, .legislation table, .legislation li {
+    clear: left
+}
+.legislation p.footnote {
+    font-size: 0.8em
+}
+.legislation hr.footnotes {
+    float: left;
+    width: 30%
+}
+.legislation sup.footnote-ref {
+    font-size: 0.6em
+}
+.legislation div.readers-notes {
+    font-size: 0.8em;
+    padding-top: 0.25em
+}
+.legislation div.crest {
+    text-align: center
+}
+.legislation img.crest {
+    width: 147px;
+    height: 141px
+}
+.legislation hr {
+    padding: 0;
+    border: none;
+    width: 40%;
+    height: 1px;
+    color: black;
+    background-color: black;
+    margin-top: 2em;
+    border: 0;
+    clear: left
+}
+.legislation blockquote span.q, .legislation cite span.q {
+    font-weight: normal;
+    font-style: normal;
+    letter-spacing: 1px
+}
+.legislation sup, .legislation sub {
+    font-size: 0.6em
+}
+.legislation sup {
+    vertical-align: super;
+    line-height: 1em
+}
+.legislation sub {
+    vertical-align: sub;
+    line-height: 1em
+}
+.legislation span.fraction, .legislation sup.numerator, .legislation sub.denominator {
+    font-size: 0.6em
+}
+.legislation span.fraction sup.numerator, .legislation span.fraction sub.denominator {
+    font-size: 1em
+}
+.legislation div.cover {
+    margin-right: -1.5em
+}
+.legislation h1.title {
+    font-size: 1.7em;
+    font-weight: bold;
+    margin-top: 2em;
+    text-align: center;
+    padding: 0 3em
+}
+.legislation table.cover-properties {
+    text-align: center;
+    width: 100%
+}
+.legislation table.cover-properties td {
+    padding: 0 0.5em;
+    width: 50%;
+    text-align: left
+}
+.legislation table.cover-properties td.date-of-assent, .legislation table.cover-properties td.document-type, .legislation table.cover-properties td.commencement {
+    text-align: right
+}
+.legislation p.reprint-date {
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: bold
+}
+.legislation div.long-title {
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation div.long-title h1, .legislation div.long-title h2, .legislation div.long-title h3, .legislation div.long-title h4, .legislation div.long-title h5, .legislation div.long-title h6 {
+    font-weight: bold
+}
+.legislation div.long-title p.history-note {
+    font-weight: normal
+}
+.legislation p.enactment {
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation h6.cover-reprint-note {
+    font-size: 0.8em;
+    font-weight: bold
+}
+.legislation hr.cover-reprint-note {
+    width: 100%
+}
+.legislation div.cover-reprint-note {
+    font-size: 0.8em
+}
+.legislation p.admin-office {
+    line-height: 100%;
+    font-size: 0.8em
+}
+.legislation div.reprint p.admin-office {
+    font-weight: bold;
+    padding-top: 0.25em
+}
+.legislation p.title-former {
+    text-align: center;
+    margin-top: 0.5em
+}
+.legislation div.example {
+    width: 100%;
+    border-bottom: thin solid black;
+    border-top: thin solid black;
+    margin: 0.5em 0
+}
+.legislation div.example p, .legislation div.example h1, .legislation div.example h2, .legislation div.example h3, .legislation div.example h4, .legislation div.example h5 {
+    font-family: Arial, sans-serif;
+    font-size: 0.8em
+}
+.legislation div.example h6 {
+    font-family: Arial, sans-serif;
+    font-size: 0.8em
+}
+.legislation div.example h6.heading {
+    font-family: Arial, sans-serif;
+    font-weight: bold
+}
+.legislation div.example h6.subheading {
+    font-family: Arial, sans-serif;
+    font-style: italic
+}
+.legislation h2.contents {
+    text-align: center;
+    margin-top: 1em;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0 3em
+}
+.legislation div.contents-note p {
+    text-align: center;
+    font-size: 0.8em;
+    font-style: italic
+}
+.legislation div.contents div.key {
+    text-align: left;
+    margin-top: 0
+}
+.legislation div.external-document {
+    margin-top: 1em
+}
+.legislation div.schedule-forms h4.head4, .legislation div.schedule-amendments h4.head4 {
+    text-align: center;
+    margin-top: 2em;
+    margin-left: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0 3em
+}
+.legislation div.schedule-forms h4.head4, .legislation div.schedule-amendments h4.head4 {
+    font-weight: normal;
+    font-style: normal
+}
+.legislation div.prov ul.prov li p.headless {
+    margin-top: 1em;
+    margin-bottom: 1.5em
+}
+.legislation h2.part, .legislation h2.schedule, .legislation h2.head1, .legislation h2.schedule-group, .legislation h2.schedule-amendments-group1, .legislation h2.sop-part {
+    text-align: center;
+    margin-top: 2em;
+    margin-left: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0 3em
+}
+.legislation h2.schedule-amendments-group1 {
+    font-weight: normal
+}
+.legislation h2.head1 {
+    font-weight: normal;
+    font-style: normal
+}
+.legislation h2.schedule-group {
+    margin-top: 1em
+}
+.legislation h3.subpart, .legislation h3.conv, .legislation h3.head2, .legislation h3.sop-subpart, .legislation h3.heading {
+    text-align: center;
+    margin-top: 1em;
+    padding: 0 3em
+}
+.legislation h3.subpart {
+    font-size: 1.5em
+}
+.legislation div.schedule-provisions h2.part {
+    font-weight: normal
+}
+.legislation div.schedule-provisions h3.subpart {
+    font-style: italic
+}
+.legislation h3.conv {
+    font-weight: bold
+}
+.legislation h3.head2 {
+    font-style: italic
+}
+.legislation h4.preamble {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-top: 1.5em
+}
+.legislation h5.preamble-block {
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation h6.preamble-headlev2 {
+    font-style: italic;
+    margin-top: 0.5em
+}
+.legislation h6.preamble-headlev3 {
+    margin-top: 0.5em
+}
+.legislation h4.crosshead, .legislation h4.ird-crosshead, .legislation h4.head3, .legislation h4.head4 {
+    text-align: center;
+    font-style: italic;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+.legislation div.schedule-provisions h4.crosshead {
+    font-style: normal
+}
+.legislation h4.ird-crosshead, .legislation h4.head4 {
+    font-weight: bold
+}
+.legislation h4.head3, .legislation div.form h4.head4 {
+    font-style: normal
+}
+.legislation ul.label-only, .legislation div.label-only {
+    float: left;
+    margin-top: -1.25em;
+    margin-bottom: 1.25em
+}
+.legislation ul.label-only-last {
+    float: left;
+    margin-top: -1.25em;
+    margin-bottom: 0em
+}
+.legislation h4.form {
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+.legislation h4.form span.label a.label {
+    margin-left: 0;
+    float: none
+}
+.legislation p.headless span.label {
+    float: left;
+    margin-left: -3em;
+    padding-right: 0.5em
+}
+.legislation p.form-deleted {
+    text-align: center
+}
+.legislation h5.prov, .legislation h5.head5, .legislation h5.head6, .legislation h5.schedule-amendments-group2 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation h5.head6 {
+    font-style: italic;
+    font-weight: normal
+}
+.legislation ul.head5 {
+    font-weight: bold
+}
+.legislation h6.subprov-crosshead, .legislation h6.schedule-amendments-group3 {
+    font-style: italic;
+    margin-top: 1em
+}
+.legislation h6.label-para-crosshead {
+    font-style: italic;
+    margin-top: 0.5em
+}
+.legislation h6.figure {
+    text-align: center;
+    font-weight: bold;
+    margin-left: 0;
+    padding: 0 3em;
+    margin-top: 0.5em
+}
+.legislation h6.figure span.label {
+    margin-left: 0;
+    float: none
+}
+.legislation p.figure-deleted, .legislation div.graphic {
+    text-align: center
+}
+.legislation img.graphic-inline {
+    display: inline
+}
+.legislation div.graphic-text, .legislation span.graphic-text {
+    display: none
+}
+.legislation div.table th {
+    vertical-align: bottom;
+    text-align: left;
+    padding: 0 0.1em
+}
+.legislation div.table th[align="center"] {
+    text-align: center
+}
+.legislation div.table th[align="right"] {
+    text-align: right
+}
+.legislation div.table td {
+    vertical-align: top;
+    padding: 0.1em 0.1em
+}
+.legislation div.tableLeft, .legislation div.tableRight, .legislation div.tableCentered, .legislation div.tableFullWidth {
+    margin: 0.6em 0
+}
+.legislation div.tableRight {
+    text-align: right
+}
+.legislation div.tableRight div.tableContainer {
+    text-align: left;
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline
+}
+.legislation div.tableCentered {
+    text-align: center
+}
+.legislation div.tableCentered div.tableContainer {
+    text-align: left;
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline
+}
+.legislation div.tableFullWidth table {
+    width: 100%
+}
+.legislation h6.table {
+    margin-top: 0.5em
+}
+.legislation table.frame-none, .legislation table.frame-default {
+    border-collapse: collapse;
+    border: none
+}
+.legislation table.frame-topbot {
+    border-collapse: collapse;
+    border-top: thin solid black;
+    border-bottom: thin solid black
+}
+.legislation table.frame-top {
+    border-collapse: collapse;
+    border-top: thin solid black
+}
+.legislation table.frame-bottom {
+    border-collapse: collapse;
+    border-bottom: thin solid black
+}
+.legislation table.frame-sides {
+    border-collapse: collapse;
+    border-left: thin solid black;
+    border-right: thin solid black
+}
+.legislation td.rowsep, .legislation th.rowsep {
+    border-bottom: thin solid black
+}
+.legislation div.flush-left-margin-1 {
+    margin-left: -3em
+}
+.legislation div.flush-left-margin-2 {
+    margin-left: -6em
+}
+.legislation div.flush-left-margin-3 {
+    margin-left: -9em
+}
+.legislation div.flush-left-margin-4 {
+    margin-left: -12em
+}
+.legislation blockquote {
+    margin: 0;
+    padding: 0
+}
+.legislation blockquote h6.subprov-crosshead {
+    margin-left: 2.5em
+}
+.legislation blockquote ul h6.subprov-crosshead {
+    margin-left: 0
+}
+.legislation blockquote p.labelled {
+    margin-left: 3em
+}
+.legislation blockquote ul p.labelled {
+    margin-left: 0
+}
+.legislation blockquote.amend-increment-1 {
+    margin-left: 3em
+}
+.legislation blockquote.amend-increment-2 {
+    margin-left: 6em
+}
+.legislation blockquote.amend-increment-3 {
+    margin-left: 9em
+}
+.legislation blockquote.quote-indented {
+    margin-left: 1em
+}
+.legislation blockquote.instrument-amend-default-margin {
+    margin-left: 2.5em;
+    margin-right: 2.5em
+}
+.legislation blockquote.amend h2.first, .legislation blockquote.amend h3.first, .legislation blockquote.amend h4.first, .legislation blockquote.amend h5.first, .legislation blockquote.amend h6.first {
+    margin-top: 0
+}
+.legislation div.commentary blockquote.quote {
+    margin-left: 3em;
+    margin-right: 3em
+}
+.legislation div.assent-block p.para {
+    font-style: italic
+}
+.legislation div.assent-block p.sig-officer {
+    font-size: 0.8em;
+    font-style: italic
+}
+.legislation div.assent-block p.sig-para {
+    font-style: italic;
+    margin-top: 1.5em;
+    line-height: 1.5em
+}
+.legislation div.signature-block p.sig-para {
+    margin-top: 2em
+}
+.legislation p.sig-officer {
+    margin-top: 3em
+}
+.legislation hr.sig-separator {
+    text-align: center;
+    width: 4em;
+    margin-top: 1em
+}
+.legislation h2.leg-history {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+    text-align: left
+}
+.legislation table.leg-history td {
+    vertical-align: top;
+    font-size: 0.8em
+}
+.legislation table.leg-history td.date, .legislation table.leg-history td.date-text {
+    padding-right: 1em
+}
+.legislation h4.reprint-index {
+    font-weight: bold
+}
+.legislation h5.reprint-notes {
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation h6.reprint-note {
+    font-style: italic;
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation p.reprint-amend {
+    font-size: 0.8em
+}
+.legislation table.empowering-prov-layout {
+    width: 100%;
+    margin-top: 2em
+}
+.legislation table.empowering-prov-layout td {
+    vertical-align: top
+}
+.legislation table.header tr {
+    vertical-align: top
+}
+.legislation table.empowering-prov-layout tr td h2, .legislation table.empowering-prov-layout tr td h3, .legislation table.empowering-prov-layout tr td h4, .legislation table.empowering-prov-layout tr td h5, .legislation table.empowering-prov-layout tr td h6 {
+    padding-right: 0;
+    margin-top: 0
+}
+.legislation table.empowering-prov-layout td.empowering-prov {
+    width: 3.5em
+}
+.legislation p.gg {
+    text-align: center;
+    margin-top: 3em
+}
+.legislation div.promulgation {
+    margin-top: 1em
+}
+.legislation div.promulgation p.admin-office {
+    font-size: 0.8em
+}
+.legislation p.issue-authority, .legislation p.gazette-date {
+    font-size: 0.8em
+}
+.legislation h2.made {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2em
+}
+.legislation h2.regulation-type {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation div.pursuant p.para {
+    margin-top: 1em
+}
+.legislation div.end h2.explnote, .legislation div.skeleton-reg-end h2.explnote {
+    margin-top: 1.5em
+}
+.legislation div.ocboxnote {
+    border: thin solid black;
+    margin-top: 0.5em
+}
+.legislation div.ocboxnote p {
+    margin: 1em
+}
+.legislation p.billtype {
+    text-align: center;
+    line-height: 100%;
+    margin-top: 1em
+}
+.legislation h2.explnote {
+    font-size: 1.5em;
+    margin-top: 2em;
+    text-align: center;
+    font-weight: bold
+}
+.legislation h3.explnote-group {
+    margin-top: 1em;
+    text-align: center;
+    font-weight: bold;
+    line-height: 100%
+}
+.legislation h4.explnote-subgroup {
+    margin-top: 1em;
+    text-align: center;
+    font-style: italic
+}
+.legislation h2.explnote-part {
+    margin-top: 1em;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5em
+}
+.legislation h3.explnote-subpart {
+    margin-top: 1em;
+    text-align: center;
+    font-size: 1.5em
+}
+.legislation h4.explnote-crosshead {
+    margin-top: 1em;
+    text-align: center;
+    font-style: italic
+}
+.legislation h4.explnote-ird-crosshead {
+    margin-top: 1em;
+    text-align: center;
+    font-style: italic;
+    font-weight: bold
+}
+.legislation h5.explnote-subhead1 {
+    margin-top: 1em;
+    font-weight: bold
+}
+.legislation h5.explnote-subhead2 {
+    margin-top: 1em;
+    font-style: italic
+}
+.legislation h2.explnote-ris {
+    margin-top: 1em;
+    text-align: center;
+    font-weight: bold;
+    line-height: 100%
+}
+.legislation p.bill-identifier {
+    text-align: center;
+    font-size: 0.8em;
+    line-height: 100%
+}
+.legislation em.intref {
+    font-style: italic
+}
+.legislation h2.billnote {
+    margin-top: 2em;
+    text-align: center
+}
+.legislation h2.commentary {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2em
+}
+.legislation h3.comm-lev1, .legislation h3.comm-appendix {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation h4.comm-lev2 {
+    font-weight: bold;
+    margin-top: 1em
+}
+.legislation h5.comm-lev3 {
+    font-style: italic;
+    margin-top: 1em
+}
+.legislation div.key, .legislation div.key2 {
+    margin-top: 1em;
+    text-align: center
+}
+.legislation div.key1 {
+    margin-top: 1em;
+    text-align: left
+}
+.legislation div.key h2.heading, .legislation div.key1 h2.heading, .legislation div.key2 h2.heading {
+    font-size: 1.5em;
+    font-weight: bold
+}
+.legislation div.key h3.subheading, .legislation div.key1 h3.subheading, .legislation div.key2 h3.subheading {
+    font-weight: bold
+}
+.legislation p.omitted-provs {
+    margin-top: 1em;
+    font-size: 1.7em;
+    text-align: center
+}
+.legislation span.omitted-prov {
+    padding-right: 3em
+}
+.legislation div.commentary blockquote.quote {
+    font-size: 0.8em
+}
+.legislation p.house, .legislation h1.sop-heading, .legislation p.sop-date {
+    text-align: center;
+    font-size: 1.7em;
+    font-weight: bold;
+    line-height: 100%
+}
+.legislation h1.sop-heading {
+    font-size: 1.9em;
+    margin-top: 1em
+}
+.legislation h2.sop-body {
+    text-align: center;
+    font-style: italic
+}
+.legislation p.motion {
+    margin-top: 1em
+}
+.legislation p.clause-ref {
+    margin-top: 1em;
+    font-style: italic
+}
+.legislation div.sop-newenact {
+    margin: 0 2.5em
+}
+.legislation div.sop-newenact p.enactment {
+    margin-top: 0.5em
+}
+.legislation hr.sop-body {
+    width: 6em
+}
+.legislation .taggedheading {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.1em;
+    color: #666;
+    background: #eff4fa;
+    padding: 0.5em 0 0.3em 15px;
+    border-bottom: 1px solid #ccc;
+    margin: 2.5em 0 1em 0
+}
+.legislation div:first-child .taggedheading {
+    margin: 0.5em 0 1em 0
+}
+.legislation div.toc-amend {
+    margin-left: 3em
+}
+.legislation div.toc {
+    margin: 0 3em;
+    font-size: 0.9em
+}
+.legislation div.toc p {
+    padding-top: 0
+}
+.legislation div.toc ul {
+    margin-left: 0
+}
+.legislation div.toc p.skeleton-act, .legislation div.toc p.skeleton-reg {
+    margin-top: 1.1em;
+    padding-top: 0;
+    text-align: center;
+    font-weight: bold
+}
+.legislation div.toc p.schedule, .legislation div.toc p.part, .legislation div.toc p.schedule-group, .legislation div.toc p.schedule-amendments-group1, .legislation div.toc p.head1 {
+    text-align: center;
+    margin-top: 0.75em;
+    margin-left: 0;
+    font-weight: bold;
+    padding: 0 3em
+}
+.legislation div.toc p.schedule a.label, .legislation div.toc p.part a.label, .legislation div.toc p.schedule-group a.label, .legislation div.toc p.schedule-amendments-group1 a.label, .legislation div.toc p.head1 a.label {
+    margin-left: 0;
+    float: none
+}
+.legislation div.toc p.schedule-amendments-group1 {
+    font-weight: normal
+}
+.legislation div.toc p.sop-part {
+    font-size: 1.2em
+}
+.legislation div.toc p.subpart, .legislation div.toc p.conv, .legislation div.toc p.head2 {
+    text-align: center;
+    margin-top: 1em;
+    padding: 0 3em
+}
+.legislation div.toc p.subpart a.label, .legislation div.toc p.conv a.label {
+    margin-left: 0;
+    float: none
+}
+.legislation div.toc p.head2 {
+    font-style: italic
+}
+.legislation div.toc p.head2 a.label {
+    margin-left: 0;
+    float: none
+}
+.legislation div.toc p.conv {
+    font-weight: bold
+}
+.legislation div.toc p.preamble {
+    font-weight: normal
+}
+.legislation div.toc p.crosshead, .legislation div.toc p.ird-crosshead, .legislation div.toc p.head3, .legislation div.toc p.head4 {
+    text-align: center;
+    font-style: italic;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+.legislation div.toc p.crosshead a.toc span.spc, .legislation div.toc p.ird-crosshead a.toc span.spc, .legislation div.toc p.head3 a.toc span.spc, .legislation div.toc p.head4 a.toc span.spc {
+    float: none;
+    margin: 0;
+    text-decoration: none
+}
+.legislation div.toc p.ird-crosshead, .legislation div.toc p.head4 {
+    font-weight: bold
+}
+.legislation div.toc p.form {
+    text-align: left;
+    margin-top: 0.5em;
+    margin-left: 0
+}
+.legislation div.toc p.form a.label {
+    float: left;
+    margin-left: -3em;
+    padding-right: 0.5em
+}
+.legislation div.toc p.head6 {
+    font-style: italic;
+    font-weight: normal
+}
+.legislation div.toc p.figure {
+    text-align: center;
+    font-weight: bold;
+    margin-left: 0;
+    padding: 0 3em;
+    margin-top: 0.5em
+}
+.legislation div.toc p.figure a.label {
+    margin-left: 0;
+    float: none
+}
+.legislation div.toc p.leg-history {
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    font-weight: normal;
+    text-align: left
+}
+.legislation div.toc p.omitted-provs {
+    font-weight: bold
+}
+.legislation div.toc p.clause-ref {
+    margin-top: 0;
+    font-style: normal
+}
+.legislation div.toc p.hdr-before {
+    margin-top: 0.5em
+}
+.legislation div.toc-schedule-provisions p.part {
+    font-weight: normal;
+    margin-left: 0;
+    float: none
+}
+.legislation div.toc-schedule-provisions p.subpart {
+    font-style: italic;
+    text-align: center;
+    margin-top: 1em;
+    padding: 0 3em
+}
+.legislation div.toc-schedule-provisions p.crosshead {
+    font-style: normal;
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 0;
+    padding: 0 3em
+}
+/* custom */
+
+.legislation h1.title {
+    margin-top: 0;
+}
+.legislation h2.part, .legislation h2.schedule, .legislation h2.head1, .legislation h2.schedule-group, .legislation h2.schedule-amendments-group1, .legislation h2.sop-part {
+    margin-top: 0;
+}
+
+.legislation{
+    width:600px;
+    float:left;
+    margin:16px;
+   background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  padding: 24px;
+  position: relative;   
+}
+
+.legislation > div{
+    height:600px;
+    overflow-y:auto;
+    overflow-x: hidden;
+}
+
+.legislation .close_page{
+    display:none;
+    position: absolute;
+    right: 30px;
+    box-shadow:inset 0px 1px 0px 0px #ffffff;
+    background-color:#ededed;
+    border-top-left-radius:17px;
+    border-top-right-radius:17px;
+    border-bottom-right-radius:17px;
+    border-bottom-left-radius:17px;
+    text-indent:0;
+    border:1px solid #dcdcdc;
+    color:#777777;
+    font-family:Arial;
+    font-size:26px;
+    font-weight:bold;
+    font-style:normal;
+    height:48px;
+    line-height:48px;
+    width:48px;
+    text-decoration:none;
+    text-align:center;
+    text-shadow:1px 1px 0px #ffffff;
+    cursor:pointer;
+
+}
+.legislation:hover .close_page{
+    display:inline-block;
+}
+.legislation .close_page:before{
+        content:"X";
+}
+.legislation .close_page:hover {
+    background-color:#dfdfdf;
+}
+
+
+
+.legislation:before, .legislation:after {
+  content: "";
+  height: 98%;
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+.legislation:before {
+  background: #fafafa;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+  left: -5px;
+  top: 4px;
+  transform: rotate(-2.5deg);
+}
+
+.legislation:after {
+  background: #f6f6f6;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  right: -3px;
+  top: 1px;
+  transform: rotate(1.4deg);
+}
