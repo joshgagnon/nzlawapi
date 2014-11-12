@@ -20,7 +20,6 @@ def tohtml(tree):
 def cull_tree(nodes):
 
     all_parents = set()
-
     [all_parents.update(list(x.iterancestors()) + [x]) for x in nodes]
 
     def test_inclusion(node, current):

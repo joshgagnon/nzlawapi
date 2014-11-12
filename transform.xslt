@@ -8,10 +8,13 @@
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="/static/style.css"/>
+                <script type="text/javascript" src="/static/main.js"/>                
             </head>
             <body>
-        <div id="legislation">
+        <div class="legislation">
+            <div>
             <xsl:apply-templates select="act"/>
+              </div>
         </div>
     </body>
 </html>
