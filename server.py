@@ -60,7 +60,7 @@ def find_node(tree, keys):
 
 def find_definitions(tree, query):
     try:
-        return [tree.xpath(".//def-term[contains(.,'%s')]" %  query)[0]]
+        return tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
     except Exception, e:
         print e
         raise CustomException("Path not found")
