@@ -18,7 +18,7 @@ def tohtml(tree):
     return transform(tree)
 
 
-def pluck_tree(node):
+def cull_tree(nodes):
     def test_inclusion(node, current):
         inclusion = node == current or node.tag in ['label', 'heading', 'cover', 'text']
         if not inclusion and node.tag == 'crosshead':
@@ -35,8 +35,9 @@ def pluck_tree(node):
             [parent.remove(x) for x in to_remove]
             node = parent
 
-    fix_parents(node)
-    return tohtml(node.getroottree())
+
+    [fix_parents(n) for n in nodes]
+    return tohtml(nodes[0].getroottree())
 
 
 def find_node(tree, keys):
@@ -51,7 +52,7 @@ def find_node(tree, keys):
         for i, a in enumerate(keys):
             if a:
                 node = node.xpath(".//%s[label='%s']" % (node_types.get(i, '*'), a))[0]
-        return node
+        return [node]
     except Exception, e:
         print e
         raise CustomException("Path not found")
@@ -59,7 +60,7 @@ def find_node(tree, keys):
 
 def find_definitions(tree, query):
     try:
-        return tree.xpath(".//def-term[contains(%s)]" %  a)
+        return [tree.xpath(".//def-term[contains(.,'%s')]" %  query)[0]]
     except Exception, e:
         print e
         raise CustomException("Path not found")
@@ -68,7 +69,7 @@ def find_definitions(tree, query):
 def find_node_by_id(query):
     try:
         tree= read_file(act_to_filename('companiesact1993'))
-        return tree.xpath("//*[@id='%s']" % query)[0]
+        return tree.xpath("//*[@id='%s']" % query)
     except IndexError, e:
         print e
         raise CustomException("Result not found")
@@ -90,9 +91,9 @@ app = Flask(__name__)
 
 
 @app.route('/act/<path:act>/definitions/<string:query>')
-def act_definitions(act='', path=''):
+def act_definitions(act='', query=''):
     try:
-        result = str(pluck_tree(find_definitions(read_file(act_to_filename(act)), query)))
+        result = str(cull_tree(find_definitions(read_file(act_to_filename(act)), query)))
     except Exception, e:
         print e
         result  = str(e)
@@ -102,7 +103,7 @@ def act_definitions(act='', path=''):
 @app.route('/act/<path:act>/<path:path>')
 def by_act(act='', path=''):
     try:
-        result = str(pluck_tree(find_node(read_file(act_to_filename(act)), path.split('/'))))
+        result = str(cull_tree(find_node(read_file(act_to_filename(act)), path.split('/'))))
     except Exception, e:
         print e
         result  = str(e)
@@ -112,7 +113,7 @@ def by_act(act='', path=''):
 @app.route('/search_id/<string:query>')
 def search_by_id(query):
     try:
-        result = str(pluck_tree(find_node_by_id(query)))
+        result = str(cull_tree(find_node_by_id(query)))
     except Exception, e:
         print e
         result  = str(e)
