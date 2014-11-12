@@ -3,6 +3,7 @@ import sys
 from lxml.etree import tostring
 from itertools import chain
 from flask import Flask
+from operator import itemgetter
 
 class CustomException(Exception):
     pass
@@ -42,19 +43,41 @@ def cull_tree(nodes):
     return tohtml(nodes[0].getroottree())
 
 
+def generate_range(string):
+    tokens = string.split('-')
+
+
+
 def find_node(tree, keys):
     node = tree
-    # xpath search is depth first, unfortunately, so we add node hints (hopefully doesn't screw us)
-    node_types = {0: 'prov'}
     try:
         # first, special case for schedule
         if keys[0] == 'schedule':
-            node = node.xpath(".//schedule[label='%s']" %keys[1])[0]
+            node = node.xpath(".//schedule[label='%s']" % keys[1])[0]
             keys = keys[2:]
+        else:
+            node = node.xpath(".//body")[0]
         for i, a in enumerate(keys):
             if a:
-                node = node.xpath(".//%s[label='%s']" % (node_types.get(i, '*'), a))[0]
-        return [node]
+                #if '-' in :
+                #    a = " or ".join(["label = '%s'" % x for x in generate_range(a)])
+                if '+' in a:
+                    #a = "label = ('%s')" % "','".join(a.split('+'))
+                    a = " or ".join(["label = '%s'" % x for x in a.split('+')])
+                else:
+                    a = "label = '%s'" % a
+
+                node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
+            if i < len(keys)-1:
+                #get shallowist nodes
+                node = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))[0]
+            else:
+                nodes = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))
+                node = [x[0] for x in nodes if x[1] == nodes[0][1]]
+
+        if not len(node):
+            raise CustomException("empty")
+        return node
     except Exception, e:
         print e
         raise CustomException("Path not found")

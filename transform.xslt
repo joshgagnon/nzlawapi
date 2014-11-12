@@ -62,7 +62,7 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>   
-             <xsl:apply-templates select="part"/>         
+             <xsl:apply-templates select="part|prov"/>         
         </div>
     </xsl:template>
 
@@ -246,6 +246,12 @@
       </div>
     </xsl:template>
 
+    <xsl:template match="schedule.misc">
+      <div class="schedule-misc">
+        <xsl:apply-templates select="para/label-para"/>
+      </div>
+    </xsl:template>
+
     <xsl:template match="schedule">
         <div class="schedule">
             <xsl:attribute name="id">
@@ -267,7 +273,7 @@
                 </tbody>
                 
             </table>
-            <xsl:apply-templates select="schedule.provisions"/>
+            <xsl:apply-templates select="schedule.provisions|schedule.misc"/>
         </div>
     </xsl:template>
 
