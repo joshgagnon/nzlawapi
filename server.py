@@ -4,6 +4,8 @@ from lxml.etree import tostring
 from itertools import chain
 from flask import Flask
 from operator import itemgetter
+from flask import render_template
+
 
 class CustomException(Exception):
     pass
@@ -128,39 +130,40 @@ app = Flask(__name__)
 @app.route('/act/<path:act>/definitions/<string:query>')
 def act_definitions(act='', query=''):
     try:
-        result = str(cull_tree(find_definitions(read_file(act_to_filename(act)), query)))
+        result = str(cull_tree(find_definitions(read_file(act_to_filename(act)), query))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
-    return result
+    return render_template('base.html', content=result) 
 
 @app.route('/act/<path:act>/search/<string:query>')
 def search(act='', query=''):
     try:
-        result = str(cull_tree(find_node_by_query(read_file(act_to_filename(act)), query)))
+        result = str(cull_tree(find_node_by_query(read_file(act_to_filename(act)), query))).decode('utf-8')
+        print result
     except Exception, e:
         print e
         result  = str(e)
-    return result
+    return render_template('base.html', content=result) 
 
 @app.route('/act/<path:act>/<path:path>')
 def by_act(act='', path=''):
     try:
-        result = str(cull_tree(find_node(read_file(act_to_filename(act)), path.split('/'))))
+        result = str(cull_tree(find_node(read_file(act_to_filename(act)), path.split('/')))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
-    return result
+    return render_template('base.html', content=result) 
 
 
 @app.route('/search_id/<string:query>')
 def search_by_id(query):
     try:
-        result = str(cull_tree(find_node_by_id(query)))
+        result = str(cull_tree(find_node_by_id(query))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
-    return result
+    return render_template('base.html', content=result) 
 
 
 

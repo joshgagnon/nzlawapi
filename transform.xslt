@@ -5,19 +5,12 @@
     <xsl:variable name="symbols-skip-insert-space">,.;:)(</xsl:variable>
 
     <xsl:template match="/">
-        <html>
-            <head>
-                <link rel="stylesheet" type="text/css" href="/static/style.css"/>
-                <script type="text/javascript" src="/static/main.js"/>                
-            </head>
-            <body>
+
         <div class="legislation">
             <div>
             <xsl:apply-templates select="act"/>
               </div>
         </div>
-    </body>
-</html>
     </xsl:template>
 
     <xsl:template match="act">
