@@ -29,9 +29,7 @@
 .legislation:focus {
     outline: none
 }
-.legislation a {
-    text-decoration: underline
-}
+
 .legislation a[href^="http:"], .legislation a[href^="https:"], .legislation a.externallink {
     background: none;
     padding: inherit;
@@ -1082,6 +1080,12 @@
     padding: 0 3em
 }
 /* custom */
+
+.legislation h1 a, .legislation h2 a, .legislation h3 a, .legislation h4 a, .legislation h5 a, .legislation h6 a {
+    text-decoration:none;
+    color:#000;
+
+}
 
 .legislation h1.title {
     margin-top: 0;

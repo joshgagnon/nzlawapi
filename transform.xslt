@@ -100,10 +100,14 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <h5 class="prov labelled">
+                <a>
+                    <xsl:attribute name="href">/search_id/<xsl:value-of select="@id"/></xsl:attribute>
+                   
                 <span class="label">
                     <xsl:value-of select="label"/>
                 </span>
                 <xsl:value-of select="heading"/>
+                </a>
             </h5>
             <ul class="prov">
                 <li>
