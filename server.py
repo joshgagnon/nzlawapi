@@ -8,6 +8,10 @@ from flask import render_template, json, jsonify, g
 from flask.json import JSONEncoder
 import psycopg2
 import datetime
+import os
+
+
+location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
 class CustomException(Exception):
     pass
@@ -95,12 +99,12 @@ def find_definitions(tree, query):
         return tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
     except Exception, e:
         print e
-        raise CustomException("Path not found")
+        raise CustomException("Path for definition not found")
 
 
 def find_node_by_id(query):
     try:
-        tree = read_file(act_to_filename('companiesact1993'))
+        tree = read_file(act_to_path('companiesact1993'))
         return tree.xpath("//*[@id='%s']" % query)
     except IndexError, e:
         print e
@@ -115,18 +119,19 @@ def find_node_by_query(tree, query):
         raise CustomException("Path not found")
 
 
-def act_to_filename(act):
-    acts = {
-        'companiesact1993': 'act-public-1993-0105.xml'
-    }
-    try:
-        return acts[act]
-    except KeyError:
-        raise CustomException("Act not found")
+def act_to_path(act):
+    with get_db().cursor() as cur:
+        query = """select path from acts where lower(replace(title, ' ', '')) = lower(%(act)s)
+         order by version desc limit 1; """
+        cur.execute(query, {'act': act})
+        try:
+            return cur.fetchone()[0]
+        except:
+            raise CustomException("Act not found")
 
 
 def read_file(filename):
-    return etree.parse(filename)
+    return etree.parse(os.path.join(location, filename))
 
 class CustomJSONEncoder(JSONEncoder):
 
@@ -161,11 +166,12 @@ def acts(act='', query=''):
         return jsonify(error=str(e))
     
 
-
+@app.route('/act/<path:act>/definition/<string:query>')
 @app.route('/act/<path:act>/definitions/<string:query>')
 def act_definitions(act='', query=''):
     try:
-        result = str(cull_tree(find_definitions(read_file(act_to_filename(act)), query))).decode('utf-8')
+        print act_to_path(act)
+        result = str(cull_tree(find_definitions(read_file(act_to_path(act)), query))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
@@ -174,17 +180,17 @@ def act_definitions(act='', query=''):
 @app.route('/act/<path:act>/search/<string:query>')
 def search(act='', query=''):
     try:
-        result = str(cull_tree(find_node_by_query(read_file(act_to_filename(act)), query))).decode('utf-8')
+        result = str(cull_tree(find_node_by_query(read_file(act_to_path(act)), query))).decode('utf-8')
         print result
     except Exception, e:
         print e
         result  = str(e)
-    return render_template('base.html', content=result) 
+    return render_template('base.html', content=result)
 
 @app.route('/act/<path:act>/<path:path>')
 def by_act(act='', path=''):
     try:
-        result = str(cull_tree(find_node(read_file(act_to_filename(act)), path.split('/')))).decode('utf-8')
+        result = str(cull_tree(find_node(read_file(act_to_path(act)), path.split('/')))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)

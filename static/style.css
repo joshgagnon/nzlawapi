@@ -1084,8 +1084,17 @@
     margin-left: 0;
     padding: 0 3em
 }
-/* custom */
 
+/*generic*/
+html{
+    position: relative;
+    height: 100%;
+}
+
+body{
+    height: 100%;
+}
+/* custom */
 .legislation h1 a, .legislation h2 a, .legislation h3 a, .legislation h4 a, .legislation h5 a, .legislation h6 a {
     text-decoration:none;
     color:#000;
@@ -1193,6 +1202,7 @@ padding-top: 70px;
 text-align:center;
 white-space: nowrap;
 overflow-y: auto;
+height:100%;
 }
 
 .legislation_browser .page_wrapper::-webkit-scrollbar {
@@ -1213,7 +1223,10 @@ overflow-y: auto;
     background-color: rgba(0, 0, 0, .5);
 }
 
-
+.legislation_finder .error{
+    color:#ff0000;
+    display:none;
+}
 
 /* bootstrap fixes */
 .legislation .label{

@@ -1,5 +1,4 @@
 function ajaxHTML(url) {
-
 	return new Promise(function(resolve, reject) {
 		var req = new XMLHttpRequest();
 		req.responseType = "document";
@@ -28,14 +27,13 @@ window.addEventListener('load', function() {
 	
 
 	document.body.addEventListener('click', function(event) {
-				var element = event.target.parentElement;;
+	var element = event.target.parentElement;;
 		if (event.target.matches('a')) {
 			event.preventDefault();
 			ajaxHTML(event.target.href)
 				.then(function(response) {
 					var el = response.querySelector('.legislation');
 					if (el) {
-										console.log(element, el)
 						el.insertBefore(create_close(), el.firstChild);
 		
 						document.body.querySelector('.page_wrapper ').appendChild(el);

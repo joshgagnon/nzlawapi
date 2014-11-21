@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
     <script type="text/javascript" src="/static/jquery-2.1.1.min.js" ></script>
     <script type="text/javascript" src="/static/main.js" ></script>
+    <script type="text/javascript" src="/static/bootstrap3-typeahead.min.js" ></script>
     <script type="text/javascript" src="/static/browser.js" ></script>
 </head>
 
@@ -15,10 +16,10 @@
     
   </div>
 </nav>
-  <div class="page_wrapper container-fluid">
-   {% block content %}
-{{ content|safe }}
-{% endblock %}
+ <div class="page_wrapper container-fluid">
+	{% block content %}
+		{{ content|safe }}
+	{% endblock %}
 </div>
 </body>
 
