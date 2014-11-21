@@ -1238,6 +1238,8 @@ height:100%;
 }
 
 .legislation a{
-
     text-decoration: underline;
+}
+.legislation .row:before, .legislation .row:after{
+    content:initial;
 }

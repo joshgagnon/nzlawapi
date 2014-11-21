@@ -135,6 +135,49 @@
         </ul>
     </xsl:template>
 
+    <xsl:template match="table">
+        <table>
+             <xsl:attribute name="id">
+                <xsl:value-of select="@id"/>
+            </xsl:attribute>   
+                <colgroup>
+                    <xsl:apply-templates select="tgroup/colspec"/>
+                </colgroup>
+            <tbody>
+                <xsl:apply-templates select="tgroup/tbody/row"/>
+            </tbody>            
+        </table>
+    </xsl:template>
+
+    <xsl:template match="colspec">
+        <col>
+           <xsl:attribute name="style">
+               width:<xsl:value-of select="@colwidth"/>
+            </xsl:attribute>   
+        </col>
+    </xsl:template>
+
+    <xsl:template match="row">
+        <tr class="row">
+            <xsl:apply-templates select="entry"/>    
+        </tr>
+    </xsl:template>
+
+    <xsl:template match="entry">
+        <td>
+                
+              <xsl:if test="count(following-sibling::entry) = 0">
+              <xsl:attribute name="colspan">
+                    <xsl:value-of select="4-count(preceding-sibling::entry)"/>
+                </xsl:attribute>   
+            </xsl:if>
+           <xsl:attribute name="style">
+               text-align:<xsl:value-of select="@align"/>
+            </xsl:attribute>                          
+            <xsl:apply-templates />    
+        </td>
+    </xsl:template>
+
     <xsl:template match="para/def-para">       
         <div class="def-para">
              <xsl:attribute name="id">
@@ -199,9 +242,12 @@
 
 
     <xsl:template match="emphasis[@style='bold']">
-        &#160;<strong><xsl:value-of select="."/></strong>
+        &#160;<span style="font-weight:bold"><xsl:value-of select="."/></span>
     </xsl:template>
 
+    <xsl:template match="emphasis[@style='italic']">
+        &#160;<span style="font-style:italic"><xsl:value-of select="."/></span>
+    </xsl:template>
 
     <xsl:template match="*[@href]">
         <a>
