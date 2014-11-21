@@ -19,22 +19,26 @@ function ajaxHTML(url) {
 }
 
 function create_close(){
-	var button = document.createElement('tag');
+	var button = document.createElement('div');
 	button.classList.add('close_page');
 	return button;
 }
 
 window.addEventListener('load', function() {
+	
 
 	document.body.addEventListener('click', function(event) {
+				var element = event.target.parentElement;;
 		if (event.target.matches('a')) {
 			event.preventDefault();
 			ajaxHTML(event.target.href)
 				.then(function(response) {
 					var el = response.querySelector('.legislation');
 					if (el) {
+										console.log(element, el)
 						el.insertBefore(create_close(), el.firstChild);
-						document.body.appendChild(el);
+		
+						document.body.querySelector('.page_wrapper ').appendChild(el);
 					} else {
 						throw 'error'
 					}
@@ -43,7 +47,7 @@ window.addEventListener('load', function() {
 				})
 		}
 		else if (event.target.matches('.close_page')) {
-			event.target.parentElement.parentElement.removeChild(event.target.parentElement);
+			element.parentElement.removeChild(element);
 		}
 	});
 });

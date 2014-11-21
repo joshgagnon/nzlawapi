@@ -7,7 +7,11 @@
     outline: 0;
     font-size: 100%;
     font: inherit;
-    vertical-align: baseline
+    vertical-align: baseline;
+    box-sizing: initial;
+    -webkit-box-sizing: initial;
+    font-family: "Times New Roman", serif;
+
 }
 .legislation article, .legislation aside, .legislation details, .legislation figcaption, .legislation figure, .legislation footer, .legislation header, .legislation hgroup, .legislation menu, .legislation nav, .legislation section {
     display: block
@@ -59,9 +63,9 @@
     text-decoration: underline
 }
 .legislation h1, .legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6, .legislation p, .legislation th, .legislation td, .legislation dl {
-    font-family: "Times New Roman", serif;
     color: #000;
-    line-height: 1.2em
+    line-height: 1.2em;
+    font-family: "Times New Roman", serif;
 }
 .legislation a.intref, .legislation a.extref, .legislation a.toc, .legislation a.term, .legislation a.leg-title, .legislation a.amending-provision {
     color: blue;
@@ -250,7 +254,8 @@
     clear: left
 }
 .legislation div, .legislation table, .legislation li {
-    clear: left
+    clear: left;
+    white-space: normal;
 }
 .legislation p.footnote {
     font-size: 0.8em
@@ -1093,15 +1098,20 @@
 .legislation h2.part, .legislation h2.schedule, .legislation h2.head1, .legislation h2.schedule-group, .legislation h2.schedule-amendments-group1, .legislation h2.sop-part {
     margin-top: 0;
 }
+.legislation .part{
+    margin-top:8px;
+}
 
 .legislation{
+    text-align:left;
     width:600px;
-    float:left;
+display: inline-block;
     margin:16px;
    background: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   padding: 24px;
   position: relative;   
+  vertical-align: bottom;
 }
 
 .legislation > div{
@@ -1169,4 +1179,52 @@
   right: -3px;
   top: 1px;
   transform: rotate(1.4deg);
+}
+
+.legislation_browser{
+padding-top: 70px;
+}
+
+.legislation_browser {
+    overflow: auto;
+}
+
+.legislation_browser .page_wrapper{
+text-align:center;
+white-space: nowrap;
+overflow-y: auto;
+}
+
+.legislation_browser .page_wrapper::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.legislation_browser .page_wrapper::-webkit-scrollbar:vertical {
+    width: 11px;
+}
+
+.legislation_browser .page_wrapper::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+
+.legislation_browser .page_wrapper::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white; /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, .5);
+}
+
+
+
+/* bootstrap fixes */
+.legislation .label{
+    display:initial;
+    color:#000;
+    text-align:initial;
+    white-space: initial;
+    border-radius:initial;
+}
+
+.legislation a{
+
+    text-decoration: underline;
 }

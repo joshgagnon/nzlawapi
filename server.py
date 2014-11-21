@@ -4,8 +4,10 @@ from lxml.etree import tostring
 from itertools import chain
 from flask import Flask
 from operator import itemgetter
-from flask import render_template
-
+from flask import render_template, json, jsonify, g
+from flask.json import JSONEncoder
+import psycopg2
+import datetime
 
 class CustomException(Exception):
     pass
@@ -54,8 +56,10 @@ def find_node(tree, keys):
     node = tree
     try:
         # first, special case for schedule
-        if keys[0] == 'schedule':
-            node = node.xpath(".//schedule[label='%s']" % keys[1])
+
+        if keys[0] in ['part', 'schedule']:
+            node = node.xpath(".//%s[label='%s']" % (keys[0], keys[1]))
+
             keys = keys[2:]
             if len(keys):
                 node = node[0]
@@ -120,11 +124,42 @@ def act_to_filename(act):
     except KeyError:
         raise CustomException("Act not found")
 
+
 def read_file(filename):
     return etree.parse(filename)
 
+class CustomJSONEncoder(JSONEncoder):
+
+    def default(self, obj):
+        try:
+            if isinstance(obj, datetime.date):
+                return obj.isoformat()
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
 
 app = Flask(__name__)
+app.json_encoder = CustomJSONEncoder
+
+
+@app.route('/')
+def browser(act='', query=''):
+    return render_template('browser.html')
+
+
+@app.route('/acts.json')
+def acts(act='', query=''):
+    try:
+        db = get_db();
+        with db.cursor() as cur:
+            cur.execute("""select trim(title), id from acts where title is not null group by id, title order by trim(title)""")
+            return jsonify({'acts': cur.fetchall()})
+    except Exception, e:
+        return jsonify(error=str(e))
+    
 
 
 @app.route('/act/<path:act>/definitions/<string:query>')
@@ -165,8 +200,22 @@ def search_by_id(query):
         result  = str(e)
     return render_template('base.html', content=result) 
 
+def connect_db():
+    conn = psycopg2.connect("dbname=legislation user=josh")
+    return conn
 
+def init_db():
+    pass
 
+def get_db():
+    if not hasattr(g, 'db'):
+        g.db = connect_db()
+    return g.db
+
+@app.teardown_appcontext
+def close_db(error):
+    if hasattr(g, 'db'):
+        g.db.close()
 
 
 if __name__ == '__main__':
