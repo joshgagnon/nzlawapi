@@ -16,6 +16,27 @@ location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 class CustomException(Exception):
     pass
 
+def levenshtein(s1, s2):
+    if len(s1) < len(s2):
+        return levenshtein(s2, s1)
+ 
+    # len(s1) >= len(s2)
+    if len(s2) == 0:
+        return len(s1)
+ 
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1       # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+ 
+    return previous_row[-1]
+
+
 def get_title(tree):
     return tree.xpath('/act/cover/title')[0].text
 
@@ -60,7 +81,6 @@ def find_node(tree, keys):
     node = tree
     try:
         # first, special case for schedule
-
         if keys[0] in ['part', 'schedule']:
             node = node.xpath(".//%s[label='%s']" % (keys[0], keys[1]))
 
@@ -101,6 +121,14 @@ def find_definitions(tree, query):
         print e
         raise CustomException("Path for definition not found")
 
+def find_definition(tree, query):
+    try:
+        nodes = tree.xpath(".//def-para/para/text/def-term[contains(.,'%s')]" %  query)
+        lev_nodes = sorted(map(lambda x: (x, levenshtein(query, x.text)), nodes), key=itemgetter(1))
+        return lev_nodes[0][0].iterancestors(tag='def-para').next()
+    except Exception, e:
+        print e
+        raise CustomException("Path for definition not found")
 
 def find_node_by_id(query):
     try:
@@ -167,6 +195,15 @@ def acts(act='', query=''):
     
 
 @app.route('/act/<path:act>/definition/<string:query>')
+def act_definition(act='', query=''):
+    try:
+        print act_to_path(act)
+        result = str(cull_tree(find_definition(read_file(act_to_path(act)), query))).decode('utf-8')
+    except Exception, e:
+        print e
+        result  = str(e)
+    return render_template('base.html', content=result) 
+
 @app.route('/act/<path:act>/definitions/<string:query>')
 def act_definitions(act='', query=''):
     try:
