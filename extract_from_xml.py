@@ -45,6 +45,7 @@ for dirpath, dirs, files in os.walk(location):
 				}
 
 				#cur.execute(query, values)
+				
 				parent_id = attrib.get('id')
 				for el in tree.xpath('//*[@id]'):
 

@@ -69,6 +69,7 @@ def cull_tree(nodes):
             node = parent
 
     [fix_parents(n) for n in nodes]
+    print tostring(nodes[0].getroottree())
     return tohtml(nodes[0].getroottree())
 
 
@@ -157,6 +158,14 @@ def act_to_path(act):
         except:
             raise CustomException("Act not found")
 
+def get_references_for_ids(ids):
+    with get_db().cursor() as cur:
+        query = """select id, title from 
+            (select parent_id, mapper from id_lookup where id = ANY(%(ids)s)) as q
+            join acts a on a.id = q.parent_id and q.mapper = 'acts' group by id, title"""
+        cur.execute(query, {'ids': ids})
+        return {'references':cur.fetchall()}
+
 
 def read_file(filename):
     return etree.parse(os.path.join(location, filename))
@@ -197,7 +206,7 @@ def acts(act='', query=''):
 @app.route('/act/<path:act>/definition/<string:query>')
 def act_definition(act='', query=''):
     try:
-        print act_to_path(act)
+        print act_to_path(act) 
         result = str(cull_tree(find_definition(read_file(act_to_path(act)), query))).decode('utf-8')
     except Exception, e:
         print e
@@ -207,7 +216,6 @@ def act_definition(act='', query=''):
 @app.route('/act/<path:act>/definitions/<string:query>')
 def act_definitions(act='', query=''):
     try:
-        print act_to_path(act)
         result = str(cull_tree(find_definitions(read_file(act_to_path(act)), query))).decode('utf-8')
     except Exception, e:
         print e
@@ -218,7 +226,6 @@ def act_definitions(act='', query=''):
 def search(act='', query=''):
     try:
         result = str(cull_tree(find_node_by_query(read_file(act_to_path(act)), query))).decode('utf-8')
-        print result
     except Exception, e:
         print e
         result  = str(e)
@@ -242,6 +249,15 @@ def search_by_id(query):
         print e
         result  = str(e)
     return render_template('base.html', content=result) 
+
+
+@app.route('/find_references/<string:query>')
+def referenced_by(query):
+    try:
+        return jsonify(get_references_for_ids(query.split(';')))
+    except Exception, e:
+        return jsonify(error=str(e))
+
 
 def connect_db():
     conn = psycopg2.connect("dbname=legislation user=josh")

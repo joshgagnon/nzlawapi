@@ -165,7 +165,6 @@
 
     <xsl:template match="entry">
         <td>
-                
               <xsl:if test="count(following-sibling::entry) = 0">
               <xsl:attribute name="colspan">
                     <xsl:value-of select="4-count(preceding-sibling::entry)"/>
@@ -178,7 +177,7 @@
         </td>
     </xsl:template>
 
-    <xsl:template match="para/def-para">       
+    <xsl:template match="def-para">       
         <div class="def-para">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
@@ -188,6 +187,21 @@
             </p>
         </div>
     </xsl:template>
+
+    <xsl:template match="amend">       
+        <div class="def-para">
+             <xsl:attribute name="class">
+                flush-left-margin-<xsl:value-of select="amend"/>
+            </xsl:attribute>           
+            <blockquote class="text">
+                  <xsl:attribute name="class">
+                    amend amend-increment-<xsl:value-of select="increment"/>
+                </xsl:attribute>                     
+                 <xsl:apply-templates select="def-para"/>
+            </blockquote>
+        </div>
+    </xsl:template>
+
 
     <xsl:template match="def-term">
              <dfn class="def-term">

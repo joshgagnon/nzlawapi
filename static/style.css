@@ -1228,6 +1228,12 @@ height:100%;
     display:none;
 }
 
+.container-form{
+    max-width: 500px;
+margin: 0 auto;
+}
+
+
 /* bootstrap fixes */
 .legislation .label{
     display:initial;

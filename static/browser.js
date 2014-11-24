@@ -30,10 +30,46 @@ $(document).on('ready', function(){
 
 	$.get('/acts.json')
 		.then(function(data){
-			$('#actName').typeahead({ items:10,  showHintOnFocus: true, source:data.acts.map(function(a){
-				return a[0];
-			}) });
+			$('#actName').typeahead({ 
+				items:10,  
+				showHintOnFocus: true, 
+				source: data.acts.map(function(a){
+					return a[0];
+				}),
+				afterSelect: function(){
+					this.$element.parents('.form-group').next().find('input, select').focus();
+					console.log(this.$element.parents('.form-group').next().find('input, select').focus());
+				}
+			});
 		});
+
+	function updateReferences(){
+		var ids = $('.legislation *[id]').map(function(){
+			return this.id;
+		}).toArray();
+		console.log(ids);
+		$.get('/find_references/'+ids.join(';'))
+			.then(function(result){
+				$('.reference_list').html('')
+				var lis = result.references.map(function(r){
+					return $('<li/>').append($('<a/>').attr('href', r[0]).text(r[1]));
+				})
+				$('.reference_list').append(lis)
+			})
+	}
+
+	function updateLegislation(response){
+		var legis = $(response).find('.legislation');
+		if(legis.length){
+			$('.legislation').remove();
+			$(response).find('.legislation').appendTo('.legislation_viewer');
+			$('.legislation_finder .error').hide();
+			updateReferences();
+		}else{
+			$('.legislation_finder .error').show();
+		}
+	}
+
 
 	function getResults(){
 		var act = $('#actName').val().toLowerCase().replace(/ /g, ''),
@@ -47,16 +83,7 @@ $(document).on('ready', function(){
 			}
 			url += value;
 			$.get(url)
-				.then(function(response){
-					var legis = $(response).find('.legislation');
-					if(legis.length){
-						$('.legislation').remove();
-						$(response).find('.legislation').appendTo('.legislation_viewer');
-						$('.legislation_finder .error').hide();
-					}else{
-						$('.legislation_finder .error').show();
-					}
-				})
+				.then(updateLegislation);
 
 		}
 
