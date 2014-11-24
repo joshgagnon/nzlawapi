@@ -49,6 +49,8 @@ def tohtml(tree):
 
 def cull_tree(nodes):
 
+    [n.attrib.update({'current': 'true'}) for n in nodes]
+
     all_parents = set()
     [all_parents.update(list(x.iterancestors()) + [x]) for x in nodes]
 
@@ -69,7 +71,6 @@ def cull_tree(nodes):
             node = parent
 
     [fix_parents(n) for n in nodes]
-    print tostring(nodes[0].getroottree())
     return tohtml(nodes[0].getroottree())
 
 
@@ -158,6 +159,19 @@ def act_to_path(act):
         except:
             raise CustomException("Act not found")
 
+
+def get_act(act):
+    with get_db().cursor() as cur:
+        query = """select document from acts a 
+        join documents d on a.document_id = d.id
+        where lower(replace(title, ' ', '')) = lower(%(act)s)
+         order by version desc limit 1; """
+        cur.execute(query, {'act': act})
+        try:
+            return etree.fromstring(cur.fetchone()[0])
+        except:
+            raise CustomException("Act not found")
+
 def get_references_for_ids(ids):
     with get_db().cursor() as cur:
         query = """select id, title from 
@@ -206,8 +220,7 @@ def acts(act='', query=''):
 @app.route('/act/<path:act>/definition/<string:query>')
 def act_definition(act='', query=''):
     try:
-        print act_to_path(act) 
-        result = str(cull_tree(find_definition(read_file(act_to_path(act)), query))).decode('utf-8')
+        result = str(cull_tree(find_definition(get_act(act), query))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
@@ -216,7 +229,7 @@ def act_definition(act='', query=''):
 @app.route('/act/<path:act>/definitions/<string:query>')
 def act_definitions(act='', query=''):
     try:
-        result = str(cull_tree(find_definitions(read_file(act_to_path(act)), query))).decode('utf-8')
+        result = str(cull_tree(find_definitions(get_act(act), query))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
@@ -225,7 +238,7 @@ def act_definitions(act='', query=''):
 @app.route('/act/<path:act>/search/<string:query>')
 def search(act='', query=''):
     try:
-        result = str(cull_tree(find_node_by_query(read_file(act_to_path(act)), query))).decode('utf-8')
+        result = str(cull_tree(find_node_by_query(get_act(act), query))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
@@ -234,7 +247,7 @@ def search(act='', query=''):
 @app.route('/act/<path:act>/<path:path>')
 def by_act(act='', path=''):
     try:
-        result = str(cull_tree(find_node(read_file(act_to_path(act)), path.split('/')))).decode('utf-8')
+        result = str(cull_tree(find_node(get_act(act), path.split('/')))).decode('utf-8')
     except Exception, e:
         print e
         result  = str(e)
@@ -245,6 +258,7 @@ def by_act(act='', path=''):
 def search_by_id(query):
     try:
         result = str(cull_tree(find_node_by_id(query))).decode('utf-8')
+        raise 'NOT IMPLEMENTED'
     except Exception, e:
         print e
         result  = str(e)
