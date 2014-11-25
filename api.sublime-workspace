@@ -32,26 +32,10 @@
 	"buffers":
 	[
 		{
-			"file": "extract_from_xml.py",
+			"file": "templates/base.html",
 			"settings":
 			{
-				"buffer_size": 2093,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tests/section47.xml",
-			"settings":
-			{
-				"buffer_size": 8492,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "server.py",
-			"settings":
-			{
-				"buffer_size": 6683,
+				"buffer_size": 920,
 				"line_ending": "Unix"
 			}
 		},
@@ -59,31 +43,63 @@
 			"file": "templates/browser.html",
 			"settings":
 			{
-				"buffer_size": 1157,
+				"buffer_size": 1411,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "static/style.css",
+			"file": "templates/form.html",
 			"settings":
 			{
-				"buffer_size": 30462,
+				"buffer_size": 1724,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "templates/base.html",
+			"file": "static/css/style.css",
 			"settings":
 			{
-				"buffer_size": 755,
+				"buffer_size": 3757,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "static/main.js",
+			"file": "source.xml",
 			"settings":
 			{
-				"buffer_size": 1208,
+				"buffer_size": 5575,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/js/browser.js",
+			"settings":
+			{
+				"buffer_size": 3425,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "server.py",
+			"settings":
+			{
+				"buffer_size": 9199,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "extract_from_xml.py",
+			"settings":
+			{
+				"buffer_size": 3506,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/josh/Downloads/0BcYmmL4pj/index.html",
+			"settings":
+			{
+				"buffer_size": 17579,
 				"line_ending": "Unix"
 			}
 		},
@@ -91,37 +107,44 @@
 			"file": "transform.xslt",
 			"settings":
 			{
-				"buffer_size": 10459,
+				"buffer_size": 11945,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "static/browser.js",
+			"file": "static/js/bootstrap3-typeahead.js",
 			"settings":
 			{
-				"buffer_size": 1700,
-				"line_ending": "Unix",
-				"name": "browser"
+				"buffer_size": 11854,
+				"line_ending": "Unix"
 			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 67.0,
+		"height": 392.0,
 		"selected_items":
 		[
 			[
-				"beaut",
-				"HTMLBeautify"
+				"pre",
+				"HTMLPrettify"
+			],
+			[
+				"pret",
+				"HTMLPrettify"
 			],
 			[
 				"prety",
 				"HTMLPrettify"
 			],
 			[
-				"pret",
-				"HTMLPrettify"
+				"beaut",
+				"HTMLBeautify"
+			],
+			[
+				"indent sp",
+				"Indentation: Convert to Spaces"
 			],
 			[
 				"format",
@@ -263,32 +286,43 @@
 	],
 	"file_history":
 	[
+		"/Users/josh/nzlawapi/server.py",
+		"/Users/josh/nzlawapi/act-public-1993-0105.xml",
+		"/Users/josh/nzlawapi/style.css",
+		"/Users/josh/nzlawapi/tmp",
+		"/Users/josh/nzlawapi/tests.py",
+		"/Users/josh/nzlawapi/target.xml",
+		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.min.js",
+		"/Users/josh/nzlawapi/static/browser.js",
+		"/Users/josh/nzlawapi/static/js/browser.js",
+		"/Users/josh/nzlawapi/static/legislation.css",
+		"/Users/josh/nzlawapi/static/style.css",
+		"/Users/josh/nzlawapi/transform.xslt",
+		"/Users/josh/nzlawapi/templates/browser.html",
+		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.js",
+		"/Users/josh/nzlawapi/static/bootstrap3-typeahead.js",
+		"/Users/josh/nzlawapi/tests/section47.xml",
+		"/Users/josh/nzlawapi/extract_from_xml.py",
+		"/Users/josh/nzlawapi/tests/schedule3.html",
+		"/Users/josh/nzlawapi/api.sublime-project",
+		"/Users/josh/nzlawapi/static/bootstrap.min.css",
+		"/Users/josh/nzlawapi/static/main.js",
+		"/Users/josh/nzlawapi/__init__.py",
 		"/Users/josh/nzlawapi/static/bootstrap-select.min.js",
 		"/Users/josh/WorkingDays/README.md",
 		"/Users/josh/WorkingDays/working-days.css",
 		"/Users/josh/WorkingDays/working-days.js",
-		"/Users/josh/nzlawapi/static/style.css",
-		"/Users/josh/nzlawapi/tests/section47.xml",
-		"/Users/josh/nzlawapi/tmp",
 		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
-		"/Users/josh/nzlawapi/__init__.py",
 		"/Users/josh/nzlawapi/templates/base.html",
-		"/Users/josh/nzlawapi/server.py",
-		"/Users/josh/nzlawapi/transform.xslt",
-		"/Users/josh/nzlawapi/static/main.js",
-		"/Users/josh/nzlawapi/tests.py",
 		"/Users/josh/nzlawapi/tests/section47.html",
 		"/Users/josh/nzlawapi/tests/section41.html",
-		"/Users/josh/nzlawapi/act-public-1993-0105.xml",
 		"/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/act/public/1993/0105/120.0/096be8ed80ea0ed3.xml",
 		"/Users/josh/nzlawapi/tests/section41.xml",
 		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/Default/Default (OSX).sublime-keymap",
 		"/Users/josh/nzlawapi/readXML.py",
-		"/Users/josh/nzlawapi/style.css",
 		"/Users/josh/nzlawapi/source.xml",
 		"/Users/josh/nzlawapi/style_simple.css",
 		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings",
-		"/Users/josh/nzlawapi/target.xml",
 		"/Users/josh/Desktop/test"
 	],
 	"find":
@@ -307,6 +341,27 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"menu",
+			"ul",
+			"append",
+			"read_file",
+			"read_file(act_to_path(act))",
+			"read_file",
+			"match=",
+			"tostring",
+			"find_node",
+			"-9",
+			"-3",
+			"col-md",
+			"print",
+			"ids",
+			"focus",
+			"};\n",
+			"afterSelect",
+			"query(",
+			"\n}",
+			"json",
+			"next",
 			"siblin",
 			"para",
 			"part",
@@ -356,6 +411,10 @@
 		"regex": false,
 		"replace_history":
 		[
+			"get_act(act)",
+			"-10",
+			"-2",
+			"col-sm",
 			"act_to_path",
 			".legislation"
 		],
@@ -373,53 +432,27 @@
 			[
 				{
 					"buffer": 0,
-					"file": "extract_from_xml.py",
+					"file": "templates/base.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2093,
+						"buffer_size": 920,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								473,
-								395
+								831,
+								831
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "tests/section47.xml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8492,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								466,
-								466
-							]
-						],
-						"settings":
-						{
-							"is_xml": true,
-							"syntax": "Packages/XML/XML.tmLanguage"
+							"is_xml": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -429,27 +462,27 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "server.py",
+					"buffer": 1,
+					"file": "templates/browser.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6683,
+						"buffer_size": 1411,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								268,
-								268
+								27,
+								27
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"is_xml": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -459,85 +492,28 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "templates/browser.html",
+					"buffer": 2,
+					"file": "templates/form.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1157,
+						"buffer_size": 1724,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								134,
-								134
+								1331,
+								1331
 							]
 						],
 						"settings":
 						{
 							"is_xml": false,
-							"syntax": "Packages/HTML/HTML.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "static/style.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 30462,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								28901,
-								28901
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 15021.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "templates/base.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 755,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								360,
-								360
-							]
-						],
-						"settings":
-						{
-							"is_xml": false,
-							"syntax": "Packages/HTML/HTML.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -547,62 +523,50 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "static/main.js",
+					"buffer": 3,
+					"file": "static/css/style.css",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1208,
+						"buffer_size": 3757,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								517,
-								519
+								2176,
+								2173
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1126.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "transform.xslt",
+					"buffer": 4,
+					"file": "source.xml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10459,
+						"buffer_size": 5575,
 						"regions":
 						{
-							"TagLint":
-							{
-								"flags": 2356,
-								"icon": "dot",
-								"regions":
-								[
-									[
-										4198,
-										4217
-									]
-								],
-								"scope": "variable.parameter"
-							}
 						},
 						"selection":
 						[
 							[
-								8066,
-								8066
+								2169,
+								2169
 							]
 						],
 						"settings":
@@ -613,7 +577,96 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3035.0,
+						"translation.y": 422.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "static/js/browser.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3425,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1965,
+								1965
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 760.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "server.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9199,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7495,
+								7495
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 2847.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "extract_from_xml.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3506,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2560,
+								2560
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 176.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -621,31 +674,107 @@
 				},
 				{
 					"buffer": 8,
-					"file": "static/browser.js",
+					"file": "/Users/josh/Downloads/0BcYmmL4pj/index.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1700,
+						"buffer_size": 17579,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1430,
-								1430
+								198,
+								249
 							]
 						],
 						"settings":
 						{
-							"auto_name": "browser",
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"is_xml": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "transform.xslt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11945,
+						"regions":
+						{
+							"TagLint":
+							{
+								"flags": 2356,
+								"icon": "dot",
+								"regions":
+								[
+									[
+										4779,
+										4798
+									]
+								],
+								"scope": "variable.parameter"
+							}
+						},
+						"selection":
+						[
+							[
+								17,
+								24
+							]
+						],
+						"settings":
+						{
+							"is_xml": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "static/js/bootstrap3-typeahead.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11854,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2536,
+								2536
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 715.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
@@ -710,16 +839,60 @@
 		"selected_items":
 		[
 			[
+				"xml",
+				"extract_from_xml.py"
+			],
+			[
+				"server",
+				"server.py"
+			],
+			[
+				"style",
+				"static/css/style.css"
+			],
+			[
+				"tran",
+				"transform.xslt"
+			],
+			[
+				"brow",
+				"static/js/browser.js"
+			],
+			[
+				"type",
+				"static/js/bootstrap3-typeahead.js"
+			],
+			[
+				"transform",
+				"transform.xslt"
+			],
+			[
+				"transofr",
+				"transform.xslt"
+			],
+			[
+				"typeahead",
+				"static/bootstrap3-typeahead.js"
+			],
+			[
+				"base.",
+				"templates/base.html"
+			],
+			[
+				"browser",
+				"static/browser.js"
+			],
+			[
+				"bro",
+				"static/browser.js"
+			],
+			[
 				"main.js",
 				"static/main.js"
 			],
 			[
 				"",
 				"server.py"
-			],
-			[
-				"style",
-				"static/style.css"
 			],
 			[
 				"tmp",

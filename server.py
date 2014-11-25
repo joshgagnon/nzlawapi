@@ -272,6 +272,12 @@ def referenced_by(query):
     except Exception, e:
         return jsonify(error=str(e))
 
+@app.route('/full_search/<string:query>')
+def full_search(query):
+    try:
+        return full_search();
+    except Exception, e:
+        return jsonify(error=str(e))
 
 def connect_db():
     conn = psycopg2.connect("dbname=legislation user=josh")

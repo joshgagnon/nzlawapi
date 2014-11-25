@@ -35,11 +35,12 @@ for dirpath, dirs, files in os.walk(location):
                 print title
 
 
-                doc_query = """INSERT INTO documents (text, type, document)
-                    VALUES (%(text)s, %(type)s, %(document)s) returning id"""
+                doc_query = """INSERT INTO documents (searchable, type, document)
+                    VALUES (to_tsvector('english', %(searchable)s), %(type)s, %(document)s) returning id"""
+
 
                 doc_values = {
-                    'text': etree.tostring(tree,  encoding='UTF-8', method='text'),
+                    'searchable': " ".join(tree.getroot().itertext()),
                     'type': 'xml',
                     'document': etree.tostring(tree, encoding='UTF-8', method='xml')
                 }
@@ -48,7 +49,7 @@ for dirpath, dirs, files in os.walk(location):
                 document_id = cur.fetchone()[0]
                 print document_id
                 values =  {
-                    'document_id': 1, #document_id,
+                    'document_id': document_id,
                     'id': attrib.get('id'), 
                     'title': title,
                     'version': int(float(dirpath.split('/')[-1])),

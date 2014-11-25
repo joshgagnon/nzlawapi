@@ -201,7 +201,7 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>           
             <p class="text">
-                 <xsl:apply-templates select="para/text|para/label-para"/>
+                 <xsl:apply-templates select="para/text|para/label-para|example"/>
             </p>
         </div>
     </xsl:template>
@@ -307,6 +307,12 @@
     </xsl:template>
 
 
+   <xsl:template match="example">
+        <div class="example">
+            <h6 class="heading"><strong>Example</strong></h6>
+            <p  class="text"><xsl:apply-templates select="para"/></p>
+        </div>
+    </xsl:template>
 
     <xsl:template match="text()">
         <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
