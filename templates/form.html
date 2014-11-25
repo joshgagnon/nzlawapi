@@ -2,16 +2,16 @@
     <div class="form-group">
         <label for="type" class=" control-label">Type</label>
         <div class="">
-            <select id="type" class="form-control">
+            <select id="type" name="type" class="form-control">
                 <option value="act">Act</option>
                 <option value="search">General Search</option>
             </select>
         </div>
     </div>
     <div class="form-group switchable visible-act">
-        <label for="actName" class="control-label">Act</label>
+        <label for="act-name" class="control-label">Act</label>
         <div class="">
-            <input type="text" class="form-control" id="actName" />
+            <input type="text" class="form-control" name="act-name" id="act-name" />
         </div>
     </div>
 
@@ -30,13 +30,13 @@
     <div class="form-group  switchable visible-act ">
         <label for="value" id="valueLabel" class="control-label">Value</label>
         <div class="">
-            <input type="text" class="form-control" id="value" />
+            <input type="text" class="form-control" name="value" id="value" />
         </div>
     </div>
     <div class="form-group  switchable  visible-search">
         <label for="query" id="queryLabel" class="control-label">Query</label>
         <div class="">
-            <input type="text" class="form-control" id="query" />
+            <input type="text" class="form-control" name="query" id="query" />
         </div>
     </div>    
     <div class="form-group error">

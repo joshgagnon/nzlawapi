@@ -45,7 +45,9 @@ body{
     overflow-y:auto;
     overflow-x: hidden;
 }
-
+.legislation.expanded > div{
+  max-height:initial;
+}
 .legislation .close_page{
     display:none;
     position: absolute;
@@ -86,6 +88,46 @@ body{
   display:none;
 }
 
+
+.legislation .expand{
+    display:none;
+    position: absolute;
+    right: 6px;
+    bottom:6px;
+    box-shadow:inset 0px 1px 0px 0px #ffffff;
+    background-color:#ededed;
+    border-top-left-radius:17px;
+    border-top-right-radius:17px;
+    border-bottom-right-radius:17px;
+    border-bottom-left-radius:17px;
+    text-indent:0;
+    border:1px solid #dcdcdc;
+    color:#777777;
+    font-family:Arial;
+    font-size:26px;
+    font-weight:bold;
+    font-style:normal;
+    height:32px;
+    line-height:32px;
+    width:32px;
+    text-decoration:none;
+    text-align:center;
+    text-shadow:1px 1px 0px #ffffff;
+    cursor:pointer;
+}
+
+.legislation:hover .expand{
+    display:inline-block;
+}
+.legislation .expand:before{
+        content:"+";
+}
+.legislation.expanded .expand:before{
+        content:"-";
+}
+.legislation .expand:hover {
+    background-color:#dfdfdf;
+}
 /*
 .legislation:before, .legislation:after {
   content: "";
@@ -167,7 +209,10 @@ padding-left: 10px;
     content:initial;
 }
 
-
+.table-container{
+  margin-right: 16px;
+  margin-left:16px;
+}
 
 
 

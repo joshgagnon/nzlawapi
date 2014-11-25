@@ -17,13 +17,13 @@ def safe_date(string):
         return None
 
 date_format = '%Y-%m-%d'
-location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
+location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/act'
 count=0;
 ids = set()
 for dirpath, dirs, files in os.walk(location):
     files = [f for f in files if f.endswith('.xml')]
     if len(files):
-        path = os.path.join(dirpath.replace(location+'/', ''), files[0])
+        path = os.path.join(dirpath.replace('/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/', ''), files[0])
         try:
             tree = etree.parse(os.path.join(dirpath, files[0]))
             attrib = tree.getroot().attrib
@@ -62,7 +62,7 @@ for dirpath, dirs, files in os.walk(location):
                     'repealed': attrib.get('terminated') == "repealed"
                 }
                 cur.execute(query, values)
-
+                break;
                 if 0: # do ids
                     parent_id = attrib.get('id')
                     for el in tree.xpath('//*[@id]'):

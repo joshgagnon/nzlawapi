@@ -9,7 +9,7 @@ from flask.json import JSONEncoder
 import psycopg2
 import datetime
 import os
-
+import elasticsearch
 
 location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
@@ -132,13 +132,22 @@ def find_definition(tree, query):
         print e
         raise CustomException("Path for definition not found")
 
-def find_node_by_id(query):
-    try:
-        tree = read_file(act_to_path('companiesact1993'))
-        return tree.xpath("//*[@id='%s']" % query)
-    except IndexError, e:
-        print e
-        raise CustomException("Result not found")
+def find_node_by_id(node_id):
+    with get_db().cursor() as cur:    
+        try:
+            query = """ 
+            select document from documents d
+            join acts a on a.document_id = d.id
+            join id_lookup i on i.parent_id = a.id and i.mapper = 'acts'
+            where i.id = %(node_id)s
+            order by version desc 
+            limit 1; """
+
+            cur.execute(query, {'node_id': node_id})
+            return etree.fromstring(cur.fetchone()[0]).xpath("//*[@id='%s']" % node_id)
+        except Exception, e:
+            print e
+            raise CustomException("Result not found")
 
 
 def find_node_by_query(tree, query):
@@ -147,17 +156,6 @@ def find_node_by_query(tree, query):
     except Exception, e:
         print e
         raise CustomException("Path not found")
-
-
-def act_to_path(act):
-    with get_db().cursor() as cur:
-        query = """select path from acts where lower(replace(title, ' ', '')) = lower(%(act)s)
-         order by version desc limit 1; """
-        cur.execute(query, {'act': act})
-        try:
-            return cur.fetchone()[0]
-        except:
-            raise CustomException("Act not found")
 
 
 def get_act(act):
@@ -174,15 +172,32 @@ def get_act(act):
 
 def get_references_for_ids(ids):
     with get_db().cursor() as cur:
-        query = """select id, title from 
+        query = """ select id, title from 
             (select parent_id, mapper from id_lookup where id = ANY(%(ids)s)) as q
-            join acts a on a.id = q.parent_id and q.mapper = 'acts' group by id, title"""
+            join acts a on a.id = q.parent_id and q.mapper = 'acts' group by id, title """
         cur.execute(query, {'ids': ids})
         return {'references':cur.fetchall()}
 
+def full_search(query):
+    result = es.search(index="legislation", body={  
+        "from" : 0, "size" : 25, 
+        "fields" : ["id", "title"],
+        "sort" : [
+            "_score",
+           # 'year'
+        ],
+        "query": { "query_string" : { "query" : query } },
+          "aggregations": {
+            "my_agg": {
+              "terms": {
+                "field": "content"
+              }
+            }
+  }
+        })
+    print("Got %d Hits:" % result['hits']['total'])
+    return result
 
-def read_file(filename):
-    return etree.parse(os.path.join(location, filename))
 
 class CustomJSONEncoder(JSONEncoder):
 
@@ -199,7 +214,7 @@ class CustomJSONEncoder(JSONEncoder):
 
 app = Flask(__name__)
 app.json_encoder = CustomJSONEncoder
-
+es = elasticsearch.Elasticsearch()
 
 @app.route('/')
 def browser(act='', query=''):
@@ -236,7 +251,7 @@ def act_definitions(act='', query=''):
     return render_template('base.html', content=result) 
 
 @app.route('/act/<path:act>/search/<string:query>')
-def search(act='', query=''):
+def act_search(act='', query=''):
     try:
         result = str(cull_tree(find_node_by_query(get_act(act), query))).decode('utf-8')
     except Exception, e:
@@ -258,7 +273,6 @@ def by_act(act='', path=''):
 def search_by_id(query):
     try:
         result = str(cull_tree(find_node_by_id(query))).decode('utf-8')
-        raise 'NOT IMPLEMENTED'
     except Exception, e:
         print e
         result  = str(e)
@@ -273,11 +287,13 @@ def referenced_by(query):
         return jsonify(error=str(e))
 
 @app.route('/full_search/<string:query>')
-def full_search(query):
+def search(query):
     try:
-        return full_search();
+         result = full_search(query);
     except Exception, e:
-        return jsonify(error=str(e))
+        result = {'error': e}
+    print result
+    return render_template('search_results.html', content=result)
 
 def connect_db():
     conn = psycopg2.connect("dbname=legislation user=josh")

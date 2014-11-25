@@ -6,7 +6,7 @@
 
     <xsl:template match="/">
 
-        <div class="legislation">
+        <div class="legislation result">
             <div>
             <xsl:apply-templates select="act"/>
               </div>
@@ -21,7 +21,7 @@
 
 
     <xsl:template match="act">
-        <div class="act">
+        <div class="act top-level">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
