@@ -1,0 +1,25 @@
+--create table documents (id serial primary key, text text, type text, document text);
+
+
+--CREATE INDEX text_index ON documents USING gin(to_tsvector('english', text));
+
+--alter table acts add column document_id integer;
+
+--alter table acts add constraint act_fk foreign key (document_id) references documents (id);
+
+--alter table acts add column repealed boolean default false;
+--delete from acts;
+--delete from documents;
+
+
+
+select a.id, a.title, ts_rank_cd(d.searchable, to_tsquery('finance & shares')) as rank
+from documents d join acts a on a.document_id = d.id 
+WHERE d.searchable @@ to_tsquery('english', 'finance & shares') and a.repealed = False
+GROUP BY a.id, a.title, a.year, ts_rank_cd(d.searchable, to_tsquery('finance & shares'))
+ORDER BY rank desc limit 100;
+
+select id, title, max(version) from acts group by id, title;
+
+--alter table documents drop column text;
+--alter table documents add column searchable tsvector;
