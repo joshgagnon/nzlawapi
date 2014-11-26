@@ -48,48 +48,8 @@ body{
 .legislation.expanded > div{
   max-height:initial;
 }
-.legislation .close_page{
-    display:none;
-    position: absolute;
-    right: 30px;
-    box-shadow:inset 0px 1px 0px 0px #ffffff;
-    background-color:#ededed;
-    border-top-left-radius:17px;
-    border-top-right-radius:17px;
-    border-bottom-right-radius:17px;
-    border-bottom-left-radius:17px;
-    text-indent:0;
-    border:1px solid #dcdcdc;
-    color:#777777;
-    font-family:Arial;
-    font-size:26px;
-    font-weight:bold;
-    font-style:normal;
-    height:48px;
-    line-height:48px;
-    width:48px;
-    text-decoration:none;
-    text-align:center;
-    text-shadow:1px 1px 0px #ffffff;
-    cursor:pointer;
-}
-
-.legislation:hover .close_page{
-    display:inline-block;
-}
-.legislation .close_page:before{
-        content:"X";
-}
-.legislation .close_page:hover {
-    background-color:#dfdfdf;
-}
-
-.legislation_references{
-  display:none;
-}
-
-
-.legislation .expand{
+.legislation .expand,
+.legislation .close-page{
     display:none;
     position: absolute;
     right: 6px;
@@ -116,18 +76,36 @@ body{
     cursor:pointer;
 }
 
-.legislation:hover .expand{
+.legislation .close-page{
+  top:6px;
+  bottom:initial;
+}
+.legislation:hover .expand,
+.legislation:hover .close-page{
     display:inline-block;
 }
+.legislation .close-page:before{
+      content:"X";
+}
+.legislation .expand:hover,
+.legislation .close-page:hover {
+    background-color:#dfdfdf;
+}
+
+
 .legislation .expand:before{
         content:"+";
 }
 .legislation.expanded .expand:before{
         content:"-";
 }
-.legislation .expand:hover {
-    background-color:#dfdfdf;
+
+
+.legislation_references{
+  display:none;
 }
+
+
 /*
 .legislation:before, .legislation:after {
   content: "";
@@ -205,6 +183,7 @@ padding-left: 10px;
 .legislation a{
     text-decoration: underline;
 }
+
 .legislation .row:before, .legislation .row:after{
     content:initial;
 }

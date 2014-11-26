@@ -34,7 +34,7 @@ $(document).on('ready', function(){
 			option = option_base.cloneNode();
 			option.value = data[i][1];
 			option.text = data[i][0];
-			select.appendChild(option);			
+			select.appendChild(option);
 		}
 		return select;
 	}
@@ -67,6 +67,15 @@ $(document).on('ready', function(){
 		}
 	}
 
+	function appendCloseControl(legislation){
+		var topLevel = $('.top-level', legislation);
+		$('<div/>').addClass('close-page')
+			.appendTo(topLevel.parent())
+			.on('click', function(){
+				legislation.remove();
+			});
+	}
+
 	function updateReferences(){
 		var ids = $('.legislation *[id]').map(function(){
 			return this.id;
@@ -88,17 +97,17 @@ $(document).on('ready', function(){
 		if(result.length){
 			result.appendTo('.legislation_viewer');
 			$('.legislation_finder .error').hide();
-			appendExpandControl($('.legislation'));
+			appendExpandControl(result);
 			updateReferences();
 		}else{
 			$('.legislation_finder .error').show();
 		}
+		return result;
 	}
 
 	var serial;
 	function hasChanged(){
 		var new_serial = $('.legislation_finder').serialize();
-		console.log(new_serial, serial)
 		if(new_serial !== serial){
 			serial = new_serial;
 			return true;
@@ -138,7 +147,8 @@ $(document).on('ready', function(){
 	function handleLink(event){
 		var link = $(event.target).attr('href');
 		$.get(link)
-			.then(updateLegislation);
+			.then(updateLegislation)
+			.then(appendCloseControl)
 		return false;
 	}
 
