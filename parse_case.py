@@ -4,7 +4,7 @@ import json
 import re
 import pprint
 
-courtfile_num = r'/^(CA|SC|CIV|CRI)/'
+courtfile_num = re.compile(r'^(CA|SC|CIV|CRI)[-0-9/ ]{5,}$')
 
 path = '/Users/josh/legislation_archive'
 json_path = '/Users/josh/legislation_archive/justice.json'
@@ -24,6 +24,15 @@ def prev_tag(el, name):
 		el = el.previous_sibling
 	return el
 
+def el_class_style(el):
+	class_name = el.find('span').attrs['class'][0]
+	sheet = (e for e in el.previous_siblings if e.name == 'style').next().text.split()
+	line = (s for s in sheet if s.startswith('.'+class_name)).next().replace('.'+class_name, '')[1:-1]
+	return style_to_dict(line)
+
+def style_to_dict(line):
+	return dict([x.split(':') for x in line.split(';') if x])
+
 
 def get_info(doc_id, json_data):
 	for j in json_data['response']['docs']:
@@ -32,7 +41,7 @@ def get_info(doc_id, json_data):
 
 
 def neutral_cite(soup):
-	return neutral_cite_el(soup).contents[0]
+	return neutral_cite_el(soup).text
 
 
 def neutral_cite_el(soup):
@@ -44,8 +53,7 @@ def neutral_cite_el(soup):
 def court_file(soup):
 	cite = neutral_cite_el(soup)
 	el = prev_tag(cite.parent.parent, 'div')
-	el = el.find('span')
-	return el.contents[0]
+	return el.text
 
 
 def full_citation(soup):
@@ -69,38 +77,45 @@ def court(soup):
 		result +=  [next_el.text]
 	return result
 
+def get_left_position(el):
+	return int(re.search(r'.*left:(\d+).*', el.attrs['style']).group(1))
+
 def consecutive_align(el):
 	results = []
-	position = re.search(r'.*(left:\d+).*', el.attrs['style']).group(1)
-	while position in el.attrs['style']:
+	position = get_left_position(el)
+	while position == get_left_position(el):
 		results.append(el.text)
 		el = next_tag(el, 'div')
 	return (results, el)
 
 def parse_between(soup):
-	between_el = (e for e in soup.find_all('span') if e.text == 'BETWEEN').next().parent.parent
-	plantiff = []
-	defendant = []
-	between_el = next_tag(between_el, 'div')
-	while between_el.text != 'AND':
-		plantiff.append(between_el.text)
-		between_el = next_tag(between_el, 'div')
-		
+	results = {}
 
-	between_el = next_tag(between_el, 'div')
-	defendant = consecutive_align(between_el)[0]
+	el = (e for e in soup.find_all('div') if e.text == 'BETWEEN').next()
 
-	return {
-		'plantiff': plantiff,
-		'defendant': defendant
-	}
+	# while not at next section
+	while el.text == 'BETWEEN': 
+		# look back to get court_num
+		court_num = (e for e in el.previous_siblings if courtfile_num.match(e.text)).next().text
+
+		el = next_tag(el, 'div')
+		plantiff, el = consecutive_align(el)
+		el = next_tag(el, 'div') #skip and
+		defendant, el = consecutive_align(el)
+		el = next_tag(el, 'div') #skip and
+		results[court_num] = {
+			'plantiffs': plantiff,
+			'defendants': defendant
+		}
+
+	return results
 			
 
 def parse_versus(soup):
 	# must be x v y
 	plantiff = []
 	defendant = []	
-	v = (e for e in el.find_all('span') if e.text == 'v').next().parent.parent
+	v = (e for e in soup.find_all('span') if e.text == 'v').next().parent.parent
 	# plantiff is every until neutral citation
 	between_el = prev_tag(v, 'div')
 	cite = neutral_cite(soup)
@@ -133,10 +148,21 @@ def judgment(soup):
 	return judgment_el(soup).text
 
 def waistband(soup):
-	return next_tag(judgment_el(soup), 'div').text
+	results = []
+	# two identified cases so far:  bold, or capitals
+	el = next_tag(judgment_el(soup), 'div')
+	if el.get('font-style') == 'bold':
+		while el_class_style(el).get('font-style') == 'bold':
+			results.append(el.text)
+			el = next_tag(el, 'div')
+	elif el.text.upper() == el.text:
+		while el.text.upper() == el.text:
+			results.append(el.text)
+			el = next_tag(el, 'div')
+	return ' '.join(results)
 
 def counsel(soup):
-	counsel_strings = ['Counsel:', 'Appearances:']
+	counsel_strings = ['Counsel:', 'Appearances:', 'Solicitors/Counsel:']
 	counsel = next_tag((e for e in soup.find_all('span') if e.text in counsel_strings).next().parent.parent, 'div')
 	return consecutive_align(counsel)[0]
 
@@ -153,8 +179,12 @@ def appeal_result(soup):
 		if not text_re.match(key):
 			break
 		el = next_tag(el, 'div')
-		results[key], el = consecutive_align(el)
-		results[key] = ' '.join(results[key])
+		if text_re.match(el.text):
+			results[key], el = consecutive_align(el)
+			results[key] = ' '.join(results[key])
+		else:
+			results = [key]
+			break
 
 	return results	
 
@@ -169,10 +199,8 @@ def process_file(filename):
 	with open(os.path.join(path, filename)) as f:
 		soup = BeautifulSoup(f.read())
 		flat_soup = mangle_format(soup)
-		#print flat_soup
 		results = {
 			'neutral_cite': neutral_cite(flat_soup),
-			'court_file': court_file(flat_soup),
 			'court': court(flat_soup),
 			'full_citation': full_citation(flat_soup),
 			'parties': parties(flat_soup),
