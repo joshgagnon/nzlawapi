@@ -4,7 +4,9 @@ import json
 import re
 import pprint
 
-path = '/Users/josh/legislation_archive/justice_trial'
+courtfile_num = r'/^(CA|SC|CIV|CRI)/'
+
+path = '/Users/josh/legislation_archive'
 json_path = '/Users/josh/legislation_archive/justice.json'
 
 with open(json_path) as f:
@@ -28,17 +30,14 @@ def get_info(doc_id, json_data):
 		if j['DocumentName'] == doc_id + '.pdf':
 			return j
 
-def get_page_one(soup):
-	return soup.select('body > a[name="1"]')[0]
-
 
 def neutral_cite(soup):
 	return neutral_cite_el(soup).contents[0]
 
+
 def neutral_cite_el(soup):
 	reg = re.compile(r'\[(\d){4}\] ([A-Z]+) (\d+)')
-	el = next_tag(get_page_one(soup), 'div')
-	el = [e for e in el.select('div  span') if reg.match(e.text)][0]
+	el = (e for e in soup.select('div  span') if reg.match(e.text)).next()
 	return el
 
 
@@ -48,14 +47,22 @@ def court_file(soup):
 	el = el.find('span')
 	return el.contents[0]
 
+
 def full_citation(soup):
-	el = next_tag(get_page_one(soup), 'div').select('div')[0].find('span')
-	return el.contents[0]
+	court_str = court(soup)[0]
+	result = []
+	el = soup.select('div')[0].find('span')
+	for s in soup.select('div'):
+		if s.text != court_str:
+			result += [s.text]
+		else:
+			break
+	return ' '.join(result)
+
 
 def court(soup):
-	el = next_tag(get_page_one(soup), 'div')
 	reg = re.compile(r'.*OF NEW ZEALAND$')
-	el = [e for e in el.select('div  span') if reg.match(e.text)][0]
+	el = (e for e in soup.select('div  span') if reg.match(e.text)).next()
 	next_el = next_tag(el.parent.parent, 'div').find('span')
 	result = [el.text]
 	if next_el.text != court_file(soup):
@@ -71,7 +78,7 @@ def consecutive_align(el):
 	return results
 
 def parse_between(soup, el):
-	between_el = [e for e in el.find_all('span') if e.text == 'BETWEEN'][0].parent.parent
+	between_el = (e for e in el.find_all('span') if e.text == 'BETWEEN').next().parent.parent
 	plantiff = []
 	defendant = []
 	between_el = next_tag(between_el, 'div')
@@ -105,6 +112,7 @@ def parse_versus(soup, el):
 	while between_el.text and between_el.text.upper() == between_el.text:
 		defendant += [between_el.text]
 		between_el = next_tag(between_el, 'div')
+
 	return {
 		'plantiff': plantiff,
 		'defendant': defendant
@@ -112,7 +120,7 @@ def parse_versus(soup, el):
 
 
 def parties(soup):
-	el = next_tag(get_page_one(soup), 'div')
+	el = soup
 	if any([e for e in el.find_all('span') if e.text == 'BETWEEN']):
 		return parse_between(soup, el)
 	else:
@@ -120,8 +128,7 @@ def parties(soup):
 
 def judgment_el(soup):
 	judgement_strings = ['Judgment:', 'Sentence:']
-	el = next_tag(get_page_one(soup), 'div')
-	return next_tag([e for e in el.find_all('span') if e.text in judgement_strings][0].parent.parent, 'div')
+	return next_tag((e for e in soup.find_all('span') if e.text in judgement_strings).next().parent.parent, 'div')
 
 def judgment(soup):
 	return judgment_el(soup).text
@@ -131,12 +138,11 @@ def waistband(soup):
 
 def counsel(soup):
 	counsel_strings = ['Counsel:', 'Appearances:']
-	el = next_tag(get_page_one(soup), 'div')
-	counsel = next_tag([e for e in el.find_all('span') if e.text in counsel_strings][0].parent.parent, 'div')
+	counsel = next_tag((e for e in soup.find_all('span') if e.text in counsel_strings).next().parent.parent, 'div')
 	return consecutive_align(counsel)
 
 def is_appeal(info):
-	return re.compile('.*NZCA*').match(info['neutral_cite'])
+	return re.compile('.*NZ(CA|SC)*').match(info['neutral_cite'])
 
 def appeal_result(soup):
 	el = next_tag(next_tag(judgment_el(soup), 'div'), 'div')
@@ -152,20 +158,27 @@ def appeal_result(soup):
 		el = next_tag(el, 'div')
 	return results	
 
+def mangle_format(soup):
+	flat_soup = BeautifulSoup('<div/>').select('div')[0]
+	[flat_soup.append(x) for x in soup.select('body > div > *')]
+	return flat_soup
+
+
 def process_file(filename):
 	#print get_info(filename.replace('.html', ''), json_data)
 	with open(os.path.join(path, filename)) as f:
 		soup = BeautifulSoup(f.read())
-
+		flat_soup = mangle_format(soup)
+		#print flat_soup
 		results = {
-			'neutral_cite': neutral_cite(soup),
-			'court_file': court_file(soup),
-			'court': court(soup),
-			'full_citation': full_citation(soup),
-			'parties': parties(soup),
-			'counsel': counsel(soup),
-			'judgment': judgment(soup),
-			'waistband': waistband(soup)
+			'neutral_cite': neutral_cite(flat_soup),
+			'court_file': court_file(flat_soup),
+			'court': court(flat_soup),
+			'full_citation': full_citation(flat_soup),
+			'parties': parties(flat_soup),
+			'counsel': counsel(flat_soup),
+			'judgment': judgment(flat_soup),
+			'waistband': waistband(flat_soup)
 		}
 		if is_appeal(results):
 			results['appeal_result'] = appeal_result(soup)
