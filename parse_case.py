@@ -75,10 +75,10 @@ def consecutive_align(el):
 	while position in el.attrs['style']:
 		results.append(el.text)
 		el = next_tag(el, 'div')
-	return results
+	return (results, el)
 
-def parse_between(soup, el):
-	between_el = (e for e in el.find_all('span') if e.text == 'BETWEEN').next().parent.parent
+def parse_between(soup):
+	between_el = (e for e in soup.find_all('span') if e.text == 'BETWEEN').next().parent.parent
 	plantiff = []
 	defendant = []
 	between_el = next_tag(between_el, 'div')
@@ -88,7 +88,7 @@ def parse_between(soup, el):
 		
 
 	between_el = next_tag(between_el, 'div')
-	defendant = consecutive_align(between_el)
+	defendant = consecutive_align(between_el)[0]
 
 	return {
 		'plantiff': plantiff,
@@ -96,11 +96,11 @@ def parse_between(soup, el):
 	}
 			
 
-def parse_versus(soup, el):
+def parse_versus(soup):
 	# must be x v y
 	plantiff = []
 	defendant = []	
-	v = [e for e in el.find_all('span') if e.text == 'v'][0].parent.parent
+	v = (e for e in el.find_all('span') if e.text == 'v').next().parent.parent
 	# plantiff is every until neutral citation
 	between_el = prev_tag(v, 'div')
 	cite = neutral_cite(soup)
@@ -120,11 +120,10 @@ def parse_versus(soup, el):
 
 
 def parties(soup):
-	el = soup
-	if any([e for e in el.find_all('span') if e.text == 'BETWEEN']):
-		return parse_between(soup, el)
+	if any([e for e in soup.find_all('span') if e.text == 'BETWEEN']):
+		return parse_between(soup)
 	else:
-		return parse_versus(soup, el)
+		return parse_versus(soup)
 
 def judgment_el(soup):
 	judgement_strings = ['Judgment:', 'Sentence:']
@@ -139,7 +138,7 @@ def waistband(soup):
 def counsel(soup):
 	counsel_strings = ['Counsel:', 'Appearances:']
 	counsel = next_tag((e for e in soup.find_all('span') if e.text in counsel_strings).next().parent.parent, 'div')
-	return consecutive_align(counsel)
+	return consecutive_align(counsel)[0]
 
 def is_appeal(info):
 	return re.compile('.*NZ(CA|SC)*').match(info['neutral_cite'])
@@ -154,8 +153,9 @@ def appeal_result(soup):
 		if not text_re.match(key):
 			break
 		el = next_tag(el, 'div')
-		results[key] = el.text
-		el = next_tag(el, 'div')
+		results[key], el = consecutive_align(el)
+		results[key] = ' '.join(results[key])
+
 	return results	
 
 def mangle_format(soup):
@@ -181,7 +181,7 @@ def process_file(filename):
 			'waistband': waistband(flat_soup)
 		}
 		if is_appeal(results):
-			results['appeal_result'] = appeal_result(soup)
+			results['appeal_result'] = appeal_result(flat_soup)
 		pprint.pprint(results)
 		print
 
