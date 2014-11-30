@@ -147,12 +147,17 @@ def judgment_el(soup):
 def judgment(soup):
 	return judgment_el(soup).text
 
+def hearing(soup):
+	hearing_strings = ['Hearing:']
+	tag = next_tag((e for e in soup.find_all('span') if e.text in hearing_strings).next().parent.parent, 'div')
+	return tag.text
+
 def waistband(soup):
 	results = []
 	# two identified cases so far:  bold, or capitals
 	el = next_tag(judgment_el(soup), 'div')
 	if el.get('font-style') == 'bold':
-		while el_class_style(el).get('font-style') == 'bold':
+		while el_class_style(el).get('font-weight') == 'bold':
 			results.append(el.text)
 			el = next_tag(el, 'div')
 	elif el.text.upper() == el.text:
@@ -162,9 +167,36 @@ def waistband(soup):
 	return ' '.join(results)
 
 def counsel(soup):
-	counsel_strings = ['Counsel:', 'Appearances:', 'Solicitors/Counsel:']
-	counsel = next_tag((e for e in soup.find_all('span') if e.text in counsel_strings).next().parent.parent, 'div')
-	return consecutive_align(counsel)[0]
+	counsel_strings = ['Counsel:', 'Appearances:']
+	try:
+		counsel = next_tag((e for e in soup.find_all('div') if e.text in counsel_strings).next(), 'div')
+		return consecutive_align(counsel)[0]
+	except:
+		counsel_tag = (e for e in soup.find_all('div') if any(e.text.startswith(x) for x in counsel_strings)).next()
+		counsel = counsel_tag.text
+		for c in counsel_strings:
+			counsel = counsel.replace(c, '')
+		counsel = [counsel.strip()]
+		# keep consuming until a ':' appears, dumb and will have to do for now
+		while True:
+			counsel_tag = next_tag(counsel_tag, 'div')
+			if ':' in counsel_tag.text:
+				break
+			else:
+				counsel.append(counsel_tag.text)
+		return counsel
+
+def matter(soup):
+	try:
+		result = {}
+		under = (e for e in soup.find_all('div') if e.text == 'UNDER').next()
+		result[under.text], matter_of = consecutive_align(next_tag(under, 'div'))
+		result[matter_of.text], pos = consecutive_align(next_tag(matter_of, 'div')) 
+		for k, i in result.items():
+			result[k] = ' '.join(i)
+		return result
+	except StopIteration:
+		return
 
 def is_appeal(info):
 	return re.compile('.*NZ(CA|SC)*').match(info['neutral_cite'])
@@ -206,7 +238,9 @@ def process_file(filename):
 			'parties': parties(flat_soup),
 			'counsel': counsel(flat_soup),
 			'judgment': judgment(flat_soup),
-			'waistband': waistband(flat_soup)
+			'waistband': waistband(flat_soup),
+			'hearing': hearing(flat_soup),
+			'matter': matter(flat_soup)
 		}
 		if is_appeal(results):
 			results['appeal_result'] = appeal_result(flat_soup)
