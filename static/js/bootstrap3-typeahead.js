@@ -113,6 +113,7 @@
   , hide: function () {
       this.$menu.hide();
       this.shown = false;
+      //debugger;
       return this;
     }
 
@@ -342,7 +343,6 @@
         default:
           this.lookup();
       }
-
       e.stopPropagation();
       e.preventDefault();
   }
@@ -376,7 +376,8 @@
 
   , mouseleave: function (e) {
       this.mousedover = false;
-      if (!this.focused && this.shown) this.hide();
+      // bug on toms machine
+      // if (!this.focused && this.shown) this.hide();
     }
 
   };

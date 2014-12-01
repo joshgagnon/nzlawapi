@@ -44,7 +44,7 @@ $(document).on('ready', function(){
 		.then(function(data){
 			$('#act-name').typeahead({ 
 				items:10,  
-				showHintOnFocus: true, 
+				//showHintOnFocus: true, 
 				source: data.acts.map(function(a){
 					return a[0];
 				}),
@@ -63,7 +63,7 @@ $(document).on('ready', function(){
 			.appendTo(topLevel.parent())
 			.on('click', function(){
 				legislation.toggleClass('expanded');
-			})
+			});
 		}
 	}
 
@@ -122,17 +122,31 @@ $(document).on('ready', function(){
 			value = $('#value').val(),
 			url = '/act/';
 		url += act+'/';
+		if(find === 'full'){
+			return getFullAct(act);
+		}
 		if(hasChanged() && value){
 			if(find !== 'section'){
-				url += find+'/';
+				url += find +'/';
 			}
 			url += value;
 			$.get(url)
 				.then(function(response){
-					$('.result').remove();
 					return response;
 				})
-				.then(updateLegislation);
+				.then(updateLegislation)
+				.then(appendCloseControl)		
+		}
+	}
+
+	function getFullAct(act){
+		if(hasChanged() && act){
+			$.get('/act/'+act+'/full')
+				.then(function(response){
+					return response;
+				})
+				.then(updateLegislation)
+				.then(appendCloseControl)								
 		}
 	}
 
@@ -140,7 +154,8 @@ $(document).on('ready', function(){
 		var value = $('#query').val();
 		if(hasChanged() && value){
 			$.get('/full_search/'+value)
-				.then(updateLegislation);
+				.then(updateLegislation)
+				.then(appendCloseControl)				
 		}
 	}
 
@@ -169,8 +184,9 @@ $(document).on('ready', function(){
 		$('#valueLabel').text($('#find').find('option:selected').text());
 	});
 	$('#find').trigger('change');
-	$('.legislation_finder').on('change keyup', '#act-name, #find, #value', debounce(getActs, 300));
-	$('.legislation_finder').on('change keyup', '#query', debounce(getQuery, 300));
+
+	$('.legislation_finder').on('click', '#submit', getActs);
+
 
 	$('#find, #type').trigger('change');
 

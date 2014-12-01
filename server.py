@@ -78,7 +78,6 @@ def generate_range(string):
     tokens = string.split('-')
 
 
-
 def find_node(tree, keys):
     node = tree
     try:
@@ -96,6 +95,7 @@ def find_node(tree, keys):
                 #if '-' in :
                 #    a = " or ".join(["label = '%s'" % x for x in generate_range(a)])
                 if '+' in a:
+
                     #a = "label = ('%s')" % "','".join(a.split('+'))
                     a = " or ".join(["label = '%s'" % x for x in a.split('+')])
                 else:
@@ -193,7 +193,7 @@ def full_search(query):
                 "field": "content"
               }
             }
-  }
+        }
         })
     print("Got %d Hits:" % result['hits']['total'])
     return result
@@ -231,6 +231,13 @@ def acts(act='', query=''):
     except Exception, e:
         return jsonify(error=str(e))
     
+@app.route('/act/<string:act>/full')
+def full(act):
+    try:
+        result = str(tohtml(get_act(act))).decode('utf-8')
+    except Exception, e:
+        result = {'error': e}
+    return render_template('base.html', content=result) 
 
 @app.route('/act/<path:act>/definition/<string:query>')
 def act_definition(act='', query=''):
@@ -294,6 +301,7 @@ def search(query):
         result = {'error': e}
     print result
     return render_template('search_results.html', content=result)
+
 
 def connect_db():
     conn = psycopg2.connect("dbname=legislation user=josh")

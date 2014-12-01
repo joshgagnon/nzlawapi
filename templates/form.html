@@ -4,6 +4,7 @@
         <div class="">
             <select id="type" name="type" class="form-control">
                 <option value="act">Act</option>
+                <option value="case">Case</option>
                 <option value="search">General Search</option>
             </select>
         </div>
@@ -23,6 +24,7 @@
                 <option value="part">Part</option>
                 <option value="schedule">Schedule</option>
                 <option value="definition">Definition</option>
+                <option value="full">Whole</option>
                 <option value="search">Search</option>
             </select>
         </div>
@@ -33,12 +35,17 @@
             <input type="text" class="form-control" name="value" id="value" />
         </div>
     </div>
-    <div class="form-group  switchable  visible-search">
+    <div class="form-group  switchable  visible-search visible-case">
         <label for="query" id="queryLabel" class="control-label">Query</label>
         <div class="">
             <input type="text" class="form-control" name="query" id="query" />
         </div>
     </div>    
+    <div class="text-center">
+     
+            <input type="button" class="btn btn-primary" name="submit" id="submit" value="Search"/>
+     
+    </div>       
     <div class="form-group error">
         No Results Found
     </div>

@@ -76,6 +76,10 @@ body{
     cursor:pointer;
 }
 
+.legislation .history-note{
+  display:none;
+}
+
 .legislation .close-page{
   top:6px;
   bottom:initial;
