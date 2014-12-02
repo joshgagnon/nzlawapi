@@ -39,12 +39,15 @@ def el_class_style(el):
 def style_to_dict(line):
 	return dict([x.split(':') for x in line.split(';') if x])
 
+def font_size(el):
+	return int(re.match(r'\d+', el_class_style(el).get('font-size', '16px')).group())
+
+
 
 def get_info(doc_id, json_data):
 	for j in json_data['response']['docs']:
 		if j['DocumentName'] == doc_id + '.pdf':
 			return j
-
 
 def neutral_cite(soup):
 	try:
@@ -137,7 +140,7 @@ def parse_versus(soup):
 	plantiff = []
 	defendant = []
 	# must be x v y
-	v = (e for e in soup.find_all('span') if e.text.lower() == 'v').next().parent.parent
+	v = (e for e in soup.find_all('div') if e.text.lower() == 'v').next()
 	# plantiff is every until neutral citation
 	court_num = (e for e in v.previous_siblings if courtfile_num.match(e.text)).next().text
 	between_el = prev_tag(v, 'div')
@@ -147,7 +150,7 @@ def parse_versus(soup):
 		between_el = prev_tag(between_el, 'div')
 	# defendant is everything until no more capitals
 	between_el = next_tag(v, 'div')
-	while between_el.text and between_el.text.upper() == between_el.text:
+	while between_el.text and ':' not in between_el.text:
 		defendant += [between_el.text]
 		between_el = next_tag(between_el, 'div')
 	results[court_num] = {
@@ -159,19 +162,33 @@ def parse_versus(soup):
 
 def parties(soup):
 	between = ['AND BETWEEN', 'BETWEEN']
-	if any([e for e in soup.find_all('span') if e.text in between]):
+	if any([e for e in soup.find_all('div') if e.text in between]):
 		return parse_between(soup)
-	else:
+	elif any([e for e in soup.find_all('div') if e.text.lower() == 'v']):
 		return parse_versus(soup)
+	else:
+		result = {}
+		result[court_file(soup)] = {}
+		return result
 
 def element_after_column(soup, strings):
-	return next_tag((e for e in soup.find_all('div') if e.text in strings).next(), 'div')
+	el = (e for e in soup.find_all('div') if e.text in strings).next()
+	while get_left_position(el) == get_left_position(next_tag(el, 'div')):
+		el = next_tag(el, 'div')
+	return next_tag(el, 'div')
 
 def text_after_column(soup, strings):
 	try:
 		return element_after_column(soup, strings).text
 	except StopIteration:
 		pass
+
+def texts_after_column(soup, strings):
+	try:
+		els = consecutive_align(element_after_column(soup, strings))
+		return ' '.join(els[0])
+	except StopIteration:
+		pass		
 
 def judgment(soup):
 	return text_after_column(soup, ['Judgment:', 'Sentence:', 'Sentenced:'])
@@ -191,6 +208,11 @@ def plea(soup):
 
 def received(soup):
 	return text_after_column(soup, ['received:'])
+
+
+def bench(soup):
+	return text_after_column(soup, ['Court:'])
+
 
 def find_bars(soup):
 
@@ -233,6 +255,7 @@ def waistband_el(soup):
 	# next, skip to court num, as title is at bottom
 	line_height = 10
 	el = first_el_after_bar(soup, bars)
+
 	while get_top_position(el) + line_height < bars[1][1] and get_page(el) <= bars[1][0]:
 		results.append(el.text)
 		el = next_tag(el, 'div')
@@ -246,7 +269,10 @@ def waistband(soup):
 def counsel(soup):
 	counsel_strings = ['Counsel:', 'Appearances:']
 	try:
-		counsel = next_tag((e for e in soup.find_all('div') if e.text in counsel_strings).next(), 'div')
+		def inclusion(el):
+			return el.text in counsel_strings and font_size(el) > 14
+
+		counsel = next_tag((e for e in soup.find_all('div') if inclusion(e)).next(), 'div')
 		return consecutive_align(counsel)[0]
 	except: pass
 	try:
@@ -266,17 +292,14 @@ def counsel(soup):
 	except: pass
 
 def matter(soup):
-	try:
-		result = {}
-		under = (e for e in soup.find_all('div') if e.text == 'UNDER').next()
-		result[under.text], matter_of = consecutive_align(next_tag(under, 'div'))
-		result[matter_of.text], pos = consecutive_align(next_tag(matter_of, 'div')) 
-		for k, i in result.items():
-			result[k] = ' '.join(i)
-		return result
-	except StopIteration:
-		return
-
+	result = {}
+	result['UNDER'] = texts_after_column(soup, ['UNDER'])
+	result['IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
+	result['IN THE ESTATE OF'] = texts_after_column(soup, ['IN THE ESTATE OF'])	
+	for k, i in result.items():
+		if not i:
+			del result[k]
+	return result
 
 def is_appeal(info):
 	if info['neutral_cite']:
@@ -310,6 +333,7 @@ def mangle_format(soup):
 	[flat_soup.append(x) for x in soup.select('body > div > *')]
 	return flat_soup
 
+
 def process_file(filename):
 	#print get_info(filename.replace('.html', ''), json_data)
 	with open(os.path.join(path, filename)) as f:
@@ -328,7 +352,8 @@ def process_file(filename):
 			'received': received(flat_soup),
 			'matter': matter(flat_soup),
 			'charge': charge(flat_soup),
-			'plea': plea(flat_soup)
+			'plea': plea(flat_soup),
+			'bench': bench(flat_soup)
 		}
 		if not results['waistband']:
 			raise 'dics'
@@ -340,20 +365,27 @@ def process_file(filename):
 success = 0
 fails = 0
 #files = [path+'/007da75b-44b1-45f4-aa6c-c43adb69c415.html']
-files = [path+'/01e4a31c-2afd-41dd-86ef-0573179e6a9e.html']
-files = os.listdir(path)
-try:
+#files = [path+'/01e4a31c-2afd-41dd-86ef-0573179e6a9e.html']
+#files = [path+'/ffecdbdb-e5d9-4d24-9430-32fcf630c4b4.html']
+files = [path+'/01e4a31c-2afd-41dd-86ef-0573179e6a9e.html',
+'fff55fd5-24b4-48df-b47f-9eab2e475d7e.html',
+'ffe96266-d738-4ac1-8f2f-2153ea36a1c6.html',
+'fff55fd5-24b4-48df-b47f-9eab2e475d7e.html',
+'fffc7d1c-bbd5-44ec-8439-8036f7952f97.html'
+]
+#files = os.listdir(path)
+with open('failed_files.txt', 'w') as failed_output:
 	for f in files:
 		if f.endswith('.html'):
 			try:
 				pprint.pprint(process_file(f))
 				success += 1
-			#except ValueError, e:
-			except Exception, e:
+			except ValueError, e:
+			#except Exception, e:
 				print e
+				failed_output.write(f)
+				failed_output.write('\n')
 				fails += 1
-#except ValueError:
-except Exception:
-	print 'error'
+
 print 'success: %d  fails: %d' % (success, fails)
 		#break

@@ -177,8 +177,6 @@ $(document).on('ready', function(){
 	}
 
 
-
-
 	$('.legislation_finder').on('change', '#type', function(){
 		var val = $(this).val();
 		$('.legislation_finder').find('.switchable').hide();
@@ -195,7 +193,6 @@ $(document).on('ready', function(){
 	$('#find').trigger('change');
 
 	$('.legislation_finder').on('click', '#submit', submit);
-
 
 	$('#find, #type').trigger('change');
 
