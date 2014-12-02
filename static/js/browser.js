@@ -23,6 +23,21 @@ function sidebar(){
 }
 
 
+function scrollTo($element){
+	$element.scrollintoview();
+}
+
+
+function fetch(url){
+	$('.legislation_finder').addClass('loading');	
+	return $.get(url)
+		.then(function(response){
+			$('.legislation_finder').removeClass('loading');	
+			return response;
+		});
+
+}
+
 $(document).on('ready', function(){
 
 	sidebar();
@@ -40,7 +55,7 @@ $(document).on('ready', function(){
 	}
 
 
-	$.get('/acts.json')
+	fetch('/acts.json')
 		.then(function(data){
 			$('#act-name').typeahead({ 
 				items:10,  
@@ -98,7 +113,10 @@ $(document).on('ready', function(){
 			result.appendTo('.legislation_viewer');
 			$('.legislation_finder .error').hide();
 			appendExpandControl(result);
-			updateReferences();
+			console.log(result)
+			appendCloseControl(result);
+			scrollTo(result);
+			//updateReferences();
 		}else{
 			$('.legislation_finder .error').show();
 		}
@@ -116,46 +134,38 @@ $(document).on('ready', function(){
 	}
 
 
-	function getActs(){
+	function submit(event){
 		var act = $('#act-name').val().toLowerCase().replace(/ /g, ''),
 			find = $('#find').val(),
 			value = $('#value').val(),
 			url = '/act/';
 		url += act+'/';
 		if(find === 'full'){
-			return getFullAct(act);
+			getFullAct(act);
 		}
-		if(hasChanged() && value){
+		else if(hasChanged() && value){
 			if(find !== 'section'){
 				url += find +'/';
 			}
 			url += value;
-			$.get(url)
-				.then(function(response){
-					return response;
-				})
-				.then(updateLegislation)
-				.then(appendCloseControl)		
+			fetch(url)
+				.then(updateLegislation)	
 		}
+		return false;
 	}
 
 	function getFullAct(act){
 		if(hasChanged() && act){
-			$.get('/act/'+act+'/full')
-				.then(function(response){
-					return response;
-				})
-				.then(updateLegislation)
-				.then(appendCloseControl)								
+			fetch('/act/'+act+'/full')
+				.then(updateLegislation)							
 		}
 	}
 
 	function getQuery(){
 		var value = $('#query').val();
 		if(hasChanged() && value){
-			$.get('/full_search/'+value)
-				.then(updateLegislation)
-				.then(appendCloseControl)				
+			fetch('/full_search/'+value)
+				.then(updateLegislation)			
 		}
 	}
 
@@ -163,7 +173,6 @@ $(document).on('ready', function(){
 		var link = $(event.target).attr('href');
 		$.get(link)
 			.then(updateLegislation)
-			.then(appendCloseControl)
 		return false;
 	}
 
@@ -185,7 +194,7 @@ $(document).on('ready', function(){
 	});
 	$('#find').trigger('change');
 
-	$('.legislation_finder').on('click', '#submit', getActs);
+	$('.legislation_finder').on('click', '#submit', submit);
 
 
 	$('#find, #type').trigger('change');

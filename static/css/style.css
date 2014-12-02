@@ -104,12 +104,13 @@ body{
         content:"-";
 }
 
-
 .legislation_references{
   display:none;
 }
-
-
+.legislation_viewer{
+  height:100%;
+  overflow:auto;
+}
 /*
 .legislation:before, .legislation:after {
   content: "";
@@ -170,9 +171,22 @@ height:100%;
 padding-left: 10px;
 }
 
+.legislation_finder #submit_loading{
+  display:none;
+}
+.legislation_finder.loading #submit{
+  display:none;
+}
+.legislation_finder.loading #submit_loading{
+  display:initial;
+}
+
+
 .legislation_finder .error{
     color:#ff0000;
     display:none;
+    margin-top:15px;
+    text-align:center;
 }
 
 /* bootstrap fixes */
@@ -234,3 +248,20 @@ margin-right: 0;
   position: fixed;
   width: inherit;
 }
+
+/* loading bs */
+.glyphicon-refresh-animate {
+    -animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+

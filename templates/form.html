@@ -12,7 +12,7 @@
     <div class="form-group switchable visible-act">
         <label for="act-name" class="control-label">Act</label>
         <div class="">
-            <input type="text" class="form-control" name="act-name" id="act-name" />
+            <input type="text" class="form-control" name="act-name" id="act-name"  autocomplete="off"/>
         </div>
     </div>
 
@@ -42,11 +42,15 @@
         </div>
     </div>    
     <div class="text-center">
-     
-            <input type="button" class="btn btn-primary" name="submit" id="submit" value="Search"/>
-     
+
+            <button id="submit" class="btn btn-primary">Search</button>
+            <button id="submit_loading" class="btn btn-info"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Search</button>
     </div>       
     <div class="form-group error">
         No Results Found
     </div>
+
+
+        
+
 </form>
