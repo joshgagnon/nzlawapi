@@ -6,7 +6,16 @@ import re
 import pprint
 from PIL import Image
 
-courtfile_num = re.compile(r'^(SC |CA )?(CA|SC|CIV|CRI):?[-0-9/,(and) ]{2,}$')
+
+courtfile_variants = [
+	'(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to) ]{2,}',
+	'T NO\. S\d{4,}',
+	'(S|T)\d{4,}',
+	'B \d+IM\d+',
+	'\d{2,}\/\d{2,}'
+]
+
+courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants))
 
 path = '/Users/josh/legislation_archive/justice'
 json_path = '/Users/josh/legislation_archive/justice.json'
@@ -31,10 +40,13 @@ def left_margin(soup):
 	return get_left_position(soup.find('div'))
 
 def el_class_style(el):
-	class_name = el.find('span').attrs['class'][0]
-	sheet = (e for e in el.previous_siblings if e.name == 'style').next().text.split()
-	line = (s for s in sheet if s.startswith('.'+class_name)).next().replace('.'+class_name, '')[1:-1]
-	return style_to_dict(line)
+	try:
+		class_name = el.find('span').attrs['class'][0]
+		sheet = (e for e in el.previous_siblings if e.name == 'style').next().text.split()
+		line = (s for s in sheet if s.startswith('.'+class_name)).next().replace('.'+class_name, '')[1:-1]
+		return style_to_dict(line)
+	except (AttributeError, StopIteration):
+		return {}
 
 def style_to_dict(line):
 	return dict([x.split(':') for x in line.split(';') if x])
@@ -70,6 +82,13 @@ def full_citation(soup):
 	court_str = court(soup)[0]
 	result = []
 	el = soup.find('div')
+	# first element must contain some letters
+	letters = re.compile(r'.*\w.*')
+	while not letters.match(el.text):
+		el = next_tag(el, 'div')
+	# can't be bold
+	while el_class_style(el).get('font-weight') == 'bold':
+		el = next_tag(el, 'div')	
 	top = get_top_position(el)
 	while top <= get_top_position(el):
 		result += [el.text]
@@ -113,7 +132,10 @@ def parse_between(soup):
 	
 	while el.text in between:
 		# look back to get court_num
-		court_num = (e for e in el.previous_siblings if courtfile_num.match(e.text)).next().text
+		try:
+			court_num = (e for e in el.previous_siblings if courtfile_num.match(e.text)).next().text
+		except:
+			court_num = "UNKNOWN"
 		el = next_tag(el, 'div')
 		plantiff = []
 		defendant = []
@@ -226,6 +248,8 @@ def find_bars(soup):
 		page_number = int(image_el.attrs['name'])
 		image_path = os.path.join(path, image_el.attrs['src'])
 		im = Image.open(image_path)
+		width, height = int(image_el.attrs['width']), int(image_el.attrs['height'])
+		im = im.resize((width, height), Image.NEAREST) 
 		pixels = im.load()
 		x = im.size[0]//2
 		previous = 0
@@ -235,6 +259,8 @@ def find_bars(soup):
 				previous = y
 				if len(results) == 2:
 					return results
+
+	return results
 
 def get_page(el):
 	return int(el.find_previous_sibling('img').attrs['name'])
@@ -255,10 +281,15 @@ def waistband_el(soup):
 	# next, skip to court num, as title is at bottom
 	line_height = 10
 	el = first_el_after_bar(soup, bars)
+	if len(bars) == 2: 
+		while get_top_position(el) + line_height < bars[1][1] and get_page(el) <= bars[1][0]:
+			results.append(el.text)
+			el = next_tag(el, 'div')
+	else: # if no second bar, get bold
+		while el_class_style(el).get('font-weight') == 'bold':
+			results.append(el.text)
+			el = next_tag(el, 'div')	
 
-	while get_top_position(el) + line_height < bars[1][1] and get_page(el) <= bars[1][0]:
-		results.append(el.text)
-		el = next_tag(el, 'div')
 	return [' '.join(results), el]
 
 
@@ -311,7 +342,7 @@ def appeal_result(soup):
 	results = {}
 	position = re.search(r'.*(left:\d+).*', el.attrs['style']).group(1)
 	text_re = re.compile('.*[a-zA-Z]+.*')
-	while position in el.attrs['style']:
+	while position in el.attrs['style'] and el_class_style(el).get('font-weight') == 'bold':
 		key = el.text
 		if not text_re.match(key):
 			break
@@ -331,6 +362,8 @@ def mangle_format(soup):
 	for div in soup.select('body > div'):
 		div.find('img').attrs['name'] = div.find_previous_sibling('a').attrs['name']
 	[flat_soup.append(x) for x in soup.select('body > div > *')]
+	# remove things with white text.  
+	[el.extract() for el in flat_soup.select('div') if el_class_style(el).get('color') == '#ffffff']
 	return flat_soup
 
 
@@ -356,7 +389,7 @@ def process_file(filename):
 			'bench': bench(flat_soup)
 		}
 		if not results['waistband']:
-			raise 'dics'
+			raise Exception('must have waistband')
 		if is_appeal(results):
 			results['appeal_result'] = appeal_result(flat_soup)
 		return results
@@ -367,21 +400,26 @@ fails = 0
 #files = [path+'/007da75b-44b1-45f4-aa6c-c43adb69c415.html']
 #files = [path+'/01e4a31c-2afd-41dd-86ef-0573179e6a9e.html']
 #files = [path+'/ffecdbdb-e5d9-4d24-9430-32fcf630c4b4.html']
-files = [path+'/01e4a31c-2afd-41dd-86ef-0573179e6a9e.html',
-'fff55fd5-24b4-48df-b47f-9eab2e475d7e.html',
-'ffe96266-d738-4ac1-8f2f-2153ea36a1c6.html',
-'fff55fd5-24b4-48df-b47f-9eab2e475d7e.html',
-'fffc7d1c-bbd5-44ec-8439-8036f7952f97.html'
-]
-#files = os.listdir(path)
+#files = [path+'/01e4a31c-2afd-41dd-86ef-0573179e6a9e.html',
+#'fff55fd5-24b4-48df-b47f-9eab2e475d7e.html',
+#'ffe96266-d738-4ac1-8f2f-2153ea36a1c6.html',
+#'fff55fd5-24b4-48df-b47f-9eab2e475d7e.html',
+#'fffc7d1c-bbd5-44ec-8439-8036f7952f97.html',
+#'03816914-59bd-4ed6-86e1-f4603f6dcefa.html'
+#]
+files = os.listdir(path)
+
 with open('failed_files.txt', 'w') as failed_output:
+	#files = failed_output.readlines()
+	#files = ['29602cbe-d0cf-4806-9c4b-02fab246ceb0.html']
 	for f in files:
+		f = f.strip();
 		if f.endswith('.html'):
 			try:
 				pprint.pprint(process_file(f))
 				success += 1
-			except ValueError, e:
-			#except Exception, e:
+			#except ValueError, e: pass
+			except Exception, e:
 				print e
 				failed_output.write(f)
 				failed_output.write('\n')
