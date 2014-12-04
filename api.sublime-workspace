@@ -4,6 +4,126 @@
 		"selected_items":
 		[
 			[
+				"submit",
+				"submitAct"
+			],
+			[
+				"page",
+				"page_number"
+			],
+			[
+				"cour",
+				"courtfile_variants"
+			],
+			[
+				"font",
+				"font_size"
+			],
+			[
+				"legis",
+				"legislation_finder"
+			],
+			[
+				"get",
+				"get_top_position"
+			],
+			[
+				"wa",
+				"waistband"
+			],
+			[
+				"lin",
+				"line_height"
+			],
+			[
+				"next_",
+				"next_sibling"
+			],
+			[
+				"find_",
+				"find_previous_sibling"
+			],
+			[
+				"first",
+				"first_el_after_top"
+			],
+			[
+				"top",
+				"get_top_position"
+			],
+			[
+				"find",
+				"find_first_bar"
+			],
+			[
+				"left",
+				"get_left_position"
+			],
+			[
+				"wait",
+				"waistband_el"
+			],
+			[
+				"de",
+				"defendant"
+			],
+			[
+				"plant",
+				"plantiffs"
+			],
+			[
+				"next",
+				"next_tag"
+			],
+			[
+				"cou",
+				"counsel_tag"
+			],
+			[
+				"counsel",
+				"counsel_strings"
+			],
+			[
+				"style",
+				"el_class_style"
+			],
+			[
+				"el",
+				"el_class_style"
+			],
+			[
+				"get_",
+				"get_left_position"
+			],
+			[
+				"just",
+				"judgement_strings"
+			],
+			[
+				"con",
+				"consecutive_align"
+			],
+			[
+				"neu",
+				"neutral_cite"
+			],
+			[
+				"def",
+				"defendant"
+			],
+			[
+				"parse",
+				"parse_versus"
+			],
+			[
+				"betwee",
+				"between_el"
+			],
+			[
+				"marg",
+				"margin-right"
+			],
+			[
 				"tex",
 				"text-decoration"
 			],
@@ -14,10 +134,6 @@
 			[
 				"va",
 				"value-of"
-			],
-			[
-				"def",
-				"defaultdict"
 			],
 			[
 				"tem",
@@ -32,10 +148,58 @@
 	"buffers":
 	[
 		{
-			"file": "templates/base.html",
+			"file": "server.py",
 			"settings":
 			{
-				"buffer_size": 920,
+				"buffer_size": 10842,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "templates/case_search_results.html",
+			"settings":
+			{
+				"buffer_size": 3431,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/js/browser.js",
+			"settings":
+			{
+				"buffer_size": 5090,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pop_el.py",
+			"settings":
+			{
+				"buffer_size": 993,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "extract_from_xml.py",
+			"settings":
+			{
+				"buffer_size": 3588,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/css/style.css",
+			"settings":
+			{
+				"buffer_size": 5165,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/js/smoothscroll.js",
+			"settings":
+			{
+				"buffer_size": 14291,
 				"line_ending": "Unix"
 			}
 		},
@@ -48,82 +212,38 @@
 			}
 		},
 		{
+			"file": "parse_case.py",
+			"settings":
+			{
+				"buffer_size": 15999,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "templates/form.html",
 			"settings":
 			{
-				"buffer_size": 1724,
+				"buffer_size": 2146,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "static/css/style.css",
+			"contents": "get solicitors\n\n\nAdministration Act 1969\nSection 77\n\n01de5053-2a3d-48f0-aa0d-3ee82b09ee33.html\n\n\nfile:///Users/josh/legislation_archive/justice/fffc7d1c-bbd5-44ec-8439-8036f7952f97.html\n# pulling counsellors instead of appearances,\n#\n\n\nfff55fd5-24b4-48df-b47f-9eab2e475d7e.pdf\n# judgement fucked up\n\n\n# party names joined based on capitals\n\n# appeal get rid of dictionary, join based on captial letters\n\n\n01e4a31c-2afd-41dd-86ef-0573179e6a9e\nmatter\n\n\n\n#Judicature Act 1908\n#schedule \n\nthe text in the top right hand corner of this doc https://forms.justice.govt.nz/search/Documents/pdf/jdo/84/alfresco/service/api/node/content/workspace/SpacesStore/058b1dde-e433-4149-a1ed-8f15cc4a6aa3/058b1dde-e433-4149-a1ed-8f15cc4a6aa3.pdf",
 			"settings":
 			{
-				"buffer_size": 3757,
-				"line_ending": "Unix"
+				"buffer_size": 726,
+				"line_ending": "Unix",
+				"name": "get solicitors"
 			}
 		},
 		{
-			"file": "source.xml",
-			"settings":
-			{
-				"buffer_size": 5575,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "static/js/browser.js",
-			"settings":
-			{
-				"buffer_size": 3425,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "server.py",
-			"settings":
-			{
-				"buffer_size": 9201,
-				"line_ending": "Unix"
-			}
-		},
-		{
+			"contents": "--create table documents (id serial primary key, text text, type text, document text);\n\n\n--CREATE INDEX text_index ON documents USING gin(to_tsvector('english', text));\n\n--alter table acts add column document_id integer;\n\n--alter table acts add constraint act_fk foreign key (document_id) references documents (id);\n\n--alter table acts add column repealed boolean default false;\n--delete from acts;\n--delete from documents;\n\n\n\nselect a.id, a.title, ts_rank_cd(d.searchable, to_tsquery('finance & shares')) as rank\nfrom documents d join acts a on a.document_id = d.id \nWHERE d.searchable @@ to_tsquery('english', 'finance & shares') and a.repealed = False\nGROUP BY a.id, a.title, a.year, ts_rank_cd(d.searchable, to_tsquery('finance & shares'))\nORDER BY rank desc limit 100;\n\nselect id, title, max(version) from acts group by id, title;\n\n--alter table documents drop column text;\n--alter table documents add column searchable tsvector;\n\n\n--create table id_lookup(id text primary key, parent_id text, mapper text);\n\n\ncreate table cases (\n\nid text primary key,\ndocument_id integer, \nneutral_citation text,\ncourt text[],\nparties json,\ncounsel text[],\nfull_citation text,\njudgment text,\nhearing text,\nmatter json,\nreceived text,\ncharge text,\nplea text,\nwaistband text,\nappeal_result json,\nbench text\n\n)\n",
 			"file": "db_stuff",
+			"file_size": 934,
+			"file_write_time": 130613625970000000,
 			"settings":
 			{
-				"buffer_size": 934,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "extract_from_xml.py",
-			"settings":
-			{
-				"buffer_size": 3566,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/josh/Downloads/0BcYmmL4pj/index.html",
-			"settings":
-			{
-				"buffer_size": 17579,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "transform.xslt",
-			"settings":
-			{
-				"buffer_size": 12184,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "static/js/bootstrap3-typeahead.js",
-			"settings":
-			{
-				"buffer_size": 11854,
+				"buffer_size": 1298,
 				"line_ending": "Unix"
 			}
 		}
@@ -131,9 +251,17 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 392.0,
+		"height": 67.0,
 		"selected_items":
 		[
+			[
+				"beaut",
+				"HTMLBeautify"
+			],
+			[
+				"spaces",
+				"Indentation: Convert to Spaces"
+			],
 			[
 				"pre",
 				"HTMLPrettify"
@@ -145,10 +273,6 @@
 			[
 				"prety",
 				"HTMLPrettify"
-			],
-			[
-				"beaut",
-				"HTMLBeautify"
 			],
 			[
 				"indent sp",
@@ -294,41 +418,62 @@
 	],
 	"file_history":
 	[
-		"/Users/josh/nzlawapi/tmp",
-		"/Users/josh/nzlawapi/server.py",
+		"/Users/josh/nzlawapi/parse_case.py",
+		"/Users/josh/nzlawapi/templates/search_results.html",
+		"/Users/josh/nzlawapi/static/css/bootstrap.css",
+		"/Users/josh/nzlawapi/static/js/main.js",
+		"/Users/josh/nzlawapi/transform.xslt",
+		"/Users/josh/nzlawapi/static/js/browser.js",
+		"/Users/josh/nzlawapi/failed_files.txt",
+		"/Users/josh/nzlawapi/extract_from_xml.py",
+		"/Users/josh/nzlawapi/db_stuff",
+		"/Users/josh/nzlawapi/api.sublime-project",
 		"/Users/josh/nzlawapi/act-public-1993-0105.xml",
+		"/Users/josh/nzlawapi/__init__.py",
+		"/Users/josh/nzlawapi/.gitignore",
+		"/Users/josh/nzlawapi/static/css/legislation.css",
+		"/Users/josh/nzlawapi/pop_el.py",
+		"/Users/josh/nzlawapi/server.py",
+		"/Users/josh/nzlawapi/templates/base.html",
+		"/Users/josh/nzlawapi/pull_justice.py",
+		"/Users/josh/nzlawapi/static/js/underscore-min.js",
+		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.js",
+		"/Users/josh/nzlawapi/static/fonts/glyphicons-halflings-regular.woff",
+		"/Users/josh/Downloads/0BcYmmL4pj/index.html",
+		"/Users/josh/nzlawapi/static/js/smoothscroll.js",
+		"/Users/josh/nzlawapi/tests/schedule3.html",
 		"/Users/josh/nzlawapi/style.css",
+		"/Users/josh/nzlawapi/static/css/style.css",
+		"/Users/josh/nzlawapi/static/fonts/glyphicons-halflings-regular.svg",
 		"/Users/josh/nzlawapi/tests.py",
+		"/Users/josh/nzlawapi/static/css/bootstrap.css.map",
+		"/Users/josh/nzlawapi/templates/browser.html",
+		"/Users/josh/nzlawapi/tests/section224.html",
+		"/Users/josh/nzlawapi/source.xml",
+		"/Users/josh/nzlawapi/templates/form.html",
+		"/Users/josh/nzlawapi/static/css/bootstrap.min.css",
+		"/Users/josh/nzlawapi/tmp",
+		"/Users/josh/nzlawapi/static/js/jquery-2.1.1.min.js",
 		"/Users/josh/nzlawapi/target.xml",
 		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.min.js",
 		"/Users/josh/nzlawapi/static/browser.js",
-		"/Users/josh/nzlawapi/static/js/browser.js",
 		"/Users/josh/nzlawapi/static/legislation.css",
 		"/Users/josh/nzlawapi/static/style.css",
-		"/Users/josh/nzlawapi/transform.xslt",
-		"/Users/josh/nzlawapi/templates/browser.html",
-		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.js",
 		"/Users/josh/nzlawapi/static/bootstrap3-typeahead.js",
 		"/Users/josh/nzlawapi/tests/section47.xml",
-		"/Users/josh/nzlawapi/extract_from_xml.py",
-		"/Users/josh/nzlawapi/tests/schedule3.html",
-		"/Users/josh/nzlawapi/api.sublime-project",
 		"/Users/josh/nzlawapi/static/bootstrap.min.css",
 		"/Users/josh/nzlawapi/static/main.js",
-		"/Users/josh/nzlawapi/__init__.py",
 		"/Users/josh/nzlawapi/static/bootstrap-select.min.js",
 		"/Users/josh/WorkingDays/README.md",
 		"/Users/josh/WorkingDays/working-days.css",
 		"/Users/josh/WorkingDays/working-days.js",
 		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
-		"/Users/josh/nzlawapi/templates/base.html",
 		"/Users/josh/nzlawapi/tests/section47.html",
 		"/Users/josh/nzlawapi/tests/section41.html",
 		"/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/act/public/1993/0105/120.0/096be8ed80ea0ed3.xml",
 		"/Users/josh/nzlawapi/tests/section41.xml",
 		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/Default/Default (OSX).sublime-keymap",
 		"/Users/josh/nzlawapi/readXML.py",
-		"/Users/josh/nzlawapi/source.xml",
 		"/Users/josh/nzlawapi/style_simple.css",
 		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings",
 		"/Users/josh/Desktop/test"
@@ -349,6 +494,50 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"case_search",
+			"case_sear",
+			"COURT(",
+			"bold",
+			"print",
+			"waistband",
+			"letters",
+			"letter",
+			"letters",
+			"\\w",
+			"print",
+			"waistband",
+			"court",
+			"appeal_resu",
+			"neutral_cite",
+			"bars",
+			"print",
+			"appeal_res",
+			"full_citat",
+			"full_citation",
+			"waistband",
+			"num",
+			"full_ci",
+			"print",
+			"neutral",
+			"parse_between",
+			"print",
+			"court_num",
+			"full_c",
+			"court_num",
+			"left",
+			"print",
+			"solic",
+			"json",
+			"neutral",
+			"remove",
+			"range",
+			"mouseleav",
+			"conse",
+			"get_page_one(soup)",
+			"console",
+			"close_page",
+			"read_file",
+			"ull_search",
 			"def-para",
 			"menu",
 			"ul",
@@ -420,6 +609,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"soup",
+			"close-page",
 			"get_act(act)",
 			"-10",
 			"-2",
@@ -436,30 +627,219 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "templates/base.html",
+					"file": "server.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 920,
+						"buffer_size": 10842,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								831,
-								831
+								10064,
+								10064
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3594.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "templates/case_search_results.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3431,
+						"regions":
+						{
+							"TagLint":
+							{
+								"flags": 2356,
+								"icon": "dot",
+								"regions":
+								[
+									[
+										383,
+										385
+									]
+								],
+								"scope": "variable.parameter"
+							}
+						},
+						"selection":
+						[
+							[
+								1327,
+								1327
 							]
 						],
 						"settings":
 						{
 							"is_xml": false,
 							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 275.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "static/js/browser.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5090,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								734,
+								734
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "pop_el.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 993,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								993,
+								954
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "extract_from_xml.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3588,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3549,
+								3549
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "static/css/style.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5165,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4132,
+								4132
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2304.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "static/js/smoothscroll.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14291,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12386,
+								12386
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
@@ -471,7 +851,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 7,
 					"file": "templates/browser.html",
 					"semi_transient": false,
 					"settings":
@@ -483,8 +863,8 @@
 						"selection":
 						[
 							[
-								27,
-								27
+								180,
+								180
 							]
 						],
 						"settings":
@@ -496,147 +876,26 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "templates/form.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1724,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1331,
-								1331
-							]
-						],
-						"settings":
-						{
-							"is_xml": false,
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "static/css/style.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3757,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2176,
-								2173
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1126.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "source.xml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5575,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2169,
-								2169
-							]
-						],
-						"settings":
-						{
-							"is_xml": true,
-							"syntax": "Packages/XML/XML.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 422.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "static/js/browser.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3425,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1965,
-								1965
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 760.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "server.py",
+					"buffer": 8,
+					"file": "parse_case.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9201,
+						"buffer_size": 15999,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5577,
-								5577
+								355,
+								355
 							]
 						],
 						"settings":
@@ -644,94 +903,36 @@
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1855.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "db_stuff",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 934,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								934,
-								934
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "extract_from_xml.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3566,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1902,
-								1855
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 153.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 9,
-					"file": "/Users/josh/Downloads/0BcYmmL4pj/index.html",
+					"file": "templates/form.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17579,
+						"buffer_size": 2146,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								198,
-								249
+								289,
+								289
 							]
 						],
 						"settings":
 						{
 							"is_xml": false,
 							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
@@ -740,86 +941,71 @@
 					},
 					"stack_index": 10,
 					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "transform.xslt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12184,
-						"regions":
-						{
-							"TagLint":
-							{
-								"flags": 2356,
-								"icon": "dot",
-								"regions":
-								[
-									[
-										4779,
-										4798
-									]
-								],
-								"scope": "variable.parameter"
-							}
-						},
-						"selection":
-						[
-							[
-								659,
-								659
-							]
-						],
-						"settings":
-						{
-							"is_xml": true,
-							"syntax": "Packages/XML/XML.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 121.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "static/js/bootstrap3-typeahead.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 11854,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2536,
-								2536
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 715.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
 				}
 			]
 		},
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 726,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								726,
+								485
+							]
+						],
+						"settings":
+						{
+							"auto_name": "get solicitors",
+							"is_xml": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "db_stuff",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1298,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1146,
+								1146
+							]
+						],
+						"settings":
+						{
+							"history_list_is_closing": true,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -851,7 +1037,7 @@
 		"cols":
 		[
 			0.0,
-			0.75067140517,
+			0.763601554644,
 			1.0
 		],
 		"rows":
@@ -877,24 +1063,136 @@
 		"selected_items":
 		[
 			[
-				"tran",
-				"transform.xslt"
-			],
-			[
-				"xml",
-				"extract_from_xml.py"
-			],
-			[
-				"server",
-				"server.py"
+				"case",
+				"parse_case.py"
 			],
 			[
 				"style",
 				"static/css/style.css"
 			],
 			[
+				"form",
+				"templates/form.html"
+			],
+			[
 				"brow",
 				"static/js/browser.js"
+			],
+			[
+				"search_",
+				"templates/search_results.html"
+			],
+			[
+				"server",
+				"server.py"
+			],
+			[
+				"el",
+				"pop_el.py"
+			],
+			[
+				"",
+				"extract_from_xml.py"
+			],
+			[
+				"parse",
+				"parse_case.py"
+			],
+			[
+				"db",
+				"db_stuff"
+			],
+			[
+				"base.html",
+				"templates/base.html"
+			],
+			[
+				"bas",
+				"templates/base.html"
+			],
+			[
+				"main.js",
+				"static/js/main.js"
+			],
+			[
+				"browser",
+				"static/js/browser.js"
+			],
+			[
+				"base.",
+				"templates/base.html"
+			],
+			[
+				"smot",
+				"static/js/smoothscroll.js"
+			],
+			[
+				"brows",
+				"static/js/browser.js"
+			],
+			[
+				"in",
+				"static/js/main.js"
+			],
+			[
+				"index",
+				"~/Downloads/0BcYmmL4pj/index.html"
+			],
+			[
+				"bro",
+				"static/js/browser.js"
+			],
+			[
+				"form.",
+				"templates/form.html"
+			],
+			[
+				"style.",
+				"static/css/style.css"
+			],
+			[
+				"style.css",
+				"style.css"
+			],
+			[
+				"browser.js",
+				"static/js/browser.js"
+			],
+			[
+				".py",
+				"server.py"
+			],
+			[
+				"html",
+				"templates/form.html"
+			],
+			[
+				"br",
+				"templates/browser.html"
+			],
+			[
+				"ahead",
+				"static/js/bootstrap3-typeahead.js"
+			],
+			[
+				"pop",
+				"pop_el.py"
+			],
+			[
+				"stle",
+				"static/css/style.css"
+			],
+			[
+				"main.j",
+				"static/js/main.js"
+			],
+			[
+				"tran",
+				"transform.xslt"
+			],
+			[
+				"xml",
+				"extract_from_xml.py"
 			],
 			[
 				"type",
@@ -911,26 +1209,6 @@
 			[
 				"typeahead",
 				"static/bootstrap3-typeahead.js"
-			],
-			[
-				"base.",
-				"templates/base.html"
-			],
-			[
-				"browser",
-				"static/browser.js"
-			],
-			[
-				"bro",
-				"static/browser.js"
-			],
-			[
-				"main.js",
-				"static/main.js"
-			],
-			[
-				"",
-				"server.py"
 			],
 			[
 				"tmp",

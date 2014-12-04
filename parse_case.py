@@ -139,7 +139,9 @@ def parse_between(soup):
     plantiff_patterns = [
         re.compile('.*Plaintiff[s]?'), 
         re.compile('.*Applicant[s]?'), 
-        re.compile('.*Appellant[s]?')]
+        re.compile('.*Appellant[s]?'),
+        re.compile('.*Insolvent[s]?')
+        ]
 
     # while not at next section
     
@@ -476,7 +478,7 @@ es = Elasticsearch()
 
 with open('failed_files.txt', 'r') as failed_output:
     files = failed_output.readlines()
-#files = ['defd75fc-e476-4c75-baa8-43780ae11415.html']
+files = ['51cf1a7d-ef4e-4c11-83c1-19c035a5921e.html']
 #with open('failed_files.txt', 'w') as failed_output:
     #files = ['29602cbe-d0cf-4806-9c4b-02fab246ceb0.html']
 for f in files:
@@ -486,7 +488,7 @@ for f in files:
             data = process_file(f)
             delete_db(cur, data)
             insert_db(cur, data)
-            print data
+            print pprint.pprint(data)
             insert_es(es, data)
             success += 1
         except NoText:

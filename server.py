@@ -4,12 +4,14 @@ from lxml.etree import tostring
 from itertools import chain
 from flask import Flask
 from operator import itemgetter
-from flask import render_template, json, jsonify, g
+from flask import render_template, json, jsonify, g, request, send_from_directory
 from flask.json import JSONEncoder
 import psycopg2
 import datetime
 import os
 import elasticsearch
+import re
+import os
 
 location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
@@ -178,6 +180,7 @@ def get_references_for_ids(ids):
         cur.execute(query, {'ids': ids})
         return {'references':cur.fetchall()}
 
+
 def full_search(query):
     result = es.search(index="legislation", body={  
         "from" : 0, "size" : 25, 
@@ -198,6 +201,17 @@ def full_search(query):
     print("Got %d Hits:" % result['hits']['total'])
     return result
 
+
+def case_search(query, offset=0):
+    result = es.search(index="legislation", doc_type="case", body={  
+        "from" : offset, "size" : 25, 
+            "sort" : [
+                "_score"
+            ],
+            "query": { "query_string" : { "query" : query } },    
+        })
+    print("Got %d Hits:" % result['hits']['total'])
+    return result
 
 class CustomJSONEncoder(JSONEncoder):
 
@@ -302,6 +316,19 @@ def search(query):
     print result
     return render_template('search_results.html', content=result)
 
+@app.route('/case/file/<path:filename>')
+def case_file(filename):
+    path = '/Users/josh/legislation_archive/justice'
+    return send_from_directory(path, filename)
+
+@app.route('/case/search')
+def case_search_route():
+    try:
+         result = case_search(re.escape(request.args.get('query', '')))
+    except Exception, e:
+        result = {'error': e}
+    print result
+    return render_template('case_search_results.html', content=result)    
 
 def connect_db():
     conn = psycopg2.connect("dbname=legislation user=josh")

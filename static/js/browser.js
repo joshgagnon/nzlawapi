@@ -28,9 +28,9 @@ function scrollTo($element){
 }
 
 
-function fetch(url){
+function fetch(url, query){
 	$('.legislation_finder').addClass('loading');	
-	return $.get(url)
+	return $.get(url, query)
 		.then(function(response){
 			$('.legislation_finder').removeClass('loading');	
 			return response;
@@ -135,6 +135,30 @@ $(document).on('ready', function(){
 
 
 	function submit(event){
+		switch($('#type').val()){
+			case "act":
+				submitAct();
+				break;
+			case "case":
+				submitCase();
+				break;
+
+		}
+
+		return false;
+	}
+
+	function submitCase(){
+		var query = $('#query').val(),
+			url = "/case/search"
+		if(query){
+			fetch(url, {query: query})
+				.then(updateLegislation)	
+		}
+
+	}
+
+	function submitAct(){
 		var act = $('#act-name').val().toLowerCase().replace(/ /g, ''),
 			find = $('#find').val(),
 			value = $('#value').val(),
@@ -142,7 +166,7 @@ $(document).on('ready', function(){
 		url += act+'/';
 		if(find === 'full'){
 			getFullAct(act);
-		}
+		}	
 		else if(hasChanged() && value){
 			if(find !== 'section'){
 				url += find +'/';
@@ -151,7 +175,6 @@ $(document).on('ready', function(){
 			fetch(url)
 				.then(updateLegislation)	
 		}
-		return false;
 	}
 
 	function getFullAct(act){
@@ -164,7 +187,7 @@ $(document).on('ready', function(){
 	function getQuery(){
 		var value = $('#query').val();
 		if(hasChanged() && value){
-			fetch('/full_search/'+value)
+			fetch('/full_search/', {query: value})
 				.then(updateLegislation)			
 		}
 	}
@@ -193,6 +216,9 @@ $(document).on('ready', function(){
 	$('#find').trigger('change');
 
 	$('.legislation_finder').on('click', '#submit', submit);
+	$('.legislation_finder').on('click', '#submit_loading', function(){
+		return false;
+	});
 
 	$('#find, #type').trigger('change');
 

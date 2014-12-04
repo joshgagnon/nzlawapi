@@ -170,7 +170,9 @@ height:100%;
 .legislation_finder{
 padding-left: 10px;
 }
-
+.legislation_finder .submit{
+  width:80px;
+}
 .legislation_finder #submit_loading{
   display:none;
 }
@@ -211,7 +213,21 @@ padding-left: 10px;
   margin-left:16px;
 }
 
+table > tbody > tr > td.table_holding_cell{
+  padding:0;
+}
+.table_holding_cell > table.table {
+background-color: initial;
+margin-bottom: 0;
 
+}
+.table_holding_cell table tr:nth-child(1) td{
+  border:none;
+}
+.case_results li>table>tbody>tr>td:nth-child(1){
+  font-weight: bold;
+  width:100px
+}
 
 /* side bar bs */
 .box {
