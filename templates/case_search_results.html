@@ -1,0 +1,157 @@
+<div>
+	<div class="result case_results">
+		<span class="search_count">Found {{ content['hits']['total'] }} Results</span>
+		<ul>
+			{% if content['hits']['total'] %}
+				{% for result in content['hits']['hits'] %}
+					<li>
+						<h5>
+						{{ result['_source']['full_citation'] }}
+						</h5>
+						<table class="table table-striped">
+							<tr>
+								<td>Document</td>
+								<td ><a href="/case/file/{{ result['_source']['id'].replace('.html', '.pdf') }}">PDF</a>
+							</tr>						
+							<tr>
+								<td>Court</td>
+								<td >{{ ', '.join(result['_source']['court']) }}</td>
+							</tr>
+							{% if result['_source']['neutral_citation']  %}
+							<tr>
+								<td>
+									 Neutral Citation
+								</td>
+								<td>
+									{{result['_source']['neutral_citation'] }}
+								</td>
+							</tr>
+							{% endif %}
+
+							<tr>
+								<td >Parties</td>
+								<td class="table_holding_cell">
+								<table class="table">
+
+								{% for k, v in result['_source']['parties'].iteritems() %}
+									<tr >
+										<td rowspan="2">{{ k }}</td>
+				
+										<td>Plantiffs</td>
+										<td>{{ '<br/>'.join(v['plantiffs'])|safe }}</td>
+									</tr>
+									<tr>
+										<td>Defendants</td>
+										<td>{{ '<br/>'.join(v['defendants'])|safe }}</td>
+									</tr>
+								{% endfor %}
+								</table>
+								</td>
+							</tr>
+							{% if result['_source']['matter']  %}
+							<tr>
+								<td >Matter</td>
+								<td class="table_holding_cell">
+								<table class="table">
+
+								{% for k, v in result['_source']['matter'].iteritems() %}
+									<tr >
+										<td >{{ k }}</td>
+										<td>{{ v }}</td>
+				
+									</tr>
+								{% endfor %}
+								</table>
+								</td>
+							</tr>
+							{% endif %}
+							{% if result['_source']['counsel']  %}
+							<tr>
+								<td>
+									Counsel
+								</td>
+								<td>
+									{{'<br/>'.join(result['_source']['counsel'] )|safe }}
+								</td>
+							</tr>
+								{% endif %}
+							{% if result['_source']['bench']  %}
+							<tr>
+								<td>
+									Bench
+								</td>
+								<td>
+									{{result['_source']['bench'] }}
+								</td>
+							</tr>
+		
+							{% endif %}
+							{% if result['_source']['judgment']  %}
+							<tr>
+								<td>
+									Judgment
+								</td>
+								<td>
+									{{result['_source']['judgment'] }}
+								</td>
+							</tr>
+							{% endif %}
+
+							{% if result['_source']['hearing']  %}
+							<tr>
+								<td>
+									Hearing
+								</td>
+								<td>
+									{{result['_source']['hearing'] }}
+								</td>
+							</tr>
+							{% endif %}
+							{% if result['_source']['received']  %}
+							<tr>
+								<td>
+									Received
+								</td>
+								<td>
+									{{result['_source']['received'] }}
+								</td>
+							</tr>
+							{% endif %}
+							{% if result['_source']['charge']  %}
+							<tr>
+								<td>
+									Charge
+								</td>
+								<td>
+									{{result['_source']['charge'] }}
+								</td>
+							</tr>
+							{% endif %}
+							{% if result['_source']['plea']  %}
+							<tr>
+								<td>
+									Plea
+								</td>
+								<td>
+									{{result['_source']['plea'] }}
+								</td>
+							</tr>
+							{% endif %}														
+							<tr>
+								<td>
+									Waistband
+								</td>
+								<td>
+									{{ result['_source']['waistband'] }}
+								</td>
+							</tr>
+
+						</table>
+					</li>
+				{% endfor %}
+			{% endif %}
+		</ul>
+	</div>
+</div>
+
+
