@@ -11,20 +11,28 @@ import json
 
 
 courtfile_variants = [
-    '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to) ]{2,}',
+    '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
     'T NO\. S\d{4,}',
     '(S|T)\d{4,}',
     'B \d+IM\d+',
-    '\d{2,}\/\d{2,}'
+    '\d{2,}\/\d{2,}',
+    '\d{4}-\d{3}-\d{6}',
+    'AP \d{2}\/\d{4}',
+    '(CA|T )\d{2,}\/\d{2,}',
+    '(CIR|CRII)[- ]\d{4}-\d{2,}-\d{2,}' #typos, should delete
 ]
 
-courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants))
+courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
 path = '/Users/josh/legislation_archive/justice'
 json_path = '/Users/josh/legislation_archive/justice.json'
 
 #with open(json_path) as f:
 #   json_data = json.loads(f.read())
+
+
+class NoText(Exception):
+    pass
 
 def next_tag(el, name):
     el = el.next_sibling
@@ -58,6 +66,8 @@ def font_size(el):
     return int(re.match(r'\d+', el_class_style(el).get('font-size', '16px')).group())
 
 
+def is_bold(el):
+    return el_class_style(el).get('font-weight') == 'bold'
 
 def get_info(doc_id, json_data):
     for j in json_data['response']['docs']:
@@ -72,7 +82,7 @@ def neutral_cite(soup):
 
 def neutral_cite_el(soup):
     reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
-    el = (e for e in soup.find_all('div') if reg.match(e.text) and el_class_style(e).get('font-weight') == 'bold').next()
+    el = (e for e in soup.find_all('div') if reg.match(e.text) and is_bold(e)).next()
     return el
 
 
@@ -85,12 +95,12 @@ def full_citation(soup):
     court_str = court(soup)[0]
     result = []
     el = soup.find('div')
-    # first element must contain some letters
+    # first letterelement must contain some s
     letters = re.compile(r'.*\w.*')
     while not letters.match(el.text):
         el = next_tag(el, 'div')
     # can't be bold
-    while el_class_style(el).get('font-weight') == 'bold':
+    while is_bold(el):
         el = next_tag(el, 'div')    
     top = get_top_position(el)
     while top <= get_top_position(el):
@@ -100,7 +110,7 @@ def full_citation(soup):
 
 
 def court(soup):
-    reg = re.compile(r'.*OF NEW ZEALAND$')
+    reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
     el = (e for e in soup.select('div  span') if reg.match(e.text)).next()
     next_el = next_tag(el.parent.parent, 'div').find('span')
     result = [el.text]
@@ -240,7 +250,6 @@ def bench(soup):
 
 
 def find_bars(soup):
-
     def is_black(pixel):
         return sum(pixel) < 150
 
@@ -261,13 +270,25 @@ def find_bars(soup):
                 results.append((page_number, y))
                 previous = y
                 if len(results) == 2:
-                    return results
+                    if not el_between_bars(soup, results):
+                        results = [results[1]]
+                    else:
+                        return results
+        # can't be more than a page, i would guess
+        if len(results) == 1 and page_number > results[0][0]:
+            break
 
     return results
 
 def get_page(el):
     return int(el.find_previous_sibling('img').attrs['name'])
 
+def el_between_bars(soup, bars):
+    try:
+        first_el_after_bar(soup, bars)
+        return True
+    except StopIteration:
+        return False
 
 def first_el_after_bar(soup, bars):
     el = soup.select('img[name=%d]'%bars[0][0])[0]
@@ -281,18 +302,38 @@ def first_el_after_bar(soup, bars):
 def waistband_el(soup):
     results = []
     bars = find_bars(soup)
-    # next, skip to court num, as title is at bottom
+    underscore = re.compile('^_+$')
     line_height = 10
-    el = first_el_after_bar(soup, bars)
-    if len(bars) == 2: 
-        while get_top_position(el) + line_height < bars[1][1] and get_page(el) <= bars[1][0]:
+    if len(bars) == 2:
+        el = first_el_after_bar(soup, bars)
+        while get_page(el) < bars[1][0] or \
+            (get_page(el) == bars[1][0] and get_top_position(el) + line_height < bars[1][1]):
+            if len(results) and underscore.match(el.text):
+                 el = next_tag(el, 'div')
+                 break
             results.append(el.text)
             el = next_tag(el, 'div')
-    else: # if no second bar, get bold
-        while el_class_style(el).get('font-weight') == 'bold':
-            results.append(el.text)
-            el = next_tag(el, 'div')    
-
+    elif len(bars) == 1: # if no second bar, get bold
+        el = first_el_after_bar(soup, bars)
+        if is_bold(el):
+            letters = re.compile(r'.*[a-zA-Z].*')
+            while is_bold(el):
+                if letters.match(el.text):
+                    results.append(el.text)
+                el = next_tag(el, 'div')  
+        else:
+            while not underscore.match(el.text):
+                results.append(el.text)
+                el = next_tag(el, 'div')  
+    else: #maybe they used underscores
+        try:
+            el = next_tag((el for el in soup.find_all('div') if underscore.match(el.text)).next(), 'div')
+            while not underscore.match(el.text):
+                results.append(el.text)
+                el = next_tag(el, 'div')
+        except StopIteration: #bastards, they forgot every kind
+            results = []
+            el = (el for el in soup.find_all('div') if el.text == '[1]').next()
     return [' '.join(results), el]
 
 
@@ -329,6 +370,7 @@ def matter(soup):
     result = {}
     result['UNDER'] = texts_after_column(soup, ['UNDER'])
     result['IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
+    result['AND IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
     result['IN THE ESTATE OF'] = texts_after_column(soup, ['IN THE ESTATE OF']) 
     for k, i in result.items():
         if not i:
@@ -354,7 +396,7 @@ def appeal_result(soup):
             results[key], el = consecutive_align(el)
             results[key] = ' '.join(results[key])
         else:
-            results = [key]
+            results = {'key': key}
             break
 
     return results  
@@ -367,8 +409,16 @@ def mangle_format(soup):
     [flat_soup.append(x) for x in soup.select('body > div > *')]
     # remove things with white text.  
     [el.extract() for el in flat_soup.select('div') if el_class_style(el).get('color') == '#ffffff']
+    #confirm text exists
+    text_re = re.compile('[a-zA-Z]+')
+    if not text_re.search(flat_soup.text):
+        raise NoText('contains no text')
     return flat_soup
 
+def delete_db(cur, data):
+    query = """delete from cases where id = %(id)s"""
+    cur.execute(query, data)
+    return
 
 def insert_db(cur, data):
     query = """INSERT INTO cases (id, neutral_citation, court, full_citation, parties, 
@@ -407,8 +457,8 @@ def process_file(filename):
             'plea': plea(flat_soup),
             'bench': bench(flat_soup)
         }
-        if not results['waistband']:
-            raise Exception('must have waistband')
+        #if not results['waistband']:
+        #    raise Exception('must have waistband')
         if is_appeal(results):
             results['appeal_result'] = appeal_result(flat_soup)
         else:
@@ -418,29 +468,35 @@ def process_file(filename):
 
 success = 0
 fails = 0
-files = os.listdir(path)
+#files = os.listdir(path)
 
 conn = psycopg2.connect("dbname=legislation user=josh")
 cur = conn.cursor()
 es = Elasticsearch()
 
-
-with open('failed_files.txt', 'w') as failed_output:
-    #files = failed_output.readlines()
+with open('failed_files.txt', 'r') as failed_output:
+    files = failed_output.readlines()
+#files = ['defd75fc-e476-4c75-baa8-43780ae11415.html']
+#with open('failed_files.txt', 'w') as failed_output:
     #files = ['29602cbe-d0cf-4806-9c4b-02fab246ceb0.html']
-    for f in files:
-        if f.endswith('.html'):
-            try:
-                data = process_file(f)
-                insert_db(cur, data)
-                insert_es(es, data)
-                success += 1
-            #except ValueError, e: pass
-            except Exception, e:
-                print e
-                failed_output.write(f)
-                failed_output.write('\n')
-                fails += 1
+for f in files:
+    f = f.strip()
+    if f.endswith('.html'):
+        try:
+            data = process_file(f)
+            delete_db(cur, data)
+            insert_db(cur, data)
+            print data
+            insert_es(es, data)
+            success += 1
+        except NoText:
+            pass            
+        except ValueError, e: 
+        #except Exception, e:
+            print e
+            #failed_output.write(f)
+            #failed_output.write('\n')
+            fails += 1
 
     print 'success: %d  fails: %d' % (success, fails)
 
