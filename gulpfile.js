@@ -1,17 +1,30 @@
 
 var gulp = require('gulp'); 
+
+
+var bower = require('gulp-bower');
 var browserify = require('browserify');
-var source = require('vinyl-source-stream') 
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
+var notify = require("gulp-notify")
 var plumber = require('gulp-plumber');  
-var sass = require('gulp-ruby-sass') ;
 var react = require('gulp-react');
-var notify = require("gulp-notify") ;
-var bower = require('gulp-bower');
 var reactify = require('reactify'); 
+var rename = require("gulp-rename");
+var sass = require('gulp-ruby-sass')
+var source = require('vinyl-source-stream') 
+var transform = require('vinyl-transform');
 
- 
+
+ var dont_break_on_errors = function(){
+    return plumber(
+        function(error){
+            notify.onError("Error: <%= error.message %>").apply(this, arguments);
+            this.emit('end');
+        }
+    );
+};
+
 
 
 // JS hint task
@@ -28,23 +41,18 @@ gulp.task('compress', function() {
 });
 
 gulp.task('js', function() {
-  /*return browserify('./src/js/app.jsx')
-  	.bundle()
-  	.pipe(plumber())
-    .pipe(source('app.js'))
-    //.pipe(streamify(uglify()))
-    .pipe(gulp.dest('./build/js/'))*/
+    var browserified = transform(function(filename) {
+        var b = browserify(filename, 
+        	{debug: true});
+        b.transform(reactify)
+        return b.bundle();
+    });
+    return gulp.src(['./src/js/app.js'])
+        .pipe(dont_break_on_errors())
+        .pipe(browserified)
 
-    var bundler = browserify({
-        entries: ['./src/js/app.js'], // Only need initial file, browserify finds the deps
-        transform: [reactify], // We want to convert JSX to normal javascript
-        debug: true, // Gives us sourcemapping
-        cache: {}, packageCache: {}, //fullPaths: true // Requirement of watchify,
-         paths:['./bower_components/react']
-    })
-    .bundle()
-    .pipe(source('app.js'))  
-    .pipe(gulp.dest('./build/js/'))
+	    .pipe(rename('app.js'))  
+	    .pipe(gulp.dest('./build/js/'))   
 });
 
 gulp.task('libs', function(){
@@ -54,6 +62,7 @@ gulp.task('libs', function(){
   	'./src/js/lib/smmothscroll.js',
   	'./src/js/lib/bootstrap.js',
   	'./src/js/lib/bootstrap3-typeahead.js',
+  	'./bower_components/react/react.js',
   	'./bower_components/reflux/dist/reflux.js',
   	])
     .pipe(concat('lib.js'))
