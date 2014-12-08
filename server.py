@@ -226,7 +226,7 @@ class CustomJSONEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="./build")
 app.json_encoder = CustomJSONEncoder
 es = elasticsearch.Elasticsearch()
 
