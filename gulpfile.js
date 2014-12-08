@@ -53,7 +53,8 @@ gulp.task('libs', function(){
   	'./src/js/lib/jquery.scrollintoview.min.js',
   	'./src/js/lib/smmothscroll.js',
   	'./src/js/lib/bootstrap.js',
-  	'./src/js/lib/bootstrap3-typeahead.js'
+  	'./src/js/lib/bootstrap3-typeahead.js',
+  	'./bower_components/reflux/dist/reflux.js',
   	])
     .pipe(concat('lib.js'))
     .pipe(gulp.dest('./build/js/'))	
@@ -100,6 +101,7 @@ gulp.task('sass', function() { 
 gulp.task('watch', function(){
   // watch for JS changes
   gulp.watch('src/js/*.j*', ['js']);
+  gulp.watch('src/js/**/*.jsx', ['js']);
   gulp.watch('src/js/lib/*.js', ['libs']);
   gulp.watch('src/css/*.scss', ['sass']);
   gulp.watch('src/fonts/*', ['fonts']);

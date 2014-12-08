@@ -1,3 +1,4 @@
 
 var browser = require('./browser.js');
-var browser = require('./test.jsx');
+var Page = require('./components/page.jsx');
+var React = require('react');
