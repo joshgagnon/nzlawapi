@@ -39,7 +39,7 @@ function fetch(url, query){
 }
 
 $(document).on('ready', function(){
-
+	return;
 	sidebar();
 
 	function createSelect(data){

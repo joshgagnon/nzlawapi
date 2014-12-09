@@ -43,27 +43,27 @@ gulp.task('compress', function() {
 gulp.task('js', function() {
     var browserified = transform(function(filename) {
         var b = browserify(filename, 
-        	{debug: true});
+        	{debug: true})
+        b.require('./src/js/lib/bootstrap3-typeahead.js', {expose: 'bootstrap3-typeahead'});
         b.transform(reactify)
         return b.bundle();
     });
     return gulp.src(['./src/js/app.js'])
         .pipe(dont_break_on_errors())
         .pipe(browserified)
-
 	    .pipe(rename('app.js'))  
 	    .pipe(gulp.dest('./build/js/'))   
 });
 
 gulp.task('libs', function(){
   return gulp.src([
-  	'./src/js/lib/jquery-2.1.1.min.js',
-  	'./src/js/lib/jquery.scrollintoview.min.js',
-  	'./src/js/lib/smmothscroll.js',
-  	'./src/js/lib/bootstrap.js',
-  	'./src/js/lib/bootstrap3-typeahead.js',
-  	'./bower_components/react/react.js',
-  	'./bower_components/reflux/dist/reflux.js',
+  	//'./src/js/lib/jquery-2.1.1.min.js',
+  	//'./src/js/lib/jquery.scrollintoview.min.js',
+  	//'./src/js/lib/smmothscroll.js',
+  	//'./src/js/lib/bootstrap.js',
+  	//'./src/js/lib/bootstrap3-typeahead.js',
+  	//'./bower_components/react/react.js',
+  	//'./bower_components/reflux/dist/reflux.js',
   	])
     .pipe(concat('lib.js'))
     .pipe(gulp.dest('./build/js/'))	
@@ -109,8 +109,8 @@ gulp.task('sass', function() { 
 
 gulp.task('watch', function(){
   // watch for JS changes
-  gulp.watch('src/js/*.j*', ['js']);
-  gulp.watch('src/js/**/*.jsx', ['js']);
+  gulp.watch('src/js/*', ['js']);
+  gulp.watch('src/js/**/*', ['js']);
   gulp.watch('src/js/lib/*.js', ['libs']);
   gulp.watch('src/css/*.scss', ['sass']);
   gulp.watch('src/fonts/*', ['fonts']);

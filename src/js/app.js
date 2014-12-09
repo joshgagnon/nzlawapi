@@ -1,25 +1,31 @@
-
-var browser = require('./browser.js');
-var Page = require('./components/page.jsx');
-var Input = require('./components/input.jsx');
-var Select = require('./components/select.jsx');
-var Form = require('./components/form.jsx');
-//var React = require('react');
-
+"use strict";
+var React = require('react');
+var Actions = require('./actions/Actions');
+var SearchForm = require('./components/SearchForm.jsx');
+var $ = require('jquery');
+var _ = require('lodash');
 
 
+React.render(<SearchForm collapsable={true}/>,
+	document.getElementById('form_wrap'));
 
-var typeValues = [
-	{val: 'act', label: 'Act'},
-	{val: 'case', label: 'Court Case'}
-	]
+Actions.typeChange({type: 'act'});
 
-React.render(
-<Form classes={['hidden-xs', 'legislation_finder']} >
-  <Select name="type" label="Type" options={typeValues} />
-  <Input name="query" type="text" label="Query" />
-  
-  <button id="submit" className="btn btn-primary submit">Search</button>
-</Form>,
-document.getElementById('form_wrap'));
 
+
+function scrollTo($element){
+	$element.scrollintoview();
+}
+
+
+
+(function sidebar(){
+	$('[data-toggle=offcanvas]').click(function() {
+	  	$(this).toggleClass('visible-xs text-center');
+	    $(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
+	    $('.row-offcanvas').toggleClass('active');
+	    $('#lg-menu').toggleClass('hidden-xs').toggleClass('visible-xs');
+	    $('#xs-menu').toggleClass('visible-xs').toggleClass('hidden-xs');
+	    $('#btnShow').toggle();
+	});
+})();

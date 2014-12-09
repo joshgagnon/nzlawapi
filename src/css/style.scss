@@ -1,6 +1,7 @@
 //test
 @import 'bootstrap';
 @import 'legislation';
+@import 'search_form';
 
 
 /*generic*/
@@ -174,29 +175,7 @@ height:100%;
     border: 2px solid white; /* should match background, can't be transparent */
     background-color: rgba(0, 0, 0, .5);
 }
-.legislation_finder{
-padding-left: 10px;
-}
-.legislation_finder .submit{
-  width:80px;
-}
-.legislation_finder #submit_loading{
-  display:none;
-}
-.legislation_finder.loading #submit{
-  display:none;
-}
-.legislation_finder.loading #submit_loading{
-  display:initial;
-}
 
-
-.legislation_finder .error{
-    color:#ff0000;
-    display:none;
-    margin-top:15px;
-    text-align:center;
-}
 
 /* bootstrap fixes */
 .legislation .label{
@@ -272,19 +251,5 @@ margin-right: 0;
   width: inherit;
 }
 
-/* loading bs */
-.glyphicon-refresh-animate {
-    -animation: spin 1s infinite linear;
-    -webkit-animation: spin2 1s infinite linear;
-}
 
-@-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg);}
-    to { -webkit-transform: rotate(360deg);}
-}
-
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
-}
 
