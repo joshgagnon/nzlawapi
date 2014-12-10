@@ -14,6 +14,7 @@ var rename = require("gulp-rename");
 var sass = require('gulp-ruby-sass')
 var source = require('vinyl-source-stream') 
 var transform = require('vinyl-transform');
+var shim = require('browserify-shim');
 
 
  var dont_break_on_errors = function(){
@@ -44,7 +45,6 @@ gulp.task('js', function() {
     var browserified = transform(function(filename) {
         var b = browserify(filename, 
         	{debug: true})
-        b.require('./src/js/lib/bootstrap3-typeahead.js', {expose: 'bootstrap3-typeahead'});
         b.transform(reactify)
         return b.bundle();
     });

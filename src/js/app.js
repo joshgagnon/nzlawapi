@@ -1,4 +1,5 @@
 "use strict";
+
 var React = require('react');
 var Actions = require('./actions/Actions');
 var SearchForm = require('./components/SearchForm.jsx');
@@ -29,3 +30,4 @@ function scrollTo($element){
 	    $('#btnShow').toggle();
 	});
 })();
+

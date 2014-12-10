@@ -3,12 +3,45 @@ var React = require('react');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var ButtonToolbar = require('react-bootstrap/ButtonToolbar');
+var joinClasses = require('react-bootstrap/utils/joinClasses');
+var classSet = require('react-bootstrap/utils/classSet');
 var Reflux = require('reflux');
 var Stores = require('../stores/Stores');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 require('bootstrap3-typeahead');
+
+
+var TypeAhead = React.createClass({
+    render: function(){
+        return <Input type="text" ref="input" name={this.props.name} label={this.props.label} defaultValue={this.props.defaultValue} value={this.state} />
+    },
+    componentDidMount: function(){
+        var node = this.refs.input.refs.input.getDOMNode();
+        $.get('/acts.json')
+            .then(function(data){
+                $(node).typeahead({ 
+                    items:10,  
+                    source: data.acts.map(function(a){
+                        return a[0];
+                    }),
+                    appendTo: $('body'),
+                    afterSelect: function(){
+                        this.$element.parents('.form-group').next().find('input, select').focus();
+                    }
+                });
+            })
+    },
+    componentWillUnmount: function(){
+        var node = this.refs.input.refs.input.getDOMNode();
+        $(node).typeahead("destroy");
+    },
+    getValue: function(){
+        return this.refs.input.getValue();
+    }
+})
+
 
 var SearchForm = React.createClass({
     mixins: [
@@ -27,7 +60,7 @@ var SearchForm = React.createClass({
         Actions.queryChange({query: evt.target.value});
     },    
     renderActFind: function(){
-        return   <Input type="text" ref="act" name="act" label='Act' defaultValue="" value={this.state.act} />
+        return   <TypeAhead type="text" ref="act" name="act" label='Act' defaultValue="" value={this.state.act} />
     },
     renderSubActFind: function(){
         return <Input type="select" ref="act_find" label='Find' name="act_find" value={this.state.act_find} >
@@ -70,24 +103,7 @@ var SearchForm = React.createClass({
                         </Button>
                   </ButtonToolbar>
             </form>
-        },
-    componentDidMount: function(){
-        var node = this.refs.act.getDOMNode();
-        $.get('/acts.json')
-            .then(function(data){
-                $(node).typeahead({ 
-                    items:10,  
-                    //showHintOnFocus: true, 
-                    source: data.acts.map(function(a){
-                        return a[0];
-                    }),
-                    appendAfter: $('.sidebar-offcanvas'),
-                    afterSelect: function(){
-                        this.$element.parents('.form-group').next().find('input, select').focus();
-                    }
-                });
-            })
-    }
+        }
 });
 
 module.exports = SearchForm;
