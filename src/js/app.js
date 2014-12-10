@@ -7,26 +7,48 @@ var Results = require('./components/ResultList.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
-var initialResults = [{content: 'x', id: 1}]
+var initialResults = [];
 var initialForm = {
 	type: 'act',
 	act: 'Companies Act 1993'
 }
 
 
-React.render(<SearchForm collapsable={true} initialForm={initialForm}/>,
-	document.getElementById('query_form'));
-React.render(<Results initialResults={initialResults}/>,
-	document.getElementById('results_viewer'));
-
-//Actions.typeChange({type: 'act'});
-
-
 function scrollTo($element){
 	$element.scrollintoview();
 }
+var App = React.createClass({
+	render: function(){
+		return (
+			<div className="wrapper">
+			    <div className="box">
+			        <div className="row row-offcanvas row-offcanvas-left">
+			            <div className="column col-sm-2 col-xs-1 sidebar-offcanvas" id="sidebar">
+			                <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo hidden-xs img-responsive center-block"/>
+			                <ul className="nav">
+			                    <li><a href="#" data-toggle="offcanvas" className="visible-xs text-center"><i className="glyphicon glyphicon-chevron-right"></i></a>
+			                    </li>
+			                </ul>
+			                <ul className="nav visible-xs" id="xs-menu">
+			                    <li><a href="#search" className="text-center"><i className="glyphicon glyphicon-search"></i></a>
+			                    </li>
+			                </ul>
+			                <SearchForm collapsable={true} initialForm={initialForm}/>
+			            </div>
+			            <div className="col-sm-10 col-xs-11 main">
+							<nav className="navbar navbar-default navbar-static-top" role="navigation">
+							  <div className="container">				  
+							  </div>
+							</nav>
+			             <Results initialResults={initialResults}/>
+			            </div>
+			        </div>
+			    </div>
+			  </div>);
+	}
+});
 
-
+React.render(<App/>, document.body);
 
 (function sidebar(){
 	$('[data-toggle=offcanvas]').click(function() {
