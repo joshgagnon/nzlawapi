@@ -2,6 +2,7 @@
 @import 'bootstrap';
 @import 'legislation';
 @import 'search_form';
+@import 'results_viewer';
 
 
 /*generic*/
@@ -111,10 +112,7 @@ body{
 .legislation_references{
   display:none;
 }
-.legislation_viewer{
-  height:100%;
-  overflow:auto;
-}
+
 .logo{
   width:200px;
   margin:20px auto;

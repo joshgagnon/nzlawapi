@@ -3,15 +3,23 @@
 var React = require('react');
 var Actions = require('./actions/Actions');
 var SearchForm = require('./components/SearchForm.jsx');
+var Results = require('./components/ResultList.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
+var initialResults = [{content: 'x', id: 1}]
+var initialForm = {
+	type: 'act',
+	act: 'Companies Act 1993'
+}
 
-React.render(<SearchForm collapsable={true}/>,
-	document.getElementById('form_wrap'));
 
-Actions.typeChange({type: 'act'});
+React.render(<SearchForm collapsable={true} initialForm={initialForm}/>,
+	document.getElementById('query_form'));
+React.render(<Results initialResults={initialResults}/>,
+	document.getElementById('results_viewer'));
 
+//Actions.typeChange({type: 'act'});
 
 
 function scrollTo($element){
@@ -31,3 +39,5 @@ function scrollTo($element){
 	});
 })();
 
+
+//var initialState = JSON.parse(document.getElementById('initial-state').innerHTML)

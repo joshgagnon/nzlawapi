@@ -11,7 +11,9 @@ var Actions = Reflux.createActions([
 		'resultRequest',
 		'resultLoading',
 		'resultSuccess',
-		'resultFailure'
+		'resultFailure',
+		'newResult',
+		'fetchActs'
 	]);
 
 
@@ -24,17 +26,22 @@ var fetch = function(data){
 	var url = '/' + data.type;
 	console.log(data)
 	if(data.type === 'act'){
-		url += '/' + data.act;
+		url += '/' + data.act.replace(/ /g, '');
+		if(data.act_find === 'search'){
+			url += '/' + data.query;
+		}
 	}
 	return $.get(url, params);
-
 }
 
 Actions.resultRequest.preEmit = function(data){
 	Actions.resultLoading({loading: true});
 	fetch(data)
 		.then(
-			Actions.resultSuccess,
+			function(response){
+				var result = $(response).find('.result').parent().html();
+				Actions.newResult({id: Math.random(), content: result})
+			},
 			Actions.resultFailure
 			)
 		//.always(Actions.resultDone)

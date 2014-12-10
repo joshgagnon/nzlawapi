@@ -6,7 +6,8 @@ var ButtonToolbar = require('react-bootstrap/ButtonToolbar');
 var joinClasses = require('react-bootstrap/utils/joinClasses');
 var classSet = require('react-bootstrap/utils/classSet');
 var Reflux = require('reflux');
-var Stores = require('../stores/Stores');
+var FormStore = require('../stores/FormStore');
+var ResultStore = require('../stores/ResultStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -15,10 +16,11 @@ require('bootstrap3-typeahead');
 
 var TypeAhead = React.createClass({
     render: function(){
-        return <Input type="text" ref="input" name={this.props.name} label={this.props.label} defaultValue={this.props.defaultValue} value={this.state} />
+        return <Input type="text" ref="input" name={this.props.name} label={this.props.label} defaultValue={this.props.value} />
     },
     componentDidMount: function(){
         var node = this.refs.input.refs.input.getDOMNode();
+        //todo, cache, prevent after unmount
         $.get('/acts.json')
             .then(function(data){
                 $(node).typeahead({ 
@@ -45,10 +47,10 @@ var TypeAhead = React.createClass({
 
 var SearchForm = React.createClass({
     mixins: [
-        Reflux.listenTo(Stores,"onChange")
+        Reflux.listenTo(FormStore,"onChange")
     ],
     getInitialState: function() {
-        return {type: 'act'};
+        return this.props.initialForm;
     },    
     onChange: function(state){
         this.setState({type: state.type});
