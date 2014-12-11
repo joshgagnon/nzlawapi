@@ -10,7 +10,9 @@ var _ = require('lodash');
 var initialResults = [];
 var initialForm = {
 	type: 'act',
-	act: 'Companies Act 1993'
+	act_name: 'Companies Act 1993',
+	act_find: 'section',
+	query: 1
 }
 
 

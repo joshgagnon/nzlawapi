@@ -26,7 +26,7 @@ var ResultList = React.createClass({
 
 var Results = React.createClass({
     mixins: [
-            Reflux.connect(ResultStore, 'results')
+        Reflux.connect(ResultStore, 'results')
     ],    
     getInitialState: function() {
         return {results: this.props.initialResults || []};

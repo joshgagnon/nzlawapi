@@ -43,6 +43,22 @@ body{
   position: relative;   
   vertical-align: bottom;
   margin:16px auto;
+   animation: pulse 2s 1;
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  70% {
+      -moz-box-shadow:  0 0 20px rgba(0,0,0,0.5);
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+  100% {
+      -moz-box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
 }
 
 .legislation > div{
@@ -52,33 +68,6 @@ body{
 }
 .legislation.expanded > div{
   max-height:initial;
-}
-.legislation .expand,
-.legislation .close-page{
-    display:none;
-    position: absolute;
-    right: 6px;
-    bottom:6px;
-    box-shadow:inset 0px 1px 0px 0px #ffffff;
-    background-color:#ededed;
-    border-top-left-radius:17px;
-    border-top-right-radius:17px;
-    border-bottom-right-radius:17px;
-    border-bottom-left-radius:17px;
-    text-indent:0;
-    border:1px solid #dcdcdc;
-    color:#777777;
-    font-family:Arial;
-    font-size:26px;
-    font-weight:bold;
-    font-style:normal;
-    height:32px;
-    line-height:32px;
-    width:32px;
-    text-decoration:none;
-    text-align:center;
-    text-shadow:1px 1px 0px #ffffff;
-    cursor:pointer;
 }
 
 .legislation .history-note{
@@ -117,30 +106,7 @@ body{
   width:200px;
   margin:20px auto;
 }
-/*
-.legislation:before, .legislation:after {
-  content: "";
-  height: 98%;
-  position: absolute;
-  width: 100%;
-  z-index: -1;
-}
-.legislation:before {
-  background: #fafafa;
-  box-shadow: 0 0 8px rgba(0,0,0,0.2);
-  left: -5px;
-  top: 4px;
-  transform: rotate(-2.5deg);
-}
 
-.legislation:after {
-  background: #f6f6f6;
-  box-shadow: 0 0 3px rgba(0,0,0,0.2);
-  right: -3px;
-  top: 1px;
-  transform: rotate(1.4deg);
-}
-*/
 .legislation_browser{
 padding-top: 70px;
 }

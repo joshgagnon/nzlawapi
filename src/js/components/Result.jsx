@@ -11,7 +11,11 @@ var Result = React.createClass({
         return null;
     },    
     render: function(){
-        return <div className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.data.content }}/>
+    	console.log(this.props.data.content)
+    	if(this.props.data.content.html_content){
+    		
+        	return <div className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.data.content.html_content }}/>
+        }
     }
 });
 

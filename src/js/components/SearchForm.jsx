@@ -2,6 +2,7 @@
 var React = require('react/addons');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
+var Alert = require('react-bootstrap/Alert');
 var ButtonToolbar = require('react-bootstrap/ButtonToolbar');
 var joinClasses = require('react-bootstrap/utils/joinClasses');
 var classSet = require('react-bootstrap/utils/classSet');
@@ -15,27 +16,30 @@ require('bootstrap3-typeahead');
 
 
 var TypeAhead = React.createClass({
+    mixins: [
+        React.addons.LinkedStateMixin,
+    ],
     render: function(){
-        return <Input type="text" ref="input" bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label} defaultValue={this.props.value}  hasFeedback/>
+        return <Input type="text" ref="input" bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label}  valueLink={this.props.valueLink} hasFeedback={this.props.hasError}/>
     },
     componentDidMount: function(){
         var node = this.refs.input.refs.input.getDOMNode();
-        //todo, cache, prevent after unmount
-        $.get('/acts.json')
-            .then(function(data){
-                $(node).typeahead({ 
-                    items:10,  
-                    source: data.acts.map(function(a){
-                        return a[0];
-                    }),
-                    appendTo: $('body'),
-                    afterSelect: function(){
-                        this.$element.parents('.form-group').next().find('input, select').focus();
-                    },
-                    // very bad
-                    scrollHeight: $(node).offset().top - $(node).position().top
-                });
-            })
+        $(node).typeahead({ 
+            items:10,  
+            source: this.props.typeahead,
+            appendTo: $('body'),
+            afterSelect: function(){
+                this.$element.parents('.form-group').next().find('input, select').focus();
+            },
+            // very bad
+            scrollHeight: $(node).offset().top - $(node).position().top
+        });        
+    },
+    componentWillReceiveProps: function(data){
+        if(data.typeahead){
+            var node = this.refs.input.refs.input.getDOMNode();
+            $(node).typeahead("setSource", data.typeahead);            
+        }
     },
     componentWillUnmount: function(){
         var node = this.refs.input.refs.input.getDOMNode();
@@ -49,36 +53,35 @@ var TypeAhead = React.createClass({
 
 var InputFactory = function(name, label){
     return function(link, error){
-        return <Input type="text" bsStyle={error ? 'error': null} key={name} ref={name} label={label} valueLink={link(name)}  hasFeedback/>
+        return <Input type="text" bsStyle={error ? 'error': null} key={name} ref={name} label={label} valueLink={link(name)}  hasFeedback={!!error} />
     }
 }
 
 
 var Inputs = {
     query: InputFactory('query', 'Query'),
-    search: InputFactory('search', 'Contains'),
-    section: InputFactory('section', 'Section'),
-    part: InputFactory('part', 'Part'),
-    schedule: InputFactory('schedule', 'Schedule'),
-    definitions: InputFactory('definitions', 'Definitions'),
-    contains: InputFactory('contains', 'Search Within'),
-    paragraph: InputFactory('paragraph', 'Paragraph'),
+    search: InputFactory('query', 'Contains'),
+    section: InputFactory('query', 'Section'),
+    part: InputFactory('query', 'Part'),
+    schedule: InputFactory('query', 'Schedule'),
+    definitions: InputFactory('query', 'Definitions'),
+    contains: InputFactory('query', 'Search Within'),
+    paragraph: InputFactory('query', 'Paragraph'),
 
-    case_query: InputFactory('case_query', 'Search Front Pages'),
-    neutral_citation: InputFactory('neutral_citation', 'Neutral Citation'),
-    court: InputFactory('court', 'Court'),
-    parties: InputFactory('parties', 'Parties'),
-    matter: InputFactory('matter', 'Matter'),
-    charge: InputFactory('charge', 'Charge'),
-    bench: InputFactory('bench', 'Bench'),
+    case_query: InputFactory('query', 'Search Front Pages'),
+    neutral_citation: InputFactory('query', 'Neutral Citation'),
+    court: InputFactory('query', 'Court'),
+    parties: InputFactory('query', 'Parties'),
+    matter: InputFactory('query', 'Matter'),
+    charge: InputFactory('query', 'Charge'),
+    bench: InputFactory('query', 'Bench'),
 
-    act_name: function(link, error){
-        return <TypeAhead type="text" bsStyle={error ? 'error': null}  key="act_name" ref="act_name" name="act_name" label='Act' valueLink={link('act_name')} />
+    act_name: function(link, error, typeahead){
+        return <TypeAhead type="text" bsStyle={error ? 'error': null}  hasError={!!error} typeahead={typeahead} key="act_name" ref="act_name" name="act_name" label='Act' valueLink={link('act_name')} />
     },
-    case_name: function(link, error){
-        return <TypeAhead type="text" bsStyle={error ? 'error': null}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={link('case_name')}  />
+    case_name: function(link, error, typeahead){
+        return <TypeAhead type="text" bsStyle={error ? 'error': null}  hasError={!!error} typeahead={typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={link('case_name')}  />
     },    
-
     acts_find: function(link){
         return <Input type="select" key="acts_find" ref="acts_find" label='Find' name="acts_find" valueLink={link('acts_find')} >
             <option value="contains">Search</option>
@@ -126,9 +129,22 @@ var SearchForm = React.createClass({
         this.count = 0;
         this.errors = {};
         return _.defaults(this.props.initialForm, 
-            {type: 'act', act_find: 'search', acts_find: 'contains', case_find: 'contains', cases_find: 'case_query',
-            errors: {}
+            {
+            type: 'act', act_find: 'search', acts_find: 'contains', case_find: 'contains', cases_find: 'case_query',
+            acts_typeahead: [], cases_typeahead: [],
+            errors: {},
+            error_message: null
         });
+    },
+    componentDidMount: function(){
+        $.get('/acts.json')
+            .then(function(data){
+                this.setState({acts_typeahead: data.acts.map(function(x){ return x[0]; })});
+            }.bind(this));
+        $.get('/cases.json')
+            .then(function(data){
+                this.setState({cases_typeahead: data.cases.map(function(x){ return x[0]; })});
+            }.bind(this));         
     },    
     onChange: function(state){
         this.setState({type: state.type});
@@ -140,10 +156,16 @@ var SearchForm = React.createClass({
         // todo, DRY
         var comps = [];
         if(this.state.type === 'act'){
-            comps.push(Inputs['act_name'](this.linkState, this.state.errors['act_name']));
+            comps.push(Inputs['act_name'](
+                this.linkState, 
+                this.state.errors['act_name'], 
+                this.state.acts_typeahead));
             comps.push(Inputs['act_find'](this.linkState));
             if(Inputs[this.state.act_find]){
-                comps.push(Inputs[this.state.act_find](this.linkState, this.state.errors[this.state.act_find]));               
+                comps.push(Inputs[this.state.act_find](
+                    this.linkState, 
+                    this.state.errors['query']
+                    ));               
             }
         }
         if(this.state.type === 'acts'){
@@ -153,46 +175,64 @@ var SearchForm = React.createClass({
             }
         }
         if(this.state.type === 'case'){
-            comps.push(Inputs['case_name'](this.linkState));
+            comps.push(Inputs['case_name'](
+                this.linkState, 
+                this.state.errors['case_name'],
+                this.state.cases_typeahead));
             comps.push(Inputs['case_find'](this.linkState));
             if(Inputs[this.state.case_find]){
-                comps.push(Inputs[this.state.case_find](this.linkState));               
+                comps.push(Inputs[this.state.case_find](this.linkState, 
+                    this.state.errors['query']));               
             }
         } 
         if(this.state.type === 'cases'){
             comps.push(Inputs['cases_find'](this.linkState));
             if(Inputs[this.state.cases_find]){
-                comps.push(Inputs[this.state.cases_find](this.linkState));               
+                comps.push(Inputs[this.state.cases_find](
+                    this.linkState, 
+                    this.state.errors['query']));               
             }
         }              
         return comps
     },
+
+    renderError: function() {
+        if (this.state.error_message){
+            return ( <Alert bsStyle = "danger"
+                onDismiss = {
+                    this.handleAlertDismiss
+                }>
+               { this.state.error_message }
+               </Alert>
+            );
+        }
+    }, 
+
     submit: function(){
         var data = _.object(_.map(this.refs, function(v, k){
             return [k, v.getValue()];
         }));
-      
         // validation, for now, is easy:  field can't be empty
-        var errors = {}
+        var errors = {};
         _.each(data, function(v, k){
-            if(!v){
-                errors[k] = true;
-            }
+            if(!v) errors[k] = true;
         });
-        this.setState({errors: errors});
+        this.setState({errors: errors, error_message: false});
         if(_.isEmpty(errors)){
             this.setState({loading: true});
-
             $.get('/query', data)
-                .then(function(){
-                    Actions.newResult({id: this.count++, content: result})
-                }.bind(this))
+                .then(function(result){
+                    Actions.newResult({id: JSON.stringify(data), content: result})
+                }.bind(this),
+                    function(result){
+                        this.setState({error_message: result.responseJSON.error});
+                    }.bind(this))
                 .always(function(){
                     this.setState({loading: false})
                 }.bind(this))
         }
-        
     },
+
     render: function(){
         var className = "form legislation-finder ";
         if(this.props.collapsable){
@@ -209,12 +249,15 @@ var SearchForm = React.createClass({
                     <option value="cases">All Court Cases</option>
                   </Input>
                   { this.optionalInputs() }
-                 <ButtonToolbar>
-                        <Button className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>
-                        <Button className="submit_loading" bsStyle="info" id="submit-loading" >
-                            <span className="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
-                        </Button>
-                  </ButtonToolbar>
+                  <div className="form-group">
+                     <ButtonToolbar>
+                            <Button className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>
+                            <Button className="submit_loading" bsStyle="info" id="submit-loading" >
+                                <span className="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                            </Button>
+                      </ButtonToolbar>
+                  </div>
+                  { this.renderError() }
             </form>
         }
 });

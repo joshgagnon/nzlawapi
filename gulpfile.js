@@ -93,17 +93,20 @@ gulp.task('bower', function() { 
 });
 
 gulp.task('sass', function() { 
+    var postcss      = require('gulp-postcss');
+    var autoprefixer = require('autoprefixer-core');
+
     return gulp.src('./src/css/style.scss')
          .pipe(sass({
              style: 'compressed',
+            "sourcemap=none": true, //hack to allow autoprefixer to work
              loadPath: [
                  './src/css',
                  './bower_components/bootstrap-sass-official/assets/stylesheets'
              ]
-         }) 
-            .on("error", notify.onError(function (error) {
-                 return "Error: " + error.message;
-             }))) 
+         }) ) 
+       // .pipe(dont_break_on_errors())
+        .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
          .pipe(gulp.dest('./build/css')); 
 });
 

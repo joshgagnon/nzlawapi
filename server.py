@@ -116,6 +116,7 @@ def find_node(tree, keys):
 
 
 def find_sub_node(tree, keys):
+    node = tree
     try:
         for i, a in enumerate(keys):
             if a:
@@ -314,7 +315,7 @@ def cases(act='', query=''):
 
 def query_act(args):
     act = get_act_exact(args.get('act_name'))
-    search_type = args.get('search_type')
+    search_type = args.get('act_find')
     if search_type == 'full':
         result = tohtml(act)
     else:
@@ -334,7 +335,7 @@ def query_act(args):
         else:
             raise CustomException('Invalid search type')
         result = cull_tree(tree)
-    return {'html_result': etree.tostring(result, encoding='UTF-8')}
+    return {'html_content': etree.tostring(result, encoding='UTF-8')}
 
 def query_acts(args):
     search_type = args.get('search_type')    
@@ -354,7 +355,6 @@ def query_cases(args):
     query = args.get('query')
     if not query:
         raise CustomException('Query missing')
-
     results = case_search(re.escape(args.get('query', '')))
     return {'results': results}
     

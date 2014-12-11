@@ -16,7 +16,9 @@ var FormStore = Reflux.createStore({
 		console.log('store submit', state);
 	},
 	onNewResult: function(result){
-		this.results.push(result)
+		if(!_.find(this.results, {id: result.id})){
+			this.results.push(result)
+		}
 		this.trigger(this.results);
 	}
 });	
