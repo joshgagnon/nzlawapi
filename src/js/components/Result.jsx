@@ -9,11 +9,10 @@ var Result = React.createClass({
     ],
     getInitialState: function() {
         return null;
-    },    
+    },  
     render: function(){
     	console.log(this.props.data.content)
     	if(this.props.data.content.html_content){
-    		
         	return <div className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.data.content.html_content }}/>
         }
     }

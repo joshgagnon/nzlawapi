@@ -15,7 +15,9 @@ var sass = require('gulp-ruby-sass')
 var source = require('vinyl-source-stream') 
 var transform = require('vinyl-transform');
 var shim = require('browserify-shim');
-
+var postcss      = require('gulp-postcss');
+var autoprefixer = require('autoprefixer-core');
+var watchify = require('watchify');
 
  var dont_break_on_errors = function(){
     return plumber(
@@ -26,8 +28,6 @@ var shim = require('browserify-shim');
     );
 };
 
-
-
 // JS hint task
 gulp.task('jshint', function() {
   gulp.src('./src/js/*.js')
@@ -35,39 +35,28 @@ gulp.task('jshint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('compress', function() {
-  gulp.src('./src/js/*.js')
-    .pipe(uglify())
-    .pipe(gulp.dest('build'))
-});
-
 gulp.task('js', function() {
-    var browserified = transform(function(filename) {
-        var b = browserify(filename, 
-        	{debug: true})
-        b.transform(reactify)
-        return b.bundle();
-    });
-    return gulp.src(['./src/js/app.js'])
-        .pipe(dont_break_on_errors())
-        .pipe(browserified)
-	    .pipe(rename('app.js'))  
-	    .pipe(gulp.dest('./build/js/'))   
+
+  var bundler = browserify(
+   {debug: true,
+    entries: ['./src/js/app.js'],
+    transform: [reactify],
+    cache: {}, packageCache: {}, fullPaths: true})
+  var watcher  = watchify(bundler);
+  return watcher
+    .on('update', function () { // When any files update
+      var updateStart = Date.now();
+      console.log('Updating!');
+      watcher.bundle() // Create new bundle that uses the cache for high performance
+        .pipe(source('app.js'))
+        .pipe(gulp.dest('./build/js/'));
+    console.log('Updated!', (Date.now() - updateStart) + 'ms');
+  })
+    .bundle() // Create the initial bundle when starting the task
+    .pipe(source('app.js'))
+    .pipe(gulp.dest('./build/'));
 });
 
-gulp.task('libs', function(){
-  return gulp.src([
-  	//'./src/js/lib/jquery-2.1.1.min.js',
-  	//'./src/js/lib/jquery.scrollintoview.min.js',
-  	//'./src/js/lib/smmothscroll.js',
-  	//'./src/js/lib/bootstrap.js',
-  	//'./src/js/lib/bootstrap3-typeahead.js',
-  	//'./bower_components/react/react.js',
-  	//'./bower_components/reflux/dist/reflux.js',
-  	])
-    .pipe(concat('lib.js'))
-    .pipe(gulp.dest('./build/js/'))	
-});
 
 gulp.task('css', function() {
   return gulp.src('./src/css/*.css')
@@ -93,8 +82,7 @@ gulp.task('bower', function() { 
 });
 
 gulp.task('sass', function() { 
-    var postcss      = require('gulp-postcss');
-    var autoprefixer = require('autoprefixer-core');
+
 
     return gulp.src('./src/css/style.scss')
          .pipe(sass({
@@ -105,19 +93,19 @@ gulp.task('sass', function() { 
                  './bower_components/bootstrap-sass-official/assets/stylesheets'
              ]
          }) ) 
-       // .pipe(dont_break_on_errors())
+        .pipe(dont_break_on_errors())
         .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
          .pipe(gulp.dest('./build/css')); 
 });
 
 gulp.task('watch', function(){
   // watch for JS changes
-  gulp.watch('src/js/*', ['js']);
-  gulp.watch('src/js/**/*', ['js']);
-  gulp.watch('src/js/lib/*.js', ['libs']);
+  //gulp.watch('src/js/*', ['js']);
+ // gulp.watch('src/js/**/*', ['js']);
+ 
   gulp.watch('src/css/*.scss', ['sass']);
   gulp.watch('src/fonts/*', ['fonts']);
   gulp.watch('src/images/*', ['images']);
 });
 
-gulp.task('default', ['watch', 'js', 'libs', 'sass', 'fonts', 'images'])
+gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images'])

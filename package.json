@@ -29,7 +29,8 @@
     "reactify": "^0.17.1",
     "reflux": "^0.2.1",
     "vinyl-source-stream": "^1.0.0",
-    "vinyl-transform": "^1.0.0"
+    "vinyl-transform": "^1.0.0",
+    "watchify": "^2.1.1"
   },
   "devDependencies": {
     "gulp-rename": "^1.2.0"
