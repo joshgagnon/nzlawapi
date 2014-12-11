@@ -16,7 +16,7 @@ require('bootstrap3-typeahead');
 
 var TypeAhead = React.createClass({
     render: function(){
-        return <Input type="text" ref="input" name={this.props.name} label={this.props.label} defaultValue={this.props.value} />
+        return <Input type="text" ref="input" bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label} defaultValue={this.props.value}  hasFeedback/>
     },
     componentDidMount: function(){
         var node = this.refs.input.refs.input.getDOMNode();
@@ -31,7 +31,9 @@ var TypeAhead = React.createClass({
                     appendTo: $('body'),
                     afterSelect: function(){
                         this.$element.parents('.form-group').next().find('input, select').focus();
-                    }
+                    },
+                    // very bad
+                    scrollHeight: $(node).offset().top - $(node).position().top
                 });
             })
     },
@@ -46,8 +48,8 @@ var TypeAhead = React.createClass({
 
 
 var InputFactory = function(name, label){
-    return function(link){
-        return <Input type="text" key={name} ref={name} label={label} valueLink={link(name)}/>
+    return function(link, error){
+        return <Input type="text" bsStyle={error ? 'error': null} key={name} ref={name} label={label} valueLink={link(name)}  hasFeedback/>
     }
 }
 
@@ -70,6 +72,12 @@ var Inputs = {
     charge: InputFactory('charge', 'Charge'),
     bench: InputFactory('bench', 'Bench'),
 
+    act_name: function(link, error){
+        return <TypeAhead type="text" bsStyle={error ? 'error': null}  key="act_name" ref="act_name" name="act_name" label='Act' valueLink={link('act_name')} />
+    },
+    case_name: function(link, error){
+        return <TypeAhead type="text" bsStyle={error ? 'error': null}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={link('case_name')}  />
+    },    
 
     acts_find: function(link){
         return <Input type="select" key="acts_find" ref="acts_find" label='Find' name="acts_find" valueLink={link('acts_find')} >
@@ -87,12 +95,6 @@ var Inputs = {
                 <option value="full">Whole Document</option>
             </Input>
     },
-    act_name: function(link){
-        return <TypeAhead type="text" key="act_name" ref="act_name" name="act_name" label='Act' valueLink={link('act_name')}/>
-    },
-    case_name: function(link){
-        return <TypeAhead type="text" key="case_name" ref="case_name" name="case_name" label='Case' valueLink={link('case_name')}/>
-    },    
     case_find: function(link){
         return <Input type="select" key="case_find" ref="case_find" label='Find' name="case_find" valueLink={link('case_find')} >
             <option value="contains">Search Within</option>
@@ -122,8 +124,10 @@ var SearchForm = React.createClass({
     ],
     getInitialState: function() {
         this.count = 0;
+        this.errors = {};
         return _.defaults(this.props.initialForm, 
-            {type: 'act', act_find: 'search', acts_find: 'contains', case_find: 'contains', cases_find: 'case_query'
+            {type: 'act', act_find: 'search', acts_find: 'contains', case_find: 'contains', cases_find: 'case_query',
+            errors: {}
         });
     },    
     onChange: function(state){
@@ -136,10 +140,10 @@ var SearchForm = React.createClass({
         // todo, DRY
         var comps = [];
         if(this.state.type === 'act'){
-            comps.push(Inputs['act_name'](this.linkState));
+            comps.push(Inputs['act_name'](this.linkState, this.state.errors['act_name']));
             comps.push(Inputs['act_find'](this.linkState));
             if(Inputs[this.state.act_find]){
-                comps.push(Inputs[this.state.act_find](this.linkState));               
+                comps.push(Inputs[this.state.act_find](this.linkState, this.state.errors[this.state.act_find]));               
             }
         }
         if(this.state.type === 'acts'){
@@ -167,14 +171,26 @@ var SearchForm = React.createClass({
         var data = _.object(_.map(this.refs, function(v, k){
             return [k, v.getValue()];
         }));
-        this.setState({loading: true})
-        $.get('/query', data)
-            .then(function(){
-                Actions.newResult({id: this.count++, content: result})
-            }.bind(this))
-            .always(function(){
-                this.setState({loading: false})
-            }.bind(this))
+      
+        // validation, for now, is easy:  field can't be empty
+        var errors = {}
+        _.each(data, function(v, k){
+            if(!v){
+                errors[k] = true;
+            }
+        });
+        this.setState({errors: errors});
+        if(_.isEmpty(errors)){
+            this.setState({loading: true});
+
+            $.get('/query', data)
+                .then(function(){
+                    Actions.newResult({id: this.count++, content: result})
+                }.bind(this))
+                .always(function(){
+                    this.setState({loading: false})
+                }.bind(this))
+        }
         
     },
     render: function(){
