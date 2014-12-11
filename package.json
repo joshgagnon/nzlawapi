@@ -1,0 +1,71 @@
+{
+  "name": "law-browser",
+  "version": "0.0.1",
+  "description": "Browse NZ legislation and cases",
+  "main": "gulpfile.js",
+
+  "directories": {
+    "test": "tests"
+  },
+
+  "dependencies": {
+    "browserify": "^7.0.0",
+    "browserify-shim": "^3.8.1",
+    "gulp": "^3.8.10",
+    "gulp-bower": "^0.0.7",
+    "gulp-concat": "^2.4.2",
+    "gulp-jshint": "^1.9.0",
+    "gulp-notify": "^2.0.1",
+    "gulp-plumber": "^0.6.6",
+    "gulp-react": "^2.0.0",
+    "gulp-ruby-sass": "^0.7.1",
+    "gulp-strip-debug": "^1.0.2",
+    "gulp-uglify": "^1.0.1",
+    "jquery": "^2.1.1",
+    "lodash": "^2.4.1",
+    "react": "^0.12.1",
+    "react-bootstrap": "^0.13.0",
+    "reactify": "^0.17.1",
+    "reflux": "^0.2.1",
+    "vinyl-source-stream": "^1.0.0",
+    "vinyl-transform": "^1.0.0",
+    "bootstrap3-typeahead": "git://github.com/joshgagnon/Bootstrap-3-Typeahead.git"
+  },
+
+  "devDependencies": {
+    "gulp-rename": "^1.2.0"
+  },
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "main": "./src/js/app.js",
+  "browser": {
+    "bootstrap3-typeahead": "./node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js"
+  },
+
+  "browserify-shim": {
+    "jquery": "$",
+    "bootstrap3-typeahead": {
+      "depends": [
+        "jquery"
+      ]
+    }  
+  },
+
+  "browserify": {
+    "transform": [ "browserify-shim" ]
+  },
+
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshgagnon/nzlawapi.git"
+  },
+  "author": "Joshua Gagnon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joshgagnon/nzlawapi/issues"
+  },
+  "homepage": "https://github.com/joshgagnon/nzlawapi"
+}

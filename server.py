@@ -50,7 +50,6 @@ def tohtml(tree):
 
 
 def cull_tree(nodes):
-
     [n.attrib.update({'current': 'true'}) for n in nodes]
 
     all_parents = set()
@@ -71,7 +70,6 @@ def cull_tree(nodes):
             to_remove = filter(lambda x: not test_inclusion(x, node), parent.getchildren())
             [parent.remove(x) for x in to_remove]
             node = parent
-
     [fix_parents(n) for n in nodes]
     return tohtml(nodes[0].getroottree())
 
@@ -86,7 +84,6 @@ def find_node(tree, keys):
         # first, special case for schedule
         if keys[0] in ['part', 'schedule']:
             node = node.xpath(".//%s[label='%s']" % (keys[0], keys[1]))
-
             keys = keys[2:]
             if len(keys):
                 node = node[0]
@@ -118,11 +115,60 @@ def find_node(tree, keys):
         raise CustomException("Path not found")
 
 
-def find_definitions(tree, query):
+def find_sub_node(tree, keys):
     try:
-        return tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
+        for i, a in enumerate(keys):
+            if a:
+                #if '-' in :
+                #    a = " or ".join(["label = '%s'" % x for x in generate_range(a)])
+                if '+' in a:
+
+                    #a = "label = ('%s')" % "','".join(a.split('+'))
+                    a = " or ".join(["label = '%s'" % x for x in a.split('+')])
+                else:
+                    a = "label = '%s'" % a
+                node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
+            if i < len(keys)-1:
+                #get shallowist nodes
+                node = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))[0][0]
+            else:
+                #if last part, get all equally shallow results
+                nodes = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))
+                node = [x[0] for x in nodes if x[1] == nodes[0][1]]
+        if not len(node):
+            raise CustomException("Empty")
+        return node
     except Exception, e:
-        print e
+        raise CustomException("Path not found")   
+
+
+def find_part_node(tree, query):
+    #todo add path test
+    keys = query.split('/')
+    tree = tree.xpath(".//%s[label='%s']" % keys[0])
+    keys = keys[2:]
+    if len(keys):
+        tree = tree[0]
+    return find_sub_node(tree, keys)
+
+def find_schedule_node(tree, query):
+    #todo add schedule test
+    keys = query.split('/')
+    tree = tree.xpath(".//%s[label='%s']" % keys[0])
+    keys = keys[2:]
+    if len(keys):
+        tree = tree[0]
+    return find_sub_node(tree, keys)
+
+def find_section_node(tree, query):
+    keys = query.split('/')
+    tree = tree.xpath(".//body")[0]
+    return find_sub_node(tree, keys)
+
+
+def find_definitions(tree, query):
+    node = tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
+    if not len(node):
         raise CustomException("Path for definition not found")
 
 def find_definition(tree, query):
@@ -172,6 +218,18 @@ def get_act(act):
         except:
             raise CustomException("Act not found")
 
+def get_act_exact(act):
+    with get_db().cursor() as cur:
+        query = """select document from acts a 
+        join documents d on a.document_id = d.id
+        where lower(title) = lower(%(act)s)
+         order by version desc limit 1; """
+        cur.execute(query, {'act': act})
+        try:
+            return etree.fromstring(cur.fetchone()[0])
+        except:
+            raise CustomException("Act not found")
+
 def get_references_for_ids(ids):
     with get_db().cursor() as cur:
         query = """ select id, title from 
@@ -181,7 +239,7 @@ def get_references_for_ids(ids):
         return {'references':cur.fetchall()}
 
 
-def full_search(query):
+def act_full_search(query):
     result = es.search(index="legislation", body={  
         "from" : 0, "size" : 25, 
         "fields" : ["id", "title"],
@@ -234,7 +292,6 @@ es = elasticsearch.Elasticsearch()
 def browser(act='', query=''):
     return render_template('browser.html')
 
-
 @app.route('/acts.json')
 def acts(act='', query=''):
     try:
@@ -245,90 +302,83 @@ def acts(act='', query=''):
     except Exception, e:
         return jsonify(error=str(e))
     
-@app.route('/act/<string:act>/full')
-def full(act):
+@app.route('/cases.json')
+def cases(act='', query=''):
     try:
-        result = str(tohtml(get_act(act))).decode('utf-8')
-    except Exception, e:
-        result = {'error': e}
-    return render_template('base.html', content=result) 
-
-@app.route('/act/<path:act>/definition/<string:query>')
-def act_definition(act='', query=''):
-    try:
-        result = str(cull_tree(find_definition(get_act(act), query))).decode('utf-8')
-    except Exception, e:
-        print e
-        result  = str(e)
-    return render_template('base.html', content=result) 
-
-@app.route('/act/<path:act>/definitions/<string:query>')
-def act_definitions(act='', query=''):
-    try:
-        result = str(cull_tree(find_definitions(get_act(act), query))).decode('utf-8')
-    except Exception, e:
-        print e
-        result  = str(e)
-    return render_template('base.html', content=result) 
-
-@app.route('/act/<path:act>/search/<string:query>')
-def act_search(act='', query=''):
-    try:
-        result = str(cull_tree(find_node_by_query(get_act(act), query))).decode('utf-8')
-    except Exception, e:
-        print e
-        result  = str(e)
-    return render_template('base.html', content=result)
-
-@app.route('/act/<path:act>/<path:path>')
-def by_act(act='', path=''):
-    try:
-        result = str(cull_tree(find_node(get_act(act), path.split('/')))).decode('utf-8')
-    except Exception, e:
-        print e
-        result  = str(e)
-    return render_template('base.html', content=result) 
-
-
-@app.route('/search_id/<string:query>')
-def search_by_id(query):
-    try:
-        result = str(cull_tree(find_node_by_id(query))).decode('utf-8')
-    except Exception, e:
-        print e
-        result  = str(e)
-    return render_template('base.html', content=result) 
-
-
-@app.route('/find_references/<string:query>')
-def referenced_by(query):
-    try:
-        return jsonify(get_references_for_ids(query.split(';')))
+        db = get_db();
+        with db.cursor() as cur:
+            cur.execute("""select trim(full_citation), document_id from cases where full_citation is not null order by trim(full_citation)""")
+            return jsonify({'cases': cur.fetchall()})
     except Exception, e:
         return jsonify(error=str(e))
 
-@app.route('/full_search/<string:query>')
-def search(query):
-    try:
-         result = full_search(query);
-    except Exception, e:
-        result = {'error': e}
-    print result
-    return render_template('search_results.html', content=result)
+def query_act(args):
+    act = get_act_exact(args.get('act_name'))
+    search_type = args.get('search_type')
+    if search_type == 'full':
+        result = tohtml(act)
+    else:
+        query = args.get('query')
+        if not query:
+            raise CustomException('Query missing')
+        if search_type == 'search':
+            tree = find_node_by_query(act, query)
+        elif search_type == 'section':
+            tree = find_section_node(act, query)
+        elif search_type == 'part':
+            tree = find_part_node(act, query)
+        elif search_type == 'schedule':
+            tree = find_schedule_node(act, query)
+        elif search_type == 'definitions':
+            tree = find_definitions(act, query)
+        else:
+            raise CustomException('Invalid search type')
+        result = cull_tree(tree)
+    return {'html_result': etree.tostring(result, encoding='UTF-8')}
 
-@app.route('/case/file/<path:filename>')
-def case_file(filename):
-    path = '/Users/josh/legislation_archive/justice'
-    return send_from_directory(path, filename)
+def query_acts(args):
+    search_type = args.get('search_type')    
+    if search_type == 'contains':
+        result = act_full_search(query)
+    elif search_type == 'defintions':
+        raise CustomException('Not Implemented')
+    else:
+        raise CustomException('Invalid search type')
+    return result
 
-@app.route('/case/search')
-def case_search_route():
+def query_case(args):
+
+    raise CustomException('Invalid search type')
+
+def query_cases(args):
+    query = args.get('query')
+    if not query:
+        raise CustomException('Query missing')
+
+    results = case_search(re.escape(args.get('query', '')))
+    return {'results': results}
+    
+@app.route('/query')
+def query():
+    args = request.args
+    query_type = args.get('type')
+    status = 200
     try:
-         result = case_search(re.escape(request.args.get('query', '')))
-    except Exception, e:
-        result = {'error': e}
-    print result
-    return render_template('case_search_results.html', content=result)    
+        if query_type == 'act':
+            result = query_act(args)
+        elif query_type == 'acts':
+            result = query_acts(args) 
+        elif query_type== 'case':
+            result = query_case(args)
+        elif query_type == 'cases':
+            result = query_cases(args)
+        else:
+            raise CustomException('Badly formed query')
+    except CustomException, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
 
 def connect_db():
     conn = psycopg2.connect("dbname=legislation user=josh")
