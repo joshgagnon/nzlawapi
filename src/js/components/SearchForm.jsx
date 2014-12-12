@@ -28,11 +28,12 @@ var TypeAhead = React.createClass({
             items: 10,
             source: this.props.typeahead,
             appendTo: $('body'),
-            //afterSelect: function(value){
+            afterSelect: function(value){
                 //self.setState({value: value});
+                self.props.valueLink.requestChange(value);
                 //debugger;
                 //this.$element.parents('.form-group').next().find('input, select').focus();
-            //},
+            },
             scrollHeight: $(node).offset().top - $(node).position().top
         });        
     },
