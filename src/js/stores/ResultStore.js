@@ -7,16 +7,20 @@ var $ = require('jquery');
 
 
 
-var FormStore = Reflux.createStore({
+var ResultStore = Reflux.createStore({
 	listenables: Actions,
 	init: function(){
 		this.results = [];
+		this.counter = 0;
 	},
 	onResultRequest: function(state){
 		console.log('store submit', state);
 	},
 	onNewResult: function(result){
-		if(!_.find(this.results, {id: result.id})){
+		var id;
+		if(!_.find(this.results, {query: result.query})){
+			result.id = 'result-'+this.counter++;
+
 			if(result.content.html_content){
 				var $content = $(result.content.html_content.replace(/<br\/>/, ' ' ));
 				var title = $content.find('h1.title').text();
@@ -27,14 +31,17 @@ var FormStore = Reflux.createStore({
 			}
 			this.results.push(result)
 		}
-		this.trigger(this.results);
+		else{
+			result = _.find(this.results, {query: result.query});
+		}
+		this.trigger({results: this.results, current: result.id});
 	},
-	onRemoveResult: function(result){
+	onRemoveResult: function(result){		
 		this.results = _.without(this.results, result)
-		this.trigger(this.results);
+		this.trigger({results: this.results});
 	}
 });	
 
 
 
-module.exports = FormStore;
+module.exports = ResultStore;

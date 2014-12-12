@@ -29,10 +29,8 @@ var TypeAhead = React.createClass({
             source: this.props.typeahead,
             appendTo: $('body'),
             afterSelect: function(value){
-                //self.setState({value: value});
                 self.props.valueLink.requestChange(value);
-                //debugger;
-                //this.$element.parents('.form-group').next().find('input, select').focus();
+                this.$element.parents('.form-group').next().find('input, select').focus();
             },
             scrollHeight: $(node).offset().top - $(node).position().top
         });        
@@ -224,7 +222,7 @@ var SearchForm = React.createClass({
             this.setState({loading: true});
             $.get('/query', data)
                 .then(function(result){
-                    Actions.newResult({id: JSON.stringify(data), content: result})
+                    Actions.newResult({query: JSON.stringify(data), content: result})
                 }.bind(this),
                     function(result){
                         this.setState({error_message: result.responseJSON.error});

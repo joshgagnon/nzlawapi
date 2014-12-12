@@ -49,7 +49,7 @@ var Result = React.createClass({
     },
 
     legislation: function(){
-        var className = 'legislation-result';
+        var className = 'legislation-result '+this.props.data.id;
         if(this.state.expanded){
             className += ' expanded';
         }

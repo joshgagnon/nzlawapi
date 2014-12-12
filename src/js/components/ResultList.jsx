@@ -4,6 +4,7 @@ var Reflux = require('reflux');
 var ResultStore = require('../stores/ResultStore');
 var Result = require('./Result.jsx')
 var _ = require('lodash');
+var $ = require('jquery');
 
 
 var ResultList = React.createClass({
@@ -26,11 +27,20 @@ var ResultList = React.createClass({
 
 var Results = React.createClass({
     mixins: [
-        Reflux.connect(ResultStore, 'results')
+        Reflux.listenTo(ResultStore, 'onResults'),
     ],    
     getInitialState: function() {
         return {results: this.props.initialResults || []};
-    },    
+    }, 
+    onResults: function(data){
+        this.setState({results: data.results});
+        if(data.current){
+            var container = $(this.getDOMNode()),
+                scrollTo = $('.'+data.current);
+            
+            container.animate({scrollTop:scrollTo.offset().top -container.offset().top + container.scrollTop()});
+        }
+    },   
     render: function(){
         return <ResultList results={this.state.results}/>
 

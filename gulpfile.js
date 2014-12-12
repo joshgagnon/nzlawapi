@@ -51,6 +51,9 @@ gulp.task('js', function() {
       console.log('Updating!');
       watcher
         .bundle() // Create new bundle that uses the cache for high performance
+       .on('error', function(error){
+          notify.onError("Error: <%= error.message %>").apply(this, arguments);
+      })       
         .pipe(source('app.js'))
         //.pipe(streamify(uglify()))
         .pipe(gulp.dest('./build/js/'));
