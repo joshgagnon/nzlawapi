@@ -18,6 +18,8 @@ var shim = require('browserify-shim');
 var postcss      = require('gulp-postcss');
 var autoprefixer = require('autoprefixer-core');
 var watchify = require('watchify');
+var uglify = require('gulp-uglify');
+var streamify = require('gulp-streamify');
 
  var dont_break_on_errors = function(){
     return plumber(
@@ -47,8 +49,10 @@ gulp.task('js', function() {
     .on('update', function () { // When any files update
       var updateStart = Date.now();
       console.log('Updating!');
-      watcher.bundle() // Create new bundle that uses the cache for high performance
+      watcher
+        .bundle() // Create new bundle that uses the cache for high performance
         .pipe(source('app.js'))
+        //.pipe(streamify(uglify()))
         .pipe(gulp.dest('./build/js/'));
       console.log('Updated!', (Date.now() - updateStart) + 'ms');
   })
@@ -57,7 +61,8 @@ gulp.task('js', function() {
         notify.onError("Error: <%= error.message %>").apply(this, arguments);
     })
     .pipe(source('app.js'))
-    .pipe(gulp.dest('./build/'));
+  //.pipe(streamify(uglify()))    
+    .pipe(gulp.dest('./build/js/'));
 });
 
 
