@@ -50,9 +50,12 @@ gulp.task('js', function() {
       watcher.bundle() // Create new bundle that uses the cache for high performance
         .pipe(source('app.js'))
         .pipe(gulp.dest('./build/js/'));
-    console.log('Updated!', (Date.now() - updateStart) + 'ms');
+      console.log('Updated!', (Date.now() - updateStart) + 'ms');
   })
     .bundle() // Create the initial bundle when starting the task
+    .on('error', function(error){
+        notify.onError("Error: <%= error.message %>").apply(this, arguments);
+    })
     .pipe(source('app.js'))
     .pipe(gulp.dest('./build/'));
 });
@@ -85,6 +88,7 @@ gulp.task('sass', function() { 
 
 
     return gulp.src('./src/css/style.scss')
+        .pipe(dont_break_on_errors())
          .pipe(sass({
              style: 'compressed',
             "sourcemap=none": true, //hack to allow autoprefixer to work
@@ -93,7 +97,6 @@ gulp.task('sass', function() { 
                  './bower_components/bootstrap-sass-official/assets/stylesheets'
              ]
          }) ) 
-        .pipe(dont_break_on_errors())
         .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
          .pipe(gulp.dest('./build/css')); 
 });

@@ -14,24 +14,25 @@ var _ = require('lodash');
 var $ = require('jquery');
 require('bootstrap3-typeahead');
 
-
 var TypeAhead = React.createClass({
     mixins: [
         React.addons.LinkedStateMixin,
     ],
     render: function(){
-        return <Input type="text" ref="input" bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label}  valueLink={this.props.valueLink} hasFeedback={this.props.hasError}/>
+        return <Input type="text" ref="input" bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label} valueLink={this.props.valueLink} hasFeedback={this.props.hasError} />
     },
     componentDidMount: function(){
+        var self = this;
         var node = this.refs.input.refs.input.getDOMNode();
         $(node).typeahead({ 
-            items:10,  
+            items: 10,
             source: this.props.typeahead,
             appendTo: $('body'),
-            afterSelect: function(){
-                this.$element.parents('.form-group').next().find('input, select').focus();
-            },
-            // very bad
+            //afterSelect: function(value){
+                //self.setState({value: value});
+                //debugger;
+                //this.$element.parents('.form-group').next().find('input, select').focus();
+            //},
             scrollHeight: $(node).offset().top - $(node).position().top
         });        
     },

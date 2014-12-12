@@ -6,14 +6,9 @@ var $ = require('jquery');
 
 
 var Actions = Reflux.createActions([
-		'typeChange',
 		'queryChange',
-		'resultRequest',
-		'resultLoading',
-		'resultSuccess',
-		'resultFailure',
 		'newResult',
-		'fetchActs'
+		'removeResult'
 	]);
 
 

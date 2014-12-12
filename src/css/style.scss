@@ -42,40 +42,10 @@ body{
     display:none;
   }
 
-  .legislation{
-      text-align:left;
-      width:600px;
-     background: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    padding: 24px;
-    position: relative;   
-    vertical-align: bottom;
-    margin:16px auto;
-     animation: pulse 2s 1;
-  }
-
-  @keyframes pulse {
-    0% {
-      -moz-box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-    70% {
-        -moz-box-shadow:  0 0 20px rgba(0,0,0,0.5);
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-    100% {
-        -moz-box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-  }
-
   .legislation > div{
       max-height:600px;
       overflow-y:auto;
       overflow-x: hidden;
-  }
-  .legislation.expanded > div{
-    max-height:initial;
   }
 
   .legislation .history-note{

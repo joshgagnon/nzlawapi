@@ -12,7 +12,7 @@ var initialForm = {
 	type: 'act',
 	act_name: 'Companies Act 1993',
 	act_find: 'section',
-	query: 1
+	query: 4
 }
 
 

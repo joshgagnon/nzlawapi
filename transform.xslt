@@ -6,7 +6,7 @@
 
     <xsl:template match="/">
 
-        <div class="legislation result">
+        <div class="legislation">
             <div>
             <xsl:apply-templates select="act"/>
               </div>

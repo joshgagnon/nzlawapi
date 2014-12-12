@@ -146,7 +146,7 @@ def find_sub_node(tree, keys):
 def find_part_node(tree, query):
     #todo add path test
     keys = query.split('/')
-    tree = tree.xpath(".//%s[label='%s']" % keys[0])
+    tree = tree.xpath(".//part[label='%s']" % keys[0])
     keys = keys[2:]
     if len(keys):
         tree = tree[0]
@@ -155,7 +155,7 @@ def find_part_node(tree, query):
 def find_schedule_node(tree, query):
     #todo add schedule test
     keys = query.split('/')
-    tree = tree.xpath(".//%s[label='%s']" % keys[0])
+    tree = tree.xpath(".//schedule[label='%s']" % keys[0])
     keys = keys[2:]
     if len(keys):
         tree = tree[0]
