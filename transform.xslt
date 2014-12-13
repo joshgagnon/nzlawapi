@@ -108,7 +108,7 @@
             <xsl:call-template name="current"/> 
             <h5 class="prov labelled">
                 <a>
-                    <xsl:attribute name="href">/search_id/<xsl:value-of select="@id"/></xsl:attribute>
+                    <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
                    
                 <span class="label">
                     <xsl:value-of select="label"/>
@@ -284,7 +284,7 @@
 
     <xsl:template match="*[@href]">
         <a>
-        <xsl:attribute name="href">/search_id/<xsl:value-of select="@href"/>
+        <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
         </xsl:attribute>   
             <xsl:value-of select="."/>
         </a>

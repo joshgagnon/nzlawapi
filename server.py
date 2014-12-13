@@ -241,12 +241,11 @@ def get_references_for_ids(ids):
 
 
 def act_full_search(query):
-    result = es.search(index="legislation", body={  
+    result = es.search(index="legislation", doc_type='act', body={  
         "from" : 0, "size" : 25, 
         "fields" : ["id", "title"],
         "sort" : [
             "_score",
-           # 'year'
         ],
         "query": { "query_string" : { "query" : query } },
           "aggregations": {
@@ -313,6 +312,17 @@ def cases(act='', query=''):
     except Exception, e:
         return jsonify(error=str(e))
 
+@app.route('/act_search_id/<string:query>')
+def search_by_id(query):
+    status = 200
+    try:
+        result = cull_tree(find_node_by_id(query))
+        result = {'html_content': etree.tostring(result, encoding='UTF-8')}
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500        
+    return jsonify(result), status
+
 def query_act(args):
     act = get_act_exact(args.get('act_name'))
     search_type = args.get('act_find')
@@ -338,7 +348,8 @@ def query_act(args):
     return {'html_content': etree.tostring(result, encoding='UTF-8')}
 
 def query_acts(args):
-    search_type = args.get('search_type')    
+    search_type = args.get('acts_find')  
+    query = args.get('query')
     if search_type == 'contains':
         result = act_full_search(query)
     elif search_type == 'defintions':

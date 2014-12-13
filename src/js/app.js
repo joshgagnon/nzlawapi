@@ -38,10 +38,7 @@ var App = React.createClass({
 			                <SearchForm collapsable={true} initialForm={initialForm}/>
 			            </div>
 			            <div className="col-sm-10 col-xs-11 main">
-							<nav className="navbar navbar-default navbar-static-top" role="navigation">
-							  <div className="container">				  
-							  </div>
-							</nav>
+		
 			             <Results initialResults={initialResults}/>
 			            </div>
 			        </div>

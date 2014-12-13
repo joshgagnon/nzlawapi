@@ -33,14 +33,14 @@ var Results = React.createClass({
         return {results: this.props.initialResults || []};
     }, 
     onResults: function(data){
+        var padding = 20;
         this.setState({results: data.results});
         if(data.current){
             var container = $(this.getDOMNode()),
                 scrollTo = $('.'+data.current);
-            
-            container.animate({scrollTop:scrollTo.offset().top -container.offset().top + container.scrollTop()});
+            container.animate({scrollTop:scrollTo.offset().top -container.offset().top + container.scrollTop()- padding} );
         }
-    },   
+    },
     render: function(){
         return <ResultList results={this.state.results}/>
 

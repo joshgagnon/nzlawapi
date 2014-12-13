@@ -7,7 +7,7 @@ var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var Glyphicon = require('react-bootstrap/Glyphicon');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
-
+var $ = require('jquery');
 
 var Result = React.createClass({
     getInitialState: function(){
@@ -47,7 +47,19 @@ var Result = React.createClass({
             "Will put subsearch in here"
         </div>
     },
-
+    handleClick: function(e){
+        var $target = $(e.target);
+        if($target.is('a') && /\/act_search_id\/.*/.test($target.prop('href'))){
+            e.preventDefault();
+            this.fetch($target.prop('href'));
+        }
+    },
+    fetch: function(url){
+        $.get(url)
+            .then(function(result){
+                Actions.newResult({query: url, content: result})
+            });
+    },
     legislation: function(){
         var className = 'legislation-result '+this.props.data.id;
         if(this.state.expanded){
@@ -62,7 +74,7 @@ var Result = React.createClass({
         return <div className={className}>
                 {this.header()}
                 {this.form()}
-                 <div className="legislation-body" dangerouslySetInnerHTML={{__html: this.props.data.content.html_content }}/>
+                 <div onClick={this.handleClick} className="legislation-body" dangerouslySetInnerHTML={{__html: this.props.data.content.html_content }}/>
              </div>
     },
     render: function(){

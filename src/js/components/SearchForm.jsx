@@ -225,7 +225,11 @@ var SearchForm = React.createClass({
                     Actions.newResult({query: JSON.stringify(data), content: result})
                 }.bind(this),
                     function(result){
-                        this.setState({error_message: result.responseJSON.error});
+                        try{
+                            this.setState({error_message: result.responseJSON.error});
+                        }catch(e){
+                           this.setState({error_message: 'Server Error'}); 
+                        }
                     }.bind(this))
                 .always(function(){
                     this.setState({loading: false})
