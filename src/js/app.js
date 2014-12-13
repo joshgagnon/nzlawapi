@@ -23,9 +23,8 @@ var App = React.createClass({
 	render: function(){
 		return (
 			<div className="wrapper">
-			    <div className="box">
-			        <div className="row row-offcanvas row-offcanvas-left">
-			            <div className="column col-sm-2 col-xs-1 sidebar-offcanvas" id="sidebar">
+
+			    <div className=" sidebar-offcanvas" id="sidebar">
 			                <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo hidden-xs img-responsive center-block"/>
 			                <ul className="nav">
 			                    <li><a href="#" data-toggle="offcanvas" className="visible-xs text-center"><i className="glyphicon glyphicon-chevron-right"></i></a>
@@ -37,13 +36,11 @@ var App = React.createClass({
 			                </ul>
 			                <SearchForm collapsable={true} initialForm={initialForm}/>
 			            </div>
-			            <div className="col-sm-10 col-xs-11 main">
+			            <div className="main">
 		
 			             <Results initialResults={initialResults}/>
 			            </div>
-			        </div>
-			    </div>
-			  </div>);
+			        </div>);
 	}
 });
 

@@ -70,7 +70,10 @@ var Result = React.createClass({
         }
         if(this.state.showing_form){
             className += ' showing-form';
-        }                   
+        }  
+         if(this.props.data.current){
+            className += ' selected';
+        }                         
         return <div className={className}>
                 {this.header()}
                 {this.form()}

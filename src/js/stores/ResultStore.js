@@ -20,7 +20,6 @@ var ResultStore = Reflux.createStore({
 		var id;
 		if(!_.find(this.results, {query: result.query})){
 			result.id = 'result-'+this.counter++;
-
 			if(result.content.html_content){
 				var $content = $(result.content.html_content.replace(/<br\/>/, ' ' ));
 				var title = $content.find('h1.title').text();
@@ -34,6 +33,10 @@ var ResultStore = Reflux.createStore({
 		else{
 			result = _.find(this.results, {query: result.query});
 		}
+		_.map(this.results, function(r){
+			r.current = false;
+		});
+		result.current = true;
 		this.trigger({results: this.results, current: result.id});
 	},
 	onRemoveResult: function(result){		

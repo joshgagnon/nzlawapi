@@ -15,53 +15,15 @@ body{
     height: 100%;
 }
 
-.legislation-result{
-  /* custom */
-  .legislation h1 a, .legislation h2 a, .legislation h3 a, .legislation h4 a, .legislation h5 a, .legislation h6 a {
-      text-decoration:none;
-      color:#000;
-  }
-  .legislation div.cover{
-      margin-right:0;
-  }
-
-  .legislation h1.title {
-      margin-top: 0;
-  }
-  .legislation h2.part, .legislation h2.schedule, .legislation h2.head1, .legislation h2.schedule-group, .legislation h2.schedule-amendments-group1, .legislation h2.sop-part {
-      margin-top: 0;
-  }
-  .legislation .part{
-      margin-top:8px;
-  }
-
-
-  .legislation h1.title,
-  .legislation h2.part,
-  {
-    display:none;
-  }
-
-  .legislation > div{
-      max-height:600px;
-      overflow-y:auto;
-      overflow-x: hidden;
-  }
-
-  .legislation .history-note{
-    display:none;
-  }
-}
 
 .logo{
   width:200px;
   margin:20px auto;
 }
 
-.legislation_browser{
-padding-top: 70px;
+.wrapper{
+  height:100%;
 }
-
 .legislation_browser {
     overflow: auto;
 }
@@ -131,39 +93,22 @@ margin-bottom: 0;
 }
 
 /* side bar bs */
-.box {
-bottom: 0;
-left: 0;
-position: absolute;
-right: 0;
-top: 0;
-}
-#sidebar, #sidebar a, #sidebar-footer a {
-padding-left: 5px;
-}
-.column {
-height: 100%;
-overflow: auto;
-background-color:#f8f8f8;
-border-right:1px solid #e7e7e7;
 
+#sidebar, #sidebar a, #sidebar-footer a {
+padding: 5px;
+width:250px;
+position:fixed;
+background-color:#f8f8f8;
+height:100%;
+border-right:1px solid #e7e7e7;
 }
+
 .main{
-  padding-left: 0;
+  padding-left: 250px;
 padding-right: 0;
-overflow-y:auto;
 height: 100%;
 }
-.wrapper, .wrapper > .box >  .row {
-height: 100%;
-margin-left: 0;
-margin-right: 0;
-}
-.navbar{
-  top: 0;
-  position: fixed;
-  width: inherit;
-}
+
 
 
 

@@ -35,6 +35,7 @@ var Results = React.createClass({
     onResults: function(data){
         var padding = 20;
         this.setState({results: data.results});
+        console.log(this.getDOMNode())
         if(data.current){
             var container = $(this.getDOMNode()),
                 scrollTo = $('.'+data.current);

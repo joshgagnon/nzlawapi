@@ -1,18 +1,23 @@
 .result_list{
   height:100%;
   overflow:auto;
+  padding-left:0;
 
  .legislation-result{
  	font-family: "Times New Roman", serif;
       text-align:left;
-      width:600px;
+      min-width:600px;
+      width:80%;
      background: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
     position: relative;   
     vertical-align: bottom;
     margin:16px auto;
-     animation: pulse 2s 1;
+    padding-bottom: 16px;
 
+    &.selected{
+     animation: pulse 2s 1;
+ 	}
 
 	  @keyframes pulse {
 	    0% {
@@ -31,21 +36,33 @@
 			border-bottom: 1px solid #e7e7e7;
 			display:none;
 	  }
-	  
+
 	  &.showing-form .legislation-result-form{
 	  	display:block;
 	  }
 
-	  &.expanded .legislation>div{
-	  	max-height: initial;
+
+	  .legislation-body{
+	  
 	  }
 
 	  .legislation-body{
-	  	padding: 0 24px 24px 24px;
+	  		padding: 0 24px 24px 24px;
+	  	     max-height:600px;
+      		overflow-y:auto;
+      		overflow-x: hidden;
 	  }
-
+	  &.collapsed{
+	  	padding-bottom:0;
+	  	margin:0 auto;
+	  }
 	  &.collapsed .legislation-body{
-	  		display:none
+	  		height:0;
+	  		padding:0;
+
+	  }
+	  &.expanded .legislation-body{
+	  	max-height: initial;
 	  }
 
 	  .legislation-header{
@@ -56,6 +73,8 @@
 			margin: 0;
 			line-height: 24px;
 			font-weight: 400;
+			white-space: nowrap;
+			overflow: hidden;
 		}
 		.btn.menu{
 				position: absolute;
@@ -75,5 +94,43 @@
 			top: 0;
 		}
 	  }
-	}  
+
+	&.collapsed .legislation-header{
+		border:none;
+	}
+
+
+  /* custom */
+  .legislation h1 a, .legislation h2 a, .legislation h3 a, .legislation h4 a, .legislation h5 a, .legislation h6 a {
+      text-decoration:none;
+      color:#000;
+  }
+  .legislation div.cover{
+      margin-right:0;
+  }
+
+  .legislation h1.title {
+      margin-top: 0;
+  }
+  .legislation h2.part, .legislation h2.schedule, .legislation h2.head1, .legislation h2.schedule-group, .legislation h2.schedule-amendments-group1, .legislation h2.sop-part {
+      margin-top: 0;
+  }
+  .legislation .part{
+      margin-top:8px;
+  }
+
+
+  .legislation h1.title,
+  .legislation h2.part,
+  {
+    display:none;
+  }
+
+
+
+  .legislation .history-note{
+    display:none;
+  }
+}
+
 }
