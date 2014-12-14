@@ -49,7 +49,7 @@ var Result = React.createClass({
     },
     handleClick: function(e){
         var $target = $(e.target);
-        if($target.is('a') && /\/act_search_id\/.*/.test($target.prop('href'))){
+        if(/\/act_search_id\/.*/.test($target.prop('href'))){
             e.preventDefault();
             this.fetch($target.prop('href'));
         }
@@ -57,7 +57,7 @@ var Result = React.createClass({
     fetch: function(url){
         $.get(url)
             .then(function(result){
-                Actions.newResult({query: url, content: result})
+                Actions.newResult({src: {url: url}, query: url, content: result})
             });
     },
     legislation: function(){

@@ -8,12 +8,8 @@ var $ = require('jquery');
 var _ = require('lodash');
 
 var initialResults = [];
-var initialForm = {
-	type: 'act',
-	act_name: 'Companies Act 1993',
-	act_find: 'section',
-	query: 4
-}
+
+var initialForm = {}
 
 
 function scrollTo($element){
@@ -46,8 +42,15 @@ var App = React.createClass({
 
 React.render(<App/>, document.body);
 
-(function sidebar(){
-	$('[data-toggle=offcanvas]').click(function() {
+// load results
+
+if(localStorage['data']){
+	_.forEach(JSON.parse(localStorage['data']).results, function(r){
+		Actions.newResult(r)
+	});
+}
+
+/*	$('[data-toggle=offcanvas]').click(function() {
 	  	$(this).toggleClass('visible-xs text-center');
 	    $(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
 	    $('.row-offcanvas').toggleClass('active');
@@ -55,7 +58,7 @@ React.render(<App/>, document.body);
 	    $('#xs-menu').toggleClass('visible-xs').toggleClass('hidden-xs');
 	    $('#btnShow').toggle();
 	});
-})();
+})();*/2
 
 
 //var initialState = JSON.parse(document.getElementById('initial-state').innerHTML)

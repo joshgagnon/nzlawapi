@@ -208,7 +208,8 @@ var SearchForm = React.createClass({
         }
     }, 
 
-    submit: function(){
+    submit: function(e){
+        e.preventDefault();
         var data = _.object(_.map(this.refs, function(v, k){
             return [k, v.getValue()];
         }));
@@ -222,7 +223,7 @@ var SearchForm = React.createClass({
             this.setState({loading: true});
             $.get('/query', data)
                 .then(function(result){
-                    Actions.newResult({query: JSON.stringify(data), content: result})
+                    Actions.newResult({query: JSON.stringify(data), src: {url: '/query', get: data}, content: result})
                 }.bind(this),
                     function(result){
                         try{
@@ -255,7 +256,7 @@ var SearchForm = React.createClass({
                   { this.optionalInputs() }
                   <div className="form-group">
                      <ButtonToolbar>
-                            <Button className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>
+                            <Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>
                             <Button className="submit_loading" bsStyle="info" id="submit-loading" >
                                 <span className="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
                             </Button>

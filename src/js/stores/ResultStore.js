@@ -23,9 +23,6 @@ var ResultStore = Reflux.createStore({
 			if(result.content.html_content){
 				var $content = $(result.content.html_content.replace(/<br\/>/, ' ' ));
 				var title = $content.find('h1.title').text();
-				if($content.find('h2.part')){
-					title += ' ' + $content.find('h2.part').text();
-				}
 				result.title = title;
 			}
 			this.results.push(result)
