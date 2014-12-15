@@ -10,10 +10,14 @@ function insertDefinitions(result){
 	var content = $(result.content.html_content);
 	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')', 'ig');
 	findText(content.get(0), reg, function(highlighted){
-        var span = document.createElement('span');
-          span.className = 'mark';
-          span.appendChild(highlighted);
-          return span;
+		var def = result.definitions[highlighted.textContent.toLowerCase()];
+		var span = document.createElement('span');
+		span.appendChild(highlighted);
+		span.setAttribute('data-toggle', 'popover');
+		span.setAttribute('title', def.key);
+		span.setAttribute('data-html', true);
+		span.setAttribute('data-content', def.html_content);
+		return span;
      });
 	result.content.html_content = content.prop('outerHTML') 
 
@@ -58,6 +62,7 @@ var ResultStore = Reflux.createStore({
 		var result = _.find(this.results, {id: id});
 		result.definitions = definitions;
 		insertDefinitions(result);
+		result.definitions_processed=true;
 		this.trigger({results: this.results});
 	}
 });	

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "autoprefixer-core": "^4.0.2",
+    "bootstrap": "^3.3.1",
     "bootstrap3-typeahead": "git://github.com/joshgagnon/Bootstrap-3-Typeahead.git",
     "browserify": "^7.0.0",
     "browserify-shim": "^3.8.1",
@@ -40,10 +41,16 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "browser": {
-    "bootstrap3-typeahead": "./node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js"
+    "bootstrap3-typeahead": "./node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js",
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
   },
   "browserify-shim": {
-    "jquery": "$",
+    "jquery": "$:jquery:jQuery",
+    "bootstrap":{
+       "depends": [
+        "jquery:jQuery"
+      ]     
+      },
     "bootstrap3-typeahead": {
       "depends": [
         "jquery"

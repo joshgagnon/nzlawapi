@@ -176,7 +176,7 @@ def find_all_definitions(tree):
         for key in keys:
             # super ugly hack to prevent placeholders like 'A'
             if len(key.text) > 1:
-                results[key.text] = html
+                results[key.text.lower()] = {'key': key.text, 'html_content': html}
     return results
 
 
@@ -333,7 +333,7 @@ def search_by_id(query):
     try:
         document, title = find_node_by_id(query)
         result = cull_tree(document)
-        result = {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': title}
+        result = {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': title, 'type': 'act'}
     except Exception, e:
         result = {'error': str(e)}
         status = 500        

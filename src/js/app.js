@@ -9,7 +9,11 @@ var _ = require('lodash');
 
 var initialResults = [];
 
-var initialForm = {}
+var initialForm = {
+	act_name: 'Companies Act 1993',
+	act_find: 'section',
+	query: 47
+}
 
 
 function scrollTo($element){

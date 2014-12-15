@@ -109,6 +109,18 @@
 	}
 
 
+	.popover-content .labelled.label{
+		font-size: initial;
+	 font-weight: initial;
+	 color: initial;
+	 white-space: normal;
+	}
+
+	.popover-content ul.label-para{
+		padding-left: 0px;
+list-style: none;
+	}
+
    .legislation .mark{
    	background-color: #FFFEA1;
    }
@@ -131,7 +143,6 @@
   .legislation .part{
       margin-top:8px;
   }
-
 
 }
 

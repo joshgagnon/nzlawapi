@@ -10,6 +10,7 @@ var ResultForm = require('./ResultForm.jsx');
 var findText = require('../util/findText.js');
 var _ = require('lodash');
 var $ = require('jquery');
+console.log(require('bootstrap'));
 
 var Result = React.createClass({
     mixins: [
@@ -25,8 +26,11 @@ var Result = React.createClass({
         }
     },
     componentDidMount: function(){
-        $('[data-toggle="tooltip"]', this.getDOMNode()).tooltip();
+        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'click'});
     },
+     componentDidUpdate: function(){
+        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'click'});
+    },   
     header: function(){
         return <div className="legislation-header">
         <Button className='menu' onClick={this.showForm}><Glyphicon glyph="list" /></Button>
@@ -84,13 +88,15 @@ var Result = React.createClass({
     }, 
     toggleDefinitions: function(){
         this.setState({definitions: !this.state.definitions});
-        $.get('/query', {
-            type: this.props.data.content.type, 
-            act_name: this.props.data.content.act_name, act_find: 'all_definitions', format: 'json'
-            })
-            .then(function(result){
-                Actions.definitions(this.props.data.id, result.content)
-            }.bind(this));
+        if(!this.props.data.content.definitions_processed){
+            $.get('/query', {
+                type: this.props.data.content.type, 
+                act_name: this.props.data.content.act_name, act_find: 'all_definitions', format: 'json'
+                })
+                .then(function(result){
+                    Actions.definitions(this.props.data.id, result.content)
+                }.bind(this));
+        }
     },
     updateSearch: function(e){
         this.setState({search: $(e.target).val()})
