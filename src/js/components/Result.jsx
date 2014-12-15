@@ -7,6 +7,7 @@ var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var Glyphicon = require('react-bootstrap/Glyphicon');
 var Actions = require('../actions/Actions');
 var ResultForm = require('./ResultForm.jsx');
+var findText = require('../util/findText.js');
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -22,6 +23,9 @@ var Result = React.createClass({
             history:false,
             search: ''
         }
+    },
+    componentDidMount: function(){
+        $('[data-toggle="tooltip"]', this.getDOMNode()).tooltip();
     },
     header: function(){
         return <div className="legislation-header">
@@ -93,35 +97,18 @@ var Result = React.createClass({
     },
     highlight: function(){
         var str = this.props.data.content.html_content;
-        function highlightWord(root,word, length){
-          textNodesUnder(root).forEach(highlightWords);
-
-          function textNodesUnder(root){
-            var n,a=[],w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false);
-            while(n=w.nextNode()) a.push(n);
-            return a;
-          }
-          function highlightWords(n){
-            for (var i; (i=n.nodeValue.substr(i).search(word,i)) > -1; n=after){
-              var after = n.splitText(i+length);
-              var highlighted = n.splitText(i);
-              var span = document.createElement('span');
-               span.className = 'mark';
-              span.appendChild(highlighted);
-              after.parentNode.insertBefore(span,after);
-            }
-          }
-        }
         if(this.state.search){
-             var search = new RegExp(this.state.search, 'i');
+            var search = new RegExp(this.state.search, 'ig');
             var content = $('<div/>').append(str);
-            highlightWord(content.get(0), search, this.state.search.length);
+             findText(content.get(0), search, function(highlighted){
+                var span = document.createElement('span');
+                  span.className = 'mark';
+                  span.appendChild(highlighted);
+                  return span;
+             });
             str = content.html();
         }
         return str;
-    },
-    definitions: function(){
-
     },
     legislation: function(){
         var className = 'legislation-result '+this.props.data.id;

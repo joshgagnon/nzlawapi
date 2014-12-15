@@ -4,12 +4,18 @@ var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-
+var findText = require('../util/findText.js');
 
 function insertDefinitions(result){
-	var html = result.content.html_content;
-	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')', 'i');
-	debugger;
+	var content = $(result.content.html_content);
+	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')', 'ig');
+	findText(content.get(0), reg, function(highlighted){
+        var span = document.createElement('span');
+          span.className = 'mark';
+          span.appendChild(highlighted);
+          return span;
+     });
+	result.content.html_content = content.prop('outerHTML') 
 
 }
 
