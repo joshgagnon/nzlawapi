@@ -31,20 +31,21 @@
 	    }
 	  }
 	  .legislation-result-form {
-			padding: 40px;
+			padding: 16px;
 			background-color: #f8f8f8;
 			border-bottom: 1px solid #e7e7e7;
+			text-align:center;
 			display:none;
 	  }
 
 	  &.showing-form .legislation-result-form{
 	  	display:block;
 	  }
+		&.showing-form .legislation-result-form label{
+		margin-right: 12px;
 
+		}
 
-	  .legislation-body{
-	  
-	  }
 
 	  .legislation-body{
 	  		padding: 0 24px 24px 24px;
@@ -59,10 +60,19 @@
 	  &.collapsed .legislation-body{
 	  		height:0;
 	  		padding:0;
-
 	  }
 	  &.expanded .legislation-body{
 	  	max-height: initial;
+	  }
+
+	  &:not(.history) .legislation-body .history-note{
+	  	display:none;
+	  }
+
+	  &:not(.context) .legislation-body  h1.title,
+  	  &:not(.context) .legislation-body  h2.part,
+	  {
+	    display:none;
 	  }
 
 	  .legislation-header{
@@ -120,17 +130,6 @@
   }
 
 
-  .legislation h1.title,
-  .legislation h2.part,
-  {
-    display:none;
-  }
-
-
-
-  .legislation .history-note{
-    display:none;
-  }
 }
 
 }

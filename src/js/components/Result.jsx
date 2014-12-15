@@ -6,15 +6,21 @@ var ButtonToolbar = require('react-bootstrap/ButtonToolbar');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var Glyphicon = require('react-bootstrap/Glyphicon');
 var Actions = require('../actions/Actions');
+var ResultForm = require('./ResultForm.jsx');
 var _ = require('lodash');
 var $ = require('jquery');
 
 var Result = React.createClass({
+    mixins: [
+        React.addons.LinkedStateMixin,
+    ],    
     getInitialState: function(){
         return {
             expanded: false,
             collapsed:false,
             showing_form: false,
+            history:false,
+            search: ''
         }
     },
     header: function(){
@@ -43,12 +49,15 @@ var Result = React.createClass({
         Actions.removeResult(this.props.data);
     },
     form: function(){
-        return <div className="legislation-result-form">
-            "Will put subsearch in here"
-        </div>
+        return <ResultForm data={this.props} 
+            toggleHistory={this.toggleHistory} history={this.state.history}
+            toggleCrossref={this.toggleCrossref} crossref={this.state.crossref}
+            toggleDefinitions={this.toggleDefinitions} definitions={this.state.definitions}
+            toggleContext={this.toggleContext} context={this.state.context}
+            updateSearch={this.updateSearch} search={this.state.search}/>
     },
     handleClick: function(e){
-        var $target = $(e.target);
+        var $target = $(e.target).closest('a');
         if(/\/act_search_id\/.*/.test($target.prop('href'))){
             e.preventDefault();
             this.fetch($target.prop('href'));
@@ -59,6 +68,55 @@ var Result = React.createClass({
             .then(function(result){
                 Actions.newResult({src: {url: url}, query: url, content: result})
             });
+    },
+    toggleHistory: function(){
+        this.setState({history: !this.state.history});
+    },
+    toggleContext: function(){
+        this.setState({context: !this.state.context});
+    }, 
+    toggleCrossref: function(){
+        this.setState({crossref: !this.state.crossref});
+    }, 
+    toggleDefinitions: function(){
+        this.setState({definitions: !this.state.definitions});
+    },
+    updateSearch: function(e){
+        this.setState({search: $(e.target).val()})
+    },
+    highlight: function(){
+        var str = this.props.data.content.html_content;
+       
+
+        function highlightWord(root,word, length){
+          textNodesUnder(root).forEach(highlightWords);
+
+          function textNodesUnder(root){
+            var n,a=[],w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false);
+            while(n=w.nextNode()) a.push(n);
+            return a;
+          }
+
+          function highlightWords(n){
+            console.log(word);
+            //for (var i; (i=n.nodeValue.indexOf(word,i)) > -1; n=after){
+            for (var i; (i=n.nodeValue.substr(i).search(word,i)) > -1; n=after){
+              var after = n.splitText(i+length);
+              var highlighted = n.splitText(i);
+              var span = document.createElement('span');
+               span.className = 'mark';
+              span.appendChild(highlighted);
+              after.parentNode.insertBefore(span,after);
+            }
+          }
+        }
+        if(this.state.search){
+             var search = new RegExp(this.state.search, 'i');
+            var content = $('<div/>').append(str);
+            highlightWord(content.get(0), search, this.state.search.length);
+            str = content.html();
+        }
+        return str;
     },
     legislation: function(){
         var className = 'legislation-result '+this.props.data.id;
@@ -73,11 +131,23 @@ var Result = React.createClass({
         }  
          if(this.props.data.current){
             className += ' selected';
-        }                         
+        } 
+        if(this.state.history){
+            className += ' history';
+        } 
+        if(this.state.context){
+            className += ' context';
+        } 
+        if(this.state.crossrefs){
+            className += ' crossrefs';
+        }
+         if(this.state.definitions){
+            className += ' definitions';
+        }       
         return <div className={className}>
                 {this.header()}
                 {this.form()}
-                 <div onClick={this.handleClick} className="legislation-body" dangerouslySetInnerHTML={{__html: this.props.data.content.html_content }}/>
+                 <div onClick={this.handleClick} className="legislation-body" dangerouslySetInnerHTML={{__html: this.highlight(this.props.data.content.html_content) }}/>
              </div>
     },
     render: function(){

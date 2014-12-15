@@ -359,7 +359,6 @@ def query_acts(args):
     return result
 
 def query_case(args):
-
     raise CustomException('Invalid search type')
 
 def query_cases(args):
