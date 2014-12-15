@@ -246,7 +246,7 @@ var SearchForm = React.createClass({
         if(this.state.loading){
             className += ' loading';
         }
-        return <form className={className}>
+        return <form className={className} autoComplete="off">
                   <Input type="select" label='Type' ref="type"  valueLink={this.linkState('type')}>
                     <option value="act">Act or Regulation</option>
                     <option value="acts">All Acts & Regulations</option>

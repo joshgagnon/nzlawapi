@@ -6,6 +6,14 @@ var _ = require('lodash');
 var $ = require('jquery');
 
 
+function insertDefinitions(result){
+	var html = result.content.html_content;
+	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')', 'i');
+	debugger;
+
+}
+
+
 
 var ResultStore = Reflux.createStore({
 	listenables: Actions,
@@ -38,6 +46,12 @@ var ResultStore = Reflux.createStore({
 	},
 	onRemoveResult: function(result){		
 		this.results = _.without(this.results, result)
+		this.trigger({results: this.results});
+	},
+	onDefinitions: function(id, definitions){
+		var result = _.find(this.results, {id: id});
+		result.definitions = definitions;
+		insertDefinitions(result);
 		this.trigger({results: this.results});
 	}
 });	

@@ -6,11 +6,9 @@
 
     <xsl:template match="/">
 
-        <div class="legislation">
-            <div>
-            <xsl:apply-templates select="act"/>
-              </div>
-        </div>
+
+        <xsl:apply-templates select="act"/>
+
     </xsl:template>
 
     <xsl:template name="current">
@@ -21,6 +19,8 @@
 
 
     <xsl:template match="act">
+        <div class="legislation">
+            <div>
         <div class="act top-level">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
@@ -33,6 +33,8 @@
                <xsl:apply-templates select="front"/> 
              <xsl:apply-templates select="body"/>       
              <xsl:apply-templates select="schedule.group"/>               
+        </div>
+            </div>
         </div>
     </xsl:template>
 

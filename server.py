@@ -43,8 +43,8 @@ def get_title(tree):
     return tree.xpath('/act/cover/title')[0].text
 
 
-def tohtml(tree):
-    xslt = etree.parse('transform.xslt')
+def tohtml(tree, transform='transform.xslt'):
+    xslt = etree.parse(transform)
     transform = etree.XSLT(xslt)
     return transform(tree)
 
@@ -167,10 +167,25 @@ def find_section_node(tree, query):
     return find_sub_node(tree, keys)
 
 
+def find_all_definitions(tree):
+    nodes = tree.xpath(".//def-para[descendant::def-term]")
+    results = {}
+    for node in nodes:
+        html = etree.tostring(tohtml(node, 'transform_def.xslt'), encoding='UTF-8')
+        keys = node.xpath('.//def-term')
+        for key in keys:
+            # super ugly hack to prevent placeholders like 'A'
+            if len(key.text) > 1:
+                results[key.text] = html
+    return results
+
+
 def find_definitions(tree, query):
-    node = tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
+    nodes = tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
     if not len(node):
         raise CustomException("Path for definition not found")
+    return nodes
+
 
 def find_definition(tree, query):
     try:
@@ -185,7 +200,7 @@ def find_node_by_id(node_id):
     with get_db().cursor() as cur:    
         try:
             query = """ 
-            select document from documents d
+            select document, title from documents d
             join acts a on a.document_id = d.id
             join id_lookup i on i.parent_id = a.id and i.mapper = 'acts'
             where i.id = %(node_id)s
@@ -193,7 +208,8 @@ def find_node_by_id(node_id):
             limit 1; """
 
             cur.execute(query, {'node_id': node_id})
-            return etree.fromstring(cur.fetchone()[0]).xpath("//*[@id='%s']" % node_id)
+            result = cur.fetchone()
+            return (etree.fromstring(result[0]).xpath("//*[@id='%s']" % node_id), result[1])
         except Exception, e:
             print e
             raise CustomException("Result not found")
@@ -272,15 +288,14 @@ def case_search(query, offset=0):
     return result
 
 class CustomJSONEncoder(JSONEncoder):
-
     def default(self, obj):
         try:
             if isinstance(obj, datetime.date):
                 return obj.isoformat()
         except TypeError:
             pass
-        else:
-            return list(iterable)
+        #else:
+        #    return list(iterable)
         return JSONEncoder.default(self, obj)
 
 
@@ -316,18 +331,29 @@ def cases(act='', query=''):
 def search_by_id(query):
     status = 200
     try:
-        result = cull_tree(find_node_by_id(query))
-        result = {'html_content': etree.tostring(result, encoding='UTF-8')}
+        document, title = find_node_by_id(query)
+        result = cull_tree(document)
+        result = {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': title}
     except Exception, e:
         result = {'error': str(e)}
         status = 500        
     return jsonify(result), status
 
+def format_response(args, result):
+    print args
+    if args.get('format', 'html') == 'json':
+        return {'content': result, 'act_name': args['act_name']}
+    else:
+        return {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': args['act_name']}
+
 def query_act(args):
     act = get_act_exact(args.get('act_name'))
     search_type = args.get('act_find')
+
     if search_type == 'full':
         result = tohtml(act)
+    elif search_type == 'all_definitions':
+        result = find_all_definitions(act)           
     else:
         query = args.get('query')
         if not query:
@@ -341,11 +367,11 @@ def query_act(args):
         elif search_type == 'schedule':
             tree = find_schedule_node(act, query)
         elif search_type == 'definitions':
-            tree = find_definitions(act, query)
+            tree = find_definitions(act, query)         
         else:
             raise CustomException('Invalid search type')
         result = cull_tree(tree)
-    return {'html_content': etree.tostring(result, encoding='UTF-8')}
+    return format_response(args, result)
 
 def query_acts(args):
     search_type = args.get('acts_find')  
@@ -387,6 +413,7 @@ def query():
     except CustomException, e:
         result = {'error': str(e)}
         status = 500
+    result['type'] = query_type
     return jsonify(result), status
 
 

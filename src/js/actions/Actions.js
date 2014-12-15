@@ -8,7 +8,8 @@ var $ = require('jquery');
 var Actions = Reflux.createActions([
 		'queryChange',
 		'newResult',
-		'removeResult'
+		'removeResult',
+		'definitions'
 	]);
 
 

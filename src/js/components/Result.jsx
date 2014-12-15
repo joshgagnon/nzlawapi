@@ -12,7 +12,7 @@ var $ = require('jquery');
 
 var Result = React.createClass({
     mixins: [
-        React.addons.LinkedStateMixin,
+        React.addons.LinkedStateMixin
     ],    
     getInitialState: function(){
         return {
@@ -27,14 +27,14 @@ var Result = React.createClass({
         return <div className="legislation-header">
         <Button className='menu' onClick={this.showForm}><Glyphicon glyph="list" /></Button>
         <h4>{this.props.data.title}</h4>
-                    <ButtonToolbar>
-                      <ButtonGroup>
-                        <Button onClick={this.expand}><Glyphicon glyph="plus-sign" /></Button>
-                        <Button onClick={this.collapse}><Glyphicon glyph="minus-sign" /></Button>
-                        <Button onClick={this.close}><Glyphicon glyph="remove-sign" /></Button>
-                      </ButtonGroup>
-                    </ButtonToolbar>
-                </div>
+            <ButtonToolbar>
+              <ButtonGroup>
+                <Button onClick={this.expand}><Glyphicon glyph="plus-sign" /></Button>
+                <Button onClick={this.collapse}><Glyphicon glyph="minus-sign" /></Button>
+                <Button onClick={this.close}><Glyphicon glyph="remove-sign" /></Button>
+              </ButtonGroup>
+            </ButtonToolbar>
+        </div>
     },
     showForm: function(){
         this.setState({showing_form: !this.state.showing_form})
@@ -80,14 +80,19 @@ var Result = React.createClass({
     }, 
     toggleDefinitions: function(){
         this.setState({definitions: !this.state.definitions});
+        $.get('/query', {
+            type: this.props.data.content.type, 
+            act_name: this.props.data.content.act_name, act_find: 'all_definitions', format: 'json'
+            })
+            .then(function(result){
+                Actions.definitions(this.props.data.id, result.content)
+            }.bind(this));
     },
     updateSearch: function(e){
         this.setState({search: $(e.target).val()})
     },
     highlight: function(){
         var str = this.props.data.content.html_content;
-       
-
         function highlightWord(root,word, length){
           textNodesUnder(root).forEach(highlightWords);
 
@@ -96,10 +101,7 @@ var Result = React.createClass({
             while(n=w.nextNode()) a.push(n);
             return a;
           }
-
           function highlightWords(n){
-            console.log(word);
-            //for (var i; (i=n.nodeValue.indexOf(word,i)) > -1; n=after){
             for (var i; (i=n.nodeValue.substr(i).search(word,i)) > -1; n=after){
               var after = n.splitText(i+length);
               var highlighted = n.splitText(i);
@@ -117,6 +119,9 @@ var Result = React.createClass({
             str = content.html();
         }
         return str;
+    },
+    definitions: function(){
+
     },
     legislation: function(){
         var className = 'legislation-result '+this.props.data.id;
