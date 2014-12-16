@@ -3,7 +3,7 @@ var React = require('react');
 var Reflux = require('reflux');
 var ResultStore = require('../stores/ResultStore');
 var Serialization = require('../stores/Serialization');
-var Result = require('./Result.jsx')
+var Result = require('./Result.jsx');
 var _ = require('lodash');
 var $ = require('jquery');
 

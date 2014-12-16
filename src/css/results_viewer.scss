@@ -2,6 +2,19 @@
   height:100%;
   overflow:auto;
   padding-left:0;
+  
+	.popover-content .labelled.label{
+		font-size: initial;
+	 font-weight: initial;
+	 color: initial;
+	 white-space: normal;
+	}
+
+	.popover-content ul.label-para{
+		padding-left: 0px;
+list-style: none;
+	}
+
 
  .legislation-result{
  	font-family: "Times New Roman", serif;
@@ -108,17 +121,8 @@
 		border:none;
 	}
 
-
-	.popover-content .labelled.label{
-		font-size: initial;
-	 font-weight: initial;
-	 color: initial;
-	 white-space: normal;
-	}
-
-	.popover-content ul.label-para{
-		padding-left: 0px;
-list-style: none;
+	.defined-word{
+		text-decoration: underline;
 	}
 
    .legislation .mark{

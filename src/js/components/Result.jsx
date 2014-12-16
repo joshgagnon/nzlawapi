@@ -26,10 +26,10 @@ var Result = React.createClass({
         }
     },
     componentDidMount: function(){
-        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'click'});
+        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'hover'});
     },
      componentDidUpdate: function(){
-        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'click'});
+        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'hover'});
     },   
     header: function(){
         return <div className="legislation-header">

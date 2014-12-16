@@ -8,14 +8,21 @@ var findText = require('../util/findText.js');
 
 function insertDefinitions(result){
 	var content = $(result.content.html_content);
-	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')', 'ig');
+	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')[s]?', 'ig');
+	console.log(reg)
 	findText(content.get(0), reg, function(highlighted){
-		var def = result.definitions[highlighted.textContent.toLowerCase()];
+		var key = highlighted.textContent.toLowerCase();
+		//ugly ugly, need to be smarter about this later
+		if(!result.definitions[key]){
+			key = key.substring(0, key.length - 1);
+		}
+		var def = result.definitions[key];
 		var span = document.createElement('span');
 		span.appendChild(highlighted);
 		span.setAttribute('data-toggle', 'popover');
 		span.setAttribute('title', def.key);
 		span.setAttribute('data-html', true);
+		span.className = 'defined-word';
 		span.setAttribute('data-content', def.html_content);
 		return span;
      });
