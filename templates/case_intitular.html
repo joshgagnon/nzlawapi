@@ -7,6 +7,17 @@
 		<td>Court</td>
 		<td >{{ ', '.join(result['court']) }}</td>
 	</tr>
+	{% if result['full_citation']  %}
+		<tr>
+			<td>
+				Full Citation
+			</td>
+			<td>
+				{{ result['full_citation'] }}
+			</td>
+		</tr>
+	{% endif %}
+
 	{% if result['neutral_citation']  %}
 		<tr>
 			<td>
@@ -123,6 +134,16 @@
 			</td>
 		</tr>
 	{% endif %}
+	{% if result['appeal_result']  %}
+		<tr>
+			<td>
+				Appeal Result
+			</td>
+			<td>
+				{{result['appeal_result'] }}
+			</td>
+		</tr>
+	{% endif %}	
 	<tr>
 		<td>
 			Waistband

@@ -52,6 +52,7 @@ var ReportModal = React.createClass({
           <Input type="text" label="Reporter"  value={this.props.reporter} onChange={this.props.reporterChange} />
           <Input type="textarea" label="Details"  value={this.props.details} onChange={this.props.detailsChange}/>
           <Input type="select"  label='Problem Fields' value={this.props.fields} onChange={this.props.fieldsChange} multiple>
+            <option value="full_citation">Full Citation</option>
             <option value="neutral_citation">Neutral Citation</option>
             <option value="court">Court</option>
             <option value="parties">Parties</option>
@@ -60,6 +61,7 @@ var ReportModal = React.createClass({
             <option value="charge">Charge</option>
             <option value="waistband">Waistband</option>
             <option value="bench">Bench</option>
+            <option value="appeal_result">Appeal Result</option>
         </Input>
           </form>
               </div>
@@ -135,7 +137,7 @@ module.exports = React.createClass({
     			this.setState({case_html: response.html_content, 
     				path: response.path, id: response.id,
     				full_citation: response.full_citation,
-    				details: '', fields: []
+    				details: '', fields: [], validated: response.validated
     			},this.getReports);
     		}.bind(this))
     },
@@ -157,6 +159,12 @@ module.exports = React.createClass({
     		localStorage['reporter'] = this.state.reporter;
     	}
     },
+    invertValid: function(e){
+    	e.preventDefault();
+    	this.setState({validated: !this.state.validated}, function(){
+    		$.post('/validate_case', {id: this.state.id, validated: this.state.validated})
+    	}.bind(this))
+    },
     submitReport: function(){
     	$.post('/error_reports', _.pick(this.state ,'id', 'reporter', 'details', 'fields'))
     		.then(this.getReports)
@@ -170,6 +178,13 @@ module.exports = React.createClass({
 								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 
+								<ButtonGroup>
+									{ !_.isUndefined(this.state.validated) ? 
+										<Button onClick={this.invertValid}  bsStyle={ this.state.validated ? 'warning' : 'success'} >Mark { this.state.validated ? 'Invalid' : 'Valid'}</Button>
+										:
+										null
+									}
+								</ButtonGroup>
 							 	<ButtonGroup>
 									<ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation} 
 									details={this.state.details} detailsChange={this.detailsChange} 

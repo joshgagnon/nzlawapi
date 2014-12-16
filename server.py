@@ -295,6 +295,7 @@ def get_case_info(case):
         results = cur.fetchone()
         return {'html_content': render_template('case_intitular.html', result=results), 
             'path':  '/case/file/'+results.get('id'), 'id': results.get('id'),
+            'validated': results.get('validated'),
             'full_citation': results.get('full_citation')}
 
 class CustomJSONEncoder(JSONEncoder):
@@ -340,6 +341,19 @@ def cases(act='', query=''):
             return jsonify({'cases': cur.fetchall()})
     except Exception, e:
         return jsonify(error=str(e))
+
+
+@app.route('/validate_case',methods=['POST'])
+def validate():
+    db = get_db();
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        query = """update cases set validated = %(validated)s where id = %(id)s """
+        cur.execute(query, {
+            'id': request.form.get('id'), 
+            'validated': request.form.get('validated')
+            })
+        db.commit()
+        return jsonify(status='success'), 200 
 
 @app.route('/error_reports',methods=['GET'])
 def get_reports():
@@ -483,4 +497,4 @@ def close_db(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',port=5666)
+    app.run()
