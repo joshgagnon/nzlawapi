@@ -341,6 +341,30 @@ def cases(act='', query=''):
     except Exception, e:
         return jsonify(error=str(e))
 
+@app.route('/error_reports',methods=['GET'])
+def get_reports():
+    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        query = """select * from error_reports where id = %(id)s """
+        print request.args.get('id')
+        cur.execute(query, {'id': request.args.get('id')})
+        return jsonify(results=cur.fetchall())  
+
+@app.route('/error_reports', methods=['POST'])
+def post_reports():
+    db = get_db();
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        query = """insert into error_reports (id, reporter, details, fields, mapper) values 
+            (%(id)s, %(reporter)s, %(details)s, %(fields)s, 'cases') """
+        cur.execute(query, {
+            'id': request.form.get('id'), 
+            'reporter': request.form.get('reporter'),
+            'details': request.form.get('details'),
+            'fields': request.form.getlist('fields[]')
+            })
+        db.commit()
+        return jsonify(status='success'), 200 
+
+
 @app.route('/act_search_id/<string:query>')
 def search_by_id(query):
     status = 200

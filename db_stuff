@@ -23,3 +23,41 @@ select id, title, max(version) from acts group by id, title;
 
 --alter table documents drop column text;
 --alter table documents add column searchable tsvector;
+
+
+--create table id_lookup(id text primary key, parent_id text, mapper text);
+
+
+create table cases (
+
+id text primary key,
+document_id integer, 
+neutral_citation text,
+court text[],
+parties json,
+counsel text[],
+full_citation text,
+judgment text,
+hearing text,
+matter json,
+received text,
+charge text,
+plea text,
+waistband text,
+appeal_result json,
+bench text
+
+)
+
+
+create table error_reports (
+	id text,
+	reporter text,
+	fields text[],
+	details text,
+	mapper text not null
+);
+
+alter table error_reports add constraint act_fk foreign key (id) references cases (id);
+
+CREATE INDEX error_id_index ON error_reports (id);

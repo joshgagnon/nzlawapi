@@ -30,15 +30,17 @@ var FullCase = React.createClass({
 	}
 });
 
-var MyModal = React.createClass({
-	/*mixins: [
-        React.addons.LinkedStateMixin,
-    ],*/
+var ReportModal = React.createClass({
+
     getInitialState: function(){
     	return {}
     },
+    preventSubmit: function(e){
+    	e.preventDefault();
+    },
     submit: function(e){
     	e.preventDefault();
+    	this.props.submitReport();
     	this.props.onRequestHide();
     },
   render: function() {
@@ -46,8 +48,8 @@ var MyModal = React.createClass({
         <Modal {...this.props} title="Report Error" animation={true}>
           <div className="modal-body">
           <p>Error in { this.props.full_citation }</p>
-          <form className="form">
-          <Input type="text" label="Reporter"  value={this.props.reporter} onChange={this.props.reportChange}/>
+          <form className="form" onSubmit={this.preventSubmit}>
+          <Input type="text" label="Reporter"  value={this.props.reporter} onChange={this.props.reporterChange} />
           <Input type="textarea" label="Details"  value={this.props.details} onChange={this.props.detailsChange}/>
           <Input type="select"  label='Problem Fields' value={this.props.fields} onChange={this.props.fieldsChange} multiple>
             <option value="neutral_citation">Neutral Citation</option>
@@ -63,7 +65,7 @@ var MyModal = React.createClass({
               </div>
 	          <div className="modal-footer">
 	            <Button onClick={this.props.onRequestHide}>Cancel</Button>
-	            <Button type="submit" className="submit" bsStyle="danger" onClick={this.submit}>Submit</Button>
+	            <Button  className="submit" bsStyle="danger" onClick={this.submit}>Submit</Button>
 	          </div>
       
         </Modal>
@@ -71,7 +73,23 @@ var MyModal = React.createClass({
   }
 });
 
-
+var ShowReports = React.createClass({
+	render: function(){
+		return <Modal {...this.props} title="Error Reports" animation={true}>
+		    <div className="modal-body">
+		    <table className="table">
+		    <tr><th>Reporter</th><th>Fields</th><th>Details</th></tr>
+			{ this.props.reports.map(function(report){
+				return <tr><td>{report.reporter}</td><td>{(report.fields||[]).join(', ')}</td><td>{report.details}</td></tr>
+			}) }
+			</table>
+		</div>
+	          <div className="modal-footer">
+	            <Button onClick={this.props.onRequestHide}>Cancel</Button>
+	          </div>		
+		</Modal>
+	}
+})
 
 module.exports = React.createClass({
 	mixins: [
@@ -81,7 +99,9 @@ module.exports = React.createClass({
     	return {
     		cases_typeahead: [],
     		case_name: '',
-    		index: 0
+    		index: 0,
+    		reporter: localStorage ? localStorage['reporter'] : '',
+    		fields: []
     	}
     },
     componentDidMount: function(){
@@ -114,19 +134,33 @@ module.exports = React.createClass({
     		.then(function(response){
     			this.setState({case_html: response.html_content, 
     				path: response.path, id: response.id,
-    				full_citation: response.full_citation
-    			})
+    				full_citation: response.full_citation,
+    				details: '', fields: []
+    			},this.getReports);
+    		}.bind(this))
+    },
+    getReports: function(){
+    	$.get('/error_reports', {id: this.state.id})
+    		.then(function(response){
+    			this.setState({reports: response.results});
     		}.bind(this))
     },
     detailsChange: function(e){
-    	this.setState({details: e.target.value})
+    	this.setState({details: e.target.value});
     },
     fieldsChange: function(e){
-    	this.setState({fields: e.target.value})
+    	this.setState({fields: _.compact(_.map(e.target.children, function(c){ return c.selected ? c.value :null }))});
     },	
     reporterChange: function(e){
-    	this.setState({reporter: e.target.value})
-    },	        	
+    	this.setState({reporter: e.target.value});
+    	if(localStorage){
+    		localStorage['reporter'] = this.state.reporter;
+    	}
+    },
+    submitReport: function(){
+    	$.post('/error_reports', _.pick(this.state ,'id', 'reporter', 'details', 'fields'))
+    		.then(this.getReports)
+    },    	        	
 	render: function(){
 		return (<div className="validator">
 					<nav className="navbar navbar-default navbar-fixed-top">
@@ -137,9 +171,17 @@ module.exports = React.createClass({
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 
 							 	<ButtonGroup>
-									<ModalTrigger modal={<MyModal case_id={this.state.id} full_citation={this.state.full_citation} details={this.state.details} detailsChange={this.detailsChange} />}>
-										<Button bsStyle="danger" >Report</Button>
+									<ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation} 
+									details={this.state.details} detailsChange={this.detailsChange} 
+									fields={_.isArray(this.state.fields) ? this.state.fields : [this.state.fields]} fieldsChange={this.fieldsChange} 
+									reporter={this.state.reporter} reporterChange={this.reporterChange} 
+									submitReport={this.submitReport}/>}>
+										<Button bsStyle="danger" >Submit Report</Button>
 									</ModalTrigger>
+
+									{this.state.reports ? <ModalTrigger modal={<ShowReports reports={this.state.reports}/>}>
+							 			<Button bsStyle="info" >Existing Reports</Button>
+							 		</ModalTrigger> : null}
 							 	</ButtonGroup>
 							 	<ButtonGroup>
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
