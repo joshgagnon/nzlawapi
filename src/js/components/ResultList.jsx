@@ -37,14 +37,15 @@ var Results = React.createClass({
         var padding = 20;
         this.setState({results: data.results});
         if(data.current){
-            var container = $(this.getDOMNode()),
+            var container = $(this.refs.scrollable.getDOMNode()),
                 scrollTo = $('.'+data.current);
             container.animate({scrollTop:scrollTo.offset().top -container.offset().top + container.scrollTop()- padding} );
         }
     },
     render: function(){
-        return <ResultList results={this.state.results}/>
-
+       return <div className="main">
+                    <ResultList ref="scrollable" results={this.state.results}/>
+                </div>
     }
 });
 

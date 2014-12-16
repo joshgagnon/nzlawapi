@@ -28,6 +28,7 @@
     "lodash": "^2.4.1",
     "react": "^0.12.1",
     "react-bootstrap": "^0.13.0",
+    "react-router": "^0.11.5",
     "reactify": "^0.17.1",
     "reflux": "^0.2.1",
     "vinyl-source-stream": "^1.0.0",
@@ -46,11 +47,11 @@
   },
   "browserify-shim": {
     "jquery": "$:jquery:jQuery",
-    "bootstrap":{
-       "depends": [
+    "bootstrap": {
+      "depends": [
         "jquery:jQuery"
-      ]     
-      },
+      ]
+    },
     "bootstrap3-typeahead": {
       "depends": [
         "jquery"

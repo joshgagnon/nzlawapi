@@ -307,6 +307,10 @@ es = elasticsearch.Elasticsearch()
 def browser(act='', query=''):
     return render_template('browser.html')
 
+@app.route('/validator')
+def validator(act='', query=''):
+    return render_template('browser.html')
+
 @app.route('/acts.json')
 def acts(act='', query=''):
     try:
