@@ -5,6 +5,7 @@ var Actions = require('./actions/Actions');
 var ReactRouter = require('react-router');
 var SearchForm = require('./components/SearchForm.jsx');
 var Results = require('./components/ResultList.jsx');
+var Validator = require('./components/Validator.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
@@ -23,7 +24,8 @@ function scrollTo($element){
 
 var Browser = React.createClass({
 	render: function(){
-		return (<div className="wrapper">
+		return (
+			<div className="wrapper">
 	    		<div className=" sidebar-offcanvas" id="sidebar">
 	                <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo hidden-xs img-responsive center-block"/>
 	                <ul className="nav">
@@ -37,31 +39,22 @@ var Browser = React.createClass({
 	                <SearchForm collapsable={true} initialForm={initialForm}/>
 	            </div>
 	             	<Results initialResults={initialResults}/>
-	        </div>)
+	        </div>
+	       )
 	}
 })
 
-var Validator = React.createClass({
-	render: function(){
-		return <div></div>
-	}
-})
+ /*<header>
+		          <ul>
+		            <li><ReactRouter.Link to="app">Browser</ReactRouter.Link></li>
+		            <li><ReactRouter.Link to="validator">Validator</ReactRouter.Link></li>
+		          </ul>
+		        </header>*/
 var App = React.createClass({
 	render: function(){
 		return (
-		      <div>
-		        <header>
-		          <ul>
-		            <li><Link to="app">Brorwser</Link></li>
-		            <li><Link to="validator">Validator</Link></li>
-		          </ul>
-		          Logged in as Jane
-		        </header>
-
-		        {/* this is the important part */}
 		        <ReactRouter.RouteHandler/>
-		      </div>
-			);
+		      );
 	}
 });
 
@@ -70,22 +63,21 @@ var App = React.createClass({
 
 if(localStorage['data']){
 	_.forEach(JSON.parse(localStorage['data']).results, function(r){
-		Actions.newResult(r)
+		Actions.newResult(r);
 	});
 }
 
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
     <ReactRouter.Route name="validator" handler={Validator}/>
-    <ReactRouter.DefaultRouter handler={Browser}/>
+    <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );
 
 
-ReactRouter.Router.run(routes, ReactRouter.Router.HistoryLocation, function (Handler) {
-  React.render(<ReactRoute.Handler/>, document.body);
+ReactRouter.run(routes, ReactRouter.HistoryLocation, function (Handler) {
+  React.render(<Handler/>, document.body);
 });
-
 
 /*	$('[data-toggle=offcanvas]').click(function() {
 	  	$(this).toggleClass('visible-xs text-center');

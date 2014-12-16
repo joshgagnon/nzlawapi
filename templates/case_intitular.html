@@ -1,0 +1,134 @@
+<table class="table table-striped">
+	<tr>
+		<td>PDF Document</td>
+		<td ><a href="/case/file/{{ result['id'].replace('.html', '.pdf') }}">PDF</a>
+	</tr>
+	<tr>
+		<td>Court</td>
+		<td >{{ ', '.join(result['court']) }}</td>
+	</tr>
+	{% if result['neutral_citation']  %}
+		<tr>
+			<td>
+				Neutral Citation
+			</td>
+			<td>
+				{{result['neutral_citation'] }}
+			</td>
+		</tr>
+	{% endif %}
+	<tr>
+		<td >Parties</td>
+		<td class="table_holding_cell">
+			<table class="table">
+				{% for k, v in result['parties'].iteritems() %}
+					<tr >
+						<td rowspan="2">{{ k }}</td>
+						
+						<td>Plantiffs</td>
+						<td>{{ '<br/>'.join(v['plantiffs'])|safe }}</td>
+					</tr>
+					<tr>
+						<td>Defendants</td>
+						<td>{{ '<br/>'.join(v['defendants'])|safe }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</td>
+	</tr>
+	{% if result['matter']  %}
+		<tr>
+			<td >Matter</td>
+			<td class="table_holding_cell">
+				<table class="table">
+					{% for k, v in result['matter'].iteritems() %}
+						<tr >
+							<td >{{ k }}</td>
+							<td>{{ v }}</td>
+							
+						</tr>
+					{% endfor %}
+				</table>
+			</td>
+		</tr>
+	{% endif %}
+	{% if result['counsel']  %}
+		<tr>
+			<td>
+				Counsel
+			</td>
+			<td>
+				{{'<br/>'.join(result['counsel'] )|safe }}
+			</td>
+		</tr>
+	{% endif %}
+	{% if result['bench']  %}
+		<tr>
+			<td>
+				Bench
+			</td>
+			<td>
+				{{result['bench'] }}
+			</td>
+		</tr>
+		
+	{% endif %}
+	{% if result['judgment']  %}
+		<tr>
+			<td>
+				Judgment
+			</td>
+			<td>
+				{{result['judgment'] }}
+			</td>
+		</tr>
+	{% endif %}
+	{% if result['hearing']  %}
+		<tr>
+			<td>
+				Hearing
+			</td>
+			<td>
+				{{result['hearing'] }}
+			</td>
+		</tr>
+	{% endif %}
+	{% if result['received']  %}
+		<tr>
+			<td>
+				Received
+			</td>
+			<td>
+				{{result['received'] }}
+			</td>
+		</tr>
+	{% endif %}
+	{% if result['charge']  %}
+		<tr>
+			<td>
+				Charge
+			</td>
+			<td>
+				{{result['charge'] }}
+			</td>
+		</tr>
+	{% endif %}
+	{% if result['plea']  %}
+		<tr>
+			<td>
+				Plea
+			</td>
+			<td>
+				{{result['plea'] }}
+			</td>
+		</tr>
+	{% endif %}
+	<tr>
+		<td>
+			Waistband
+		</td>
+		<td>
+			{{ result['waistband'] }}
+		</td>
+	</tr>
+</table>

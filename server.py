@@ -7,6 +7,7 @@ from operator import itemgetter
 from flask import render_template, json, jsonify, g, request, send_from_directory
 from flask.json import JSONEncoder
 import psycopg2
+import psycopg2.extras
 import datetime
 import os
 import elasticsearch
@@ -287,6 +288,15 @@ def case_search(query, offset=0):
     print("Got %d Hits:" % result['hits']['total'])
     return result
 
+def get_case_info(case):
+    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        query = """select * from cases where full_citation = %(case)s """
+        cur.execute(query, {'case': case})
+        results = cur.fetchone()
+        return {'html_content': render_template('case_intitular.html', result=results), 
+            'path':  '/case/file/'+results.get('id'), 'id': results.get('id'),
+            'full_citation': results.get('full_citation')}
+
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         try:
@@ -389,6 +399,10 @@ def query_acts(args):
     return result
 
 def query_case(args):
+    case = args.get('case_name')
+    if case:
+        return get_case_info(case)
+
     raise CustomException('Invalid search type')
 
 def query_cases(args):
@@ -397,7 +411,13 @@ def query_cases(args):
         raise CustomException('Query missing')
     results = case_search(re.escape(args.get('query', '')))
     return {'results': results}
-    
+
+@app.route('/case/file/<path:filename>')
+def case_file(filename):
+    path = '/Users/josh/legislation_archive/justice'
+    return send_from_directory(path, filename)
+
+
 @app.route('/query')
 def query():
     args = request.args
@@ -417,7 +437,6 @@ def query():
     except CustomException, e:
         result = {'error': str(e)}
         status = 500
-    result['type'] = query_type
     return jsonify(result), status
 
 
