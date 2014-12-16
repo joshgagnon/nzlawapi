@@ -179,7 +179,7 @@ module.exports = React.createClass({
 										<Button bsStyle="danger" >Submit Report</Button>
 									</ModalTrigger>
 
-									{this.state.reports ? <ModalTrigger modal={<ShowReports reports={this.state.reports}/>}>
+									{this.state.reports && this.state.reports.length ? <ModalTrigger modal={<ShowReports reports={this.state.reports}/>}>
 							 			<Button bsStyle="info" >Existing Reports</Button>
 							 		</ModalTrigger> : null}
 							 	</ButtonGroup>
