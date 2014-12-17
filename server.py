@@ -197,8 +197,8 @@ def find_definition(tree, query):
         print e
         raise CustomException("Path for definition not found")
 
-def find_node_by_id(node_id):
-    with get_db().cursor() as cur:    
+def find_node_by_id(node_id, db):
+    with (db or get_db()).cursor() as cur:    
         try:
             query = """ 
             select document, title from documents d
@@ -224,8 +224,8 @@ def find_node_by_query(tree, query):
         raise CustomException("Path not found")
 
 
-def get_act(act):
-    with get_db().cursor() as cur:
+def get_act(act, db):
+    with (db or get_db()).cursor() as cur:
         query = """select document from acts a 
         join documents d on a.document_id = d.id
         where lower(replace(title, ' ', '')) = lower(%(act)s)
@@ -236,8 +236,8 @@ def get_act(act):
         except:
             raise CustomException("Act not found")
 
-def get_act_exact(act):
-    with get_db().cursor() as cur:
+def get_act_exact(act, db):
+    with (db or get_db()).cursor() as cur:
         query = """select document from acts a 
         join documents d on a.document_id = d.id
         where lower(title) = lower(%(act)s)

@@ -180,7 +180,7 @@ module.exports = React.createClass({
 
 								<ButtonGroup>
 									{ !_.isUndefined(this.state.validated) ? 
-										<Button onClick={this.invertValid}  bsStyle={ this.state.validated ? 'warning' : 'success'} >Mark { this.state.validated ? 'Invalid' : 'Valid'}</Button>
+										<Button onClick={this.invertValid}  bsStyle={ this.state.validated ? 'warning' : 'success'} >{ this.state.validated ? 'Not Reviewed' : 'Reviewed'}</Button>
 										:
 										null
 									}
