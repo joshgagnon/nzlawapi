@@ -197,7 +197,7 @@ def find_definition(tree, query):
         print e
         raise CustomException("Path for definition not found")
 
-def find_node_by_id(node_id, db):
+def find_node_by_id(node_id, db=None):
     with (db or get_db()).cursor() as cur:    
         try:
             query = """ 
@@ -224,7 +224,7 @@ def find_node_by_query(tree, query):
         raise CustomException("Path not found")
 
 
-def get_act(act, db):
+def get_act(act, db=None):
     with (db or get_db()).cursor() as cur:
         query = """select document from acts a 
         join documents d on a.document_id = d.id
@@ -236,7 +236,7 @@ def get_act(act, db):
         except:
             raise CustomException("Act not found")
 
-def get_act_exact(act, db):
+def get_act_exact(act, db=None):
     with (db or get_db()).cursor() as cur:
         query = """select document from acts a 
         join documents d on a.document_id = d.id
@@ -315,11 +315,9 @@ app.json_encoder = CustomJSONEncoder
 es = elasticsearch.Elasticsearch()
 
 @app.route('/')
-def browser(act='', query=''):
-    return render_template('browser.html')
-
 @app.route('/validator')
-def validator(act='', query=''):
+@app.route('/full_act')
+def browser(act='', query=''):
     return render_template('browser.html')
 
 @app.route('/acts.json')
@@ -398,14 +396,20 @@ def format_response(args, result):
     else:
         return {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': args['act_name']}
 
+def full_act_response(act, args):
+    return {
+        'html_content': etree.tostring(tohtml(act), encoding='UTF-8'),
+        'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8'),
+        'act_name': args['act_name']
+    }
+
 def query_act(args):
     act = get_act_exact(args.get('act_name'))
     search_type = args.get('act_find')
-
     if search_type == 'full':
-        result = tohtml(act)
+        return full_act_response(act, args)
     elif search_type == 'all_definitions':
-        result = find_all_definitions(act)           
+        result = find_all_definitions(act)              
     else:
         query = args.get('query')
         if not query:
@@ -497,4 +501,4 @@ def close_db(error):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run('0.0.0.0', debug=True, port=5001)

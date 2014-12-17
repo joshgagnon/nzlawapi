@@ -19,7 +19,7 @@
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
             </xsl:attribute>                 
-            <span class="partlabel">Part <span class="number"><xsl:value-of select="./label"/></span><xsl:value-of select="./heading"/></span>
+            <span class="part-label">Part <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
             <xsl:apply-templates select="./subpart|./crosshead|./prov"/>
         </li>
@@ -30,7 +30,7 @@
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
             </xsl:attribute>                 
-            <span class="partlabel">Subpart <span class="number"><xsl:value-of select="./label"/></span><xsl:value-of select="./heading"/></span>
+            <span class="subart-label">Subpart <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
             <xsl:apply-templates select="./crosshead|./prov"/>
 
@@ -51,7 +51,7 @@
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
             </xsl:attribute>
-            <span class="label"><span class="number"><xsl:value-of select="./label"/></span><xsl:value-of select="./heading"/></span>
+            <span class="prov-label"><span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>     
         </li>
     </xsl:template>
