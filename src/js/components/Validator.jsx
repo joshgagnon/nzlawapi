@@ -75,6 +75,29 @@ var ReportModal = React.createClass({
   }
 });
 
+var UserModal = React.createClass({
+    preventSubmit: function(e){
+        e.preventDefault();
+    },    
+      render: function() {
+        return (
+            <Modal {...this.props} title="User Name" animation={true}>
+              <div className="modal-body">
+              <form className="form" onSubmit={this.preventSubmit}>
+              <Input type="text" label="Reporter"  value={this.props.reporter} onChange={this.props.reporterChange} />
+              </form>
+                  </div>
+                  <div className="modal-footer">
+                    <Button onClick={this.props.onRequestHide}>Close</Button>
+                  </div>
+          
+            </Modal>
+          );
+      }
+})
+
+
+
 var ShowReports = React.createClass({
 	render: function(){
 		return <Modal {...this.props} title="Error Reports" animation={true}>
@@ -87,7 +110,7 @@ var ShowReports = React.createClass({
 			</table>
 		</div>
 	          <div className="modal-footer">
-	            <Button onClick={this.props.onRequestHide}>Cancel</Button>
+	            <Button onClick={this.props.onRequestHide}>Close</Button>
 	          </div>		
 		</Modal>
 	}
@@ -111,7 +134,10 @@ module.exports = React.createClass({
             .then(function(data){
             	var cases = data.cases.map(function(x){ return x[0]; });
                 this.setState({cases_typeahead: cases, case_name: cases[0]}, this.fetch);
-            }.bind(this));         
+            }.bind(this));
+        if(!this.state.reporter){
+            this.refs.name_modal.toggle();
+        }       
     },
     submit: function(e){
     	e.preventDefault();
@@ -137,7 +163,8 @@ module.exports = React.createClass({
     			this.setState({case_html: response.html_content, 
     				path: response.path, id: response.id,
     				full_citation: response.full_citation,
-    				details: '', fields: [], validated: response.validated
+    				details: '', fields: [], validated: response.validated,
+                    index: this.state.cases_typeahead.indexOf(this.state.case_name)
     			},this.getReports);
     		}.bind(this))
     },
@@ -154,15 +181,16 @@ module.exports = React.createClass({
     	this.setState({fields: _.compact(_.map(e.target.children, function(c){ return c.selected ? c.value :null }))});
     },	
     reporterChange: function(e){
-    	this.setState({reporter: e.target.value});
-    	if(localStorage){
-    		localStorage['reporter'] = this.state.reporter;
-    	}
+    	this.setState({reporter: e.target.value}, function(){;
+        	if(localStorage){
+        		localStorage['reporter'] = this.state.reporter;
+        	}
+        }.bind(this));
     },
     invertValid: function(e){
     	e.preventDefault();
     	this.setState({validated: !this.state.validated}, function(){
-    		$.post('/validate_case', {id: this.state.id, validated: this.state.validated})
+    		$.post('/validate_case', {id: this.state.id, validated: this.state.validated, username: this.state.reporter})
     	}.bind(this))
     },
     submitReport: function(){
@@ -177,7 +205,6 @@ module.exports = React.createClass({
 							<form className="form form-inline">
 								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
-
 								<ButtonGroup>
 									{ !_.isUndefined(this.state.validated) ? 
 										<Button onClick={this.invertValid}  bsStyle={ this.state.validated ? 'warning' : 'success'} >{ this.state.validated ? 'Not Reviewed' : 'Reviewed'}</Button>
@@ -202,15 +229,21 @@ module.exports = React.createClass({
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
 								 	<Button onClick={this.next}><span className="glyphicon glyphicon-chevron-right"></span></Button>
 							 	</ButtonGroup>
+                                <ButtonGroup>
+                                    <ModalTrigger ref="name_modal" modal={<UserModal 
+                                    reporter={this.state.reporter} reporterChange={this.reporterChange} />}>
+                                        <Button bsStyle="info" >User Name</Button>
+                                    </ModalTrigger> 
+                                </ButtonGroup>                               
 							</form>
 						</div>
 					</nav>
 					<div className="container-fluid">	
 						<div className="row results">
-							<div className="col-lg-6 extracted">
+							<div className="col-lg-4 col extracted">
 								<Intitular html={this.state.case_html}/>
 							</div>
-							<div className="col-lg-6 rendered">
+							<div className="col-lg-8 col rendered">
 								<FullCase path={this.state.path}/>
 							</div>
 						</div>
