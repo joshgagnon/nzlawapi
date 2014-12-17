@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"legi",
+				"legislation-result"
+			],
+			[
 				"submit",
 				"submitAct"
 			],
@@ -151,7 +155,31 @@
 			"file": "server.py",
 			"settings":
 			{
-				"buffer_size": 10842,
+				"buffer_size": 16882,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/js/app.js",
+			"settings":
+			{
+				"buffer_size": 2899,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/js/components/Validator.jsx",
+			"settings":
+			{
+				"buffer_size": 8208,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/js/components/Act.jsx",
+			"settings":
+			{
+				"buffer_size": 4026,
 				"line_ending": "Unix"
 			}
 		},
@@ -159,7 +187,7 @@
 			"file": "gulpfile.js",
 			"settings":
 			{
-				"buffer_size": 404,
+				"buffer_size": 3567,
 				"line_ending": "Unix"
 			}
 		},
@@ -172,10 +200,18 @@
 			}
 		},
 		{
-			"file": "static/js/browser.js",
+			"file": "transform.xslt",
 			"settings":
 			{
-				"buffer_size": 5090,
+				"buffer_size": 12198,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "contents.xslt",
+			"settings":
+			{
+				"buffer_size": 2178,
 				"line_ending": "Unix"
 			}
 		},
@@ -196,26 +232,10 @@
 			}
 		},
 		{
-			"file": "static/css/style.css",
-			"settings":
-			{
-				"buffer_size": 5165,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "static/js/smoothscroll.js",
-			"settings":
-			{
-				"buffer_size": 14291,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "templates/browser.html",
 			"settings":
 			{
-				"buffer_size": 1411,
+				"buffer_size": 27,
 				"line_ending": "Unix"
 			}
 		},
@@ -231,7 +251,7 @@
 			"file": "templates/form.html",
 			"settings":
 			{
-				"buffer_size": 2146,
+				"buffer_size": 2147,
 				"line_ending": "Unix"
 			}
 		},
@@ -245,13 +265,10 @@
 			}
 		},
 		{
-			"contents": "--create table documents (id serial primary key, text text, type text, document text);\n\n\n--CREATE INDEX text_index ON documents USING gin(to_tsvector('english', text));\n\n--alter table acts add column document_id integer;\n\n--alter table acts add constraint act_fk foreign key (document_id) references documents (id);\n\n--alter table acts add column repealed boolean default false;\n--delete from acts;\n--delete from documents;\n\n\n\nselect a.id, a.title, ts_rank_cd(d.searchable, to_tsquery('finance & shares')) as rank\nfrom documents d join acts a on a.document_id = d.id \nWHERE d.searchable @@ to_tsquery('english', 'finance & shares') and a.repealed = False\nGROUP BY a.id, a.title, a.year, ts_rank_cd(d.searchable, to_tsquery('finance & shares'))\nORDER BY rank desc limit 100;\n\nselect id, title, max(version) from acts group by id, title;\n\n--alter table documents drop column text;\n--alter table documents add column searchable tsvector;\n\n\n--create table id_lookup(id text primary key, parent_id text, mapper text);\n\n\ncreate table cases (\n\nid text primary key,\ndocument_id integer, \nneutral_citation text,\ncourt text[],\nparties json,\ncounsel text[],\nfull_citation text,\njudgment text,\nhearing text,\nmatter json,\nreceived text,\ncharge text,\nplea text,\nwaistband text,\nappeal_result json,\nbench text\n\n)\n",
 			"file": "db_stuff",
-			"file_size": 934,
-			"file_write_time": 130613625970000000,
 			"settings":
 			{
-				"buffer_size": 1298,
+				"buffer_size": 1551,
 				"line_ending": "Unix"
 			}
 		}
@@ -420,12 +437,40 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/josh/nzlawapi",
-		"/Users/josh/nzlawapi/static",
-		"/Users/josh/nzlawapi/tests"
+		"/Users/josh/tmp_sandbox/nzlawapi"
 	],
 	"file_history":
 	[
+		"/Users/josh/tmp_sandbox/nzlawapi/src/css/results_viewer.scss",
+		"/Users/josh/tmp_sandbox/nzlawapi/src/css/validator.scss",
+		"/Users/josh/tmp_sandbox/nzlawapi/src/css/act_browser.scss",
+		"/Users/josh/tmp_sandbox/nzlawapi/src/css/style.scss",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/react-router/.jshintrc",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/autoprefixer-core/lib/hacks/align-content.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/build/js/app.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/css-opacity.json",
+		"/Users/josh/tmp_sandbox/nzlawapi/.sass-cache/bd357b36c940106ba1ff5c9f503c7ae9d5d7a03b/results_viewer.scssc",
+		"/Users/josh/tmp_sandbox/nzlawapi/results.log",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/gulp-react/node_modules/react-tools/src/utils/__tests__/LegacyImmutableObject-test.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/bootstrap/less/responsive-embed.less",
+		"/Users/josh/tmp_sandbox/nzlawapi/src/css/legislation.scss",
+		"/Users/josh/tmp_sandbox/nzlawapi/.sass-cache/bd357b36c940106ba1ff5c9f503c7ae9d5d7a03b/legislation.scssc",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/react/lib/LocalEventTrapMixin.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/bower_components/bootstrap-sass-official/LICENSE",
+		"/Users/josh/tmp_sandbox/nzlawapi/build/css/style.css",
+		"/Users/josh/tmp_sandbox/nzlawapi/.sass-cache/1655f0b40cd870346a19d7d83bf392ee68bca8ba/style.scssc",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/bootstrap/less/type.less",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/react/lib/ReactPropTypeLocations.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/mout/date/totalDaysInYear.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/transform.xslt",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/bootstrap/docs/_data/sass-team.yml",
+		"/Users/josh/tmp_sandbox/nzlawapi/.sass-cache/bd357b36c940106ba1ff5c9f503c7ae9d5d7a03b/validator.scssc",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/react/lib/getUnboundedScrollPosition.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/node_modules/bootstrap/less/mixins/nav-vertical-align.less",
+		"/Users/josh/tmp_sandbox/nzlawapi/api.sublime-project",
+		"/Users/josh/tmp_sandbox/nzlawapi/static/js/smoothscroll.js",
+		"/Users/josh/tmp_sandbox/nzlawapi/static/css/style.css",
+		"/Users/josh/tmp_sandbox/nzlawapi/static/js/browser.js",
 		"/Users/josh/nzlawapi/parse_case.py",
 		"/Users/josh/nzlawapi/templates/search_results.html",
 		"/Users/josh/nzlawapi/static/css/bootstrap.css",
@@ -502,6 +547,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"case",
 			"case_search",
 			"case_sear",
 			"COURT(",
@@ -617,6 +663,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"act",
 			"soup",
 			"close-page",
 			"get_act(act)",
@@ -635,7 +682,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -644,15 +691,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10842,
+						"buffer_size": 16882,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9445,
-								9429
+								13931,
+								13931
 							]
 						],
 						"settings":
@@ -662,42 +709,147 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3594.0,
+						"translation.y": 4739.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "gulpfile.js",
+					"file": "src/js/app.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 404,
+						"buffer_size": 2899,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								248,
-								248
+								305,
+								305
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
-						"translation.x": 0.0,
+						"translation.x": -0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/js/components/Validator.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8208,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3683,
+								3683
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 1954.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
+					"file": "src/js/components/Act.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4026,
+						"regions":
+						{
+							"TagLint":
+							{
+								"flags": 2356,
+								"icon": "dot",
+								"regions":
+								[
+									[
+										3010,
+										3019
+									]
+								],
+								"scope": "variable.parameter"
+							}
+						},
+						"selection":
+						[
+							[
+								3840,
+								3840
+							]
+						],
+						"settings":
+						{
+							"is_xml": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "gulpfile.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3567,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								775,
+								778
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "templates/case_search_results.html",
 					"semi_transient": false,
 					"settings":
@@ -722,8 +874,8 @@
 						"selection":
 						[
 							[
-								1062,
-								1062
+								223,
+								223
 							]
 						],
 						"settings":
@@ -733,43 +885,89 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 275.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "static/js/browser.js",
+					"buffer": 6,
+					"file": "transform.xslt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5090,
+						"buffer_size": 12198,
+						"regions":
+						{
+							"TagLint":
+							{
+								"flags": 2356,
+								"icon": "dot",
+								"regions":
+								[
+									[
+										4789,
+										4808
+									]
+								],
+								"scope": "variable.parameter"
+							}
+						},
+						"selection":
+						[
+							[
+								9308,
+								9302
+							]
+						],
+						"settings":
+						{
+							"is_xml": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3497.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "contents.xslt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2178,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								734,
-								734
+								2053,
+								2053
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"is_xml": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 8,
 					"file": "pop_el.py",
 					"semi_transient": false,
 					"settings":
@@ -793,11 +991,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 9,
 					"file": "extract_from_xml.py",
 					"semi_transient": false,
 					"settings":
@@ -823,84 +1021,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "static/css/style.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5165,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4132,
-								4132
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2304.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "static/js/smoothscroll.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14291,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12386,
-								12386
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
+					"buffer": 10,
 					"file": "templates/browser.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1411,
+						"buffer_size": 27,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								180,
-								180
+								0,
+								0
 							]
 						],
 						"settings":
@@ -914,11 +1052,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "parse_case.py",
 					"semi_transient": false,
 					"settings":
@@ -944,24 +1082,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 12,
 					"file": "templates/form.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2146,
+						"buffer_size": 2147,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								289,
-								289
+								0,
+								0
 							]
 						],
 						"settings":
@@ -975,7 +1113,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 13,
 					"type": "text"
 				}
 			]
@@ -985,7 +1123,7 @@
 			"sheets":
 			[
 				{
-					"buffer": 11,
+					"buffer": 13,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1010,16 +1148,16 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 14,
 					"file": "db_stuff",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1298,
+						"buffer_size": 1551,
 						"regions":
 						{
 						},
@@ -1039,7 +1177,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
@@ -1099,16 +1237,60 @@
 		"selected_items":
 		[
 			[
+				"",
+				"src/js/components/Validator.jsx"
+			],
+			[
+				"act.jsx",
+				"src/js/components/Act.jsx"
+			],
+			[
+				"trans",
+				"transform.xslt"
+			],
+			[
+				"contents.",
+				"contents.xslt"
+			],
+			[
+				"result_ver",
+				"src/css/results_viewer.scss"
+			],
+			[
+				"tyle",
+				"src/css/style.scss"
+			],
+			[
+				"style",
+				"build/css/style.css"
+			],
+			[
+				"valida",
+				"src/css/validator.scss"
+			],
+			[
+				"gulp",
+				"gulpfile.js"
+			],
+			[
+				"valid",
+				"src/js/components/Validator.jsx"
+			],
+			[
+				"app.j",
+				"src/js/app.js"
+			],
+			[
+				"app",
+				"build/js/app.js"
+			],
+			[
 				"ser",
 				"server.py"
 			],
 			[
 				"case",
 				"parse_case.py"
-			],
-			[
-				"style",
-				"static/css/style.css"
 			],
 			[
 				"form",
@@ -1129,10 +1311,6 @@
 			[
 				"el",
 				"pop_el.py"
-			],
-			[
-				"",
-				"extract_from_xml.py"
 			],
 			[
 				"parse",
