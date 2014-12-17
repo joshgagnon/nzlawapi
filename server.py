@@ -345,10 +345,11 @@ def cases(act='', query=''):
 def validate():
     db = get_db();
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        query = """update cases set validated = %(validated)s where id = %(id)s """
+        query = """update cases set validated = %(validated)s, reporter = %(username)s where id = %(id)s """
         cur.execute(query, {
             'id': request.form.get('id'), 
-            'validated': request.form.get('validated')
+            'validated': request.form.get('validated'),
+            'username': request.form.get('username')
             })
         db.commit()
         return jsonify(status='success'), 200 
