@@ -1,0 +1,24 @@
+.act_browser{
+	padding-top:80px;
+	padding-bottom:80px;
+	form{
+		padding-top: 6px;
+
+		label{
+			padding-right: 10px;
+		}
+		input.form-control {
+			width:300px  !important;
+		}
+		.form-group,
+		.btn-group{
+			padding:0 8px;
+		}
+	}
+	.top-bar{
+		background-color:#f8f8f8;
+		border-bottom:1px solid #e7e7e7;
+		height:80px;
+	}
+
+}
