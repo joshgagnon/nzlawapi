@@ -6,6 +6,7 @@ var ReactRouter = require('react-router');
 var SearchForm = require('./components/SearchForm.jsx');
 var Results = require('./components/ResultList.jsx');
 var Validator = require('./components/Validator.jsx');
+var Act = require('./components/Act.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
@@ -70,6 +71,7 @@ if(localStorage['data']){
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
     <ReactRouter.Route name="validator" handler={Validator}/>
+    <ReactRouter.Route name="full_act" handler={Act}/>
     <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );
