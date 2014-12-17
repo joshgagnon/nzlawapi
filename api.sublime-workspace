@@ -4,6 +4,102 @@
 		"selected_items":
 		[
 			[
+				"get",
+				"getReports"
+			],
+			[
+				"submi",
+				"submitReport"
+			],
+			[
+				"sumb",
+				"submitReport"
+			],
+			[
+				"Rep",
+				"ReportModal"
+			],
+			[
+				"report",
+				"submitReport"
+			],
+			[
+				"preven",
+				"preventDefault"
+			],
+			[
+				"prevent",
+				"preventSubmit"
+			],
+			[
+				"details",
+				"detailsChange"
+			],
+			[
+				"det",
+				"detailsChange"
+			],
+			[
+				"full",
+				"full_citation"
+			],
+			[
+				"cases",
+				"cases_typeahead"
+			],
+			[
+				"Type",
+				"TypeAhead"
+			],
+			[
+				"de",
+				"definitions"
+			],
+			[
+				"x",
+				"xslt"
+			],
+			[
+				"legi",
+				"legislation-body"
+			],
+			[
+				"leg",
+				"legislation-result-form"
+			],
+			[
+				"legis",
+				"legislation-result"
+			],
+			[
+				"Button",
+				"ButtonToolbar"
+			],
+			[
+				"ini",
+				"getInitialState"
+			],
+			[
+				"ful",
+				"full_citation"
+			],
+			[
+				"init",
+				"intialResults"
+			],
+			[
+				"render",
+				"renderActFind"
+			],
+			[
+				"bower",
+				"bower_components"
+			],
+			[
+				"bow",
+				"bower_components"
+			],
+			[
 				"submit",
 				"submitAct"
 			],
@@ -18,14 +114,6 @@
 			[
 				"font",
 				"font_size"
-			],
-			[
-				"legis",
-				"legislation_finder"
-			],
-			[
-				"get",
-				"get_top_position"
 			],
 			[
 				"wa",
@@ -62,10 +150,6 @@
 			[
 				"wait",
 				"waistband_el"
-			],
-			[
-				"de",
-				"defendant"
 			],
 			[
 				"plant",
@@ -151,79 +235,47 @@
 			"file": "server.py",
 			"settings":
 			{
-				"buffer_size": 10842,
+				"buffer_size": 16615,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "gulpfile.js",
+			"file": "gen_contents.py",
 			"settings":
 			{
-				"buffer_size": 404,
+				"buffer_size": 745,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "templates/case_search_results.html",
+			"file": "compact.xml",
 			"settings":
 			{
-				"buffer_size": 3431,
+				"buffer_size": 2638373,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "static/js/browser.js",
+			"file": "transform.xslt",
 			"settings":
 			{
-				"buffer_size": 5090,
+				"buffer_size": 12198,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "pop_el.py",
+			"file": "contents.xslt",
 			"settings":
 			{
-				"buffer_size": 993,
+				"buffer_size": 2151,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "extract_from_xml.py",
+			"file": "output.html",
 			"settings":
 			{
-				"buffer_size": 3588,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "static/css/style.css",
-			"settings":
-			{
-				"buffer_size": 5165,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "static/js/smoothscroll.js",
-			"settings":
-			{
-				"buffer_size": 14291,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "templates/browser.html",
-			"settings":
-			{
-				"buffer_size": 1411,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "parse_case.py",
-			"settings":
-			{
-				"buffer_size": 15999,
+				"buffer_size": 122553,
 				"line_ending": "Unix"
 			}
 		},
@@ -231,40 +283,130 @@
 			"file": "templates/form.html",
 			"settings":
 			{
-				"buffer_size": 2146,
+				"buffer_size": 2147,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "get solicitors\n\n\nAdministration Act 1969\nSection 77\n\n01de5053-2a3d-48f0-aa0d-3ee82b09ee33.html\n\n\nfile:///Users/josh/legislation_archive/justice/fffc7d1c-bbd5-44ec-8439-8036f7952f97.html\n# pulling counsellors instead of appearances,\n#\n\n\nfff55fd5-24b4-48df-b47f-9eab2e475d7e.pdf\n# judgement fucked up\n\n\n# party names joined based on capitals\n\n# appeal get rid of dictionary, join based on captial letters\n\n\n01e4a31c-2afd-41dd-86ef-0573179e6a9e\nmatter\n\n\n\n#Judicature Act 1908\n#schedule \n\nthe text in the top right hand corner of this doc https://forms.justice.govt.nz/search/Documents/pdf/jdo/84/alfresco/service/api/node/content/workspace/SpacesStore/058b1dde-e433-4149-a1ed-8f15cc4a6aa3/058b1dde-e433-4149-a1ed-8f15cc4a6aa3.pdf",
+			"contents": "  function appendExpandControl(legislation){\n    var topLevel = $('.top-level', legislation);\n    if( topLevel.height() > topLevel.parent().height()){\n      $('<div/>').addClass('expand')\n      .appendTo(topLevel.parent())\n      .on('click', function(){\n        legislation.toggleClass('expanded');\n      });\n    }\n  }\n\n  function appendCloseControl(legislation){\n    var topLevel = $('.top-level', legislation);\n    $('<div/>').addClass('close-page')\n      .appendTo(topLevel.parent())\n      .on('click', function(){\n        legislation.remove();\n      });\n  }\n\n  function updateReferences(){\n    var ids = $('.legislation *[id]').map(function(){\n      return this.id;\n    }).toArray();\n    if(ids.length){\n      $.get('/find_references/'+ids.join(';'))\n        .then(function(result){\n          $('.reference_list').html('')\n          var lis = result.references.map(function(r){\n            return $('<li/>').append($('<a/>').attr('href', r[0]).text(r[1]));\n          })\n          $('.reference_list').append(lis);\n        });\n    }\n  }\n\n  function updateLegislation(response){\n    var result = $(response).find('.result');\n    if(result.length){\n      result.appendTo('.legislation_viewer');\n      $('.legislation_finder .error').hide();\n      appendExpandControl(result);\n      console.log(result)\n      appendCloseControl(result);\n      scrollTo(result);\n      //updateReferences();\n    }else{\n      $('.legislation_finder .error').show();\n    }\n    return result;\n  }\n\n  var serial;\n  function hasChanged(){\n    var new_serial = $('.legislation_finder').serialize();\n    if(new_serial !== serial){\n      serial = new_serial;\n      return true;\n    }\n    return false;\n  }\n\n\n  function submit(event){\n    switch($('#type').val()){\n      case \"act\":\n        submitAct();\n        break;\n      case \"case\":\n        submitCase();\n        break;\n\n    }\n\n    return false;\n  }\n\n  function submitCase(){\n    var query = $('#query').val(),\n      url = \"/case/search\"\n    if(query){\n      fetch(url, {query: query})\n        .then(updateLegislation)  \n    }\n\n  }\n\n  function submitAct(){\n    var act = $('#act-name').val().toLowerCase().replace(/ /g, ''),\n      find = $('#find').val(),\n      value = $('#value').val(),\n      url = '/act/';\n    url += act+'/';\n    if(find === 'full'){\n      getFullAct(act);\n    } \n    else if(hasChanged() && value){\n      if(find !== 'section'){\n        url += find +'/';\n      }\n      url += value;\n      fetch(url)\n        .then(updateLegislation)  \n    }\n  }\n\n  function getFullAct(act){\n    if(hasChanged() && act){\n      fetch('/act/'+act+'/full')\n        .then(updateLegislation)              \n    }\n  }\n\n  function getQuery(){\n    var value = $('#query').val();\n    if(hasChanged() && value){\n      fetch('/full_search/', {query: value})\n        .then(updateLegislation)      \n    }\n  }",
 			"settings":
 			{
-				"buffer_size": 726,
+				"buffer_size": 2825,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Search\n\nDefinitions\n\nContents (parent)\n\nContext (children) (subsearch)\n\nCross References\n\nHistory Notes checkbox\n\nLink History\n\n\n\nDEFINTIONS\n\nLOADING ICON\n\nCASE RESULTS\n\nSCHEDULES\n\n",
+			"settings":
+			{
+				"buffer_size": 181,
 				"line_ending": "Unix",
-				"name": "get solicitors"
+				"name": "Search"
 			}
 		},
 		{
-			"contents": "--create table documents (id serial primary key, text text, type text, document text);\n\n\n--CREATE INDEX text_index ON documents USING gin(to_tsvector('english', text));\n\n--alter table acts add column document_id integer;\n\n--alter table acts add constraint act_fk foreign key (document_id) references documents (id);\n\n--alter table acts add column repealed boolean default false;\n--delete from acts;\n--delete from documents;\n\n\n\nselect a.id, a.title, ts_rank_cd(d.searchable, to_tsquery('finance & shares')) as rank\nfrom documents d join acts a on a.document_id = d.id \nWHERE d.searchable @@ to_tsquery('english', 'finance & shares') and a.repealed = False\nGROUP BY a.id, a.title, a.year, ts_rank_cd(d.searchable, to_tsquery('finance & shares'))\nORDER BY rank desc limit 100;\n\nselect id, title, max(version) from acts group by id, title;\n\n--alter table documents drop column text;\n--alter table documents add column searchable tsvector;\n\n\n--create table id_lookup(id text primary key, parent_id text, mapper text);\n\n\ncreate table cases (\n\nid text primary key,\ndocument_id integer, \nneutral_citation text,\ncourt text[],\nparties json,\ncounsel text[],\nfull_citation text,\njudgment text,\nhearing text,\nmatter json,\nreceived text,\ncharge text,\nplea text,\nwaistband text,\nappeal_result json,\nbench text\n\n)\n",
-			"file": "db_stuff",
-			"file_size": 934,
-			"file_write_time": 130613625970000000,
+			"file": "node_modules/react-bootstrap/Affix.js",
 			"settings":
 			{
-				"buffer_size": 1298,
+				"buffer_size": 615,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "db_stuff",
+			"settings":
+			{
+				"buffer_size": 1551,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "A (CA747/2010) V R COA CA747/2010 19 July 2011\n\n* Chambers J died before this judgment was delivered. The remaining Judges have decided under s 30(1) of the Supreme Court Act 2003 to continue the proceeding to judgment. ALYXE JOHN WOOD-LUXFORD v MARK JOHN WOOD [2013] NZSC 153 [19 December 2013]",
+			"settings":
+			{
+				"buffer_size": 295,
+				"line_ending": "Unix",
+				"name": "A (CA747/2010) V R COA CA747/2010 19 July 2011"
 			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 67.0,
+		"height": 207.0,
 		"selected_items":
 		[
 			[
+				"prety",
+				"HTMLPrettify"
+			],
+			[
+				"pret",
+				"HTMLPrettify"
+			],
+			[
+				"prett",
+				"HTMLPrettify"
+			],
+			[
 				"beaut",
 				"HTMLBeautify"
+			],
+			[
+				"react 	",
+				"Snippet: React: isMounted()"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"foram",
+				"Format: Javascript"
+			],
+			[
+				"in",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"form",
+				"Format: Javascript"
+			],
+			[
+				"inde",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"format",
+				"Format: Javascript"
+			],
+			[
+				"javs",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"lint",
+				"Tag: Lint Selection or Document"
+			],
+			[
+				"",
+				"Auto indent"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"sort",
+				"Sort Lines"
+			],
+			[
+				"sass",
+				"Set Syntax: Sass"
 			],
 			[
 				"spaces",
@@ -275,24 +417,8 @@
 				"HTMLPrettify"
 			],
 			[
-				"pret",
-				"HTMLPrettify"
-			],
-			[
-				"prety",
-				"HTMLPrettify"
-			],
-			[
 				"indent sp",
 				"Indentation: Convert to Spaces"
-			],
-			[
-				"format",
-				"Format: Javascript"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"user",
@@ -301,10 +427,6 @@
 			[
 				"deault",
 				"Preferences: Key Bindings - Default"
-			],
-			[
-				"prett",
-				"HTMLPrettify"
 			],
 			[
 				"pretty",
@@ -347,16 +469,8 @@
 				"HTMLBeautify"
 			],
 			[
-				"inde",
-				"Indentation: Reindent Lines"
-			],
-			[
 				"beau",
 				"HTMLBeautify"
-			],
-			[
-				"in",
-				"Indentation: Reindent Lines"
 			],
 			[
 				"prettify",
@@ -368,10 +482,6 @@
 			],
 			[
 				"insta",
-				"Package Control: Install Package"
-			],
-			[
-				"instal",
 				"Package Control: Install Package"
 			],
 			[
@@ -421,70 +531,147 @@
 	"expanded_folders":
 	[
 		"/Users/josh/nzlawapi",
-		"/Users/josh/nzlawapi/static",
+		"/Users/josh/nzlawapi/node_modules/react-bootstrap/utils",
+		"/Users/josh/nzlawapi/src",
+		"/Users/josh/nzlawapi/src/css",
+		"/Users/josh/nzlawapi/src/js",
+		"/Users/josh/nzlawapi/src/js/components",
+		"/Users/josh/nzlawapi/src/js/lib",
+		"/Users/josh/nzlawapi/src/js/stores",
+		"/Users/josh/nzlawapi/src/js/util",
+		"/Users/josh/nzlawapi/templates",
 		"/Users/josh/nzlawapi/tests"
 	],
 	"file_history":
 	[
-		"/Users/josh/nzlawapi/parse_case.py",
-		"/Users/josh/nzlawapi/templates/search_results.html",
-		"/Users/josh/nzlawapi/static/css/bootstrap.css",
-		"/Users/josh/nzlawapi/static/js/main.js",
-		"/Users/josh/nzlawapi/transform.xslt",
-		"/Users/josh/nzlawapi/static/js/browser.js",
-		"/Users/josh/nzlawapi/failed_files.txt",
-		"/Users/josh/nzlawapi/extract_from_xml.py",
-		"/Users/josh/nzlawapi/db_stuff",
-		"/Users/josh/nzlawapi/api.sublime-project",
-		"/Users/josh/nzlawapi/act-public-1993-0105.xml",
-		"/Users/josh/nzlawapi/__init__.py",
-		"/Users/josh/nzlawapi/.gitignore",
-		"/Users/josh/nzlawapi/static/css/legislation.css",
+		"/Users/josh/nzlawapi/old_routes.py",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/handlebars/coverage/lcov-report/prettify.css",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/data/prefixes.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/fstream/lib/proxy-reader.js",
 		"/Users/josh/nzlawapi/pop_el.py",
+		"/Users/josh/nzlawapi/parse_case.py",
+		"/Users/josh/nzlawapi/src/css/style.scss",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/css-opacity.json",
+		"/Users/josh/nzlawapi/src/js/stores/ResultStore.js",
+		"/Users/josh/nzlawapi/src/js/stores/Serialization.js",
+		"/Users/josh/nzlawapi/src/js/app.js",
+		"/Users/josh/nzlawapi/src/js/components/Result.jsx",
+		"/Users/josh/nzlawapi/src/css/results_viewer.scss",
+		"/Users/josh/nzlawapi/src/css/search_form.scss",
+		"/Users/josh/nzlawapi/src/js/components/TypeAhead.jsx",
+		"/Users/josh/nzlawapi/src/css/validator.scss",
+		"/Users/josh/nzlawapi/extract_from_xml.py",
+		"/Users/josh/nzlawapi/templates/case_intitular.html",
+		"/Users/josh/nzlawapi/src/js/components/ResultList.jsx",
+		"/Users/josh/nzlawapi/src/js/components/Validator.jsx",
+		"/Users/josh/nzlawapi/node_modules/reactify/node_modules/jstransform/node_modules/.bin/esvalidate",
 		"/Users/josh/nzlawapi/server.py",
-		"/Users/josh/nzlawapi/templates/base.html",
-		"/Users/josh/nzlawapi/pull_justice.py",
-		"/Users/josh/nzlawapi/static/js/underscore-min.js",
-		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.js",
-		"/Users/josh/nzlawapi/static/fonts/glyphicons-halflings-regular.woff",
-		"/Users/josh/Downloads/0BcYmmL4pj/index.html",
-		"/Users/josh/nzlawapi/static/js/smoothscroll.js",
-		"/Users/josh/nzlawapi/tests/schedule3.html",
-		"/Users/josh/nzlawapi/style.css",
-		"/Users/josh/nzlawapi/static/css/style.css",
-		"/Users/josh/nzlawapi/static/fonts/glyphicons-halflings-regular.svg",
-		"/Users/josh/nzlawapi/tests.py",
-		"/Users/josh/nzlawapi/static/css/bootstrap.css.map",
+		"/Users/josh/nzlawapi/node_modules/browserify/test/standalone_events.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/isEventSupported.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/mout/src/array/every.js",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/module-deps/node_modules/detective/bench/esprima_v_acorn.txt",
+		"/Users/josh/nzlawapi/bower_components/jquery/src/event.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/mout/array/every.js",
+		"/Users/josh/nzlawapi/gulpfile.js",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/region-usage-json/PY.json",
+		"/Users/josh/nzlawapi/node_modules/react-router/modules/utils/PropTypes.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/emptyObject.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/ReactPropTypeLocationNames.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/inquirer/node_modules/cli-color/node_modules/es5-ext/date/valid-date.js",
+		"/Users/josh/nzlawapi/src/css/legislation.scss",
+		"/Users/josh/nzlawapi/package.json",
+		"/Users/josh/nzlawapi/bower_components/jquery/src/queue.js",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/queryselector.json",
+		"/Users/josh/nzlawapi/node_modules/uglify/node_modules/grunt-css-url-replace/test/fixtures/with_hash_or_query_string.css",
+		"/Users/josh/nzlawapi/deploy.ini",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/http-browserify/example/get/server.js",
+		"/Users/josh/nzlawapi/.sass-cache/507351ab82bfcf40844a737493b9d6ab0524b06a/validator.scssc",
+		"/Users/josh/nzlawapi/node_modules/bootstrap/less/mixins/nav-vertical-align.less",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/sql-storage.json",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/handlebars/print-script",
+		"/Users/josh/nzlawapi/node_modules/react/lib/ReactPutListenerQueue.js",
+		"/Users/josh/nzlawapi/src/js/components/SearchForm.jsx",
+		"/Users/josh/nzlawapi/node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js",
+		"/Users/josh/nzlawapi/transform.xslt",
+		"/Users/josh/nzlawapi/node_modules/react-bootstrap/TabPane.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/toArray.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-react/node_modules/react-tools/src/browser/eventPlugins/AnalyticsEventPluginFactory.js",
+		"/Users/josh/nzlawapi/.sass-cache/507351ab82bfcf40844a737493b9d6ab0524b06a/search_form.scssc",
+		"/Users/josh/nzlawapi/templates/search_results.html",
+		"/Users/josh/nzlawapi/node_modules/react-bootstrap/Interpolate.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/isNode.js",
+		"/Users/josh/nzlawapi/node_modules/react-bootstrap/Input.js",
+		"/Users/josh/nzlawapi/node_modules/react-router/modules/behaviors/ImitateBrowserBehavior.js",
 		"/Users/josh/nzlawapi/templates/browser.html",
-		"/Users/josh/nzlawapi/tests/section224.html",
-		"/Users/josh/nzlawapi/source.xml",
+		"/Users/josh/nzlawapi/src/js/components/ResultForm.jsx",
+		"/Users/josh/nzlawapi/node_modules/bootstrap/less/responsive-embed.less",
+		"/Users/josh/nzlawapi/results.log",
+		"/Users/josh/nzlawapi/node_modules/browserify-shim/lib/resolve-shims.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/SyntheticUIEvent.js",
+		"/Users/josh/nzlawapi/templates/case_search_results.html",
+		"/Users/josh/nzlawapi/node_modules/bootstrap/docs/_data/sass-team.yml",
 		"/Users/josh/nzlawapi/templates/form.html",
-		"/Users/josh/nzlawapi/static/css/bootstrap.min.css",
-		"/Users/josh/nzlawapi/tmp",
-		"/Users/josh/nzlawapi/static/js/jquery-2.1.1.min.js",
-		"/Users/josh/nzlawapi/target.xml",
-		"/Users/josh/nzlawapi/static/js/bootstrap3-typeahead.min.js",
-		"/Users/josh/nzlawapi/static/browser.js",
-		"/Users/josh/nzlawapi/static/legislation.css",
-		"/Users/josh/nzlawapi/static/style.css",
-		"/Users/josh/nzlawapi/static/bootstrap3-typeahead.js",
-		"/Users/josh/nzlawapi/tests/section47.xml",
-		"/Users/josh/nzlawapi/static/bootstrap.min.css",
-		"/Users/josh/nzlawapi/static/main.js",
-		"/Users/josh/nzlawapi/static/bootstrap-select.min.js",
-		"/Users/josh/WorkingDays/README.md",
-		"/Users/josh/WorkingDays/working-days.css",
-		"/Users/josh/WorkingDays/working-days.js",
-		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
-		"/Users/josh/nzlawapi/tests/section47.html",
-		"/Users/josh/nzlawapi/tests/section41.html",
-		"/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/act/public/1993/0105/120.0/096be8ed80ea0ed3.xml",
-		"/Users/josh/nzlawapi/tests/section41.xml",
-		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/Default/Default (OSX).sublime-keymap",
-		"/Users/josh/nzlawapi/readXML.py",
-		"/Users/josh/nzlawapi/style_simple.css",
-		"/Users/josh/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings",
-		"/Users/josh/Desktop/test"
+		"/Users/josh/nzlawapi/src/js/stores/FormStore.js",
+		"/Users/josh/nzlawapi/bower_components/gulp/docs/writing-a-plugin/guidelines.md",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/insight/lib/providers.js",
+		"/Users/josh/nzlawapi/templates/validator.html",
+		"/Users/josh/nzlawapi/templates/base.html",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/commondir/example/base.js",
+		"/Users/josh/nzlawapi/node_modules/bootstrap/docs/browser-bugs.html",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/inquirer/lib/ui/bottom-bar.js",
+		"/Users/josh/nzlawapi/node_modules/browserify/test/bare_shebang.js",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/buffer/test/base64.js",
+		"/Users/josh/nzlawapi/src/js/browser.js",
+		"/Users/josh/nzlawapi/bower.json",
+		"/Users/josh/nzlawapi/node_modules/react/lib/ReactPropTypes.js",
+		"/Users/josh/nzlawapi/node_modules/reactify/node_modules/jstransform/visitors/__tests__/es7-rest-property-helpers-test.js",
+		"/Users/josh/nzlawapi/node_modules/browserify-shim/node_modules/exposify/test/fixtures/three-only.js",
+		"/Users/josh/nzlawapi/src/js/util/findText.js",
+		"/Users/josh/nzlawapi/node_modules/browserify/test/util.js",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/lib/utils.js",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/user-timing.json",
+		"/Users/josh/nzlawapi/node_modules/.bin/uglify",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/postcss/node_modules/js-base64/test/yoshinoya.js",
+		"/Users/josh/nzlawapi/src/js/actions/Actions.js",
+		"/Users/josh/nzlawapi/transform_def.xslt",
+		"/Users/josh/nzlawapi/node_modules/react-bootstrap/Nav.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/node_modules/glob/test/new-glob-optional-options.js",
+		"/Users/josh/nzlawapi/bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap-sprockets.scss",
+		"/Users/josh/nzlawapi/bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap-mincer.scss",
+		"/Users/josh/nzlawapi/bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap-compass.scss",
+		"/Users/josh/nzlawapi/bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss",
+		"/Users/josh/nzlawapi/bower_components/bootstrap-sass-official/assets/javascripts/bootstrap-sprockets.js",
+		"/Users/josh/nzlawapi/.sass-cache/507351ab82bfcf40844a737493b9d6ab0524b06a/_bootstrap.scssc",
+		"/Users/josh/nzlawapi/.sass-cache/032bf2b72a7e54ae9490ea2ca57d5bf01be3d5b7/_bootstrap.scssc",
+		"/Users/josh/nzlawapi/src/js/lib/bootstrap3-typeahead.js",
+		"/Users/josh/nzlawapi/node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.min.js",
+		"/Users/josh/nzlawapi/bower_components/gulp/docs/recipes/specifying-a-cwd.md",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/module-deps/node_modules/detective/test/sparse-array.js",
+		"/Users/josh/nzlawapi/node_modules/gulp-react/node_modules/react-tools/src/addons/ReactComponentWithPureRenderMixin.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/ReactServerRendering.js",
+		"/Users/josh/nzlawapi/db_stuff",
+		"/Users/josh/nzlawapi/node_modules/react/lib/DefaultEventPluginOrder.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/ReactElement.js",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/xml-serializer.json",
+		"/Users/josh/nzlawapi/bower_components/gulp/docs/recipes/split-tasks-across-multiple-files.md",
+		"/Users/josh/nzlawapi/bower_components/gulp/index.js",
+		"/Users/josh/nzlawapi/node_modules/.bin/browserify",
+		"/Users/josh/nzlawapi/node_modules/jquery/src/serialize.js",
+		"/Users/josh/nzlawapi/bower_components/jquery/src/serialize.js",
+		"/Users/josh/nzlawapi/node_modules/reactify/node_modules/jstransform/visitors/reserved-words-helper.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/ReactErrorUtils.js",
+		"/Users/josh/nzlawapi/node_modules/react/lib/SyntheticTouchEvent.js",
+		"/Users/josh/nzlawapi/.sass-cache/507351ab82bfcf40844a737493b9d6ab0524b06a/results_viewer.scssc",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/lib/core/resolvers/UrlResolver.js",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/url/url.js",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/offline-apps.json",
+		"/Users/josh/nzlawapi/node_modules/autoprefixer-core/node_modules/caniuse-db/features-json/ambient-light.json",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/JSONStream/examples/all_docs.js",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/insert-module-globals/bench/results.txt",
+		"/Users/josh/nzlawapi/node_modules/browserify/node_modules/insert-module-globals/node_modules/lexical-scope/bench/results.txt",
+		"/Users/josh/nzlawapi/node_modules/watchify/node_modules/browserify/node_modules/insert-module-globals/bench/results.txt",
+		"/Users/josh/nzlawapi/node_modules/watchify/node_modules/browserify/node_modules/insert-module-globals/node_modules/lexical-scope/bench/results.txt",
+		"/Users/josh/nzlawapi/node_modules/gulp-bower/node_modules/bower/templates/std/search-results.std"
 	],
 	"find":
 	{
@@ -502,6 +689,70 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"getDOMNode",
+			"get_db()",
+			"get_db():",
+			"get_db",
+			"get_case_info",
+			"console",
+			"mymodal",
+			"path",
+			"path:",
+			"html_",
+			"get_case_info",
+			"get_case_infon",
+			"content",
+			"render",
+			"['_source']",
+			"cur",
+			"query_type =",
+			"cases",
+			"case",
+			"typeahead",
+			"get('",
+			"background-color",
+			"port",
+			"definitions",
+			"title",
+			"tohtml",
+			"current",
+			"all_defin",
+			"label-para",
+			"para/text",
+			"def-para",
+			"definitions",
+			"find_all_definitions",
+			"link",
+			"mark",
+			"definition",
+			"history",
+			"600",
+			"search_id",
+			"act_full_searcha",
+			"act_full_search",
+			"acts",
+			"id",
+			"console",
+			"path not ",
+			"error_message",
+			"error",
+			"destroy",
+			"scrollHeight ",
+			"case_searc",
+			"case",
+			"ull_search",
+			"full_search",
+			"cull_tree",
+			"full",
+			"schedul",
+			"json",
+			"class",
+			"appendAfter",
+			"$appendAfter",
+			"react",
+			"bower",
+			"src",
+			"static",
 			"case_search",
 			"case_sear",
 			"COURT(",
@@ -565,51 +816,7 @@
 			"};\n",
 			"afterSelect",
 			"query(",
-			"\n}",
-			"json",
-			"next",
-			"siblin",
-			"para",
-			"part",
-			"act_to_filename",
-			"cur",
-			"curr",
-			"]'))\n",
-			"font-fami",
-			"style",
-			"tohtml",
-			"id",
-			"print",
-			"subpart",
-			"label-para",
-			"group",
-			"<sched",
-			">\n",
-			"move",
-			"#legislation",
-			"def-term",
-			"entitled person",
-			"entitled persons",
-			">\n",
-			"select",
-			"DLM323523",
-			"DLM2478612",
-			"DLM321970",
-			"para/text",
-			"para",
-			"label-para",
-			"labelled",
-			"getprevious",
-			"crosshead",
-			"heading",
-			"parent",
-			"16</",
-			"=\".\"/>\n",
-			">6",
-			"#",
-			"label",
-			"                <xsl:for-each select=\"prov.body/subprov\">\n                    <li>\n                        <div class=\"subprov\">\n                            <p class=\"class\">\n                                <xsl:value-of select=\"para/text\"/>\n                            </p>\n                            <xsl:for-each select=\"para/label-para\">\n                                <ul class=\"label-para\">\n                                    <li>\n                                        <p class=\"labelled label\">\n                                            <span class=\"label\">(\n                                                <xsl:value-of select=\"label\"/>\n                                                )</span>\n                                            <span class=\"spc\"> </span>\n                                            <xsl:value-of select=\"para/text\"/>\n                                        </p>\n                                    </li>\n                                </ul>\n                            </xsl:for-each>\n                        </div>\n                        <xsl:for-each select=\"../../notes/history/history-note\">\n                            <p class=\"history-note\">\n                                <xsl:attribute name=\"id\">\n                                    <xsl:value-of select=\"@id\"/>\n                                </xsl:attribute>\n                                <xsl:value-of select=\".\"/>\n                            </p>\n                        </xsl:for-each>\n                    </li>\n                </xsl:for-each>",
-			"current"
+			"\n}"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -617,6 +824,10 @@
 		"regex": false,
 		"replace_history":
 		[
+			"",
+			"className",
+			"build",
+			"src",
 			"soup",
 			"close-page",
 			"get_act(act)",
@@ -635,7 +846,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -644,15 +855,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10842,
+						"buffer_size": 16615,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9445,
-								9429
+								13388,
+								13388
 							]
 						],
 						"settings":
@@ -662,127 +873,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3594.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "gulpfile.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 404,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								248,
-								248
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 4752.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "templates/case_search_results.html",
+					"buffer": 1,
+					"file": "gen_contents.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3431,
-						"regions":
-						{
-							"TagLint":
-							{
-								"flags": 2356,
-								"icon": "dot",
-								"regions":
-								[
-									[
-										383,
-										385
-									]
-								],
-								"scope": "variable.parameter"
-							}
-						},
-						"selection":
-						[
-							[
-								1062,
-								1062
-							]
-						],
-						"settings":
-						{
-							"is_xml": false,
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 275.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "static/js/browser.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5090,
+						"buffer_size": 745,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								734,
-								734
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "pop_el.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 993,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								993,
-								954
+								632,
+								613
 							]
 						],
 						"settings":
@@ -793,150 +904,106 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "extract_from_xml.py",
+					"buffer": 2,
+					"file": "compact.xml",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3588,
+						"buffer_size": 2638373,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3549,
-								3549
+								762833,
+								762840
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "static/css/style.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5165,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4132,
-								4132
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"is_xml": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2304.0,
+						"translation.y": 155110.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "static/js/smoothscroll.js",
+					"buffer": 3,
+					"file": "transform.xslt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 14291,
+						"buffer_size": 12198,
 						"regions":
 						{
+							"TagLint":
+							{
+								"flags": 2356,
+								"icon": "dot",
+								"regions":
+								[
+									[
+										4789,
+										4808
+									]
+								],
+								"scope": "variable.parameter"
+							}
 						},
 						"selection":
 						[
 							[
-								12386,
-								12386
+								8840,
+								8840
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"is_xml": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2879.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "templates/browser.html",
+					"buffer": 4,
+					"file": "contents.xslt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1411,
+						"buffer_size": 2151,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								180,
-								180
+								1057,
+								1057
 							]
 						],
 						"settings":
 						{
-							"is_xml": false,
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "parse_case.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15999,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								355,
-								355
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
+							"is_xml": true,
+							"spell_check": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
@@ -948,24 +1015,60 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "templates/form.html",
+					"buffer": 5,
+					"file": "output.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2146,
+						"buffer_size": 122553,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								289,
-								289
+								1153,
+								1153
 							]
 						],
 						"settings":
 						{
+							"is_xml": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 5,
+			"sheets":
+			[
+				{
+					"buffer": 6,
+					"file": "templates/form.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2147,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2147,
+								2147
+							]
+						],
+						"settings":
+						{
+							"history_list_is_closing": true,
 							"is_xml": false,
 							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"tab_size": 4,
@@ -977,32 +1080,57 @@
 					},
 					"stack_index": 11,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
+				},
 				{
-					"buffer": 11,
+					"buffer": 7,
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 726,
+						"buffer_size": 2825,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								726,
-								485
+								1040,
+								1040
 							]
 						],
 						"settings":
 						{
-							"auto_name": "get solicitors",
+							"auto_name": "",
+							"is_xml": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 181,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								181,
+								181
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Search",
 							"is_xml": false,
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
@@ -1010,24 +1138,54 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
-					"file": "db_stuff",
-					"semi_transient": false,
+					"buffer": 9,
+					"file": "node_modules/react-bootstrap/Affix.js",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 1298,
+						"buffer_size": 615,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1146,
-								1146
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "db_stuff",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1551,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1014,
+								1014
 							]
 						],
 						"settings":
@@ -1039,7 +1197,36 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 295,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								59,
+								48
+							]
+						],
+						"settings":
+						{
+							"auto_name": "A (CA747/2010) V R COA CA747/2010 19 July 2011",
+							"is_xml": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -1051,7 +1238,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 29.0
 	},
 	"layout":
 	{
@@ -1073,7 +1260,7 @@
 		"cols":
 		[
 			0.0,
-			0.763601554644,
+			0.881477953126,
 			1.0
 		],
 		"rows":
@@ -1099,44 +1286,364 @@
 		"selected_items":
 		[
 			[
-				"ser",
-				"server.py"
+				"out",
+				"output.html"
 			],
 			[
-				"case",
-				"parse_case.py"
+				"compact",
+				"compact.xml"
 			],
 			[
-				"style",
-				"static/css/style.css"
+				"xslt",
+				"transform.xslt"
 			],
 			[
-				"form",
-				"templates/form.html"
+				"",
+				"gen_contents.py"
 			],
 			[
-				"brow",
-				"static/js/browser.js"
-			],
-			[
-				"search_",
-				"templates/search_results.html"
+				"valid",
+				"src/js/components/Validator.jsx"
 			],
 			[
 				"server",
 				"server.py"
 			],
 			[
-				"el",
-				"pop_el.py"
-			],
-			[
-				"",
-				"extract_from_xml.py"
+				"vali",
+				"src/js/components/Validator.jsx"
 			],
 			[
 				"parse",
 				"parse_case.py"
+			],
+			[
+				"val",
+				"src/js/components/Validator.jsx"
+			],
+			[
+				"case_",
+				"templates/case_intitular.html"
+			],
+			[
+				"server.py",
+				"server.py"
+			],
+			[
+				"gulp",
+				"gulpfile.js"
+			],
+			[
+				"valida",
+				"src/js/components/Validator.jsx"
+			],
+			[
+				"serv",
+				"server.py"
+			],
+			[
+				"xml",
+				"extract_from_xml.py"
+			],
+			[
+				"searchfr",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"searchfor",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"serverpy",
+				"server.py"
+			],
+			[
+				"typeahead",
+				"src/js/components/TypeAhead.jsx"
+			],
+			[
+				"search",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"inti",
+				"templates/case_intitular.html"
+			],
+			[
+				"result",
+				"src/js/components/Result.jsx"
+			],
+			[
+				"old",
+				"old_routes.py"
+			],
+			[
+				"searchform",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"app.",
+				"src/js/app.js"
+			],
+			[
+				"style",
+				"src/css/style.scss"
+			],
+			[
+				"style.",
+				"src/css/style.scss"
+			],
+			[
+				"resultlsit",
+				"src/js/components/ResultList.jsx"
+			],
+			[
+				"bro",
+				"templates/browser.html"
+			],
+			[
+				"base.h",
+				"templates/base.html"
+			],
+			[
+				"util/fin",
+				"src/js/util/findText.js"
+			],
+			[
+				"app",
+				"src/js/app.js"
+			],
+			[
+				"pack",
+				"package.json"
+			],
+			[
+				"package",
+				"package.json"
+			],
+			[
+				"rseult",
+				"src/js/components/Result.jsx"
+			],
+			[
+				"resultstor",
+				"src/js/stores/ResultStore.js"
+			],
+			[
+				"actions",
+				"src/js/actions/Actions.js"
+			],
+			[
+				"results",
+				"src/css/results_viewer.scss"
+			],
+			[
+				"ser",
+				"server.py"
+			],
+			[
+				"form.",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"serial",
+				"src/js/stores/Serialization.js"
+			],
+			[
+				"serail",
+				"bower_components/jquery/src/serialize.js"
+			],
+			[
+				"resultlit",
+				"src/js/components/ResultList.jsx"
+			],
+			[
+				"result_v",
+				"src/css/results_viewer.scss"
+			],
+			[
+				"styel",
+				"src/css/style.scss"
+			],
+			[
+				"result.scs",
+				"src/css/results_viewer.scss"
+			],
+			[
+				"result.jsx",
+				"src/js/components/Result.jsx"
+			],
+			[
+				"results.jsx",
+				"src/js/components/ResultList.jsx"
+			],
+			[
+				"form.jsx",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"form.js",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"resultli",
+				"src/js/components/ResultList.jsx"
+			],
+			[
+				"app.js",
+				"src/js/app.js"
+			],
+			[
+				"resultst",
+				"src/js/stores/ResultStore.js"
+			],
+			[
+				"result.",
+				"src/js/components/Result.jsx"
+			],
+			[
+				"resultlsit.js",
+				"src/js/components/ResultList.jsx"
+			],
+			[
+				"legis",
+				"src/css/legislation.scss"
+			],
+			[
+				"form",
+				"src/js/stores/FormStore.js"
+			],
+			[
+				"resulst",
+				"src/js/stores/ResultStore.js"
+			],
+			[
+				"serach_",
+				"src/css/search_form.scss"
+			],
+			[
+				"resul",
+				"src/css/results_viewer.scss"
+			],
+			[
+				"serch",
+				"templates/search_results.html"
+			],
+			[
+				"trans",
+				"transform.xslt"
+			],
+			[
+				"gul",
+				"gulpfile.js"
+			],
+			[
+				"browser.js",
+				"src/js/browser.js"
+			],
+			[
+				"tran",
+				"transform.xslt"
+			],
+			[
+				"serverp",
+				"server.py"
+			],
+			[
+				"results_v",
+				"src/css/results_viewer.scss"
+			],
+			[
+				"saer",
+				"src/js/components/SearchForm.jsx"
+			],
+			[
+				"styles",
+				"src/css/style.scss"
+			],
+			[
+				"store",
+				"src/js/stores/ResultStore.js"
+			],
+			[
+				"typeah",
+				"~/Bootstrap-3-Typeahead/bootstrap3-typeahead.js"
+			],
+			[
+				"base",
+				"templates/base.html"
+			],
+			[
+				"browser",
+				"templates/browser.html"
+			],
+			[
+				"serer",
+				"node_modules/react/lib/ServerReactRootIndex.js"
+			],
+			[
+				"brow",
+				"templates/browser.html"
+			],
+			[
+				"input",
+				"node_modules/react-bootstrap/Input.js"
+			],
+			[
+				"bootstra",
+				"src/js/lib/bootstrap3-typeahead.js"
+			],
+			[
+				"typehead",
+				"node_modules/bootstrap-3-typeahead/bootstrap3-typeahead.js"
+			],
+			[
+				"form.scs",
+				"src/css/search_form.scss"
+			],
+			[
+				"leg",
+				"src/css/legislation.scss"
+			],
+			[
+				"base.",
+				"templates/base.html"
+			],
+			[
+				"selec",
+				"src/js/components/select.jsx"
+			],
+			[
+				"gulf",
+				"gulpfile.js"
+			],
+			[
+				"legi",
+				"src/css/legislation.css"
+			],
+			[
+				"gu",
+				"gulpfile.js"
+			],
+			[
+				"typeahe",
+				"src/js/bootstrap3-typeahead.js"
+			],
+			[
+				"bower",
+				"bower.json"
+			],
+			[
+				"case",
+				"parse_case.py"
+			],
+			[
+				"search_",
+				"templates/search_results.html"
+			],
+			[
+				"el",
+				"pop_el.py"
 			],
 			[
 				"db",
@@ -1155,14 +1662,6 @@
 				"static/js/main.js"
 			],
 			[
-				"browser",
-				"static/js/browser.js"
-			],
-			[
-				"base.",
-				"templates/base.html"
-			],
-			[
 				"smot",
 				"static/js/smoothscroll.js"
 			],
@@ -1179,24 +1678,8 @@
 				"~/Downloads/0BcYmmL4pj/index.html"
 			],
 			[
-				"bro",
-				"static/js/browser.js"
-			],
-			[
-				"form.",
-				"templates/form.html"
-			],
-			[
-				"style.",
-				"static/css/style.css"
-			],
-			[
 				"style.css",
 				"style.css"
-			],
-			[
-				"browser.js",
-				"static/js/browser.js"
 			],
 			[
 				".py",
@@ -1227,14 +1710,6 @@
 				"static/js/main.js"
 			],
 			[
-				"tran",
-				"transform.xslt"
-			],
-			[
-				"xml",
-				"extract_from_xml.py"
-			],
-			[
 				"type",
 				"static/js/bootstrap3-typeahead.js"
 			],
@@ -1245,10 +1720,6 @@
 			[
 				"transofr",
 				"transform.xslt"
-			],
-			[
-				"typeahead",
-				"static/bootstrap3-typeahead.js"
 			],
 			[
 				"tmp",
@@ -1263,11 +1734,11 @@
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"selected_items":
 		[
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"select_symbol":
 	{

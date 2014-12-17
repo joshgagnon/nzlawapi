@@ -137,7 +137,8 @@ module.exports = React.createClass({
     			this.setState({case_html: response.html_content, 
     				path: response.path, id: response.id,
     				full_citation: response.full_citation,
-    				details: '', fields: [], validated: response.validated
+    				details: '', fields: [], validated: response.validated,
+                    index: this.state.cases_typeahead.indexOf(this.state.case_name)
     			},this.getReports);
     		}.bind(this))
     },
