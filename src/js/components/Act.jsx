@@ -27,7 +27,7 @@ var ActScroll = React.createClass({
     componentDidMount: function(){
         $('.legislation-contents').affix({
           offset: {
-            top: 80
+            top: 0
           }
         })
 

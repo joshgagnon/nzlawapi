@@ -37,8 +37,19 @@ gulp.task('jshint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('js', function() {
+gulp.task('js-prod', function() {
+  return browserify(
+   {debug: true,
+    entries: ['./src/js/app.js'],
+    transform: [reactify],
+    cache: {}, packageCache: {}, fullPaths: true})
+    .bundle()
+    .pipe(source('app.js'))
+    .pipe(streamify(uglify()))    
+    .pipe(gulp.dest('./build/js/'));
+});
 
+gulp.task('js', function() {
   var bundler = browserify(
    {debug: true,
     entries: ['./src/js/app.js'],
@@ -55,16 +66,14 @@ gulp.task('js', function() {
           notify.onError("Error: <%= error.message %>").apply(this, arguments);
       })       
         .pipe(source('app.js'))
-        .pipe(streamify(uglify()))
         .pipe(gulp.dest('./build/js/'));
-      console.log('Updated!', (Date.now() - updateStart) + 'ms');
+        console.log('Updated!', (Date.now() - updateStart) + 'ms');
   })
     .bundle() // Create the initial bundle when starting the task
     .on('error', function(error){
         notify.onError("Error: <%= error.message %>").apply(this, arguments);
     })
-    .pipe(source('app.js'))
-    .pipe(streamify(uglify()))    
+    .pipe(source('app.js'))  
     .pipe(gulp.dest('./build/js/'));
 });
 
@@ -77,7 +86,6 @@ gulp.task('css', function() {
 });
 
 gulp.task('fonts', function() {
-
   return gulp.src('./src/fonts/*')
     .pipe(gulp.dest('./build/fonts/bootstrap'))
 });
@@ -93,8 +101,6 @@ gulp.task('bower', function() { 
 });
 
 gulp.task('sass', function() { 
-
-
     return gulp.src('./src/css/style.scss')
         .pipe(dont_break_on_errors())
          .pipe(sass({
@@ -110,13 +116,10 @@ gulp.task('sass', function() { 
 });
 
 gulp.task('watch', function(){
-  // watch for JS changes
-  //gulp.watch('src/js/*', ['js']);
- // gulp.watch('src/js/**/*', ['js']);
- 
   gulp.watch('src/css/*.scss', ['sass']);
   gulp.watch('src/fonts/*', ['fonts']);
   gulp.watch('src/images/*', ['images']);
 });
 
 gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images'])
+gulp.task('prod', ['js-prod', 'sass', 'fonts', 'images'])
