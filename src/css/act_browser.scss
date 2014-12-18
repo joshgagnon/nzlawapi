@@ -21,41 +21,50 @@
 		border-bottom:1px solid #e7e7e7;
 		height:80px;
 	}
-	.affix{
+
+	.legislation-contents{
+		max-height: calc(100% - 100px);
 		position: fixed;
-		max-height: 100%;
+		width: 25%;
 		overflow: auto;
-	}
-	.contents{
 
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;		
+		.contents{
 
-		.nav>li>a{
-			padding:0
-		}
-		&>ul{
-			padding-left:0;
-		}
-		.nav .nav{
-			padding-left:12px;
-		}
-		 .active > a{
-			text-decoration: none;
-			font-weight: 500;
-		}
-		 .nav .nav {
-			display: none;
-			padding-bottom: 10px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;		
+
+			.nav>li>a{
+				padding:0
 			}
+			&>ul{
+				padding-left:0;
+			}
+			.nav .nav{
+				padding-left:12px;
+			}
+			 .active > a{
+				text-decoration: none;
+				font-weight: 500;
+			}
+			 .nav .nav {
+				display: none;
+			}
+			/*
+			.nav .nav li{
+				display:none;
+			}
+			.nav .nav li.active{
+				display:block;
+			}*/
 
 
-		.nav>.active>ul {
-			display: block;
-		}
-		span.crosshead {
-			font-style: italic;
+			.nav>.active>ul {
+				display: block;
+			}
+			span.crosshead {
+				font-style: italic;
+			}
 		}
 	}
 }

@@ -384,7 +384,7 @@ def search_by_id(query):
     try:
         document, title = find_node_by_id(query)
         result = cull_tree(document)
-        result = {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': title, 'type': 'act'}
+        result = {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': title, 'type': 'act'}
     except Exception, e:
         result = {'error': str(e)}
         status = 500        
@@ -395,12 +395,12 @@ def format_response(args, result):
     if args.get('format', 'html') == 'json':
         return {'content': result, 'act_name': args['act_name']}
     else:
-        return {'html_content': etree.tostring(result, encoding='UTF-8'), 'act_name': args['act_name']}
+        return {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': args['act_name']}
 
 def full_act_response(act, args):
     return {
-        'html_content': etree.tostring(tohtml(act), encoding='UTF-8'),
-        'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8'),
+        'html_content': etree.tostring(tohtml(act), encoding='UTF-8', method="html",),
+        'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8', method="html"),
         'act_name': args['act_name']
     }
 

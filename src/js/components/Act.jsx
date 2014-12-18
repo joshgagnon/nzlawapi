@@ -35,21 +35,28 @@ var ActScroll = React.createClass({
     },
     componentDidUpdate: function(){
          $('body').scrollspy({ target:'.legislation-contents .contents', offset:90});
+        $('body').on('activate.bs.scrollspy', function (e) {
+            var scrollTo = $(e.target);
+            var container = $('.legislation-contents');
+            console.log(scrollTo.position(), container.position())
+            container.scrollTop(scrollTo.offset().top -container.offset().top + container.scrollTop());
+        });   
      },
      interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
-            var offset = 55;
+            var offset = 58;
             var container = $('body'),
                 scrollTo = $(link.attr('href'));
-
-            //container.animate({scrollTop: scrollTo.offset().top - offset} );
             container.scrollTop(scrollTo.offset().top - offset);
         }
      },
+     stopPropagation: function(e){
+        e.stopPropagation();
+     },
     render: function(){
-        return <div onClick={this.interceptLink} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+        return <div onClick={this.interceptLink} onWheel={this.stopProp} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
     }
 });
 
