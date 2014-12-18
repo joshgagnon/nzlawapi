@@ -1,4 +1,5 @@
 .act_browser{
+	   position:relative;
 	padding-top:80px;
 	padding-bottom:80px;
 	form{
@@ -21,4 +22,25 @@
 		height:80px;
 	}
 
+	.contents{
+		.nav>li>a{
+			padding:0
+		}
+		ul{
+			padding-left:0;
+		}
+		 .active > a{
+			text-decoration: none;
+			background-color: #eee;
+		}
+		 .nav .nav {
+			display: none;
+			padding-bottom: 10px;
+			}
+
+
+		.nav>.active>ul {
+		display: block;
+		}
+	}
 }

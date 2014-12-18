@@ -187,9 +187,8 @@ module.exports = React.createClass({
         	}
         }.bind(this));
     },
-    invertValid: function(e){
-    	e.preventDefault();
-    	this.setState({validated: !this.state.validated}, function(){
+    handleValid: function(e){
+    	this.setState({validated:e.target.checked}, function(){
     		$.post('/validate_case', {id: this.state.id, validated: this.state.validated, username: this.state.reporter})
     	}.bind(this))
     },
@@ -206,11 +205,7 @@ module.exports = React.createClass({
 								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 								<ButtonGroup>
-									{ !_.isUndefined(this.state.validated) ? 
-										<Button onClick={this.invertValid}  bsStyle={ this.state.validated ? 'warning' : 'success'} >{ this.state.validated ? 'Not Reviewed' : 'Reviewed'}</Button>
-										:
-										null
-									}
+									<Input type="checkbox" label="Reviewed" checked={this.state.validated} onChange={this.handleValid}/>
 								</ButtonGroup>
 							 	<ButtonGroup>
 									<ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation} 

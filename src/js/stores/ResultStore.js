@@ -9,7 +9,6 @@ var findText = require('../util/findText.js');
 function insertDefinitions(result){
 	var content = $(result.content.html_content);
 	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')[s]?', 'ig');
-	console.log(reg)
 	findText(content.get(0), reg, function(highlighted){
 		var key = highlighted.textContent.toLowerCase();
 		//ugly ugly, need to be smarter about this later
@@ -39,7 +38,7 @@ var ResultStore = Reflux.createStore({
 		this.counter = 0;
 	},
 	onResultRequest: function(state){
-		console.log('store submit', state);
+
 	},
 	onNewResult: function(result){
 		var id;

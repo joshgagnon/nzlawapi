@@ -10,7 +10,9 @@
 
     <xsl:template match="act">
         <div class="contents">
-            <xsl:apply-templates select="./body/prov|./body/part"/>
+            <ul class="nav">
+                <xsl:apply-templates select="./body/prov|./body/part"/>
+            </ul>
         </div>
     </xsl:template>
 
@@ -21,7 +23,9 @@
             </xsl:attribute>                 
             <span class="part-label">Part <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
-            <xsl:apply-templates select="./subpart|./crosshead|./prov"/>
+             <ul class="nav">
+                <xsl:apply-templates select="./subpart|./crosshead|./prov"/>
+             </ul>
         </li>
     </xsl:template>
 
@@ -32,7 +36,9 @@
             </xsl:attribute>                 
             <span class="subart-label">Subpart <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
-            <xsl:apply-templates select="./crosshead|./prov"/>
+             <ul class="nav">
+                <xsl:apply-templates select="./crosshead|./prov"/>
+            </ul>
 
         </li>
     </xsl:template>
@@ -43,7 +49,6 @@
                 </xsl:attribute>     
             <span class="crosshead"><xsl:value-of select="."/></span>
             </a>
-            <xsl:apply-templates select="./prov"/>
     </xsl:template>
 
     <xsl:template match="prov[@toc]">
@@ -51,6 +56,7 @@
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
             </xsl:attribute>
+
             <span class="prov-label"><span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>     
         </li>

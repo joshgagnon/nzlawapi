@@ -27,10 +27,15 @@ var ActScroll = React.createClass({
     componentDidMount: function(){
         $('.legislation-contents').affix({
           offset: {
-            top: 100
+            top: 80
           }
         })
-        //.scrollspy({ target:'.legislation-contents' })
+
+    },
+    componentDidUpdate: function(){
+
+
+         $('body').scrollspy({ target:'.legislation-contents .contents' });
     },
     render: function(){
         return <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
