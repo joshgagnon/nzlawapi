@@ -204,26 +204,26 @@ module.exports = React.createClass({
 							<form className="form form-inline">
 								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
-								<ButtonGroup>
-									<Input type="checkbox" label="Reviewed" checked={this.state.validated} onChange={this.handleValid}/>
-								</ButtonGroup>
-							 	<ButtonGroup>
-									<ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation} 
-									details={this.state.details} detailsChange={this.detailsChange} 
-									fields={_.isArray(this.state.fields) ? this.state.fields : [this.state.fields]} fieldsChange={this.fieldsChange} 
-									reporter={this.state.reporter} reporterChange={this.reporterChange} 
-									submitReport={this.submitReport}/>}>
-										<Button bsStyle="danger" >Submit Report</Button>
-									</ModalTrigger>
-
-									{this.state.reports && this.state.reports.length ? <ModalTrigger modal={<ShowReports reports={this.state.reports}/>}>
-							 			<Button bsStyle="info" >Existing Reports</Button>
-							 		</ModalTrigger> : null}
-							 	</ButtonGroup>
 							 	<ButtonGroup>
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
 								 	<Button onClick={this.next}><span className="glyphicon glyphicon-chevron-right"></span></Button>
 							 	</ButtonGroup>
+                                <ButtonGroup>
+                                    <Input type="checkbox" label="Reviewed" checked={this.state.validated} onChange={this.handleValid}/>
+                                </ButtonGroup>
+                                <ButtonGroup>
+                                    <ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation} 
+                                    details={this.state.details} detailsChange={this.detailsChange} 
+                                    fields={_.isArray(this.state.fields) ? this.state.fields : [this.state.fields]} fieldsChange={this.fieldsChange} 
+                                    reporter={this.state.reporter} reporterChange={this.reporterChange} 
+                                    submitReport={this.submitReport}/>}>
+                                        <Button bsStyle="danger" >Submit Report</Button>
+                                    </ModalTrigger>
+
+                                    {this.state.reports && this.state.reports.length ? <ModalTrigger modal={<ShowReports reports={this.state.reports}/>}>
+                                        <Button bsStyle="info" >Existing Reports</Button>
+                                    </ModalTrigger> : null}
+                                </ButtonGroup>
                                 <ButtonGroup>
                                     <ModalTrigger ref="name_modal" modal={<UserModal 
                                     reporter={this.state.reporter} reporterChange={this.reporterChange} />}>
