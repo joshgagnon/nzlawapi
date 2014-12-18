@@ -14,8 +14,9 @@ var ResultStore = require('../stores/ResultStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-require('bootstrap3-typeahead');
 var TypeAhead = require('./TypeAhead.jsx'); 
+require('bootstrap3-typeahead');
+require('bootstrap')
 
 var ActHTML = React.createClass({
     render: function(){
@@ -33,12 +34,22 @@ var ActScroll = React.createClass({
 
     },
     componentDidUpdate: function(){
+         $('body').scrollspy({ target:'.legislation-contents .contents', offset:90});
+     },
+     interceptLink: function(e){
+        var link = $(e.target).closest('a');
+        if(link.length){
+            e.preventDefault();
+            var offset = 55;
+            var container = $('body'),
+                scrollTo = $(link.attr('href'));
 
-
-         $('body').scrollspy({ target:'.legislation-contents .contents' });
-    },
+            //container.animate({scrollTop: scrollTo.offset().top - offset} );
+            container.scrollTop(scrollTo.offset().top - offset);
+        }
+     },
     render: function(){
-        return <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+        return <div onClick={this.interceptLink} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
     }
 });
 

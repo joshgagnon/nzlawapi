@@ -10,7 +10,7 @@ var ResultForm = require('./ResultForm.jsx');
 var findText = require('../util/findText.js');
 var _ = require('lodash');
 var $ = require('jquery');
-console.log(require('bootstrap'));
+
 
 var Result = React.createClass({
     mixins: [

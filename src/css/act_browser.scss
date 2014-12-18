@@ -21,17 +21,29 @@
 		border-bottom:1px solid #e7e7e7;
 		height:80px;
 	}
-
+	.affix{
+		position: fixed;
+		max-height: 100%;
+		overflow: auto;
+	}
 	.contents{
+
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;		
+
 		.nav>li>a{
 			padding:0
 		}
-		ul{
+		&>ul{
 			padding-left:0;
+		}
+		.nav .nav{
+			padding-left:12px;
 		}
 		 .active > a{
 			text-decoration: none;
-			background-color: #eee;
+			font-weight: 500;
 		}
 		 .nav .nav {
 			display: none;
@@ -40,7 +52,10 @@
 
 
 		.nav>.active>ul {
-		display: block;
+			display: block;
+		}
+		span.crosshead {
+			font-style: italic;
 		}
 	}
 }

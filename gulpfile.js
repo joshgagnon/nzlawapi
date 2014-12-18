@@ -1,7 +1,5 @@
-
+console.time('Loading plugins');
 var gulp = require('gulp'); 
-
-
 var bower = require('gulp-bower');
 var browserify = require('browserify');
 var concat = require('gulp-concat');
@@ -11,7 +9,7 @@ var plumber = require('gulp-plumber');
 var react = require('gulp-react');
 var reactify = require('reactify'); 
 var rename = require("gulp-rename");
-var sass = require('gulp-ruby-sass')
+var sass = require('gulp-ruby-sass');
 var source = require('vinyl-source-stream') 
 var transform = require('vinyl-transform');
 var shim = require('browserify-shim');
@@ -20,6 +18,7 @@ var autoprefixer = require('autoprefixer-core');
 var watchify = require('watchify');
 var uglify = require('gulp-uglify');
 var streamify = require('gulp-streamify');
+console.timeEnd('Loading plugins');
 
  var dont_break_on_errors = function(){
     return plumber(
