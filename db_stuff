@@ -61,3 +61,21 @@ create table error_reports (
 alter table error_reports add constraint act_fk foreign key (id) references cases (id);
 
 CREATE INDEX error_id_index ON error_reports (id);
+
+
+CREATE TABLE regulations (
+	id text primary key,
+	document_id integer, 
+	version integer,
+	title text,
+	path text,
+	number integer,
+	date_first_valid date,
+	date_gazetted date,
+	date_terminated date,
+	date_imprint date,
+	year integer,
+	repealed boolean default false
+);
+
+alter table regulations add constraint act_fk foreign key (document_id) references documents (id);

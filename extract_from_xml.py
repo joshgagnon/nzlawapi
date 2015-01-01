@@ -84,7 +84,9 @@ def process_acts(cur):
 def process_regulations(cur):
     location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/regulation'
     count=0;
-    ids = set()
+    cur.execute("""select id from id_lookup where mapper='regulations'""")
+
+    ids = set([x[0] for x in cur.fetchall()])
     for dirpath, dirs, files in os.walk(location):
         files = [f for f in files if f.endswith('.xml')]
         if len(files):
@@ -93,12 +95,12 @@ def process_regulations(cur):
                 tree = etree.parse(os.path.join(dirpath, files[0]))
                 attrib = tree.getroot().attrib
                 if attrib.get('id'):
-                    title = tree.xpath('/act/cover/title')[0].text
-                    query = """INSERT INTO regulations (id, document_id, version, title, path, number, date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed)
-                        VALUES (%(id)s, %(document_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_first_valid)s, %(date_assent)s, 
-                            %(date_as_at)s, %(year)s, %(repealed)s); """
+                    title = tree.xpath('/regulation/cover/title')[0].text
+                    query = """INSERT INTO regulations (id, document_id, version, title, path, number, date_as_at, date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed)
+                        VALUES (%(id)s, %(document_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_as_at)s, %(date_first_valid)s, %(date_gazetted)s, %(date_terminated)s, %(date_imprint)s, 
+                            %(year)s, %(repealed)s); """
                     print title
-
+                    print path
                     doc_query = """INSERT INTO documents (searchable, type, document)
                         VALUES (to_tsvector('english', %(searchable)s), %(type)s, %(document)s) returning id"""
 
@@ -111,29 +113,29 @@ def process_regulations(cur):
 
                     cur.execute(doc_query, doc_values)
                     document_id = cur.fetchone()[0]
-                    print document_id
+                    
                     values =  {
                         'document_id': document_id,
                         'id': attrib.get('id'), 
                         'title': title,
                         'version': int(float(dirpath.split('/')[-1])),
                         'path': path,
-                        'number': int(attrib.get('act.no')),
+                        'number': int(attrib.get('sr.no')),
                         'date_first_valid': safe_date(attrib.get('date.first.valid')),
                         'date_gazetted': safe_date(attrib.get('date.date_gazetted')),
-                        'date_terminated': safe_date(attrib.get('date.ter')),
+                        'date_terminated': safe_date(attrib.get('date.terminated')),
                         'date_imprint': safe_date(attrib.get('date.imprint')),
+                        'date_as_at': safe_date(attrib.get('date.as.at')),
                         'year': int(attrib.get('year')),
                         'repealed': attrib.get('terminated') == "repealed"
                     }
                     cur.execute(query, values)
                     parent_id = attrib.get('id')
                     for el in tree.xpath('//*[@id]'):
-
                         new_id = el.attrib.get('id')
                         if new_id not in ids:
                             query = """ INSERT INTO id_lookup(id, parent_id, mapper) VALUES 
-                            (%(id)s, %(parent_id)s, 'acts')"""
+                            (%(id)s, %(parent_id)s, 'regulations')"""
                             values = {
                                 'id':new_id,
                                 'parent_id': parent_id
@@ -148,10 +150,10 @@ def process_regulations(cur):
                 print 'ERROR', e, path
 
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     conn = psycopg2.connect("dbname=legislation user=josh")
     cur = conn.cursor()
-    process_acts(cur)
+    #process_acts(cur)
     process_regulations(cur)
     conn.commit()
     cur.close()
