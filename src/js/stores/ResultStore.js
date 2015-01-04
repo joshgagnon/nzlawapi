@@ -24,9 +24,8 @@ function insertDefinitions(result){
 		span.className = 'defined-word';
 		span.setAttribute('data-content', def.html_content);
 		return span;
-     });
-	result.content.html_content = content.prop('outerHTML') 
-
+    });
+	result.content.html_content = content.prop('outerHTML');
 }
 
 
@@ -42,6 +41,7 @@ var ResultStore = Reflux.createStore({
 	},
 	onNewResult: function(result){
 		var id;
+		debugger;
 		if(!_.find(this.results, {query: result.query})){
 			result.id = 'result-'+this.counter++;
 			if(result.content.html_content){

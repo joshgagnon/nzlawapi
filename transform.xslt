@@ -7,7 +7,7 @@
     <xsl:template match="/">
 
 
-        <xsl:apply-templates select="act"/>
+        <xsl:apply-templates select="act|regulation"/>
 
     </xsl:template>
 
@@ -21,19 +21,39 @@
     <xsl:template match="act">
         <div class="legislation">
             <div>
-        <div class="act top-level">
-             <xsl:attribute name="id">
-                <xsl:value-of select="@id"/>
-            </xsl:attribute>
-             <xsl:if test="@terminated = 'repealed'">
-               <xsl:attribute name="class">repealed</xsl:attribute>   
-            </xsl:if>       
-                <xsl:call-template name="current"/> 
-              <xsl:apply-templates select="cover"/>       
-               <xsl:apply-templates select="front"/> 
-             <xsl:apply-templates select="body"/>       
-             <xsl:apply-templates select="schedule.group"/>               
+                <div class="act top-level">
+                     <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:attribute>
+                     <xsl:if test="@terminated = 'repealed'">
+                       <xsl:attribute name="class">repealed</xsl:attribute>   
+                    </xsl:if>       
+                        <xsl:call-template name="current"/> 
+                      <xsl:apply-templates select="cover"/>       
+                       <xsl:apply-templates select="front"/> 
+                     <xsl:apply-templates select="body"/>       
+                     <xsl:apply-templates select="schedule.group"/>               
+                </div>
+            </div>
         </div>
+    </xsl:template>
+
+    <xsl:template match="regulation">
+        <div class="legislation">
+            <div>
+                <div class="regulation top-level">
+                     <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:attribute>
+                     <xsl:if test="@terminated = 'repealed'">
+                       <xsl:attribute name="class">repealed</xsl:attribute>   
+                    </xsl:if>       
+                        <xsl:call-template name="current"/> 
+                      <xsl:apply-templates select="cover"/>       
+                       <xsl:apply-templates select="front"/> 
+                     <xsl:apply-templates select="body"/>       
+                     <xsl:apply-templates select="schedule.group"/>               
+                </div>
             </div>
         </div>
     </xsl:template>

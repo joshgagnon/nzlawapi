@@ -238,10 +238,16 @@ def get_act(act, db=None):
 
 def get_act_exact(act, db=None):
     with (db or get_db()).cursor() as cur:
-        query = """select document from acts a 
-        join documents d on a.document_id = d.id
-        where lower(title) = lower(%(act)s)
-         order by version desc limit 1; """
+        query = """
+            (select document, version 
+        from acts a join documents d on a.document_id = d.id
+            where lower(title) = lower('ANZ Banking Group (New Zealand) Act Commencement Order 1979'))
+        union 
+            (select document, version 
+        from regulations a join documents d on a.document_id = d.id
+            where lower(title) = lower('ANZ Banking Group (New Zealand) Act Commencement Order 1979'))      
+            order by version desc limit 1; """
+
         cur.execute(query, {'act': act})
         try:
             return etree.fromstring(cur.fetchone()[0])
@@ -325,7 +331,11 @@ def acts(act='', query=''):
     try:
         db = get_db();
         with db.cursor() as cur:
-            cur.execute("""select trim(title), id from acts where title is not null group by id, title order by trim(title)""")
+            cur.execute("""(select trim(title), id from acts 
+                where title is not null group by id, title order by trim(title))
+                union 
+                (select trim(title), id from regulations 
+                where title is not null group by id, title order by trim(title))""")
             return jsonify({'acts': cur.fetchall()})
     except Exception, e:
         return jsonify(error=str(e))

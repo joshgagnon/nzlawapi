@@ -187,7 +187,7 @@ var SearchForm = React.createClass({
         if(_.isEmpty(errors)){
             this.setState({loading: true});
             $.get('/query', data)
-                .then(function(result){
+                .then(function(result){              
                     Actions.newResult({query: JSON.stringify(data), src: {url: '/query', get: data}, content: result})
                 }.bind(this),
                     function(result){

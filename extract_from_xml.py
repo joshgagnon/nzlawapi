@@ -3,7 +3,7 @@ from os.path import join
 from lxml import etree
 import psycopg2
 import datetime
-
+import xml.etree.ElementTree as ET
 
 
 
@@ -81,26 +81,31 @@ def process_acts(cur):
             except Exception, e:
                 print 'ERROR', e, path
 
+
 def process_regulations(cur):
     location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/regulation'
     count=0;
     cur.execute("""select id from id_lookup where mapper='regulations'""")
-
+    parser = etree.XMLParser(resolve_entities=False)
+    
     ids = set([x[0] for x in cur.fetchall()])
     for dirpath, dirs, files in os.walk(location):
         files = [f for f in files if f.endswith('.xml')]
+        
         if len(files):
             path = os.path.join(dirpath.replace('/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/', ''), files[0])
             try:
-                tree = etree.parse(os.path.join(dirpath, files[0]))
+                print path
+                tree = etree.parse(os.path.join(dirpath, files[0]), parser)
+
                 attrib = tree.getroot().attrib
                 if attrib.get('id'):
                     title = tree.xpath('/regulation/cover/title')[0].text
                     query = """INSERT INTO regulations (id, document_id, version, title, path, number, date_as_at, date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed)
                         VALUES (%(id)s, %(document_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_as_at)s, %(date_first_valid)s, %(date_gazetted)s, %(date_terminated)s, %(date_imprint)s, 
                             %(year)s, %(repealed)s); """
-                    print title
-                    print path
+                    #print title
+                    
                     doc_query = """INSERT INTO documents (searchable, type, document)
                         VALUES (to_tsvector('english', %(searchable)s), %(type)s, %(document)s) returning id"""
 
@@ -146,12 +151,14 @@ def process_regulations(cur):
                                 print e
                         ids |= {new_id}
                     
-            except Exception, e:
+            except etree.XMLSyntaxError, e:
                 print 'ERROR', e, path
+
 
 
 if __name__ == '__main__':
     conn = psycopg2.connect("dbname=legislation user=josh")
+    conn.set_client_encoding('utf8')
     cur = conn.cursor()
     #process_acts(cur)
     process_regulations(cur)
