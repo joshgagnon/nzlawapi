@@ -7,42 +7,22 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 from xml.dom import minidom
+from copy import deepcopy
 import re
-
-
-def is_noun(tag):
-    return tag in ['NN', 'NNS', 'NNP', 'NNPS']
-
-
-def is_verb(tag):
-    return tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
-
-
-def is_adverb(tag):
-    return tag in ['RB', 'RBR', 'RBS']
-
-
-def is_adjective(tag):
-    return tag in ['JJ', 'JJR', 'JJS']
-
-def penn_to_wn(tag):
-    if is_adjective(tag):
-        return wn.ADJ
-    elif is_noun(tag):
-        return wn.NOUN
-    elif is_adverb(tag):
-        return wn.ADV
-    elif is_verb(tag):
-        return wn.VERB
-    return None
-
 
 ws_split = re.compile(r'\s+', re.U).split
 
 def processNode(parent, defs):
     doc = parent.ownerDocument
     for node in parent.childNodes[:]:
-        if node.nodeType==node.TEXT_NODE:
+        if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
+            key = node.getElementsByTagName('def-term')[0].childNodes[0].nodeValue
+            if len(key) > 1:
+                base = lmtzr.lemmatize(key)
+                #html = tohtml(etree.fromstring(node.toxml()), 'transform_def.xslt')
+                defs[base] = {'key': key, 'definition': node}
+                print base
+        elif node.nodeType==node.TEXT_NODE:
             words = ws_split(node.nodeValue)
             new_words = []
             changed = False
@@ -50,8 +30,17 @@ def processNode(parent, defs):
                 if word in defs:
                     text = ' '.join(new_words+[''])
                     parent.insertBefore(doc.createTextNode(text), node)
+
                     b = doc.createElement('catalex-def')
-                    b.appendChild(doc.createTextNode(word))
+                    
+                    clone_def = defs[word]['definition'].cloneNode(True)
+                    clone_def.tagName = 'definition'
+                    b.appendChild(clone_def)
+
+                    match = doc.createElement('match')
+                    match.appendChild(doc.createTextNode(word))
+                    b.appendChild(match)
+
                     parent.insertBefore(b, node)
                     new_words = ['']
                     changed = True
@@ -70,34 +59,32 @@ def find_all_definitions(tree):
     nodes = tree.xpath(".//def-para[descendant::def-term]")
     results = {}
     for node in nodes:
-        html = etree.tostring(node, encoding='UTF-8')
         keys = node.xpath('.//def-term')
         for key in keys:
             # super ugly hack to prevent placeholders like 'A'
             if len(key.text) > 1:
-            	base = lmtzr.lemmatize(key.text)
-            	if base not in results:
-                	results[base] = {'key': key.text, 'html_content': html}
+                base = lmtzr.lemmatize(key.text)
+                domnode = minidom.parseString(etree.tostring(node, encoding='UTF-8', method="html")).childNodes[0]
+                if base not in results:
+                    results[base] = {'key': key.text, 'definition': domnode}
                 if key.text.lower() not in results:
-                	results[key.text.lower()] = {'key': key.text, 'html_content': html}
+                    results[key.text.lower()] = {'key': key.text, 'definition': domnode}
                 print base, key.text
     return results
 
 def insert_definitions(tree):
-	interpretation = get_act_exact('Interpretation Act 1999')
-	definitions = find_all_definitions(interpretation)
-	keys = definitions.keys()
-	domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-	processNode(domxml, keys)
-	print domxml.toxml()
-	tree = etree.fromstring(domxml.toxml())
-	"""for el in list(tree.iter(tag=etree.Element)):
-		#todo update defintions as they are traversed
-		if el.text: # and tail
-		 	intersects = [key for key in keys if key in el.text]
-		 	print intersects
-			for intersect in intersects:
-				sub = etree.SubElement(el, "catalex-def")
-	"""
-	return tree
+    interpretation = get_act_exact('Interpretation Act 1999')
+    definitions = find_all_definitions(interpretation)
+    domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+    processNode(domxml, definitions)
+    tree = etree.fromstring(domxml.toxml())
+    """for el in list(tree.iter(tag=etree.Element)):
+        #todo update defintions as they are traversed
+        if el.text: # and tail
+            intersects = [key for key in keys if key in el.text]
+            print intersects
+            for intersect in intersects:
+                sub = etree.SubElement(el, "catalex-def")
+    """
+    return tree
 

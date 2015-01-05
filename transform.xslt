@@ -306,13 +306,21 @@
 
 
    <xsl:template match="catalex-def">
-        <span data-toggle="popover" data-trigger="hover" title="Test" data-content="test"><xsl:apply-templates/></span>
+        <span data-toggle="popover" data-trigger="hover" >
+            <xsl:attribute name="data-content">
+                <xsl:value-of select="definition"/>
+            </xsl:attribute> 
+            <xsl:attribute name="title">
+                <xsl:value-of select="match"/>
+            </xsl:attribute>                             
+            <xsl:value-of select="match"/>          
+        </span>
     </xsl:template>
 
     <xsl:template match="*[@href]">
         <a>
-        <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
-        </xsl:attribute>   
+            <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
+            </xsl:attribute>   
             <xsl:value-of select="."/>
         </a>
     </xsl:template>
@@ -328,13 +336,9 @@
          <xsl:apply-templates/>
     </xsl:template>
 
-
    <xsl:template match="citation">
          <xsl:apply-templates/>
     </xsl:template>
-
-
-
 
    <xsl:template match="example">
         <div class="example">

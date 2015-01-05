@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:strip-space elements="*"/>
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
-    <xsl:variable name="symbols-skip-insert-space">,.;:)(</xsl:variable>
+    <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
     <xsl:template match="/">
         <xsl:apply-templates select="def-para"/>
