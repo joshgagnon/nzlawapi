@@ -1,3 +1,7 @@
+from db import get_db, get_act_exact
+from util import CustomException, tohtml
+from views import mod
+from definitions import insert_definitions
 from lxml import etree
 import sys
 from lxml.etree import tostring
@@ -6,8 +10,6 @@ from flask import Flask
 from operator import itemgetter
 from flask import render_template, json, jsonify, g, request, send_from_directory
 from flask.json import JSONEncoder
-import psycopg2
-import psycopg2.extras
 import datetime
 import os
 import elasticsearch
@@ -16,38 +18,12 @@ import os
 
 location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
-class CustomException(Exception):
-    pass
-
-def levenshtein(s1, s2):
-    if len(s1) < len(s2):
-        return levenshtein(s2, s1)
- 
-    # len(s1) >= len(s2)
-    if len(s2) == 0:
-        return len(s1)
- 
-    previous_row = range(len(s2) + 1)
-    for i, c1 in enumerate(s1):
-        current_row = [i + 1]
-        for j, c2 in enumerate(s2):
-            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
-            deletions = current_row[j] + 1       # than s2
-            substitutions = previous_row[j] + (c1 != c2)
-            current_row.append(min(insertions, deletions, substitutions))
-        previous_row = current_row
- 
-    return previous_row[-1]
 
 
 def get_title(tree):
     return tree.xpath('/act/cover/title')[0].text
 
 
-def tohtml(tree, transform='transform.xslt'):
-    xslt = etree.parse(transform)
-    transform = etree.XSLT(xslt)
-    return transform(tree)
 
 
 def cull_tree(nodes):
@@ -131,19 +107,6 @@ def find_section_node(tree, query):
     return find_sub_node(tree, keys)
 
 
-def find_all_definitions(tree):
-    nodes = tree.xpath(".//def-para[descendant::def-term]")
-    results = {}
-    for node in nodes:
-        html = etree.tostring(tohtml(node, 'transform_def.xslt'), encoding='UTF-8')
-        keys = node.xpath('.//def-term')
-        for key in keys:
-            # super ugly hack to prevent placeholders like 'A'
-            if len(key.text) > 1:
-                results[key.text.lower()] = {'key': key.text, 'html_content': html}
-    return results
-
-
 def find_definitions(tree, query):
     nodes = tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
     if not len(node):
@@ -186,38 +149,6 @@ def find_node_by_query(tree, query):
         print e
         raise CustomException("Path not found")
 
-
-def get_act(act, db=None):
-    with (db or get_db()).cursor() as cur:
-        query = """select document from acts a 
-        join documents d on a.document_id = d.id
-        where lower(replace(title, ' ', '')) = lower(%(act)s)
-         order by version desc limit 1; """
-        cur.execute(query, {'act': act})
-        try:
-            return etree.fromstring(cur.fetchone()[0])
-        except:
-            raise CustomException("Act not found")
-
-def get_act_exact(act, db=None):
-    with (db or get_db()).cursor() as cur:
-        query = """
-            (select document, version, path
-        from acts a join documents d on a.document_id = d.id
-            where lower(title) = lower(%(act)s))
-        union 
-            (select document, version, path
-        from regulations a join documents d on a.document_id = d.id
-            where lower(title) = lower(%(act)s))      
-            order by version desc limit 1; """
-
-        cur.execute(query, {'act': act})
-        try:
-            result = cur.fetchone()
-            print result[2]
-            return etree.fromstring(result[0])
-        except:
-            raise CustomException("Act not found")
 
 def get_references_for_ids(ids):
     with get_db().cursor() as cur:
@@ -282,14 +213,10 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 app = Flask(__name__, static_folder="./build")
+app.register_blueprint(mod)
 app.json_encoder = CustomJSONEncoder
 es = elasticsearch.Elasticsearch()
 
-@app.route('/')
-@app.route('/validator')
-@app.route('/full_act')
-def browser(act='', query=''):
-    return render_template('browser.html')
 
 @app.route('/acts.json')
 def acts(act='', query=''):
@@ -374,7 +301,7 @@ def format_response(args, result):
 
 def full_act_response(act, args):
     return {
-        'html_content': etree.tostring(tohtml(act), encoding='UTF-8', method="html",),
+        'html_content': etree.tostring(tohtml(insert_definitions(act)), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8', method="html"),
         'act_name': args['act_name']
     }
@@ -458,17 +385,6 @@ def query():
     return jsonify(result), status
 
 
-def connect_db():
-    conn = psycopg2.connect("dbname=legislation user=josh")
-    return conn
-
-def init_db():
-    pass
-
-def get_db():
-    if not hasattr(g, 'db'):
-        g.db = connect_db()
-    return g.db
 
 @app.teardown_appcontext
 def close_db(error):
