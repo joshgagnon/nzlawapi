@@ -41,7 +41,6 @@ var ResultStore = Reflux.createStore({
 	},
 	onNewResult: function(result){
 		var id;
-		debugger;
 		if(!_.find(this.results, {query: result.query})){
 			result.id = 'result-'+this.counter++;
 			if(result.content.html_content){

@@ -41,7 +41,7 @@
     <xsl:template match="regulation">
         <div class="legislation">
             <div>
-                <div class="regulation top-level">
+            <div class="regulation top-level">
                      <xsl:attribute name="id">
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
@@ -88,7 +88,7 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>   
-             <xsl:apply-templates select="part|prov"/>         
+             <xsl:apply-templates select="part|prov|amend/prov"/>         
         </div>
     </xsl:template>
 
@@ -102,7 +102,7 @@
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
             </h2>
-            <xsl:apply-templates select="subpart|crosshead|prov"/> 
+            <xsl:apply-templates select="subpart|crosshead|prov|amend/prov"/> 
         </div>
     </xsl:template>
 
@@ -116,7 +116,7 @@
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
                 <xsl:value-of select="heading"/>
             </h3>
-            <xsl:apply-templates select="crosshead|prov"/> 
+            <xsl:apply-templates select="crosshead|prov|amend/prov"/> 
         </div>
     </xsl:template>
 
@@ -159,7 +159,7 @@
         <div class="subprov">
             <xsl:call-template name="current"/> 
             <xsl:apply-templates select="label"/>
-            <xsl:apply-templates select="para/*[position() > 1]"/>
+            <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov"/>
         </div>
     </xsl:template>
 

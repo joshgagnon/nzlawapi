@@ -79,43 +79,6 @@ def generate_range(string):
     tokens = string.split('-')
 
 
-def find_node(tree, keys):
-    node = tree
-    try:
-        # first, special case for schedule
-        if keys[0] in ['part', 'schedule']:
-            node = node.xpath(".//%s[label='%s']" % (keys[0], keys[1]))
-            keys = keys[2:]
-            if len(keys):
-                node = node[0]
-        else:
-            node = node.xpath(".//body")[0]
-        for i, a in enumerate(keys):
-            if a:
-                #if '-' in :
-                #    a = " or ".join(["label = '%s'" % x for x in generate_range(a)])
-                if '+' in a:
-
-                    #a = "label = ('%s')" % "','".join(a.split('+'))
-                    a = " or ".join(["label = '%s'" % x for x in a.split('+')])
-                else:
-                    a = "label = '%s'" % a
-
-                node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
-            if i < len(keys)-1:
-                #get shallowist nodes
-                node = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))[0][0]
-            else:
-                #if last part, get all equally shallow results
-                nodes = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))
-                node = [x[0] for x in nodes if x[1] == nodes[0][1]]
-        if not len(node):
-            raise CustomException("empty")
-        return node
-    except Exception, e:
-        raise CustomException("Path not found")
-
-
 def find_sub_node(tree, keys):
     node = tree
     try:
@@ -148,7 +111,7 @@ def find_part_node(tree, query):
     #todo add path test
     keys = query.split('/')
     tree = tree.xpath(".//part[label='%s']" % keys[0])
-    keys = keys[2:]
+    keys = keys[1:]
     if len(keys):
         tree = tree[0]
     return find_sub_node(tree, keys)
@@ -157,7 +120,7 @@ def find_schedule_node(tree, query):
     #todo add schedule test
     keys = query.split('/')
     tree = tree.xpath(".//schedule[label='%s']" % keys[0])
-    keys = keys[2:]
+    keys = keys[1:]
     if len(keys):
         tree = tree[0]
     return find_sub_node(tree, keys)
@@ -239,18 +202,20 @@ def get_act(act, db=None):
 def get_act_exact(act, db=None):
     with (db or get_db()).cursor() as cur:
         query = """
-            (select document, version 
+            (select document, version, path
         from acts a join documents d on a.document_id = d.id
-            where lower(title) = lower('ANZ Banking Group (New Zealand) Act Commencement Order 1979'))
+            where lower(title) = lower(%(act)s))
         union 
-            (select document, version 
+            (select document, version, path
         from regulations a join documents d on a.document_id = d.id
-            where lower(title) = lower('ANZ Banking Group (New Zealand) Act Commencement Order 1979'))      
+            where lower(title) = lower(%(act)s))      
             order by version desc limit 1; """
 
         cur.execute(query, {'act': act})
         try:
-            return etree.fromstring(cur.fetchone()[0])
+            result = cur.fetchone()
+            print result[2]
+            return etree.fromstring(result[0])
         except:
             raise CustomException("Act not found")
 
