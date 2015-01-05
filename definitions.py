@@ -49,9 +49,8 @@ def processNode(parent, defs):
             for word in words:
                 if word in defs:
                     text = ' '.join(new_words+[''])
-                    print word
                     parent.insertBefore(doc.createTextNode(text), node)
-                    b = doc.createElement('b')
+                    b = doc.createElement('catalex-def')
                     b.appendChild(doc.createTextNode(word))
                     parent.insertBefore(b, node)
                     new_words = ['']
@@ -90,6 +89,8 @@ def insert_definitions(tree):
 	keys = definitions.keys()
 	domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
 	processNode(domxml, keys)
+	print domxml.toxml()
+	tree = etree.fromstring(domxml.toxml())
 	"""for el in list(tree.iter(tag=etree.Element)):
 		#todo update defintions as they are traversed
 		if el.text: # and tail

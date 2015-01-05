@@ -21,7 +21,10 @@ require('bootstrap')
 var ActHTML = React.createClass({
     render: function(){
         return <div className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}}/>
-    }
+    },
+    componentDidUpdate: function(){
+        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.act_browser', placement: 'auto', trigger: 'hover'});
+     },    
 });
 
 var ActScroll = React.createClass({
@@ -40,7 +43,7 @@ var ActScroll = React.createClass({
             var container = $('.legislation-contents');
             console.log(scrollTo.position(), container.position())
             container.scrollTop(scrollTo.offset().top -container.offset().top + container.scrollTop());
-        });   
+        }); 
      },
      interceptLink: function(e){
         var link = $(e.target).closest('a');

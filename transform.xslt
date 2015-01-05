@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:strip-space elements="*"/>
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
-    <xsl:variable name="symbols-skip-insert-space">,.;:)(</xsl:variable>
+    <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
     <xsl:template match="/">
 
@@ -304,6 +304,11 @@
         &#160;<span style="font-style:italic"><xsl:value-of select="."/></span>
     </xsl:template>
 
+
+   <xsl:template match="catalex-def">
+        <span data-toggle="popover" data-trigger="hover" title="Test" data-content="test"><xsl:apply-templates/></span>
+    </xsl:template>
+
     <xsl:template match="*[@href]">
         <a>
         <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
@@ -327,6 +332,8 @@
    <xsl:template match="citation">
          <xsl:apply-templates/>
     </xsl:template>
+
+
 
 
    <xsl:template match="example">

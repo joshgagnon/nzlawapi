@@ -337,7 +337,7 @@ def query_acts(args):
     query = args.get('query')
     if search_type == 'contains':
         result = act_full_search(query)
-    elif search_type == 'defintions':
+    elif search_type == 'definitions':
         raise CustomException('Not Implemented')
     else:
         raise CustomException('Invalid search type')
