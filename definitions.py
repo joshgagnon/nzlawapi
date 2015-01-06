@@ -41,8 +41,6 @@ def processNode(parent, defs):
                     line = lines[i]
                     while isinstance(line, basestring) and defs[definition]['regex'].search(line.lower()):
                         span = defs[definition]['regex'].search(line.lower()).span()
-
-                        #todo, grow for plurals etc
                         lines[i:i+1] = [line[:span[0]], create_def(line[span[0]:span[1]], defs[definition]['definition']), line[span[1]:]]
                         i += 2
                         line = line[span[1]:]
