@@ -9,11 +9,11 @@ class DefWrap(object):
     def __repr__(self):
         return '<DefWrap>%s</DefWrap>' % self.string
 
-inputstring = "testing is a fun thing to do, oh boy you better believe it's a fun thing"
+inputstring = "testing is a fun thing is a fun thing fun to do, oh boy you better believe it's a fun thing fun fun"
 
-defs = ['fun', 'fun thing', 'boy', 'oh boy you better']
+defs = ['fun', 'fun thing', 'boy', 'oh boy you better', 'it']
 
-expected = ['testing is a ', DefWrap('fun thing'), ' to do, ', DefWrap('oh boy you better'), " believe it's a ", DefWrap('fun thing')]
+expected = ['testing is a ', DefWrap('fun thing'), ' is a ', DefWrap('fun thing'),' ', DefWrap('fun'), ' to do, ', DefWrap('oh boy you better'), " believe ",  DefWrap('it'), "'s a ", DefWrap('fun thing'), ' ', DefWrap('fun'), ' ', DefWrap('fun')]
 
 
 ordered_defs = sorted(defs, key=lambda x: len(x), reverse=True)
@@ -25,9 +25,10 @@ for definition in ordered_defs:
         while isinstance(line, basestring) and definition.lower() in line.lower():
             hit = line.lower().index(definition.lower())
             lines[i:i+1] = [line[:hit], DefWrap(definition), line[hit + len(definition):]]
+            i += 2
             line = line[hit + len(definition):]
         i += 1
-
-print('results')
+lines = filter(lambda x:x, lines)
+print('Success: ', lines==expected)
 print(lines)
 print(expected)
