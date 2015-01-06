@@ -310,7 +310,7 @@
 
 
    <xsl:template match="catalex-def">
-        <span data-toggle="popover"  data-html="true">
+        <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
             <xsl:attribute name="data-content">
                <xsl:value-of select="@definition"/>
             </xsl:attribute> 
@@ -318,7 +318,7 @@
                 <xsl:value-of select="match"/>
             </xsl:attribute>                             
             <xsl:value-of select="match"/>          
-        </span>
+        </a>
     </xsl:template>
 
     <xsl:template match="*[@href]">

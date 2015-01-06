@@ -68,7 +68,9 @@ height:100%;
 .legislation a{
     text-decoration: underline;
 }
-
+.legislation a.def-popover{
+    color:#000;
+}
 .legislation .row:before, .legislation .row:after{
     content:initial;
 }

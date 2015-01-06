@@ -20,11 +20,21 @@ require('bootstrap')
 
 var ActHTML = React.createClass({
     render: function(){
-        return <div className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+        return <div onClick={this.interceptLink} className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}} />
     },
     componentDidUpdate: function(){
-        $(this.getDOMNode()).popover({container: '.act_browser', placement: 'auto', trigger: 'hover', 'selector': '[data-toggle="popover"]'});
-     },    
+        $(this.getDOMNode()).popover({container: '.act_browser', placement: 'auto', trigger: 'focus', selector: '[data-toggle="popover"]'});
+     },
+     interceptLink: function(e){
+        var link = $(e.target).closest('a');
+        if(link.length){
+            e.preventDefault();
+            if(link.attr('href') !== '#'){
+
+            }
+        }
+     },
+
 });
 
 var ActScroll = React.createClass({
