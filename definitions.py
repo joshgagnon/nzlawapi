@@ -19,8 +19,10 @@ def processNode(parent, defs):
             key = node.getElementsByTagName('def-term')[0].childNodes[0].nodeValue
             if len(key) > 1:
                 base = lmtzr.lemmatize(key)
-                #html = tohtml(etree.fromstring(node.toxml()), 'transform_def.xslt')
-                defs[base] = {'key': key, 'definition': node}
+                html = etree.tostring(
+                        tohtml(etree.fromstring(node.toxml()), 
+                            'transform_def.xslt'), encoding='UTF-8', method="html")
+                defs[base] = {'key': key, 'definition': html}
                 print base
         elif node.nodeType==node.TEXT_NODE:
             words = ws_split(node.nodeValue)
@@ -30,11 +32,8 @@ def processNode(parent, defs):
                 if word in defs:
                     text = ' '.join(new_words+[''])
                     parent.insertBefore(doc.createTextNode(text), node)
-
                     b = doc.createElement('catalex-def')
-                    
-
-                    b.setAttribute('definition', etree.tostring(tohtml(etree.fromstring(defs[word]['definition'].toxml()), 'transform_def.xslt'), encoding='UTF-8', method="html")) 
+                    b.setAttribute('definition', defs[word]['definition']) 
                     match = doc.createElement('match')
                     match.appendChild(doc.createTextNode(word))
 
@@ -63,12 +62,12 @@ def find_all_definitions(tree):
             # super ugly hack to prevent placeholders like 'A'
             if len(key.text) > 1:
                 base = lmtzr.lemmatize(key.text)
-                domnode = minidom.parseString(etree.tostring(node, encoding='UTF-8', method="html")).childNodes[0]
+                html = etree.tostring(tohtml(node, 'transform_def.xslt'), encoding='UTF-8', method="html")
+
                 if base not in results:
-                    results[base] = {'key': key.text, 'definition': domnode}
+                    results[base] = {'key': key.text, 'definition': html}
                 if key.text.lower() not in results:
-                    results[key.text.lower()] = {'key': key.text, 'definition': domnode}
-                print base, key.text
+                    results[key.text.lower()] = {'key': key.text, 'definition': html}
     return results
 
 def insert_definitions(tree):

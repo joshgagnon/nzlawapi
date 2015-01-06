@@ -23,7 +23,7 @@ var ActHTML = React.createClass({
         return <div className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}}/>
     },
     componentDidUpdate: function(){
-        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.act_browser', placement: 'auto'});
+        $(this.getDOMNode()).popover({container: '.act_browser', placement: 'auto', trigger: 'hover', 'selector': '[data-toggle="popover"]'});
      },    
 });
 

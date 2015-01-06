@@ -6,7 +6,6 @@
 
     <xsl:template match="/">
         <xsl:apply-templates select="def-para"/>
-
     </xsl:template>
 
         <xsl:template match="def-para">   
