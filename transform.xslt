@@ -58,10 +58,6 @@
         </div>
     </xsl:template>
 
-    <xsl:template match="text()">
-        asdf\
-    </xsl:template>
-
     <xsl:template match="cover">
         <div class="cover reprint">
         <!--<p class="reprint-date">
@@ -353,7 +349,7 @@
 
     <xsl:template match="text()">
         <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
-          <xsl:if test="string-length(preceding-sibling::*[1]/.)">
+          <xsl:if test="string-length(preceding-sibling::*[1]/.) and name(..) != catalex-def">
                 <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
         </xsl:if>
         <xsl:value-of select="."/>
