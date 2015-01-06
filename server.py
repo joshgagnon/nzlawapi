@@ -300,9 +300,12 @@ def format_response(args, result):
         return {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': args['act_name']}
 
 def full_act_response(act, args):
+    xml, definitions = insert_definitions(act)
     return {
-        'html_content': etree.tostring(tohtml(insert_definitions(act)), encoding='UTF-8', method="html",),
+        'html_content': etree.tostring(tohtml(xml), encoding='UTF-8', method="html",),
+        #'html_content': etree.tostring(xml, encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8', method="html"),
+        'definitions': definitions,
         'act_name': args['act_name']
     }
 

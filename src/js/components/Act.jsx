@@ -18,12 +18,24 @@ var TypeAhead = require('./TypeAhead.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap')
 
-var ActHTML = React.createClass({
+var ActDisplay = React.createClass({
     render: function(){
         return <div onClick={this.interceptLink} className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}} />
     },
     componentDidUpdate: function(){
-        $(this.getDOMNode()).popover({container: '.act_browser', placement: 'auto', trigger: 'focus', selector: '[data-toggle="popover"]'});
+        var self = this;
+        $(this.getDOMNode()).popover({
+            container: '.act_browser', 
+            placement: 'auto', 
+            trigger: 'focus', 
+            selector: '[data-toggle="popover"]',
+            content: function(){
+                return self.props.definitions[$(this).attr('def-id')].html;
+            },
+            title: function(){
+                return self.props.definitions[$(this).attr('def-id')].title;
+            }
+        });
      },
      interceptLink: function(e){
         var link = $(e.target).closest('a');
@@ -33,8 +45,7 @@ var ActHTML = React.createClass({
 
             }
         }
-     },
-
+     }
 });
 
 var ActScroll = React.createClass({
@@ -113,9 +124,11 @@ module.exports = React.createClass({
     		act_name: this.state.act_name
     	})
     		.then(function(response){
-    			this.setState({act_html: response.html_content, 
+    			this.setState({
+                    act_html: response.html_content, 
                     act_name: response.act_name,
     				act_contents: response.html_contents_page,
+                    act_definitions: response.definitions
     			});
     		}.bind(this))
     },	        	
@@ -139,7 +152,7 @@ module.exports = React.createClass({
 					<div className="container">	
 						<div className="row results">
                             <div className="col-md-9">
-								<ActHTML html={this.state.act_html}/>
+								<ActDisplay html={this.state.act_html} definitions={this.state.act_definitions} />
                             </div>
                             <div className="col-md-3">
                                 <ActScroll html={this.state.act_contents}/>

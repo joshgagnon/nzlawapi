@@ -307,13 +307,10 @@
 
    <xsl:template match="catalex-def">
         <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
-            <xsl:attribute name="data-content">
-               <xsl:value-of select="@definition"/>
-            </xsl:attribute> 
-            <xsl:attribute name="title">
-                <xsl:value-of select="match"/>
-            </xsl:attribute>                             
-            <xsl:value-of select="match"/>          
+            <xsl:attribute name="def-id">
+               <xsl:value-of select="@def-id"/>
+            </xsl:attribute>                       
+            <xsl:value-of select="."/>          
         </a>
     </xsl:template>
 
@@ -349,7 +346,7 @@
 
     <xsl:template match="text()">
         <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
-          <xsl:if test="string-length(preceding-sibling::*[1]/.) and name(..) != catalex-def">
+          <xsl:if test="string-length(preceding-sibling::*[1]/.)">
                 <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
         </xsl:if>
         <xsl:value-of select="."/>
