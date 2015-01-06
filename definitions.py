@@ -14,39 +14,25 @@ ws_split = re.compile(r'\s+', re.U).split
 
 def processNode(parent, defs):
     doc = parent.ownerDocument
-    for node in parent.childNodes[:]:
+    for node in parent.childNodes[:]: #better clone, as we will modify
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
-            key = node.getElementsByTagName('def-term')[0].childNodes[0].nodeValue
+            key = node.getElementsByTagName('def-term')[0].childNodes[0].nodeValue.lower()
             if len(key) > 1:
                 base = lmtzr.lemmatize(key)
                 html = etree.tostring(
                         tohtml(etree.fromstring(node.toxml()), 
                             'transform_def.xslt'), encoding='UTF-8', method="html")
                 defs[base] = {'key': key, 'definition': html}
-                print base
         elif node.nodeType==node.TEXT_NODE:
-            words = ws_split(node.nodeValue)
-            new_words = []
-            changed = False
-            for word in words:
-                if word in defs:
-                    text = ' '.join(new_words+[''])
-                    parent.insertBefore(doc.createTextNode(text), node)
-                    b = doc.createElement('catalex-def')
-                    b.setAttribute('definition', defs[word]['definition']) 
-                    match = doc.createElement('match')
-                    match.appendChild(doc.createTextNode(word))
-
-                    b.appendChild(match)
-
-                    parent.insertBefore(b, node)
-                    new_words = ['']
-                    changed = True
-                else:
-                    new_words.append(word)
-            if changed:
-                text = ' '.join(new_words)
-                parent.replaceChild(doc.createTextNode(text), node)
+            ordered_defs = sorted(defs.keys(), key=lambda x: len(x), reverse=True)
+            lines = [node.nodeValue]
+            for definition in ordered_defs:
+                for line in lines[:]:
+                    if not isinstance(line, basestring):
+                        continue
+                    hits = [m.start() for m in re.finditer(definition, line, flags=re.I)]
+                    if len(hits)
+                        print definition, line
         else:
             processNode(node, defs)
             
@@ -61,7 +47,7 @@ def find_all_definitions(tree):
         for key in keys:
             # super ugly hack to prevent placeholders like 'A'
             if len(key.text) > 1:
-                base = lmtzr.lemmatize(key.text)
+                base = lmtzr.lemmatize(key.text.lower())
                 html = etree.tostring(tohtml(node, 'transform_def.xslt'), encoding='UTF-8', method="html")
 
                 if base not in results:
