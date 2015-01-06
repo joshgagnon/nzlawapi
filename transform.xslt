@@ -58,6 +58,10 @@
         </div>
     </xsl:template>
 
+    <xsl:template match="text()">
+        asdf\
+    </xsl:template>
+
     <xsl:template match="cover">
         <div class="cover reprint">
         <!--<p class="reprint-date">
@@ -78,7 +82,7 @@
             <div class="long-title">
                  <xsl:value-of select="long-title/para/text"/>
             
-             <xsl:apply-templates select="long-title/para/label-para"/> 
+                <xsl:apply-templates select="long-title/para/label-para"/> 
              </div>           
         </div>
     </xsl:template>
@@ -306,9 +310,9 @@
 
 
    <xsl:template match="catalex-def">
-        <span data-toggle="popover" data-trigger="hover" >
+        <span data-toggle="popover"  data-html="true">
             <xsl:attribute name="data-content">
-                <xsl:value-of select="definition"/>
+               <xsl:value-of select="@definition"/>
             </xsl:attribute> 
             <xsl:attribute name="title">
                 <xsl:value-of select="match"/>
@@ -364,7 +368,7 @@
 
     <xsl:template match="schedule.provisions">
       <div class="schedule-provisions">
-        <xsl:apply-templates select="prov"/>
+        <xsl:apply-templates select="prov|part"/>
       </div>
     </xsl:template>
 
@@ -393,8 +397,7 @@
                     <td class="empowering-prov">
                     </td>
                     </tr>
-                </tbody>
-                
+                </tbody>                
             </table>
             <xsl:apply-templates select="schedule.provisions|schedule.misc"/>
         </div>

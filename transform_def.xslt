@@ -10,15 +10,18 @@
     </xsl:template>
 
         <xsl:template match="def-para">   
-
-        <div class="def-para">
-             <xsl:attribute name="id">
-                <xsl:value-of select="@id"/>
-            </xsl:attribute>           
-            <p class="text">
-                 <xsl:apply-templates select="para/text|para/label-para|example"/>
-            </p>
+        <div class="definition-result">
+            <div class="legislation">
+            <div class="def-para">
+                 <xsl:attribute name="id">
+                    <xsl:value-of select="@id"/>
+                </xsl:attribute>           
+                <p class="text">
+                     <xsl:apply-templates select="para/text|para/label-para|example"/>
+                </p>
+            </div>
         </div>
+    </div>
     </xsl:template>
 
        <xsl:template match="example">

@@ -33,12 +33,11 @@ def processNode(parent, defs):
 
                     b = doc.createElement('catalex-def')
                     
-                    clone_def = defs[word]['definition'].cloneNode(True)
-                    clone_def.tagName = 'definition'
-                    b.appendChild(clone_def)
 
+                    b.setAttribute('definition', etree.tostring(tohtml(etree.fromstring(defs[word]['definition'].toxml()), 'transform_def.xslt'), encoding='UTF-8', method="html")) 
                     match = doc.createElement('match')
                     match.appendChild(doc.createTextNode(word))
+
                     b.appendChild(match)
 
                     parent.insertBefore(b, node)
