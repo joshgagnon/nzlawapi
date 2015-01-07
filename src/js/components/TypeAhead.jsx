@@ -15,11 +15,16 @@ module.exports = React.createClass({
         var self = this;
         var node = this.refs.input.refs.input.getDOMNode();
         $(node).typeahead({ 
-            items: 10,
+            items: this.props.items || 10,
             source: this.props.typeahead,
             appendTo: $('body'),
             afterSelect: function(value){
-                self.props.valueLink.requestChange(value);
+                if(value !== null && typeof value === 'object'){
+                    self.props.valueLink.requestChange(value.name);
+                }
+                else{
+                    self.props.valueLink.requestChange(value);
+                }
                 this.$element.parents('.form-group').next().find('input, select').focus();
             },
             scrollHeight: $(node).offset().top - $(node).position().top

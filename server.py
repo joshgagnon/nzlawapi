@@ -15,6 +15,7 @@ import os
 import elasticsearch
 import re
 import os
+import psycopg2
 
 location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
@@ -242,6 +243,23 @@ def cases(act='', query=''):
     except Exception, e:
         return jsonify(error=str(e))
 
+@app.route('/act_case_hint.json')
+def act_case_hint():
+    try:
+        db = get_db();
+        with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("""
+                select title as name, type from
+                    ((select trim(full_citation) as title, 'case'as type from cases where full_citation is not null order by trim(full_citation)) 
+                    union
+                    (select trim(title) as title, 'act' as type from acts  where title is not null group by id, title order by trim(title)) 
+                    union 
+                    (select trim(title) as title, 'regulation' as type from regulations where title is not null group by id, title order by trim(title))) q
+                   where title like '%%'||%(query)s||'%%' order by title limit 25;
+                """, {'query': request.args.get('query')})
+            return jsonify({'results': cur.fetchall()})
+    except Exception, e:
+        return jsonify(error=str(e))
 
 @app.route('/validate_case',methods=['POST'])
 def validate():
@@ -303,7 +321,6 @@ def full_act_response(act, args):
     xml, definitions = insert_definitions(act)
     return {
         'html_content': etree.tostring(tohtml(xml), encoding='UTF-8', method="html",),
-        #'html_content': etree.tostring(xml, encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8', method="html"),
         'definitions': definitions,
         'act_name': args['act_name']

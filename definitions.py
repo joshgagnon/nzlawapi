@@ -162,7 +162,7 @@ def insert_definitions(tree):
     interpretation = get_act_exact('Interpretation Act 1999')
     definitions = find_all_definitions(interpretation)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    process_node(domxml, definitions)
+    #process_node(domxml, definitions)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree, render_definitions(definitions)
 

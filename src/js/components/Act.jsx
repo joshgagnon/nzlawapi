@@ -95,12 +95,18 @@ module.exports = React.createClass({
     		index: 0,
     	}
     },
-    componentDidMount: function(){
+    /*componentDidMount: function(){
         $.get('/acts.json')
             .then(function(data){
             	var acts = data.acts.map(function(x){ return x[0]; });
                 this.setState({acts_typeahead: acts}, this.fetch);
             }.bind(this));         
+    },*/
+    typeahead_query: function(query, process){
+        $.get('/act_case_hint.json', {query: query})
+            .then(function(results){
+                process(results.results)
+            });
     },
     submit: function(e){
     	e.preventDefault();
@@ -138,10 +144,8 @@ module.exports = React.createClass({
 						<div className="container">
 						
 							<form className="form form-inline">
-								<TypeAhead typeahead={this.state.acts_typeahead}  key="act_name" ref="act_name" name="act_name" label='Act' valueLink={this.linkState('act_name')} 
+								<TypeAhead typeahead={this.typeahead_query}  key="act_name" ref="act_name" name="act_name" label='Act' valueLink={this.linkState('act_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
-
-
 							 	<ButtonGroup>
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
 								 	<Button onClick={this.next}><span className="glyphicon glyphicon-chevron-right"></span></Button>
