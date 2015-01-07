@@ -1,4 +1,4 @@
-from db import get_db, get_act_exact
+from db import get_act_exact
 from util import tohtml
 from nltk.stem import *
 from lxml import etree
@@ -71,8 +71,8 @@ class Definitions(MutableMapping):
     
     def __deepcopy__(self):
         newone = type(self)()
-        newone.retired = deepcopy(self.retired)
-        newone.store = deepcopy(self.store)
+        newone.retired = self.retired[:]
+        newone.store = self.store.copy()
         return newone
 
 def infer_life_time(node):
