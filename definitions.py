@@ -95,11 +95,25 @@ def find_all_definitions(tree):
 def render_definitions(definitions):
     return {v.id: v.render() for k, v in definitions.all()}
 
+import time
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print '%s function took %0.3f ms' % (f.func_name, (time2-time1)*1000.0)
+        return ret
+    return wrap
+
+@timing
 def insert_definitions(tree):
     interpretation = get_act_exact('Interpretation Act 1999')
     definitions = find_all_definitions(interpretation)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+    time1 = time.time()
     processNode(domxml, definitions)
+    time2 = time.time()
+    print '%s function took %0.3f ms' % ('ducjs', (time2-time1)*1000.0)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree, render_definitions(definitions)
 

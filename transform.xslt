@@ -1,6 +1,6 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:strip-space elements="*"/>
+
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
@@ -350,7 +350,6 @@
                 <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
         </xsl:if>
         <xsl:value-of select="."/>
-
     </xsl:template>
 
     <xsl:template match="schedule.group">
