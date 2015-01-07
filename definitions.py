@@ -8,8 +8,10 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 from xml.dom import minidom
 from copy import deepcopy
-from collections import namedtuple
+from collections import namedtuple, MutableMapping, defaultdict
+from itertools import chain
 import re
+
 
 lmtzr = WordNetLemmatizer()
 
@@ -21,22 +23,45 @@ class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id'])):
             id = 'def-%s' % xml.xpath('.//def-term')[0].attrib['id']
         return self.__bases__[0].__new__(self, full_word, xml, regex, id)
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def render(self):
         return {
             'title': self.full_word,
             'html': etree.tostring(tohtml(self.xml, 'transform_def.xslt'), encoding='UTF-8', method="html")
             }
 
-class Definitions(dict):
-    others = []
+class Definitions(MutableMapping):
+    
+    def __init__(self, *args, **kwargs):
+        self.store = defaultdict(list)
+        self.retired = []
+        self.update(defaultdict(*args, **kwargs))  # use the free update to set keys
 
-    def __setitem__(self, key, val):
-        if self.has_key(key):
-            self.others.append((key, dict.__getitem__(self, key)))
-        dict.__setitem__(self, key, val)
+    def __getitem__(self, key):
+        if key in self.store:
+            return self.store[key][-1] 
+        else:
+            raise KeyError
+
+    def __setitem__(self, key, value):
+        self.store[key].append(value)
+
+    def __delitem__(self, key):
+        self.store[key].pop()
+
+    def __iter__(self):
+        return iter(self.store)
+
+    def __len__(self):
+        return len(self.store)
 
     def all(self):
-        return dict.items(self) + self.others
+        return set(list(chain.from_iterable(self.store.values())) + self.retired)
+
+    def __repr__(self):
+        return self.store.__repr__()
     
 
 def processNode(parent, defs):
@@ -79,21 +104,21 @@ def processNode(parent, defs):
 
 def find_all_definitions(tree):
     nodes = tree.xpath(".//def-para[descendant::def-term]")
-    results = Definitions()
+    definitions = Definitions()
     for node in nodes:
         keys = node.xpath('.//def-term')
         for key in keys:
             # super ugly hack to prevent placeholders like 'A'
             if len(key.text) > 1:
                 base = lmtzr.lemmatize(key.text.lower())
-                if base not in results:
-                    results[base] = Definition(full_word=key.text, xml=node, regex=re.compile("%s[\w']*" % base, flags=re.I))
-                if key.text.lower() not in results:
-                    results[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=re.compile("%s[\w']*" % key.text.lower(), flags=re.I))
-    return results
+                if base not in definitions:
+                    definitions[base] = Definition(full_word=key.text, xml=node, regex=re.compile("%s[\w']*" % base, flags=re.I))
+                if key.text.lower() not in definitions:
+                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=re.compile("%s[\w']*" % key.text.lower(), flags=re.I))
+    return definitions
 
 def render_definitions(definitions):
-    return {v.id: v.render() for k, v in definitions.all()}
+    return {v.id: v.render() for v in definitions.all()}
 
 import time
 def timing(f):
