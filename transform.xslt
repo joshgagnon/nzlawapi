@@ -5,10 +5,7 @@
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
     <xsl:template match="/">
-
-
         <xsl:apply-templates select="act|regulation"/>
-
     </xsl:template>
 
     <xsl:template name="current">
@@ -17,6 +14,13 @@
         </xsl:if>
     </xsl:template>
 
+    <xsl:template name="quote">
+        <xsl:if test="@quote = '1'">“</xsl:if>        
+    </xsl:template>
+
+    <xsl:template name="parentquote">
+        <xsl:if test="../@quote = '1'">“</xsl:if>        
+    </xsl:template>
 
     <xsl:template match="act">
         <div class="legislation">
@@ -130,9 +134,10 @@
             <xsl:call-template name="current"/> 
             <h5 class="prov labelled">
                 <a>
-                    <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
+                <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
                    
                 <span class="label">
+                    <xsl:call-template name="parentquote"/> 
                     <xsl:value-of select="label"/>
                 </span>
                 <xsl:value-of select="heading"/>
@@ -165,7 +170,7 @@
 
     <xsl:template match="para/label-para">
         <ul class="label-para">
-        <xsl:call-template name="current"/> 
+            <xsl:call-template name="current"/>
             <li>
                 <xsl:apply-templates select="label"/>
                 <xsl:apply-templates select="para/label-para"/>
@@ -216,13 +221,13 @@
     </xsl:template>
 
     <xsl:template match="def-para">   
-
         <div class="def-para">
             <xsl:call-template name="current"/> 
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>           
             <p class="text">
+            <xsl:call-template name="quote"/> 
                  <xsl:apply-templates select="para/text|para/label-para|example"/>
             </p>
         </div>
@@ -243,6 +248,7 @@
     </xsl:template>
 
 
+
     <xsl:template match="def-term">
              <dfn class="def-term">
                 <xsl:attribute name="id">
@@ -254,22 +260,27 @@
 
     <xsl:template match="label">
         <p class="labelled label">
-            <xsl:call-template name="current"/> 
+            <xsl:call-template name="current"/>
             <xsl:if test="text() != ''">
                 <span class="label">
-                    (<xsl:value-of select="."/>)
+                     <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
                 </span>
             </xsl:if>
             <xsl:choose>
-            <xsl:when test="../para/text != ''">
-                <xsl:apply-templates select="../para/text[1]"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <span class="deleted label-deleted">[Repealed]</span>
-            </xsl:otherwise>
-        </xsl:choose>
+                <xsl:when test="../para/text != ''">
+                    <xsl:apply-templates select="../para/text[1]"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="deleted label-deleted">[Repealed]</span>
+                </xsl:otherwise>
+            </xsl:choose>
         </p>
     </xsl:template>
+
+    <xsl:template match="follow-text[@space-before='no']">        
+    </xsl:template>
+
+
 
 
     <xsl:template match='crosshead'>
@@ -366,7 +377,20 @@
 
     <xsl:template match="schedule.misc">
       <div class="schedule-misc">
-        <xsl:apply-templates select="para/label-para"/>
+        <xsl:apply-templates select="head1|para/label-para"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="head1">
+      <div class="head1">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>        
+            <h2 class="part">
+                <span class="label"><xsl:value-of select="label"/></span><br/>
+                <xsl:value-of select="heading"/>
+            </h2>
+        <xsl:apply-templates select="prov|para"/>
       </div>
     </xsl:template>
 
