@@ -110,7 +110,7 @@ def find_section_node(tree, query):
 
 def find_definitions(tree, query):
     nodes = tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" %  query)
-    if not len(node):
+    if not len(nodes):
         raise CustomException("Path for definition not found")
     return nodes
 
