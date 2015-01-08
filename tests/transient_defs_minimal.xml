@@ -1,0 +1,73 @@
+<act>
+    <body>
+    <part>
+        <prov>
+            <prov.body>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <para xml:lang="en-NZ">
+                        <text>
+                            In this Act, unless the context otherwise requires,—
+                        </text>
+                        <def-para id="DLM319577">
+                            <para>
+                                <text>
+                                    <def-term id="DLM319578">test</def-term>
+                                </text>
+                            </para>
+                        </def-para>
+                    </para>
+                </subprov>
+            </prov.body>
+        </prov>
+    </part>
+    <part>
+        <subpart>
+            <prov>
+                <prov.body>
+                    <subprov skeleton="no">
+                        <para>
+                            <text>In this subpart,—</text>
+                            <def-para id="DLM6041540">
+                                <para>
+                                    <text>
+                                        <def-term id="DLM6041541">milk</def-term>
+                                   </text>
+                                </para>
+                            </def-para>
+                        </para>
+                    </subprov>
+                </prov.body>
+            </prov>
+        </subpart>
+    </part>
+    <part id="DLM321160" irdnumbering="no" toc="yes" xml:lang="en-NZ" date.first.valid="2007-09-18" sonz="" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="">
+        <label auto.number="no" denominator="yes">14</label>
+        <heading xml:lang="en-NZ">Compromises with creditors</heading>
+        <prov id="DLM321161" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">227</label>
+            <heading xml:lang="en-NZ">Interpretation</heading>
+            <prov.body>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="no" />
+                    <para xml:lang="en-NZ">
+                        <text>
+                            In this Part, unless the context otherwise requires,—
+                        </text>
+                        <def-para id="DLM1091706" xml:lang="en-NZ">
+                            <para xml:lang="en-NZ">
+                                <text>
+                                    <def-term id="DLM1091707" xml:lang="en-NZ">company</def-term>
+                                    includes an overseas company registered under
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM322860">Part 18</intref>
+                                    </citation>
+                                </text>
+                            </para>
+                        </def-para>
+                    </para>
+                </subprov>
+            </prov.body>
+        </prov>
+    </part>
+</body>
+</act>

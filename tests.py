@@ -1,9 +1,10 @@
 import random
 import unittest
-from ;xml import etree
+from xml import etree
 from db import connect_db
 from server import *
 from definitions import *
+
 
 class TestQueries(unittest.TestCase):
 
@@ -40,8 +41,23 @@ class TestQueries(unittest.TestCase):
 class TestDefinitions(unittest.TestCase):
 
     def test_definition_extraction(self):
-        tree = etree.parse('tests/3_definitions.xml')
-        
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.parse('tests/3_definitions.xml', parser=parser)
+        definitions = find_all_definitions(tree)
+        self.assertEqual(len(definitions), 3)
+        self.assertTrue('accounting period' in definitions)
+        self.assertTrue('address for service' in definitions)
+        self.assertTrue('annual meeting' in definitions)
+
+    def test_definition_transience_simple(self):
+        parser = etree.XMLParser(remove_blank_text=True)        
+        tree = etree.parse('tests/transient_defs.xml', parser=parser)
+        tree, definitions = process_definitions(tree, Definitions())
+        self.assertEqual(len(definitions), 1)
+        self.assertEqual(len(definitions.all()), 4)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,140 @@
+<act id="DLM319569" instructing.office="Economic Development" irdnumbering="no" xml:lang="en-NZ" year.imprint="2014" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" date.first.valid="2007-09-18" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" sonz="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="" prospective.consolidation.base.version="">
+
+    <body id="DLM319573" prov-type="section" xml:lang="en-NZ">
+        <prov id="DLM319574" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">1</label>
+            <heading xml:lang="en-NZ">Short Title and commencement</heading>
+            <prov.body>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">1</label>
+                    <para xml:lang="en-NZ">
+                        <text>This Act may be cited as the Companies Act 1993.</text>
+                    </para>
+                </subprov>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">2</label>
+                    <para xml:lang="en-NZ">
+                        <text>This Act shall come into force on 1 July 1994.</text>
+                    </para>
+                </subprov>
+            </prov.body>
+        </prov>
+
+
+
+        <part id="DLM319575" irdnumbering="no" toc="yes" xml:lang="en-NZ" date.first.valid="2007-09-18" sonz="" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="">
+            <label auto.number="no" denominator="yes">1</label>
+            <heading xml:lang="en-NZ">Preliminary</heading>
+            <prov id="DLM319576" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                <label auto.number="no" denominator="yes">2</label>
+                <heading xml:lang="en-NZ">Interpretation</heading>
+                <prov.body>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">1</label>
+                        <para xml:lang="en-NZ">
+                            <text>
+                                In this Act, unless the context otherwise requires,—
+                            </text>
+                            <def-para id="DLM319577" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM319578" xml:lang="en-NZ">accounting period</def-term>
+                                        , in relation to a company, means a year ending on a balance date of the company and, if as a result of the date of the registration of the company or a change of the balance date of the company, the period ending on that date is longer or shorter than a year, that longer or shorter period is an accounting period
+                                    </text>
+                                </para>
+                            </def-para>
+                        </para>
+                    </subprov>
+                </prov.body>
+            </prov>
+        </part>
+        <part id="DLM320872" irdnumbering="no" toc="yes" xml:lang="en-NZ" date.first.valid="2007-09-18" sonz="" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="">
+            <label auto.number="no" denominator="yes">11</label>
+            <heading xml:lang="en-NZ">Accounting records and financial reporting</heading>
+            <subpart id="DLM6042912" irdnumbering="no" toc="yes" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.first.valid="2007-09-18" date.terminated="nulldate" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" sonz="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="">
+                <label auto.number="no" denominator="yes">2</label>
+                <heading>Financial reporting</heading>
+                <notes>
+                    <history>
+                        <history-note id="DLM6042992">
+                            <amended-provision>Subpart 2 heading</amended-provision>
+                            :
+                            <amending-operation>inserted</amending-operation>
+                            , on
+                            <amendment-date>1 April 2014</amendment-date>
+                            , by
+                            <amending-provision href="DLM5739987">section 30</amending-provision>
+                            of the
+                            <amending-leg>
+                                Financial Reporting (Amendments to Other Enactments) Act 2013
+                            </amending-leg>
+                            (2013 No 102).
+                        </history-note>
+                    </history>
+                </notes>
+                <prov id="DLM320886" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">198</label>
+                    <heading>Interpretation</heading>
+                    <prov.body>
+                        <subprov skeleton="no">
+                            <label auto.number="no" denominator="yes" />
+                            <para>
+                                <text>In this subpart,—</text>
+                                <def-para id="DLM6041540">
+                                    <para>
+                                        <text>
+                                            <def-term id="DLM6041541">group</def-term>
+                                            means a group comprising a company or an overseas company and its subsidiaries
+                                        </text>
+                                    </para>
+                                </def-para>
+                                <def-para id="DLM6041542">
+                                    <para>
+                                        <text>
+                                            <def-term id="DLM6041543">large company</def-term>
+                                            means a company that is large under
+                                            <citation jurisdiction="nz">
+                                                <extref href="DLM5206501">section 45</extref>
+                                            </citation>
+                                            of the
+                                            <citation jurisdiction="nz">Financial Reporting Act 2013</citation>
+                                        </text>
+                                    </para>
+                                </def-para>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                </prov>
+            </subpart>
+        </part>
+        <part id="DLM321160" irdnumbering="no" toc="yes" xml:lang="en-NZ" date.first.valid="2007-09-18" sonz="" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="">
+            <label auto.number="no" denominator="yes">14</label>
+            <heading xml:lang="en-NZ">Compromises with creditors</heading>
+            <prov id="DLM321161" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                <label auto.number="no" denominator="yes">227</label>
+                <heading xml:lang="en-NZ">Interpretation</heading>
+                <prov.body>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="no" />
+                        <para xml:lang="en-NZ">
+                            <text>
+                                In this Part, unless the context otherwise requires,—
+                            </text>
+                            <def-para id="DLM1091706" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM1091707" xml:lang="en-NZ">company</def-term>
+                                        includes an overseas company registered under
+                                        <citation jurisdiction="nz">
+                                            <intref href="DLM322860">Part 18</intref>
+                                        </citation>
+                                    </text>
+                                </para>
+                            </def-para>
+                        </para>
+                    </subprov>
+                </prov.body>
+            </prov>
+        </part>
+    </body>
+</act>

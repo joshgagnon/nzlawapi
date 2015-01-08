@@ -102,8 +102,6 @@ def process_node(parent, defs):
         return match
 
     for node in parent.childNodes[:]: #better clone, as we will modify
-        if node.nodeType == node.ELEMENT_NODE:
-            defs.expire_tag(node.tagName)
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
             key = node.getElementsByTagName('def-term')[0].childNodes[0].nodeValue
             if len(key) > 1:
@@ -137,6 +135,9 @@ def process_node(parent, defs):
                 parent.removeChild(node)
         else:
             process_node(node, defs)
+
+        if node.nodeType == node.ELEMENT_NODE:
+            defs.expire_tag(node.tagName)            
             
 
 def find_all_definitions(tree):
@@ -158,12 +159,17 @@ def find_all_definitions(tree):
 def render_definitions(definitions):
     return {v.id: v.render() for v in definitions.all()}
 
+#todo rename
+def process_definitions(tree, definitions):
+    domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+    process_node(domxml, definitions)
+    tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
+    return tree, definitions
 
 def insert_definitions(tree):
     interpretation = get_act_exact('Interpretation Act 1999')
     definitions = find_all_definitions(interpretation)
-    domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    process_node(domxml, definitions)
-    tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
+    tree, definitions = process_definitions(tree, definitions)
     return tree, render_definitions(definitions)
+
 

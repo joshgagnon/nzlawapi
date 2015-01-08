@@ -121,7 +121,7 @@ module.exports = React.createClass({
     },    
     fetch: function(){
     	$.get('/query', {
-    		type: 'all',
+    		type: 'act',
             act_find: 'full',
     		act_name: this.state.act_name
     	})
