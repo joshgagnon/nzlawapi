@@ -323,7 +323,8 @@ def full_act_response(act, args):
         'html_content': etree.tostring(tohtml(xml), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act, 'contents.xslt'), encoding='UTF-8', method="html"),
         'definitions': definitions,
-        'act_name': args['act_name']
+        'act_name': args['act_name'],
+        'type': 'act'
     }
 
 def query_act(args):
@@ -367,7 +368,6 @@ def query_case(args):
     case = args.get('case_name')
     if case:
         return get_case_info(case)
-
     raise CustomException('Invalid search type')
 
 def query_cases(args):
@@ -375,6 +375,12 @@ def query_cases(args):
     if not query:
         raise CustomException('Query missing')
     results = case_search(re.escape(args.get('query', '')))
+    return {'results': results}
+
+def query_all(args):
+    title = args.get('title')
+    results = []
+
     return {'results': results}
 
 @app.route('/case/file/<path:filename>')
@@ -389,6 +395,8 @@ def query():
     query_type = args.get('type')
     status = 200
     try:
+        if query_type == 'all':
+            result = query_all(args)
         if query_type == 'act':
             result = query_act(args)
         elif query_type == 'acts':

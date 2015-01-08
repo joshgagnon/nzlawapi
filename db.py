@@ -47,3 +47,17 @@ def get_act_exact(act, db=None):
             return etree.fromstring(result[0])
         except:
             raise CustomException("Act not found")
+
+
+def get_document_from_title(title, db=None):
+    with (db or get_db()).cursor() as cur:
+        cur.execute("""
+            select title as name, type, document, from
+                ((select trim(full_citation) as title, 'case'as type from cases where full_citation is not null order by trim(full_citation)) 
+                union
+                (select trim(title) as title, 'act' as type from acts  where title is not null group by id, title order by trim(title)) 
+                union 
+                (select trim(title) as title, 'regulation' as type from regulations where title is not null group by id, title order by trim(title))) q
+               where title like '%%'||%(query)s||'%%' order by title limit 25;
+            """, {'query': request.args.get('query')})
+        return jsonify({'results': cur.fetchall()})

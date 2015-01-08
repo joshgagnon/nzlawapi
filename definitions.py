@@ -154,6 +154,7 @@ def find_all_definitions(tree):
                     definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=re.compile("(^|\W)(%s[\w']*)" % key.text.lower(), flags=re.I))
     return definitions
 
+
 def render_definitions(definitions):
     return {v.id: v.render() for v in definitions.all()}
 
