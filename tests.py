@@ -1,8 +1,9 @@
 import random
 import unittest
+from ;xml import etree
 from db import connect_db
 from server import *
-
+from definitions import *
 
 class TestQueries(unittest.TestCase):
 
@@ -35,6 +36,12 @@ class TestQueries(unittest.TestCase):
         self.assertEqual(len(find_node_by_query(self.xml, 'constitution')), 910)
         self.assertEqual(len(find_node_by_query(self.xml, 'fistycuffs')), 0)
 
+
+class TestDefinitions(unittest.TestCase):
+
+    def test_definition_extraction(self):
+        tree = etree.parse('tests/3_definitions.xml')
+        
 
 if __name__ == '__main__':
     unittest.main()
