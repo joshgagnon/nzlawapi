@@ -36,7 +36,7 @@
                 <span class="schedule-label">Schedule <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
-                <xsl:apply-templates select="./schedule.provisions/prov" />
+                <xsl:apply-templates select="./schedule.provisions/prov|" />
              </ul>
         </li>
     </xsl:template>
@@ -50,7 +50,6 @@
              <ul class="nav">
                 <xsl:apply-templates select="./crosshead|./prov"/>
             </ul>
-
         </li>
     </xsl:template>
 

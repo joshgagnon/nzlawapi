@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eqn id="DLM4091397">
+    <table align="center" fontsize="11.5" frame="none" id="DLM3694000" leading="13.5">
+        <tgroup align="center" cols="6">
+            <colspec colname="col1" colwidth="7.57*" />
+            <colspec colname="COLSPEC1" colwidth="4.00mm" />
+            <colspec colname="col2" colwidth="21.00mm" />
+            <colspec colname="COLSPEC2" colwidth="4.00mm" />
+            <colspec colname="COLSPEC0" colwidth="10.00mm" />
+            <colspec colname="col3" colwidth="7.60*" />
+            <tbody>
+                <row>
+                    <entry colsep="0" rowsep="0"></entry>
+                    <entry colsep="0" morerows="1" rowsep="0" valign="middle">(</entry>
+                    <entry colsep="0" rowsep="1">number held</entry>
+                    <entry colsep="0" morerows="1" rowsep="0" valign="middle">)</entry>
+                    <entry colsep="0" morerows="1" rowsep="0" valign="middle">× 100</entry>
+                    <entry colsep="0" rowsep="0"></entry>
+                </row>
+                <row>
+                    <entry colsep="0" rowsep="0"></entry>
+                    <entry colsep="0" rowsep="0">total</entry>
+                    <entry colsep="0" rowsep="0"></entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+    <para>
+        <text>where—</text>
+        <def-para id="DLM4091398">
+            <para>
+                <text>
+                    <def-term id="DLM4091399">number held</def-term>
+                    is the number of financial products, in that class, in which the person has a relevant interest
+                </text>
+            </para>
+        </def-para>
+        <def-para id="DLM4091400">
+            <para>
+                <text>
+                    <def-term id="DLM4091401">total</def-term>
+                    is the total number of financial products in that class.
+                </text>
+            </para>
+        </def-para>
+    </para>
+</eqn>
+
