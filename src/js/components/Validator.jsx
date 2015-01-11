@@ -200,7 +200,6 @@ module.exports = React.createClass({
 		return (<div className="validator">
 					<nav className="navbar navbar-default navbar-fixed-top">
 						<div className="container">
-						
 							<form className="form form-inline">
 								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>

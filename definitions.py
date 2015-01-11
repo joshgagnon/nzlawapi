@@ -15,6 +15,7 @@ import re
 
 lmtzr = WordNetLemmatizer()
 
+match_string = "(^|\W)(%s[es]{,2}[']?)($|\W)"
 
 class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'expiry_tag'])):
 
@@ -109,7 +110,7 @@ def process_node(parent, defs):
                 defs[base] = Definition(
                     full_word=key, 
                     xml=etree.fromstring(node.toxml()), 
-                    regex=re.compile("(^|\W)(%s[\w']*)" % base, flags=re.I),
+                    regex=re.compile(match_string % base, flags=re.I),
                     expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
         elif node.nodeType == node.TEXT_NODE:
             lines = [node.nodeValue]
@@ -150,9 +151,10 @@ def find_all_definitions(tree):
             if len(key.text) > 1:
                 base = lmtzr.lemmatize(key.text.lower())
                 if base not in definitions:
-                    definitions[base] = Definition(full_word=key.text, xml=node, regex=re.compile("(^|\W)(%s[\w']*)" % base, flags=re.I))
+                    # fucked up 'action'
+                    definitions[base] = Definition(full_word=key.text, xml=node, regex=re.compile(match_string % base, flags=re.I))
                 if key.text.lower() not in definitions:
-                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=re.compile("(^|\W)(%s[\w']*)" % key.text.lower(), flags=re.I))
+                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=re.compile(match_string % key.text.lower(), flags=re.I))
     return definitions
 
 

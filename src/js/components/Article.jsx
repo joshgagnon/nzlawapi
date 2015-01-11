@@ -55,7 +55,6 @@ var ActScroll = React.createClass({
             top: 0
           }
         })
-
     },
     componentDidUpdate: function(){
          $('body').scrollspy({ target:'.legislation-contents .contents', offset:90});
@@ -138,7 +137,6 @@ module.exports = React.createClass({
 		return (<div className="act_browser">
 					<nav className="navbar navbar-default navbar-fixed-top">
 						<div className="container">
-						
 							<form className="form form-inline">
 								<TypeAhead typeahead={this.typeahead_query}  key="act_name" ref="act_name" name="act_name" label='Act' valueLink={this.linkState('act_name')} 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>

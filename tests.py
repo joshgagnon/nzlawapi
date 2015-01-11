@@ -1,19 +1,19 @@
 import random
 import unittest
 from xml import etree
-from db import connect_db
 from server import *
 from definitions import *
 
 
 class TestQueries(unittest.TestCase):
 
-    def setUp(self):
-        self.conn = connect_db()
-        self.xml = get_act_exact('companies act 1993', db=self.conn)
+    def setUp(self):      
+        parser = etree.XMLParser(remove_blank_text=True)      
+        self.xml = etree.parse('tests/companiesact.xml', parser=parser)
 
     def tearDown(self):
-        self.conn.close()
+        pass
+        #self.conn.close()
 
     def test_path_query_counts(self):
         # test path queries return correct number of leaf nodes
