@@ -76,6 +76,7 @@ var ActScroll = React.createClass({
         }
      },
      stopPropagation: function(e){
+        // TODO, fix
         e.stopPropagation();
      },
     render: function(){
