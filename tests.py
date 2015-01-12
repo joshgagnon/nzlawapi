@@ -77,7 +77,7 @@ class TestEquations(unittest.TestCase):
         self.parser = etree.XMLParser(remove_blank_text=True)      
 
     def test_equations(self):
-        for i in [f for f in os.listdir('tests/equations') if f.endswith('.xml')]:
+        for f in [f for f in os.listdir('tests/equations') if f.endswith('.xml')]:
             result= transform_eqn(os.path.join('tests/equations', f), self.parser)
             expected = etree.parse(os.path.join('tests/equations', f.replace('.xml', '.html')), parser=self.parser)
             self.assertTrue(xml_compare(result, expected.getroot(), print_error))
