@@ -104,14 +104,16 @@ def process_node(parent, defs):
 
     for node in parent.childNodes[:]: #better clone, as we will modify
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
-            key = node.getElementsByTagName('def-term')[0].childNodes[0].nodeValue
-            if len(key) > 1:
-                base = lmtzr.lemmatize(key.lower())
-                defs[base] = Definition(
-                    full_word=key, 
-                    xml=etree.fromstring(node.toxml()), 
-                    regex=re.compile(match_string % base, flags=re.I),
-                    expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
+            key_nodes = node.getElementsByTagName('def-term')
+            for key_node in key_nodes:
+                key = key_node.childNodes[0].nodeValue
+                if len(key) > 1:
+                    base = lmtzr.lemmatize(key.lower())
+                    defs[base] = Definition(
+                        full_word=key, 
+                        xml=etree.fromstring(node.toxml()), 
+                        regex=re.compile(match_string % base, flags=re.I),
+                        expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
         elif node.nodeType == node.TEXT_NODE:
             lines = [node.nodeValue]
             ordered_defs = sorted(defs.keys(), key=lambda x: len(x), reverse=True)
