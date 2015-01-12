@@ -1,0 +1,54 @@
+<eqn id="DLM4353812">
+    <table align="center" fontsize="9.5" frame="none" id="DLM4374000" leading="10.5">
+        <tgroup cols="17">
+            <colspec colname="col1" colwidth="38.00pt" />
+            <colspec colname="col2" colwidth="3.00pt" />
+            <colspec colname="col3" colwidth="6.00pt" />
+            <colspec colname="col4" colwidth="4.00pt" />
+            <colspec colname="col5" colwidth="33.00pt" />
+            <colspec colname="col6" colwidth="3.00pt" />
+            <colspec colname="col7" colwidth="6.00pt" />
+            <colspec colname="col8" colwidth="3.00pt" />
+            <colspec colname="col9" colwidth="70.00pt" />
+            <colspec colname="col10" colwidth="3.00pt" />
+            <colspec colname="col11" colwidth="6.00pt" />
+            <colspec colname="col12" colwidth="4.00pt" />
+            <colspec colname="col13" colwidth="33.00pt" />
+            <colspec colname="col14" colwidth="4.00pt" />
+            <colspec colname="col15" colwidth="6.00pt" />
+            <colspec colname="col16" colwidth="4.00pt" />
+            <colspec colname="col17" colwidth="60.00pt" />
+            <tbody>
+                <row>
+                    <entry align="right" colsep="0" morerows="1" rowsep="0" valign="middle">dividends</entry>
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">+</entry>
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">balances</entry>
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">−</entry>
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">assessable income</entry>
+                    <entry align="center" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">−</entry>
+                    <entry colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" valign="bottom">balances</entry>
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">−</entry>
+                    <entry align="left" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="left" colsep="0" morerows="1" rowsep="0" valign="middle">exit exemption.</entry>
+                </row>
+                <row>
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="right" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" rowsep="0" valign="middle" />
+                    <entry colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" rowsep="0">tax rate</entry>
+                    <entry align="left" colsep="0" rowsep="0" valign="middle" />
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+</eqn>

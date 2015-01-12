@@ -1,0 +1,28 @@
+<eqn id="DLM1520259">
+    <table align="center" fontsize="11.5" frame="none" id="DLM4535515" leading="12.5">
+        <tgroup cols="5">
+            <colspec colname="col1" colwidth="90.00pt" />
+            <colspec colname="col2" colwidth="5.00pt" />
+            <colspec colname="col3" colwidth="8.00pt" />
+            <colspec colname="col4" colwidth="4.00pt" />
+            <colspec colname="col5" colwidth="168.00pt" />
+            <tbody>
+                <row>
+                    <entry align="center" colsep="0">tax rate × payment</entry>
+                    <entry colsep="0" rowsep="0" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">−</entry>
+                    <entry colsep="0" rowsep="0" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">
+                        credit attached − credit transferred
+                        <brk/> − FDP credit transferred.
+                    </entry>
+                </row>
+                <row>
+                    <entry align="center" colsep="0" rowsep="0">1 − tax rate</entry>
+                    <entry colsep="0" rowsep="0" />
+                    <entry colsep="0" rowsep="0" />
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+</eqn>

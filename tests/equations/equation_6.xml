@@ -1,0 +1,29 @@
+<eqn id="DLM1512706">
+    <table align="center" fontsize="11.5" frame="none" id="DLM4374003" leading="12.5">
+        <tgroup cols="5">
+            <colspec colname="col1" colwidth="120.00pt" />
+            <colspec colname="col2" colwidth="4.00pt" />
+            <colspec colname="col3" colwidth="8.00pt" />
+            <colspec colname="col4" colwidth="5.00pt" />
+            <colspec colname="col5" colwidth="138.00pt" />
+            <tbody>
+                <row>
+                    <entry align="right" colsep="0" morerows="1" rowsep="0" valign="middle">(receipt − asc per share)</entry>
+                    <entry align="center" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">×</entry>
+                    <entry colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0">
+                        capital gains +
+                        <brk/> (capital property distributed
+                        <brk/> − cost) − capital losses
+                    </entry>
+                </row>
+                <row>
+                    <entry align="center" colsep="0" rowsep="0" valign="middle" />
+                    <entry colsep="0" rowsep="0" valign="middle" />
+                    <entry align="center" colsep="0" rowsep="0">total receipts − total asc.</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+</eqn>

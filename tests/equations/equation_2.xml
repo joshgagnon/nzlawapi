@@ -1,0 +1,15 @@
+<eqn id="DLM1512480">
+    <table align="center" fontsize="11.5" frame="none" id="DLM4353809" leading="12.5">
+        <tgroup cols="1">
+            <colspec colname="col1" colwidth="40.00pt" />
+            <tbody>
+                <row valign="top">
+                    <entry align="center" colsep="0">refund</entry>
+                </row>
+                <row valign="top">
+                    <entry align="center" colsep="0" rowsep="0">tax rate.</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+</eqn>

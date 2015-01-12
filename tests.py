@@ -4,6 +4,8 @@ from xml import etree
 from server import *
 from definitions import *
 from util import xml_compare
+import os
+
 
 class TestQueries(unittest.TestCase):
 
@@ -66,15 +68,19 @@ def transform_eqn(filename, parser):
     tree = etree.parse('tests/equations/equation_1.xml', parser=parser)
     return etree.fromstring(etree.tostring(transform(tree), encoding='UTF-8', method="html"), parser=parser)
 
+def print_error(msg):
+    print msg
+
 class TestEquations(unittest.TestCase):
 
     def setUp(self):      
         self.parser = etree.XMLParser(remove_blank_text=True)      
 
-    def test_equation_1(self):
-        result= transform_eqn('tests/equations/equation_1.xml', self.parser)
-        expected = etree.parse('tests/equations/equation_1.html', parser=self.parser)
-        self.assertTrue(xml_compare(result, expected.getroot()))
+    def test_equations(self):
+        for i in [f for f in os.listdir('tests/equations') if f.endswith('.xml')]:
+            result= transform_eqn(os.path.join('tests/equations', f), self.parser)
+            expected = etree.parse(os.path.join('tests/equations', f.replace('.xml', '.html')), parser=self.parser)
+            self.assertTrue(xml_compare(result, expected.getroot(), print_error))
 
 
 

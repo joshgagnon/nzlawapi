@@ -1,0 +1,25 @@
+<eqn id="DLM1512683">
+    <table align="center" fontsize="11.5" frame="none" id="DLM4374001" leading="12.5">
+        <tgroup cols="5">
+            <colspec colname="col1" colwidth="132.00pt" />
+            <colspec colname="col2" colwidth="5.00pt" />
+            <colspec colname="col3" colwidth="8.00pt" />
+            <colspec colname="col4" colwidth="4.00pt" />
+            <colspec colname="col5" colwidth="105.90pt" />
+            <tbody>
+                <row>
+                    <entry align="center" colsep="0">paid-up capital + premiums</entry>
+                    <entry colsep="0" rowsep="0" />
+                    <entry align="center" colsep="0" morerows="1" rowsep="0" valign="middle">×</entry>
+                    <entry align="left" colsep="0" rowsep="0" valign="middle" />
+                    <entry align="left" colsep="0" morerows="1" rowsep="0" valign="middle">30 June 1994 shares.</entry>
+                </row>
+                <row>
+                    <entry align="center" colsep="0" rowsep="0">all shares issued</entry>
+                    <entry colsep="0" rowsep="0" />
+                    <entry align="left" colsep="0" rowsep="0" valign="middle" />
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+</eqn>
