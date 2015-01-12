@@ -1,10 +1,10 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
+    <xsl:import href="equations.xslt" />
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
-    <xsl:import href="equations.xslt" />
+    
 
     <xsl:template match="/">
         <xsl:apply-templates select="act|regulation"/>
@@ -166,7 +166,7 @@
         <div class="subprov">
             <xsl:call-template name="current"/> 
             <xsl:apply-templates select="label"/>
-            <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov"/>
+            <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov" />
         </div>
     </xsl:template>
 

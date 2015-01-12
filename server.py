@@ -20,12 +20,8 @@ import psycopg2
 location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
 
-
 def get_title(tree):
     return tree.xpath('/act/cover/title')[0].text
-
-
-
 
 def cull_tree(nodes):
     [n.attrib.update({'current': 'true'}) for n in nodes]
