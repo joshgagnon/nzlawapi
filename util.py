@@ -1,4 +1,6 @@
 from lxml import etree
+import os
+
 
 class CustomException(Exception):
     pass
@@ -23,7 +25,7 @@ def levenshtein(s1, s2):
 
 
 
-def tohtml(tree, transform='transform.xslt'):
+def tohtml(tree, transform=os.path.join('xslt', 'transform.xslt')):
     xslt = etree.parse(transform)
     transform = etree.XSLT(xslt)
     return transform(tree)

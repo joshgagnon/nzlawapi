@@ -64,7 +64,7 @@ class TestDefinitions(unittest.TestCase):
         self.assertEqual(len(definitions.all()), 4)
 
 def transform_eqn(filename, parser):
-    transform = etree.XSLT(etree.parse('equations.xslt'))
+    transform = etree.XSLT(etree.parse('xslt/equations_root.xslt'))
     tree = etree.parse('tests/equations/equation_1.xml', parser=parser)
     return etree.fromstring(etree.tostring(transform(tree), encoding='UTF-8', method="html"), parser=parser)
 

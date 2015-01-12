@@ -11,7 +11,7 @@ from copy import deepcopy
 from collections import namedtuple, MutableMapping, defaultdict
 from itertools import chain
 import re
-
+import os
 
 lmtzr = WordNetLemmatizer()
 
@@ -30,7 +30,7 @@ class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'e
     def render(self):
         return {
             'title': self.full_word,
-            'html': etree.tostring(tohtml(self.xml, 'transform_def.xslt'), encoding='UTF-8', method="html")
+            'html': etree.tostring(tohtml(self.xml, os.path.join('xslt','transform_def.xslt')), encoding='UTF-8', method="html")
             }
 
 class Definitions(MutableMapping):

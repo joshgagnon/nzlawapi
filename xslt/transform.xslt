@@ -4,7 +4,7 @@
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
-    <!--<xsl:import href="equations.xsl"/>-->
+    <xsl:import href="equations.xslt" />
 
     <xsl:template match="/">
         <xsl:apply-templates select="act|regulation"/>

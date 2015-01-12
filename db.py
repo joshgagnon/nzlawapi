@@ -52,12 +52,20 @@ def get_act_exact(act, db=None):
 def get_document_from_title(title, db=None):
     with (db or get_db()).cursor() as cur:
         cur.execute("""
-            select title as name, type, document, from
-                ((select trim(full_citation) as title, 'case'as type from cases where full_citation is not null order by trim(full_citation)) 
+            select title as name, q.type, document from
+                ((select trim(full_citation) as title, 'case' as type, null as document_id from cases
+            where trim(full_citation) = %(title)s
+                ) 
                 union
-                (select trim(title) as title, 'act' as type from acts  where title is not null group by id, title order by trim(title)) 
+                (select trim(title) as title, 'act' as type, document_id from acts
+            where title = %(title)s
+            order by version desc limit 1
+                ) 
                 union 
-                (select trim(title) as title, 'regulation' as type from regulations where title is not null group by id, title order by trim(title))) q
-               where title like '%%'||%(query)s||'%%' order by title limit 25;
-            """, {'query': request.args.get('query')})
-        return jsonify({'results': cur.fetchall()})
+                (select trim(title) as title, 'regulation' as type, document_id from regulations
+            where title = %(title)s
+            order by version desc limit 1
+                )) q
+            left outer join documents d on q.document_id = d.id
+            """, {'title': title})
+        return execute.fetchone()
