@@ -1,7 +1,10 @@
 from db import get_db
 import elasticsearch
 import psycopg2
-from flask import render_template
+from flask import render_template, current_app
+import os
+from lxml import etree
+import re
 
 es = elasticsearch.Elasticsearch()
 
@@ -43,10 +46,33 @@ def get_case_info(case):
         results = cur.fetchone()
         return {
             'html_content': render_template('case_intitular.html', result=results), 
-            'path':  '/case/file/'+results.get('id'), 'id': results.get('id'),
+            'path':  '/case/file/'+results.get('id'), 
+            'id': results.get('id'),
             'validated': results.get('validated'),
-            'full_citation': results.get('full_citation')}
+            'full_citation': results.get('full_citation')
+            }
 
+def fix_case_paths(tree):
+	for node in tree.xpath('.//*[@src]'):
+		node.attrib['src'] = os.path.join('/case/file', node.attrib['src'])
+	return tree
+
+def fix_case_pixels(tree):
+	for node in tree.xpath('.//*[@style]'):
+
+		node.attrib['style'] = re.sub("(\d+)", r"\1px", node.attrib['style'], flags=re.DOTALL)
+	return tree	
+
+def fix_case_structure(tree):
+	tree.tag = 'case'
+	tree.remove(tree.xpath('./head')[0])
+	return tree
+
+def process_case(tree):
+	tree = fix_case_structure(tree)
+	tree = fix_case_paths(tree)
+	tree = fix_case_pixels(tree)
+	return tree
 
 
 def get_full_case(case):
@@ -54,5 +80,12 @@ def get_full_case(case):
         query = """select * from cases where full_citation = %(case)s """
         cur.execute(query, {'case': case})
         results = cur.fetchone()
-        print results
+        print os.path.join(current_app.config['CASE_DIR'], results.get('id'))
+        with open(os.path.join(current_app.config['CASE_DIR'], results.get('id')), 'U') as f:
+        	html = process_case(etree.HTML(f.read()))
+	        return {
+	            'html_content': etree.tostring(html), 
+	            'html_contents_page': case_contents(tree),
+	            'full_citation': results.get('full_citation')
+	            }
     return results	
