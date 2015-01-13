@@ -1,5 +1,5 @@
 <act id="DLM319569" instructing.office="Economic Development" irdnumbering="no" xml:lang="en-NZ" year.imprint="2014" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" date.first.valid="2007-09-18" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" sonz="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="" prospective.consolidation.base.version="">
-
+    <cover><title>Test</title></cover>
     <body id="DLM319573" prov-type="section" xml:lang="en-NZ">
         <prov id="DLM319574" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
             <label auto.number="no" denominator="yes">1</label>
