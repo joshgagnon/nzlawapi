@@ -10,16 +10,16 @@
 
     <xsl:template name="current">
         <xsl:if test="@current = 'true'">
-           <xsl:attribute name="class">current</xsl:attribute>   
+           <xsl:attribute name="class">current</xsl:attribute>
         </xsl:if>
     </xsl:template>
 
     <xsl:template name="quote">
-        <xsl:if test="@quote = '1'">“</xsl:if>        
+        <xsl:if test="@quote = '1'">“</xsl:if>
     </xsl:template>
 
     <xsl:template name="parentquote">
-        <xsl:if test="../@quote = '1'">“</xsl:if>        
+        <xsl:if test="../@quote = '1'">“</xsl:if>
     </xsl:template>
 
     <xsl:template match="act">
@@ -30,13 +30,13 @@
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
                     <xsl:if test="@terminated = 'repealed'">
-                       <xsl:attribute name="class">repealed</xsl:attribute>   
-                    </xsl:if>       
-                    <xsl:call-template name="current"/> 
-                    <xsl:apply-templates select="cover"/>       
-                    <xsl:apply-templates select="front"/> 
-                    <xsl:apply-templates select="body"/>       
-                    <xsl:apply-templates select="schedule.group"/>               
+                       <xsl:attribute name="class">repealed</xsl:attribute>
+                    </xsl:if>
+                    <xsl:call-template name="current"/>
+                    <xsl:apply-templates select="cover"/>
+                    <xsl:apply-templates select="front"/>
+                    <xsl:apply-templates select="body"/>
+                    <xsl:apply-templates select="schedule.group"/>
                 </div>
             </div>
         </div>
@@ -50,13 +50,13 @@
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
                      <xsl:if test="@terminated = 'repealed'">
-                       <xsl:attribute name="class">repealed</xsl:attribute>   
-                    </xsl:if>       
-                        <xsl:call-template name="current"/> 
-                      <xsl:apply-templates select="cover"/>       
-                       <xsl:apply-templates select="front"/> 
-                     <xsl:apply-templates select="body"/>       
-                     <xsl:apply-templates select="schedule.group"/>               
+                       <xsl:attribute name="class">repealed</xsl:attribute>
+                    </xsl:if>
+                        <xsl:call-template name="current"/>
+                      <xsl:apply-templates select="cover"/>
+                       <xsl:apply-templates select="front"/>
+                     <xsl:apply-templates select="body"/>
+                     <xsl:apply-templates select="schedule.group"/>
                 </div>
             </div>
         </div>
@@ -78,12 +78,12 @@
         <div class="front">
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute>   
+            </xsl:attribute>
             <div class="long-title">
                  <xsl:value-of select="long-title/para/text"/>
-            
-                <xsl:apply-templates select="long-title/para/label-para"/> 
-             </div>           
+
+                <xsl:apply-templates select="long-title/para/label-para"/>
+             </div>
         </div>
     </xsl:template>
 
@@ -91,8 +91,8 @@
         <div class="body">
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute>   
-             <xsl:apply-templates select="part|prov|amend/prov"/>         
+            </xsl:attribute>
+             <xsl:apply-templates select="part|prov|amend/prov"/>
         </div>
     </xsl:template>
 
@@ -100,13 +100,13 @@
         <div class="part">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute> 
-            <xsl:call-template name="current"/> 
+            </xsl:attribute>
+            <xsl:call-template name="current"/>
             <h2 class="part">
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
             </h2>
-            <xsl:apply-templates select="subpart|crosshead|prov|amend/prov"/> 
+            <xsl:apply-templates select="subpart|crosshead|prov|amend/prov"/>
         </div>
     </xsl:template>
 
@@ -114,13 +114,13 @@
         <div class="subpart">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute> 
-            <xsl:call-template name="current"/> 
+            </xsl:attribute>
+            <xsl:call-template name="current"/>
             <h3 class="subpart">
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
                 <xsl:value-of select="heading"/>
             </h3>
-            <xsl:apply-templates select="crosshead|prov|amend/prov"/> 
+            <xsl:apply-templates select="crosshead|prov|amend/prov"/>
         </div>
     </xsl:template>
 
@@ -129,13 +129,13 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <xsl:call-template name="current"/> 
+            <xsl:call-template name="current"/>
             <h5 class="prov labelled">
                 <a>
                 <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
-                   
+
                 <span class="label">
-                    <xsl:call-template name="parentquote"/> 
+                    <xsl:call-template name="parentquote"/>
                     <xsl:value-of select="label"/>
                 </span>
                 <xsl:value-of select="heading"/>
@@ -149,8 +149,8 @@
                 </xsl:when>
                         <xsl:otherwise>
                         <span class="deleted label-deleted">[Repealed]</span>
-                    </xsl:otherwise>   
-                    </xsl:choose>   
+                    </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:apply-templates select="notes/history/history-note"/>
                 </li>
             </ul>
@@ -159,7 +159,7 @@
 
     <xsl:template match='prov.body/subprov'>
         <div class="subprov">
-            <xsl:call-template name="current"/> 
+            <xsl:call-template name="current"/>
             <xsl:apply-templates select="label"/>
             <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov" />
         </div>
@@ -179,13 +179,13 @@
         <table>
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute>   
+            </xsl:attribute>
                 <colgroup>
                     <xsl:apply-templates select="tgroup/colspec"/>
                 </colgroup>
             <tbody>
                 <xsl:apply-templates select="tgroup/tbody/row"/>
-            </tbody>            
+            </tbody>
         </table>
     </xsl:template>
 
@@ -193,13 +193,13 @@
         <col>
            <xsl:attribute name="style">
                width:<xsl:value-of select="@colwidth"/>
-            </xsl:attribute>   
+            </xsl:attribute>
         </col>
     </xsl:template>
 
     <xsl:template match="row">
         <tr class="row">
-            <xsl:apply-templates select="entry"/>    
+            <xsl:apply-templates select="entry"/>
         </tr>
     </xsl:template>
 
@@ -208,37 +208,37 @@
               <xsl:if test="count(following-sibling::entry) = 0">
               <xsl:attribute name="colspan">
                     <xsl:value-of select="4-count(preceding-sibling::entry)"/>
-                </xsl:attribute>   
+                </xsl:attribute>
             </xsl:if>
            <xsl:attribute name="style">
                text-align:<xsl:value-of select="@align"/>
-            </xsl:attribute>                          
-            <xsl:apply-templates />    
+            </xsl:attribute>
+            <xsl:apply-templates />
         </td>
     </xsl:template>
 
-    <xsl:template match="def-para">   
+    <xsl:template match="def-para">
         <div class="def-para">
-            <xsl:call-template name="current"/> 
+            <xsl:call-template name="current"/>
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute>           
+            </xsl:attribute>
             <p class="text">
-                <xsl:call-template name="quote"/> 
+                <xsl:call-template name="quote"/>
                 <xsl:apply-templates select="para/text|para/label-para|example|text"/>
             </p>
         </div>
     </xsl:template>
 
-    <xsl:template match="amend">       
+    <xsl:template match="amend">
         <div class="def-para">
              <xsl:attribute name="class">
                 flush-left-margin-<xsl:value-of select="amend"/>
-            </xsl:attribute>           
+            </xsl:attribute>
             <blockquote class="text">
                   <xsl:attribute name="class">
                     amend amend-increment-<xsl:value-of select="increment"/>
-                </xsl:attribute>                     
+                </xsl:attribute>
                  <xsl:apply-templates select="def-para"/>
             </blockquote>
         </div>
@@ -272,14 +272,14 @@
         </p>
     </xsl:template>
 
-    <xsl:template match="follow-text[@space-before='no']">        
+    <xsl:template match="follow-text[@space-before='no']">
     </xsl:template>
 
     <xsl:template match='crosshead'>
         <h4 class="crosshead">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
-            </xsl:attribute>       
+            </xsl:attribute>
             <xsl:value-of select="."/>
         </h4>
     </xsl:template>
@@ -312,15 +312,15 @@
         <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
             <xsl:attribute name="def-id">
                <xsl:value-of select="@def-id"/>
-            </xsl:attribute>                       
-            <xsl:value-of select="."/>          
+            </xsl:attribute>
+            <xsl:value-of select="."/>
         </a>
     </xsl:template>
 
     <xsl:template match="*[@href]">
         <a>
             <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
-            </xsl:attribute>   
+            </xsl:attribute>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>
@@ -328,7 +328,7 @@
    <!-- <xsl:template match="*[@current = 'true']">
 
         <xsl:attribute name="class">current
-        </xsl:attribute>   
+        </xsl:attribute>
           <xsl:apply-templates/>
     </xsl:template> -->
 
@@ -377,7 +377,7 @@
       <div class="head1">
         <xsl:attribute name="id">
             <xsl:value-of select="@id"/>
-        </xsl:attribute>        
+        </xsl:attribute>
             <h2 class="part">
                 <span class="label"><xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
@@ -388,7 +388,7 @@
 
     <xsl:template match="schedule">
         <div class="schedule">
-            <xsl:call-template name="current"/> 
+            <xsl:call-template name="current"/>
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
@@ -405,7 +405,7 @@
                     <td class="empowering-prov">
                     </td>
                     </tr>
-                </tbody>                
+                </tbody>
             </table>
             <xsl:apply-templates select="schedule.provisions|schedule.misc"/>
         </div>

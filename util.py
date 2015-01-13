@@ -5,24 +5,25 @@ import os
 class CustomException(Exception):
     pass
 
+
 def levenshtein(s1, s2):
     if len(s1) < len(s2):
         return levenshtein(s2, s1)
     if len(s2) == 0:
         return len(s1)
- 
+
     previous_row = range(len(s2) + 1)
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
         for j, c2 in enumerate(s2):
-            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            # j+1 instead of j since previous_row and current_row are one character longer
+            insertions = previous_row[j + 1] + 1
             deletions = current_row[j] + 1       # than s2
             substitutions = previous_row[j] + (c1 != c2)
             current_row.append(min(insertions, deletions, substitutions))
         previous_row = current_row
- 
-    return previous_row[-1]
 
+    return previous_row[-1]
 
 
 def tohtml(tree, transform=os.path.join('xslt', 'transform.xslt')):
@@ -74,19 +75,10 @@ def xml_compare(x1, x2, reporter=None):
             return False
     return True
 
+
 def text_compare(t1, t2):
     if not t1 and not t2:
         return True
     if t1 == '*' or t2 == '*':
         return True
     return (t1 or '').strip() == (t2 or '').strip()
-
-
-
-
-def config_as_dict(config):
-    the_dict = {}
-    for section in config.sections():
-        print section
-        the_dict[section] = dict(config.items(section))
-    return the_dict

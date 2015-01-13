@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, json, jsonify, g, request, send_from_directory
+from flask import Blueprint, render_template
 
 mod = Blueprint('base', __name__, template_folder='templates')
 
