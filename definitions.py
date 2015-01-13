@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from db import get_act_exact
 from util import tohtml
 from nltk.stem import *
@@ -17,7 +18,7 @@ import uuid
 lmtzr = WordNetLemmatizer()
 
 def key_regex(string):
-    match_string = "(^|\W)(%s[es]{,2}[']?)($|\W)" % re.sub('[][()]', '', string)
+    match_string = u"(^|\W)(%s['’]?[es]{,2}['’]?)($|\W)" % re.sub('[][()]', '', string)
     return re.compile(match_string, flags=re.I)
 
 class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'expiry_tag'])):
@@ -33,7 +34,7 @@ class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'e
     def render(self):
         return {
             'title': self.full_word,
-            'html': etree.tostring(tohtml(self.xml, os.path.join('xslt','transform_def.xslt')), encoding='UTF-8', method="html")
+            'html': etree.tostring(tohtml(self.xml, os.path.join('xslt','transform_def.xslt')), encoding='UTF-8', method="html")         
             }
 
 class Definitions(MutableMapping):
@@ -96,7 +97,7 @@ def infer_life_time(node):
     return None
 
 
-def process_node(parent, defs):
+def process_node(parent, defs, title):
     doc = parent.ownerDocument
 
     def create_def(word, definition):
@@ -104,6 +105,28 @@ def process_node(parent, defs):
         match.setAttribute('def-id', definition.id)
         match.appendChild(doc.createTextNode(word))
         return match
+
+    def gen_xml(node):
+        xml = node.toxml()
+        if node.tagName != 'def-para':
+            xml = '<def-para>%s</def-para>' % xml
+        etree_node = etree.fromstring(xml)
+        try:
+            src_id = etree_node.xpath('.//*[@id]')[0].attrib['id']
+        except IndexError:
+            return etree_node
+        prov_node = node
+        #find parent prov
+        while prov_node != doc and prov_node.tagName not in ['prov', 'schedule'] and prov_node.parentNode:
+            prov_node = prov_node.parentNode
+        if prov_node and prov_node != doc:
+            prov = prov_node.getElementsByTagName('label')[0].childNodes[0].nodeValue
+            src = etree.Element('catalex-src')
+            element_type = {'prov': 'Section', 'schedule': 'Schedule'}[prov_node.tagName]
+            src.attrib['src'] = src_id
+            src.text = '%s %s %s' % (title, element_type, prov)
+            etree_node.append(src)            
+        return etree_node        
 
     for node in parent.childNodes[:]: #better clone, as we will modify
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
@@ -114,20 +137,16 @@ def process_node(parent, defs):
                     base = lmtzr.lemmatize(key.lower())
                     defs[base] = Definition(
                         full_word=key, 
-                        xml=etree.fromstring(node.toxml()), 
+                        xml=gen_xml(node), 
                         regex=key_regex(base),
                         expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
         elif node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-term':
-            #print node.toxml()
-            #print 'value', node.nodeValue
-            #print node.childNodes
             key = node.childNodes[0].nodeValue
-            if False and key and len(key) > 1:
+            if key and len(key) > 1:
                 base = lmtzr.lemmatize(key.lower())
-                #print '<def-term>%s</def-term>'%node.parentNode.toxml()
                 defs[base] = Definition(
                     full_word=key, 
-                    xml=etree.fromstring('<def-term>%s</def-term>'%node.parentNode.toxml()), 
+                    xml=gen_xml(node.parentNode), 
                     regex=key_regex(base),
                     expiry_tag=infer_life_time(node.parentNode.childNodes[0]))           
         elif node.nodeType == node.TEXT_NODE:
@@ -153,26 +172,34 @@ def process_node(parent, defs):
                 [parent.insertBefore(n, node) for n in new_nodes]
                 parent.removeChild(node)
         else:
-            process_node(node, defs)
+            process_node(node, defs, title)
 
         if node.nodeType == node.ELEMENT_NODE:
             defs.expire_tag(node.tagName)            
             
 
 def find_all_definitions(tree):
+    title = tree.xpath('/act/cover/title')[0].text
     nodes = tree.xpath(".//def-para[descendant::def-term]")
     definitions = Definitions()
+    # todo, missing def-terms without def-para
     for node in nodes:
         keys = node.xpath('.//def-term')
+        prov = node.iterancestors(tag='prov').next().xpath('./label')[0].text
         for key in keys:
             # super ugly hack to prevent placeholders like 'A'
             if len(key.text) > 1:
+                clone = deepcopy(node)
+                src = etree.Element('catalex-src')
+                src.attrib['src'] = key.attrib.get('id')
+                src.text = '%s Section %s' % (title, prov)
+                clone.append(src)
+
                 base = lmtzr.lemmatize(key.text.lower())
                 if base not in definitions:
-                    # fucked up 'action'
-                    definitions[base] = Definition(full_word=key.text, xml=node, regex=key_regex(base))
+                    definitions[base] = Definition(full_word=key.text, xml=clone, regex=key_regex(base))
                 if key.text.lower() not in definitions:
-                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=key_regex(base))
+                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=clone, regex=key_regex(base))
     return definitions
 
 
@@ -181,8 +208,9 @@ def render_definitions(definitions):
 
 #todo rename
 def process_definitions(tree, definitions):
+    title = tree.xpath('/act/cover/title')[0].text   
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    process_node(domxml, definitions)
+    process_node(domxml, definitions, title)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree, definitions
 

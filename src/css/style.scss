@@ -5,6 +5,7 @@
 @import 'results_viewer';
 @import 'validator';
 @import 'act_browser';
+@import 'spinner';
 
 
 /*generic*/
@@ -70,6 +71,10 @@ height:100%;
 }
 .legislation a.def-popover{
     color:#000;
+}
+
+.legislation .catalex-src{
+  font-style:italic;
 }
 .legislation .row:before, .legislation .row:after{
     content:initial;

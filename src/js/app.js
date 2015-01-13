@@ -46,11 +46,11 @@ var Browser = React.createClass({
 })
 
  /*<header>
-		          <ul>
-		            <li><ReactRouter.Link to="app">Browser</ReactRouter.Link></li>
-		            <li><ReactRouter.Link to="validator">Validator</ReactRouter.Link></li>
-		          </ul>
-		        </header>*/
+  <ul>
+    <li><ReactRouter.Link to="app">Browser</ReactRouter.Link></li>
+    <li><ReactRouter.Link to="validator">Validator</ReactRouter.Link></li>
+  </ul>
+</header>*/
 var App = React.createClass({
 	render: function(){
 		return (

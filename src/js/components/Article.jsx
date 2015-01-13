@@ -120,6 +120,9 @@ module.exports = React.createClass({
     	this.setState({index: idx, act_name: this.state.acts_typeahead[idx]}, this.fetch);
     },    
     fetch: function(){
+        this.setState({
+            loading: true
+        });
     	$.get('/query', {
     		type: 'act',
             act_find: 'full',
@@ -130,7 +133,8 @@ module.exports = React.createClass({
                     act_html: response.html_content, 
                     act_name: response.act_name,
     				act_contents: response.html_contents_page,
-                    act_definitions: response.definitions
+                    act_definitions: response.definitions,
+                    loading: false
     			});
     		}.bind(this))
     },	        	
@@ -148,7 +152,8 @@ module.exports = React.createClass({
 							</form>
 						</div>
 					</nav>
-					<div className="container">	
+					<div className="container">
+                    {this.state.loading ? <div className="csspinner traditional"></div> : null}
 						<div className="row results">
                             <div className="col-md-9">
 								<ActDisplay html={this.state.act_html} definitions={this.state.act_definitions} />

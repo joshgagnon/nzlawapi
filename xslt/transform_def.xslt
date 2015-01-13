@@ -11,17 +11,30 @@
         <xsl:template match="def-para">   
         <div class="definition-result">
             <div class="legislation">
-            <div class="def-para">
-                 <xsl:attribute name="id">
-                    <xsl:value-of select="@id"/>
-                </xsl:attribute>           
-                <p class="text">
-                     <xsl:apply-templates select="para/text|para/label-para|example"/>
-                </p>
+                <div class="def-para">
+                     <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:attribute>           
+                    <p class="text">
+                         <xsl:apply-templates select="para/text|para/label-para|example|text"/>
+                    </p>
+                </div>
+                <xsl:apply-templates select="catalex-src"/>
             </div>
-        </div>
     </div>
     </xsl:template>
+
+       <xsl:template match="catalex-src">
+        <span class="catalex-src">
+        Source: <a >
+        <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
+        </xsl:attribute>   
+            <xsl:value-of select="."/>
+        </a>
+        </span>
+    </xsl:template>
+
+
 
        <xsl:template match="example">
         <div class="example">
