@@ -175,7 +175,7 @@
         </ul>
     </xsl:template>
 
-    <xsl:template match="table">
+    <xsl:template match="table[not(ancestor::eqn)]">
         <table>
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
@@ -245,12 +245,12 @@
     </xsl:template>
 
     <xsl:template match="def-term">
-         <dfn class="def-term">
+        <dfn class="def-term">
             <xsl:attribute name="id">
-                    <xsl:value-of select="def-term/@id"/>
-                </xsl:attribute>
-                <xsl:apply-templates/>           
-            </dfn>
+                <xsl:value-of select="@id"/>
+            </xsl:attribute>
+            <xsl:apply-templates/>
+        </dfn>
     </xsl:template>
 
     <xsl:template match="label">
