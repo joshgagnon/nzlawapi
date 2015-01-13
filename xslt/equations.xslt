@@ -73,7 +73,16 @@
                                     </xsl:choose>
                                 </xsl:variable>
                                 <xsl:attribute name="style">text-align:<xsl:value-of select="$align"/>;<xsl:if test="@valign">vertical-align:<xsl:value-of select="@valign"/>;</xsl:if></xsl:attribute>
-                                <xsl:value-of select="."/>
+                                <xsl:for-each select="*|text()">
+                                    <xsl:choose>
+                                        <xsl:when test="name() = 'brk'">
+                                            <br class="brk"/>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:copy-of select="."/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:for-each>
                             </td>
                         </xsl:for-each>
                     </tr>
