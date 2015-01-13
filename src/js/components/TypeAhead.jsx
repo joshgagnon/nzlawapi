@@ -9,22 +9,22 @@ module.exports = React.createClass({
         React.addons.LinkedStateMixin,
     ],
     render: function(){
-        return <Input type="text" ref="input" {...this.props} bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label} valueLink={this.props.valueLink} hasFeedback={this.props.hasError} />
+        return <Input type="text" ref="input" {...this.props} bsStyle={this.props.bsStyle} 
+                name={this.props.name} label={this.props.label} valueLink={this.props.valueLink} hasFeedback={this.props.hasError} />
     },
     componentDidMount: function(){
         var self = this;
         var node = this.refs.input.refs.input.getDOMNode();
+        var appendTo = undefined;
+        if(!this.props.appendToSelf){
+            appendTo = $('body')
+        }
         $(node).typeahead({ 
             items: this.props.items || 10,
             source: this.props.typeahead,
-            appendTo: $('body'),
+            appendTo: appendTo,
             afterSelect: function(value){
-                if(value !== null && typeof value === 'object'){
-                    self.props.valueLink.requestChange(value.name);
-                }
-                else{
-                    self.props.valueLink.requestChange(value);
-                }
+                self.props.valueLink.requestChange(value);
                 this.$element.parents('.form-group').next().find('input, select').focus();
             },
             scrollHeight: $(node).offset().top - $(node).position().top

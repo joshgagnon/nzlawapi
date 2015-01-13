@@ -80,3 +80,13 @@ def text_compare(t1, t2):
     if t1 == '*' or t2 == '*':
         return True
     return (t1 or '').strip() == (t2 or '').strip()
+
+
+
+
+def config_as_dict(config):
+    the_dict = {}
+    for section in config.sections():
+        print section
+        the_dict[section] = dict(config.items(section))
+    return the_dict

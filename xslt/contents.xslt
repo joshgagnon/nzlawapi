@@ -5,10 +5,10 @@
     <xsl:variable name="symbols-skip-insert-space">,.;:)(</xsl:variable>
 
     <xsl:template match="/">
-        <xsl:apply-templates select="act"/>
+        <xsl:apply-templates select="act|regulation"/>
     </xsl:template>
 
-    <xsl:template match="act">
+    <xsl:template match="act|regulation">
         <div class="contents">
             <ul class="nav">
                 <xsl:apply-templates select="./body/prov|./body/part|./schedule.group/schedule"/>

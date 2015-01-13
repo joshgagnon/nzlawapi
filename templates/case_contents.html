@@ -1,0 +1,11 @@
+    <div class="contents">
+            <ul class="nav">
+                {% for title, id in results %}
+                 <li>
+                    <a href="#{{id}}">
+                        {{title}}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+    </div>

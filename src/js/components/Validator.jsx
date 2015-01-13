@@ -157,7 +157,8 @@ module.exports = React.createClass({
     fetch: function(){
     	$.get('/query', {
     		type: 'case',
-    		case_name: this.state.case_name
+    		title: this.state.case_name,
+            validator: true
     	})
     		.then(function(response){
     			this.setState({case_html: response.html_content, 
