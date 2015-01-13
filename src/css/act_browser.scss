@@ -24,9 +24,24 @@
 
 	.case{
 		line-height:1;
-		a{
-			color:#000;
+
+		.page_number{
+			position: absolute;
+			right: 70px;
+			top: 1169px;
+			font-size: 11px;
+			font-family: Times;
+			color: #000000;
+			letter-spacing: 1.22792px;
+
 		}
+
+		.page{
+			border-bottom:1px solid #333;
+		}
+		.page:last-child{
+			border-bottom:none;
+		}		
 	}
 
 	.legislation-contents{

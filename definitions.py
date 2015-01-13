@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from db import get_act_exact
 from util import tohtml
-from nltk.stem import *
+#from nltk.stem import *
 from lxml import etree
-
 #from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
-from nltk.corpus import wordnet as wn
+#from nltk.corpus import wordnet as wn
 from xml.dom import minidom
 from copy import deepcopy
 from collections import namedtuple, MutableMapping, defaultdict
@@ -17,9 +16,11 @@ import uuid
 
 lmtzr = WordNetLemmatizer()
 
+
 def key_regex(string):
     match_string = u"(^|\W)(%s['’]?[es]{,2}['’]?)($|\W)" % re.sub('[][()]', '', string)
     return re.compile(match_string, flags=re.I)
+
 
 class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'expiry_tag'])):
 
@@ -34,18 +35,19 @@ class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'e
     def render(self):
         return {
             'title': self.full_word,
-            'html': etree.tostring(tohtml(self.xml, os.path.join('xslt','transform_def.xslt')), encoding='UTF-8', method="html")         
-            }
+            'html': etree.tostring(tohtml(self.xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
+        }
+
 
 class Definitions(MutableMapping):
 
     def __init__(self):
         self.store = defaultdict(list)
-        self.retired = []  
+        self.retired = []
 
     def __getitem__(self, key):
         if key in self.store:
-            return self.store[key][-1] 
+            return self.store[key][-1]
         else:
             raise KeyError
 
@@ -73,12 +75,13 @@ class Definitions(MutableMapping):
 
     def __repr__(self):
         return self.store.__repr__()
-    
+
     def __deepcopy__(self):
         newone = type(self)()
         newone.retired = self.retired[:]
         newone.store = self.store.copy()
         return newone
+
 
 def infer_life_time(node):
     try:
@@ -92,8 +95,9 @@ def infer_life_time(node):
         if 'this section' in text:
             return 'prov'
         if 'in subsection' in text:
-            return 'subprov'            
-    except (AttributeError, IndexError): pass
+            return 'subprov'
+    except (AttributeError, IndexError):
+        pass
     return None
 
 
@@ -125,10 +129,10 @@ def process_node(parent, defs, title):
             element_type = {'prov': 'Section', 'schedule': 'Schedule'}[prov_node.tagName]
             src.attrib['src'] = src_id
             src.text = '%s %s %s' % (title, element_type, prov)
-            etree_node.append(src)            
-        return etree_node        
+            etree_node.append(src)
+        return etree_node
 
-    for node in parent.childNodes[:]: #better clone, as we will modify
+    for node in parent.childNodes[:]:  # better clone, as we will modify
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
             key_nodes = node.getElementsByTagName('def-term')
             for key_node in key_nodes:
@@ -136,8 +140,8 @@ def process_node(parent, defs, title):
                 if len(key) > 1:
                     base = lmtzr.lemmatize(key.lower())
                     defs[base] = Definition(
-                        full_word=key, 
-                        xml=gen_xml(node), 
+                        full_word=key,
+                        xml=gen_xml(node),
                         regex=key_regex(base),
                         expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
         elif node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-term':
@@ -145,10 +149,10 @@ def process_node(parent, defs, title):
             if key and len(key) > 1:
                 base = lmtzr.lemmatize(key.lower())
                 defs[base] = Definition(
-                    full_word=key, 
-                    xml=gen_xml(node.parentNode), 
+                    full_word=key,
+                    xml=gen_xml(node.parentNode),
                     regex=key_regex(base),
-                    expiry_tag=infer_life_time(node.parentNode.childNodes[0]))           
+                    expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
         elif node.nodeType == node.TEXT_NODE:
             lines = [node.nodeValue]
             ordered_defs = sorted(defs.keys(), key=lambda x: len(x), reverse=True)
@@ -161,11 +165,11 @@ def process_node(parent, defs, title):
                         if not match:
                             break
                         span = match.span(2)
-                        lines[i:i+1] = [line[:span[0]], create_def(line[span[0]:span[1]], defs[definition]), line[span[1]:]]
+                        lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], defs[definition]), line[span[1]:]]
                         i += 2
                         line = line[span[1]:]
                     i += 1
-            lines = filter(lambda x:x, lines)
+            lines = filter(lambda x: x, lines)
             new_nodes = map(lambda x: doc.createTextNode(x) if isinstance(x, basestring) else x, lines)
 
             if len(new_nodes) > 1:
@@ -175,11 +179,11 @@ def process_node(parent, defs, title):
             process_node(node, defs, title)
 
         if node.nodeType == node.ELEMENT_NODE:
-            defs.expire_tag(node.tagName)            
-            
+            defs.expire_tag(node.tagName)
+
 
 def find_all_definitions(tree):
-    title = tree.xpath('./cover/title')[0].text   
+    title = tree.xpath('./cover/title')[0].text
     nodes = tree.xpath(".//def-para[descendant::def-term]")
     definitions = Definitions()
     # todo, missing def-terms without def-para
@@ -206,6 +210,7 @@ def find_all_definitions(tree):
 def render_definitions(definitions):
     return {v.id: v.render() for v in definitions.all()}
 
+
 #todo rename
 def process_definitions(tree, definitions):
     title = tree.xpath('./cover/title')[0].text
@@ -214,10 +219,9 @@ def process_definitions(tree, definitions):
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree, definitions
 
+
 def insert_definitions(tree):
     interpretation = get_act_exact('Interpretation Act 1999')
     definitions = find_all_definitions(interpretation)
     tree, definitions = process_definitions(tree, definitions)
     return tree, render_definitions(definitions)
-
-

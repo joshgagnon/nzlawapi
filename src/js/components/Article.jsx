@@ -175,10 +175,10 @@ module.exports = React.createClass({
 					<div className="container">
                     {this.state.loading ? <div className="csspinner traditional"></div> : null}
 						<div className="row results">
-                            <div className="col-md-9">
+                            <div className="col-md-10">
 								<ActDisplay html={this.state.act_html} definitions={this.state.act_definitions} />
                             </div>
-                            <div className="col-md-3">
+                            <div className="col-md-2">
                                 <ArticleScroll html={this.state.contents}/>
                             </div>                           
 						</div>
