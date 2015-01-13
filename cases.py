@@ -68,6 +68,9 @@ def fix_case_structure(tree):
 	tree.tag = 'div'
 	tree.attrib['class'] = 'case'
 	tree.remove(tree.xpath('./head')[0])
+	for a in tree.xpath('./body/a[@name]'):
+		#a.tag = 'div'
+		a.attrib['class'] = 'page'
 	return tree
 
 def process_case(tree):

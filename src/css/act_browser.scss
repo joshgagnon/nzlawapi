@@ -24,7 +24,11 @@
 
 	.case{
 		line-height:1;
+		a{
+			color:#000;
+		}
 	}
+
 	.legislation-contents{
 		max-height: calc(100% - 100px);
 		position: fixed;

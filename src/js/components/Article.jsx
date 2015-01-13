@@ -163,7 +163,7 @@ module.exports = React.createClass({
 						<div className="container">
 							<form className="form form-inline">
 								<TypeAhead typeahead={this.typeahead_query}  key="article_name" ref="article_name" name="article_name" 
-                                        label='Article' valueLink={linkArticle } 
+                                        label='Article' valueLink={linkArticle} appendToSelf={true}
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 							 	<ButtonGroup>
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
