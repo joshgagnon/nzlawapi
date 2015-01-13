@@ -65,8 +65,10 @@ class TestDefinitions(unittest.TestCase):
 
 def transform_eqn(filename, parser):
     transform = etree.XSLT(etree.parse('xslt/equations_root.xslt'))
-    tree = etree.parse('tests/equations/equation_1.xml', parser=parser)
-    return etree.fromstring(etree.tostring(transform(tree), encoding='UTF-8', method="html"), parser=parser)
+    tree = etree.parse(filename, parser=parser)
+    # using method="html" leaves col tags unclosed, and therefore creates malformed documents which can't be read by fromstring
+    # TODO: is there a fix for this, or do we even need fromstring(tosting())?
+    return etree.fromstring(etree.tostring(transform(tree), encoding='UTF-8', method="xml"), parser=parser)
 
 def print_error(msg):
     print msg

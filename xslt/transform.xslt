@@ -180,7 +180,7 @@
         </ul>
     </xsl:template>
 
-    <xsl:template match="table">
+    <xsl:template match="table[not(ancestor::eqn)]">
         <table>
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
