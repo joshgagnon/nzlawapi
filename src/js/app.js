@@ -61,17 +61,17 @@ var App = React.createClass({
 
 
 // load results
-
 if(localStorage['data']){
 	_.forEach(JSON.parse(localStorage['data']).results, function(r){
 		Actions.newResult(r);
 	});
 }
 
+
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
     <ReactRouter.Route name="validator" handler={Validator}/>
-    <ReactRouter.Route name="full_article" handler={Article}/>
+    <ReactRouter.Route name="full_article" handler={Article} />
     <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );

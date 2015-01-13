@@ -1,23 +1,21 @@
-from db import get_db, get_act_exact
-from util import CustomException, tohtml
+from db import get_db, get_act_exact, get_document_from_title
+from util import CustomException, tohtml, config_as_dict
 from views import mod
 from definitions import insert_definitions
+from cases import get_full_case, get_case_info
 from lxml import etree
 import sys
 from lxml.etree import tostring
 from itertools import chain
-from flask import Flask
 from operator import itemgetter
-from flask import render_template, json, jsonify, g, request, send_from_directory
+from flask import render_template, json, jsonify, g, request, send_from_directory, Flask
 from flask.json import JSONEncoder
 import datetime
 import os
-import elasticsearch
 import re
 import os
 import psycopg2
 
-location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe'
 
 
 def get_title(tree):
@@ -156,46 +154,7 @@ def get_references_for_ids(ids):
         return {'references':cur.fetchall()}
 
 
-def act_full_search(query):
-    result = es.search(index="legislation", doc_type='act', body={  
-        "from" : 0, "size" : 25, 
-        "fields" : ["id", "title"],
-        "sort" : [
-            "_score",
-        ],
-        "query": { "query_string" : { "query" : query } },
-          "aggregations": {
-            "my_agg": {
-              "terms": {
-                "field": "content"
-              }
-            }
-        }
-        })
-    print("Got %d Hits:" % result['hits']['total'])
-    return result
 
-
-def case_search(query, offset=0):
-    result = es.search(index="legislation", doc_type="case", body={  
-        "from" : offset, "size" : 25, 
-            "sort" : [
-                "_score"
-            ],
-            "query": { "query_string" : { "query" : query } },    
-        })
-    print("Got %d Hits:" % result['hits']['total'])
-    return result
-
-def get_case_info(case):
-    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        query = """select * from cases where full_citation = %(case)s """
-        cur.execute(query, {'case': case})
-        results = cur.fetchone()
-        return {'html_content': render_template('case_intitular.html', result=results), 
-            'path':  '/case/file/'+results.get('id'), 'id': results.get('id'),
-            'validated': results.get('validated'),
-            'full_citation': results.get('full_citation')}
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -209,11 +168,12 @@ class CustomJSONEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-app = Flask(__name__, static_folder="./build")
-app.register_blueprint(mod)
-app.json_encoder = CustomJSONEncoder
-es = elasticsearch.Elasticsearch()
+if len(sys.argv) <= 1:
+    raise Exception('need a config file')
 
+
+app = Flask(__name__, static_folder='build')
+app.config.from_pyfile(sys.argv[1])
 
 @app.route('/acts.json')
 def acts(act='', query=''):
@@ -251,7 +211,7 @@ def act_case_hint():
                     (select trim(title) as title, 'act' as type from acts  where title is not null group by id, title order by trim(title)) 
                     union 
                     (select trim(title) as title, 'regulation' as type from regulations where title is not null group by id, title order by trim(title))) q
-                   where title like '%%'||%(query)s||'%%' order by title limit 25;
+                   where title ilike '%%'||%(query)s||'%%' order by title limit 25;
                 """, {'query': request.args.get('query')})
             return jsonify({'results': cur.fetchall()})
     except Exception, e:
@@ -315,21 +275,20 @@ def format_response(args, result):
 
 def full_act_response(act, args):
     xml, definitions = insert_definitions(act)
+    #xml, definitions = act, {}
     return {
         'html_content': etree.tostring(tohtml(xml), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act, os.path.join('xslt','contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': definitions,
-        'act_name': args['act_name'],
+        'act_name': args.get('act_name', args.get('title')),
         'type': 'act'
     }
 
 def query_act(args):
-    act = get_act_exact(args.get('act_name'))
-    search_type = args.get('act_find')
+    act = get_act_exact(args.get('act_name', args.get('title')))
+    search_type = args.get('find')
     if search_type == 'full':
-        return full_act_response(act, args)
-    elif search_type == 'all_definitions':
-        result = find_all_definitions(act)              
+        return full_act_response(act, args)           
     else:
         query = args.get('query')
         if not query:
@@ -361,9 +320,11 @@ def query_acts(args):
     return result
 
 def query_case(args):
-    case = args.get('case_name')
-    if case:
+    case = args.get('title')
+    if case and args.get('validator'):
         return get_case_info(case)
+    if case:
+        return get_full_case(case)
     raise CustomException('Invalid search type')
 
 def query_cases(args):
@@ -374,14 +335,14 @@ def query_cases(args):
     return {'results': results}
 
 def query_all(args):
-    title = args.get('title')
+    title = args.get('article_name')
     results = []
-
     return {'results': results}
 
 @app.route('/case/file/<path:filename>')
 def case_file(filename):
-    path = '/Users/josh/legislation_archive/justice'
+    path = app.config['CASE_DIR']
+    print app.config['CASE_DIR']
     return send_from_directory(path, filename)
 
 
@@ -391,11 +352,9 @@ def query():
     query_type = args.get('type')
     status = 200
     try:
-        if query_type == 'all':
-            result = query_all(args)
-        if query_type == 'act':
+        if query_type == 'act' or query_type == 'regulation':
             result = query_act(args)
-        elif query_type == 'acts':
+        elif query_type == 'acts' or query_type == 'regulations':
             result = query_acts(args) 
         elif query_type== 'case':
             result = query_case(args)
@@ -416,5 +375,8 @@ def close_db(error):
         g.db.close()
 
 
+
 if __name__ == '__main__':
-    app.run('0.0.0.0', debug=True, port=5001)
+    app.register_blueprint(mod)
+    app.json_encoder = CustomJSONEncoder
+    app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])

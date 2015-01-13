@@ -9,7 +9,8 @@ var Actions = Reflux.createActions([
 		'queryChange',
 		'newResult',
 		'removeResult',
-		'definitions'
+		'definitions',
+		'articleName'
 	]);
 
 

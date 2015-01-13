@@ -179,7 +179,7 @@ def process_node(parent, defs, title):
             
 
 def find_all_definitions(tree):
-    title = tree.xpath('/act/cover/title')[0].text   
+    title = tree.xpath('./cover/title')[0].text   
     nodes = tree.xpath(".//def-para[descendant::def-term]")
     definitions = Definitions()
     # todo, missing def-terms without def-para
@@ -208,7 +208,7 @@ def render_definitions(definitions):
 
 #todo rename
 def process_definitions(tree, definitions):
-    title = tree.xpath('/act/cover/title')[0].text
+    title = tree.xpath('./cover/title')[0].text
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     process_node(domxml, definitions, title)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))

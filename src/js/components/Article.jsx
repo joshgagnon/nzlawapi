@@ -48,7 +48,7 @@ var ActDisplay = React.createClass({
      }
 });
 
-var ActScroll = React.createClass({
+var ArticleScroll = React.createClass({
     componentDidMount: function(){
         $('.legislation-contents').affix({
           offset: {
@@ -86,64 +86,84 @@ var ActScroll = React.createClass({
 
 module.exports = React.createClass({
 	mixins: [
-        React.addons.LinkedStateMixin,
+      //  React.addons.LinkedStateMixin,
     ],
     getInitialState: function(){
+        // for development only, delete
+        var article = {article_name: 'Companies Act 1993', article_type: 'act'}
+        if(localStorage['article']){
+            article = JSON.parse(localStorage['article']);
+        }
+
     	return {
-    		acts_typeahead: [],
-    		act_name: 'Companies Act 1993',
+    		typeahead: [],
+            article_name: this.props.article_name || article.article_name,
+    		article_type: this.props.article_type || article.article_type,
     		index: 0,
     	}
     },
     componentDidMount: function(){
-        this.fetch();
+        if(this.state.article_name){
+            this.fetch();
+        }
     },
     typeahead_query: function(query, process){
         $.get('/act_case_hint.json', {query: query})
             .then(function(results){
+                this.setState({typeahead: results.results});
                 process(results.results)
-            });
+            }.bind(this));
     },
     submit: function(e){
     	e.preventDefault();
-    	var index = this.state.acts_typeahead.indexOf(this.state.act_name);
+    	var index = this.state.typeahead.indexOf(this.state.article_name);
     	this.fetch();
     },
     next: function(){
-    	var idx = (this.state.index+1) % this.state.acts_typeahead.length;
-    	this.setState({index: idx, act_name: this.state.acts_typeahead[idx]}, this.fetch);
+    	var idx = (this.state.index+1) % this.state.typeahead.length;
+    	this.setState({index: idx, act_name: this.state.typeahead[idx]}, this.fetch);
     },
     prev: function(){
     	var idx = this.state.index-1
     	var n = this.state.acts_typeahead.length;
     	idx = ((idx%n)+n)%n;
-    	this.setState({index: idx, act_name: this.state.acts_typeahead[idx]}, this.fetch);
+    	this.setState({index: idx, act_name: this.state.typeahead[idx]}, this.fetch);
     },    
     fetch: function(){
+        // for development only, delete
+        localStorage['article'] = JSON.stringify({article_name: this.state.article_name, article_type: this.state.article_type});
         this.setState({
             loading: true
         });
     	$.get('/query', {
-    		type: 'act',
-            act_find: 'full',
-    		act_name: this.state.act_name
+    		type: this.state.article_type,
+            find: 'full',
+    		title: this.state.article_name
     	})
     		.then(function(response){
     			this.setState({
                     act_html: response.html_content, 
                     act_name: response.act_name,
-    				act_contents: response.html_contents_page,
+    				contents: response.html_contents_page,
                     act_definitions: response.definitions,
                     loading: false
     			});
     		}.bind(this))
-    },	        	
+    },
+    handleArticleChange: function(value){
+        this.setState({article_name: value.name, article_type: value.type});
+    },
 	render: function(){
+        var linkArticle = {
+          value: this.state.article_name,
+          requestChange: this.handleArticleChange
+        };
 		return (<div className="act_browser">
 					<nav className="navbar navbar-default navbar-fixed-top">
 						<div className="container">
 							<form className="form form-inline">
-								<TypeAhead typeahead={this.typeahead_query}  key="act_name" ref="act_name" name="act_name" label='Act' valueLink={this.linkState('act_name')} 
+								<TypeAhead typeahead={this.typeahead_query}  key="article_name" ref="article_name" name="article_name" 
+                                        label='Article' valueLink={linkArticle } 
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 							 	<ButtonGroup>
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
@@ -159,7 +179,7 @@ module.exports = React.createClass({
 								<ActDisplay html={this.state.act_html} definitions={this.state.act_definitions} />
                             </div>
                             <div className="col-md-3">
-                                <ActScroll html={this.state.act_contents}/>
+                                <ArticleScroll html={this.state.contents}/>
                             </div>                           
 						</div>
 					</div>

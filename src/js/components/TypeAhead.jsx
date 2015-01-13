@@ -9,7 +9,8 @@ module.exports = React.createClass({
         React.addons.LinkedStateMixin,
     ],
     render: function(){
-        return <Input type="text" ref="input" {...this.props} bsStyle={this.props.bsStyle} name={this.props.name} label={this.props.label} valueLink={this.props.valueLink} hasFeedback={this.props.hasError} />
+        return <Input type="text" ref="input" {...this.props} bsStyle={this.props.bsStyle} 
+                name={this.props.name} label={this.props.label} valueLink={this.props.valueLink} hasFeedback={this.props.hasError} />
     },
     componentDidMount: function(){
         var self = this;
@@ -20,7 +21,7 @@ module.exports = React.createClass({
             appendTo: $('body'),
             afterSelect: function(value){
                 if(value !== null && typeof value === 'object'){
-                    self.props.valueLink.requestChange(value.name);
+                    self.props.valueLink.requestChange(value);
                 }
                 else{
                     self.props.valueLink.requestChange(value);

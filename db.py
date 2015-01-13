@@ -1,8 +1,9 @@
 from util import CustomException
 import psycopg2
 import psycopg2.extras
-from flask import g
+from flask import g, current_app
 from lxml import etree
+
 
 def get_db():
     if not hasattr(g, 'db'):
@@ -10,7 +11,7 @@ def get_db():
     return g.db
 
 def connect_db():
-    conn = psycopg2.connect("dbname=legislation user=josh")
+    conn = psycopg2.connect(database=current_app.config['DB'], user=current_app.config['DB_USER'], password=current_app.config['DB_PW'])
     return conn
 
 def init_db():
@@ -68,4 +69,4 @@ def get_document_from_title(title, db=None):
                 )) q
             left outer join documents d on q.document_id = d.id
             """, {'title': title})
-        return execute.fetchone()
+        return cur.fetchone()
