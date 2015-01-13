@@ -8,7 +8,7 @@ import sys
 from lxml.etree import tostring
 from itertools import chain
 from operator import itemgetter
-from flask import render_template, json, jsonify, g, request, send_from_directory, Flask
+from flask import json, jsonify, g, request, send_from_directory, Flask
 from flask.json import JSONEncoder
 import datetime
 import os

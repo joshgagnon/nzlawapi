@@ -3,6 +3,7 @@ import elasticsearch
 import psycopg2
 from flask import render_template, current_app
 import os
+import uuid
 from lxml import etree
 import re
 
@@ -64,7 +65,8 @@ def fix_case_pixels(tree):
 	return tree	
 
 def fix_case_structure(tree):
-	tree.tag = 'case'
+	tree.tag = 'div'
+	tree.attrib['class'] = 'case'
 	tree.remove(tree.xpath('./head')[0])
 	return tree
 
@@ -75,6 +77,22 @@ def process_case(tree):
 	return tree
 
 
+def process_case_contents(tree):
+	contents = ''
+	results = []
+	start = tree.xpath('.//div')[0]
+	div_id = str(uuid.uuid4())
+	results.append(('Intituling', div_id))
+	start.attrib['id'] = div_id
+	i = 1
+	for span in tree.xpath('.//span'):
+		if re.match('^ *\[%d+\]' % i, span.text):
+			span_id = str(uuid.uuid4())
+			results.append(('Section %d' % i, span_id))
+			span.attrib['id'] = span_id
+			i += 1
+	return tree, render_template('case_contents.html', results=results)
+
 def get_full_case(case):
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         query = """select * from cases where full_citation = %(case)s """
@@ -82,10 +100,11 @@ def get_full_case(case):
         results = cur.fetchone()
         print os.path.join(current_app.config['CASE_DIR'], results.get('id'))
         with open(os.path.join(current_app.config['CASE_DIR'], results.get('id')), 'U') as f:
-        	html = process_case(etree.HTML(f.read()))
+        	tree = process_case(etree.HTML(f.read()))
+        	tree, contents = process_case_contents(tree)
 	        return {
-	            'html_content': etree.tostring(html), 
-	            'html_contents_page': case_contents(tree),
+	            'html_content': etree.tostring(tree), 
+	            'html_contents_page': contents,
 	            'full_citation': results.get('full_citation')
 	            }
     return results	
