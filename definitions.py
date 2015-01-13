@@ -12,16 +12,19 @@ from collections import namedtuple, MutableMapping, defaultdict
 from itertools import chain
 import re
 import os
+import uuid
 
 lmtzr = WordNetLemmatizer()
 
-match_string = "(^|\W)(%s[es]{,2}[']?)($|\W)"
+def key_regex(string):
+    match_string = "(^|\W)(%s[es]{,2}[']?)($|\W)" % re.sub('[][()]', '', string)
+    return re.compile(match_string, flags=re.I)
 
 class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'expiry_tag'])):
 
     def __new__(self, full_word, xml, regex, id=None, expiry_tag=None):
         if not id:
-            id = 'def-%s' % xml.xpath('.//def-term')[0].attrib['id']
+            id = 'def-%s' % xml.xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
         return self.__bases__[0].__new__(self, full_word, xml, regex, id, expiry_tag)
 
     def __eq__(self, other):
@@ -112,8 +115,21 @@ def process_node(parent, defs):
                     defs[base] = Definition(
                         full_word=key, 
                         xml=etree.fromstring(node.toxml()), 
-                        regex=re.compile(match_string % base, flags=re.I),
+                        regex=key_regex(base),
                         expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
+        elif node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-term':
+            #print node.toxml()
+            #print 'value', node.nodeValue
+            #print node.childNodes
+            key = node.childNodes[0].nodeValue
+            if False and key and len(key) > 1:
+                base = lmtzr.lemmatize(key.lower())
+                #print '<def-term>%s</def-term>'%node.parentNode.toxml()
+                defs[base] = Definition(
+                    full_word=key, 
+                    xml=etree.fromstring('<def-term>%s</def-term>'%node.parentNode.toxml()), 
+                    regex=key_regex(base),
+                    expiry_tag=infer_life_time(node.parentNode.childNodes[0]))           
         elif node.nodeType == node.TEXT_NODE:
             lines = [node.nodeValue]
             ordered_defs = sorted(defs.keys(), key=lambda x: len(x), reverse=True)
@@ -154,9 +170,9 @@ def find_all_definitions(tree):
                 base = lmtzr.lemmatize(key.text.lower())
                 if base not in definitions:
                     # fucked up 'action'
-                    definitions[base] = Definition(full_word=key.text, xml=node, regex=re.compile(match_string % base, flags=re.I))
+                    definitions[base] = Definition(full_word=key.text, xml=node, regex=key_regex(base))
                 if key.text.lower() not in definitions:
-                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=re.compile(match_string % key.text.lower(), flags=re.I))
+                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=node, regex=key_regex(base))
     return definitions
 
 

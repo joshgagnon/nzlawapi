@@ -4,8 +4,6 @@
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
-    
-
     <xsl:template match="/">
         <xsl:apply-templates select="act|regulation"/>
     </xsl:template>
@@ -31,14 +29,14 @@
                      <xsl:attribute name="id">
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
-                     <xsl:if test="@terminated = 'repealed'">
+                    <xsl:if test="@terminated = 'repealed'">
                        <xsl:attribute name="class">repealed</xsl:attribute>   
                     </xsl:if>       
-                        <xsl:call-template name="current"/> 
-                      <xsl:apply-templates select="cover"/>       
-                       <xsl:apply-templates select="front"/> 
-                     <xsl:apply-templates select="body"/>       
-                     <xsl:apply-templates select="schedule.group"/>               
+                    <xsl:call-template name="current"/> 
+                    <xsl:apply-templates select="cover"/>       
+                    <xsl:apply-templates select="front"/> 
+                    <xsl:apply-templates select="body"/>       
+                    <xsl:apply-templates select="schedule.group"/>               
                 </div>
             </div>
         </div>
@@ -66,10 +64,10 @@
 
     <xsl:template match="cover">
         <div class="cover reprint">
-        <!--<p class="reprint-date">
-            Reprint as at <xsl:value-of select="reprint-date"/>
-        </p>-->
-        <h1 class="title"><xsl:value-of select="title"/></h1>
+            <!-- <p class="reprint-date">
+                Reprint as at <xsl:value-of select="reprint-date"/>
+            </p> -->
+            <h1 class="title"><xsl:value-of select="title"/></h1>
         </div>
     </xsl:template>
 
@@ -126,8 +124,6 @@
         </div>
     </xsl:template>
 
-
-
     <xsl:template match="prov">
         <div class="prov">
             <xsl:attribute name="id">
@@ -154,7 +150,6 @@
                         <xsl:otherwise>
                         <span class="deleted label-deleted">[Repealed]</span>
                     </xsl:otherwise>   
-
                     </xsl:choose>   
                     <xsl:apply-templates select="notes/history/history-note"/>
                 </li>
@@ -229,8 +224,8 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>           
             <p class="text">
-            <xsl:call-template name="quote"/> 
-                 <xsl:apply-templates select="para/text|para/label-para|example"/>
+                <xsl:call-template name="quote"/> 
+                <xsl:apply-templates select="para/text|para/label-para|example|text"/>
             </p>
         </div>
     </xsl:template>
@@ -249,16 +244,14 @@
         </div>
     </xsl:template>
 
-
-
     <xsl:template match="def-term">
-             <dfn class="def-term">
-                <xsl:attribute name="id">
-                        <xsl:value-of select="@id"/>
-                    </xsl:attribute>
-                    <xsl:apply-templates/>           
-                </dfn>
-            </xsl:template>
+        <dfn class="def-term">
+            <xsl:attribute name="id">
+                <xsl:value-of select="@id"/>
+            </xsl:attribute>
+            <xsl:apply-templates/>
+        </dfn>
+    </xsl:template>
 
     <xsl:template match="label">
         <p class="labelled label">
@@ -282,16 +275,13 @@
     <xsl:template match="follow-text[@space-before='no']">        
     </xsl:template>
 
-
-
-
     <xsl:template match='crosshead'>
         <h4 class="crosshead">
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>       
-                <xsl:value-of select="."/>
-            </h4>
+            <xsl:value-of select="."/>
+        </h4>
     </xsl:template>
 
     <xsl:template match="notes/history/history-note">
