@@ -10,7 +10,24 @@
     <xsl:template match="eqn/table">
         <div class="table pgwide-1 tablecenter">
             <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
-            <xsl:attribute name="style">font-size:medium;line-height:<xsl:value-of select="round(@leading * 100 div 11.5)"/>%;</xsl:attribute>
+            <xsl:variable name="baseFontSize">
+                <xsl:choose>
+                    <xsl:when test="@fontsize">
+                        <xsl:value-of select="@fontsize"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>11.5</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name="textFontSize">
+                <xsl:choose>
+                    <xsl:when test="$baseFontSize &lt; 11.5">small</xsl:when>
+                    <xsl:when test="$baseFontSize &gt; 11.5">large</xsl:when>
+                    <xsl:otherwise>medium</xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:attribute name="style">font-size:<xsl:value-of select="$textFontSize"/>;line-height:<xsl:value-of select="round(@leading * 100 div $baseFontSize)"/>%;</xsl:attribute>
             <xsl:choose>
                 <xsl:when test="descendant::tgroup/@align='center'">
                     <div class="tableFullWidth">
@@ -42,14 +59,20 @@
                             <xsl:attribute name="style">vertical-align:<xsl:value-of select="@valign"/>;</xsl:attribute>
                         </xsl:if>
                         <xsl:for-each select="entry">
-                            <td style="text-align:center;">
+                            <td>
                                 <xsl:if test="@morerows">
                                     <xsl:attribute name="rowspan"><xsl:value-of select="@morerows + 1"/></xsl:attribute>
                                 </xsl:if>
                                 <xsl:if test="@rowsep = '1' or not(@rowsep)">
                                     <xsl:attribute name="class">rowsep</xsl:attribute>
                                 </xsl:if>
-                                <xsl:attribute name="style">text-align:center;<xsl:if test="@valign">vertical-align:<xsl:value-of select="@valign"/>;</xsl:if></xsl:attribute>
+                                <xsl:variable name="align">
+                                    <xsl:choose>
+                                        <xsl:when test="@align"><xsl:value-of select="@align"/></xsl:when>
+                                        <xsl:otherwise>center</xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
+                                <xsl:attribute name="style">text-align:<xsl:value-of select="$align"/>;<xsl:if test="@valign">vertical-align:<xsl:value-of select="@valign"/>;</xsl:if></xsl:attribute>
                                 <xsl:value-of select="."/>
                             </td>
                         </xsl:for-each>
