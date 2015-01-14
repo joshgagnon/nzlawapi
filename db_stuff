@@ -14,7 +14,7 @@
 
 
 select a.id, a.title, ts_rank_cd(d.searchable, to_tsquery('finance & shares')) as rank
-from documents d join acts a on a.document_id = d.id 
+from documents d join acts a on a.document_id = d.id
 WHERE d.searchable @@ to_tsquery('english', 'finance & shares') and a.repealed = False
 GROUP BY a.id, a.title, a.year, ts_rank_cd(d.searchable, to_tsquery('finance & shares'))
 ORDER BY rank desc limit 100;
@@ -31,7 +31,7 @@ select id, title, max(version) from acts group by id, title;
 create table cases (
 
 id text primary key,
-document_id integer, 
+document_id integer,
 neutral_citation text,
 court text[],
 parties json,
@@ -64,18 +64,20 @@ CREATE INDEX error_id_index ON error_reports (id);
 
 
 CREATE TABLE regulations (
-	id text primary key,
-	document_id integer, 
+	id text,
+	document_id integer,
 	version integer,
 	title text,
 	path text,
 	number integer,
 	date_first_valid date,
+	date_as_at date,
 	date_gazetted date,
 	date_terminated date,
 	date_imprint date,
 	year integer,
 	repealed boolean default false
 );
+alter table regulations add constraint regulation_pk primary key (id, version);
 
-alter table regulations add constraint act_fk foreign key (document_id) references documents (id);
+alter table regulations add constraint regulation_fk foreign key (document_id) references documents (id);

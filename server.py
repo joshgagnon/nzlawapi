@@ -360,9 +360,8 @@ def query_all(args):
 
 @app.route('/case/file/<path:filename>')
 def case_file(filename):
-    path = app.config['CASE_DIR']
-    print app.config['CASE_DIR']
-    return send_from_directory(path, filename)
+    case_path = app.config['CASE_DIR']
+    return send_from_directory(case_path, filename)
 
 
 @app.route('/query')

@@ -16,6 +16,9 @@ import uuid
 
 lmtzr = WordNetLemmatizer()
 
+"""
+    naming conventions in http://www.lawfoundation.org.nz/style-guide/nzlsg_12.html#4.1.1
+"""
 
 def key_regex(string):
     match_string = u"(^|\W)(%s['’]?[es]{,2}['’]?)($|\W)" % re.sub('[][()]', '', string)
@@ -126,13 +129,15 @@ def process_node(parent, defs, title):
         if prov_node and prov_node != doc:
             prov = prov_node.getElementsByTagName('label')[0].childNodes[0].nodeValue
             src = etree.Element('catalex-src')
-            element_type = {'prov': 'Section', 'schedule': 'Schedule'}[prov_node.tagName]
+            element_type = {'prov': 's', 'schedule': 'cl'}[prov_node.tagName]
             src.attrib['src'] = src_id
             src.text = '%s %s %s' % (title, element_type, prov)
             etree_node.append(src)
         return etree_node
 
-    for node in parent.childNodes[:]:  # better clone, as we will modify
+    for node in parent.childNodes[:]:  # better clone, as we will modify'
+        if node.nodeType == node.ELEMENT_NODE and node.tagName == 'a':
+            pass
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
             key_nodes = node.getElementsByTagName('def-term')
             for key_node in key_nodes:
@@ -196,7 +201,8 @@ def find_all_definitions(tree):
                 clone = deepcopy(node)
                 src = etree.Element('catalex-src')
                 src.attrib['src'] = key.attrib.get('id')
-                src.text = '%s Section %s' % (title, prov)
+                src.text = '%s s %s' % (title, prov)
+                #todo add brackets
                 clone.append(src)
 
                 base = lmtzr.lemmatize(key.text.lower())

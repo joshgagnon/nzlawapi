@@ -106,9 +106,9 @@ def process_case_contents(tree):
     start.attrib['id'] = div_id
     i = 1
     for span in tree.xpath('.//span'):
-        if re.match('^ *\[%d+\]' % i, span.text):
+        if span.text and re.match('^ *\[%d+\]' % i, span.text):
             span_id = str(uuid.uuid4())
-            results.append(('Section %d' % i, span_id))
+            results.append(('Paragraph %d' % i, span_id))
             span.attrib['id'] = span_id
             i += 1
     return tree, render_template('case_contents.html', results=results)
