@@ -79,5 +79,23 @@ CREATE TABLE regulations (
 	repealed boolean default false
 );
 alter table regulations add constraint regulation_pk primary key (id, version);
-
 alter table regulations add constraint regulation_fk foreign key (document_id) references documents (id);
+
+
+CREATE TABLE act_references (
+	source_id text,
+	target_id text,
+	mapper text,
+	count text
+);
+alter table act_references add constraint act_ref_pk primary key (source_id, target_id, mapper);
+alter table act_references add constraint act_ref_fk foreign key (source_id) references acts(id);
+
+REATE TABLE regulation_references (
+	source_id text,
+	target_id text,
+	mapper text,
+	count text
+);
+alter table regulation_references add constraint reg_ref_pk primary key (source, target, mapper);
+alter table regulation_references add constraint reg_ref_fk foreign key (source_id) references acts(id);

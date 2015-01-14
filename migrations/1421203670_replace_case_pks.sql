@@ -1,0 +1,9 @@
+ALTER TABLE error_reports DROP CONSTRAINT act_fk;
+
+ALTER TABLE cases DROP CONSTRAINT cases_pkey;
+
+ALTER TABLE cases RENAME COLUMN id TO source_id;
+
+ALTER TABLE cases ADD COLUMN id SERIAL;
+
+ALTER TABLE cases ADD PRIMARY KEY (id);

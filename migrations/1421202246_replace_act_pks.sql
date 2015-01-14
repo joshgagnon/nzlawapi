@@ -1,0 +1,9 @@
+ALTER TABLE acts DROP CONSTRAINT acts_pkey;
+
+ALTER TABLE acts ADD CONSTRAINT acts_uniq UNIQUE(id, version);
+
+ALTER TABLE acts RENAME COLUMN id TO source_id;
+
+ALTER TABLE acts ADD COLUMN id SERIAL;
+
+ALTER TABLE acts ADD PRIMARY KEY (id);

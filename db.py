@@ -19,7 +19,7 @@ def init_db():
 
 def get_act(act, db=None):
     with (db or get_db()).cursor() as cur:
-        query = """select document from acts a 
+        query = """select document from acts a
         join documents d on a.document_id = d.id
         where lower(replace(title, ' ', '')) = lower(%(act)s)
          order by version desc limit 1; """
@@ -35,10 +35,10 @@ def get_act_exact(act, db=None):
             (select document, version, path
         from acts a join documents d on a.document_id = d.id
             where lower(title) = lower(%(act)s))
-        union 
+        union
             (select document, version, path
         from regulations a join documents d on a.document_id = d.id
-            where lower(title) = lower(%(act)s))      
+            where lower(title) = lower(%(act)s))
             order by version desc limit 1; """
 
         cur.execute(query, {'act': act})
@@ -56,13 +56,13 @@ def get_document_from_title(title, db=None):
             select title as name, q.type, document from
                 ((select trim(full_citation) as title, 'case' as type, null as document_id from cases
             where trim(full_citation) = %(title)s
-                ) 
+                )
                 union
                 (select trim(title) as title, 'act' as type, document_id from acts
             where title = %(title)s
             order by version desc limit 1
-                ) 
-                union 
+                )
+                union
                 (select trim(title) as title, 'regulation' as type, document_id from regulations
             where title = %(title)s
             order by version desc limit 1
