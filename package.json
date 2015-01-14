@@ -12,6 +12,7 @@
     "bootstrap3-typeahead": "git://github.com/joshgagnon/Bootstrap-3-Typeahead.git",
     "browserify": "^7.0.0",
     "browserify-shim": "^3.8.1",
+    "d3": "^3.5.3",
     "gulp": "^3.8.10",
     "gulp-bower": "^0.0.7",
     "gulp-concat": "^2.4.2",
