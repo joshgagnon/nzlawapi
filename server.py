@@ -212,7 +212,7 @@ def act_case_hint():
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
                 select title as name, type from
-                    ((select trim(full_citation) as title, 'case'as type from cases where full_citation is not null order by trim(full_citation))
+                    ((select trim(full_citation) as title, 'case' as type from cases where full_citation is not null order by trim(full_citation))
                     union
                     (select trim(title) as title, 'act' as type from acts  where title is not null group by id, title order by trim(title))
                     union

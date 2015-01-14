@@ -119,8 +119,8 @@ def get_full_case(case):
         query = """select * from cases where full_citation = %(case)s """
         cur.execute(query, {'case': case})
         results = cur.fetchone()
-        print os.path.join(current_app.config['CASE_DIR'], results.get('id'))
-        with open(os.path.join(current_app.config['CASE_DIR'], results.get('id')), 'U') as f:
+        print os.path.join(current_app.config['CASE_DIR'], results.get('source_id'))
+        with open(os.path.join(current_app.config['CASE_DIR'], results.get('source_id')), 'U') as f:
             tree = process_case(etree.HTML(f.read()))
             tree, contents = process_case_contents(tree)
             return {
