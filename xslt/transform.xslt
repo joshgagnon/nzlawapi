@@ -321,6 +321,9 @@
         <a>
             <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
             </xsl:attribute>
+            <xsl:if test="name() = 'extref'">
+                 <xsl:attribute name="class">external_ref</xsl:attribute>
+            </xsl:if>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>
