@@ -21,23 +21,24 @@ def connect_db(config):
 
 
 def get_migrations(db):
-    files = set(os.listdir('migrations'))
+    files = set([f for f in os.listdir('migrations') if not f.startswith('_') and not f.endswith('.pyc')])
     with db.cursor() as cur:
         cur.execute(""" SELECT name FROM migrations """)
         return sorted(list(files.difference(map(lambda x: x[0], cur.fetchall()))))
 
 
 def run_py_migration(db, filename):
-    print('Executing %s' % filename)
+    mod = importlib.import_module('migrations.%s' % filename.replace('.py', ''))
+    mod.run(db)
 
 
 def run_sql_migration(db, filename):
-    print('Executing %s' % filename)
     with open(os.path.join('migrations', filename)) as f, db.cursor() as cur:
         cur.execute(f.read())
 
 
 def run_migration(db, filename):
+    print('Executing %s' % filename)
     if filename.endswith('.py'):
         run_py_migration(db, filename)
     elif filename.endswith('.sql'):
