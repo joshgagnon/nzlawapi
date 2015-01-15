@@ -46,6 +46,7 @@ var ActDisplay = React.createClass({
 
         });
      },
+     //todo destroy
      interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){

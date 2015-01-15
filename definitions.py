@@ -28,14 +28,14 @@ def key_regex(string):
 
 class Definition(object):
 
-    def __init__(self, full_word, key, xml, regex, id=None, expiry_tag=None):
+    def __init__(self, full_word, key, xmls, regex, id=None, expiry_tag=None):
         if not id:
-            id = 'def-%s' % xml.xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
+            id = 'def-%s' % xmls[0].xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
         else:
             id = 'def-%s' % id
         self.full_word = full_word
         self.key = key
-        self.xml = xml
+        self.xmls = xmls
         self.regex = regex
         self.id = id
         self.expiry_tag = expiry_tag
@@ -44,15 +44,15 @@ class Definition(object):
         return self.id == other.id
 
     def combine(self, other):
-        root = etree.Element('para')
-        root.append(self.xml)
-        root.append(other.xml)
-        self.xml = root
+        self.xmls += other.xmls
 
     def render(self):
+        xml = etree.Element('catalex-def-para')
+        [xml.append(x) for x in self.xmls]
+        print etree.tostring(xml)
         return {
             'title': self.full_word,
-            'html': etree.tostring(tohtml(self.xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
+            'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
         }
 
 
@@ -233,12 +233,12 @@ def find_all_definitions(tree, definitions, expire=True):
             # todo tricky rules
             src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
             src.text = generate_path_string(node)
-            clone.append(src)
+
             base = lmtzr.lemmatize(text.lower())
             expiry_tag = infer_life_time(parent) if expire else None
-            definitions.add(Definition(full_word=text, key=base, xml=clone, id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
+            definitions.add(Definition(full_word=text, key=base, xmls=[clone, src], id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
             if text.lower() != base:
-                definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
+                definitions.add(Definition(full_word=text, key=text.lower(), xmls=[clone, src], id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
 
 
 #todo rename
