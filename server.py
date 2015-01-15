@@ -12,7 +12,7 @@ import datetime
 import os
 import re
 import psycopg2
-
+import time
 
 def get_title(tree):
     return tree.xpath('/act/cover/title')[0].text
@@ -212,12 +212,14 @@ def act_case_hint():
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
                 select title as name, type from
-                    ((select trim(full_citation) as title, 'case' as type from cases where full_citation is not null order by trim(full_citation))
+                    ((select trim(full_citation) as title, 'case' as type from cases
+                        where full_citation is not null order by trim(full_citation))
                     union
-                    (select trim(title) as title, 'act' as type from acts  where title is not null group by id, title order by trim(title))
+                    (select trim(title) as title, 'act' as type from acts
+                        where latest_version = true and title is not null group by id, title order by trim(title) )
                     union
                     (select trim(title) as title, 'regulation' as type from regulations
-                        where title is not null group by id, title order by trim(title))) q
+                        where latest_version = true and title is not null group by id, title order by trim(title))) q
                    where title ilike '%%'||%(query)s||'%%' order by title limit 25;
                 """, {'query': request.args.get('query')})
             return jsonify({'results': cur.fetchall()})
@@ -390,6 +392,17 @@ def query():
 def close_db(error):
     if hasattr(g, 'db'):
         g.db.close()
+
+@app.before_request
+def before_request():
+  g.start = time.time()
+
+@app.teardown_request
+def teardown_request(exception=None):
+    diff = time.time() - g.start
+    if diff > 2:
+        print 'Request took %.2f seconds' % diff
+
 
 if __name__ == '__main__':
     app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])

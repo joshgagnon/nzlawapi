@@ -20,17 +20,18 @@ lmtzr = WordNetLemmatizer()
     naming conventions in http://www.lawfoundation.org.nz/style-guide/nzlsg_12.html#4.1.1
 """
 
+
 def key_regex(string):
     match_string = u"(^|\W)(%s['’]?[es]{,2}['’]?)($|\W)" % re.sub('[][()]', '', string)
     return re.compile(match_string, flags=re.I)
 
 
-class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'expiry_tag'])):
+class Definition(namedtuple('Definition', ['full_word', 'key', 'xml', 'regex', 'id', 'expiry_tag'])):
 
-    def __new__(self, full_word, xml, regex, id=None, expiry_tag=None):
+    def __new__(self, full_word, key, xml, regex, id=None, expiry_tag=None):
         if not id:
             id = 'def-%s' % xml.xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
-        return self.__bases__[0].__new__(self, full_word, xml, regex, id, expiry_tag)
+        return self.__bases__[0].__new__(self, full_word, key, xml, regex, id, expiry_tag)
 
     def __eq__(self, other):
         return self.id == other.id
@@ -42,7 +43,7 @@ class Definition(namedtuple('Definition', ['full_word', 'xml', 'regex', 'id', 'e
         }
 
 
-class Definitions(MutableMapping):
+class Definitionsxz(MutableMapping):
 
     def __init__(self):
         self.store = defaultdict(list)
@@ -69,6 +70,9 @@ class Definitions(MutableMapping):
     def all(self):
         return set(list(chain.from_iterable(self.store.values())) + self.retired)
 
+    def enable_tag(self, tag):
+        pass
+
     def expire_tag(self, tag):
         for k in list(self.store):
             [self.retired.append(d) for d in self.store[k] if d.expiry_tag == tag]
@@ -86,19 +90,64 @@ class Definitions(MutableMapping):
         return newone
 
 
+class Definitions(object):
+
+    def __init__(self):
+        self.pool = defaultdict(list)
+        self.active = defaultdict(list)
+
+    def active(self, key):
+        if key in self.active:
+            return self.active[key][-1]
+        else:
+            raise KeyError
+
+    def add(self, definition):
+        self.pool[definition.expiry_tag].append(definition)
+        if not definition.expiry_tag:
+            self.active[definition.key].append(definition)
+
+    def items(self):
+        return list(chain.from_iterable(self.pool.values()))
+
+    def enable_tag(self, tag):
+        for definition in self.pool[tag]:
+            self.active[definition.key].append(definition)
+
+    def expire_tag(self, tag):
+        for definition in self.pool[tag]:
+            self.active[definition.key].remove(definition)
+            if not len(self.active[definition.key]):
+                del self.active[definition.key]
+
+    def ordered_defs(self):
+        current = map(lambda x: x[-1], self.active.values())
+        return sorted(current, key=lambda x: len(x.key), reverse=True)
+
+    def render(self):
+        return {v.id: v.render() for v in self.items()}
+
+    def __deepcopy__(self):
+        newone = type(self)()
+        newone.pool = self.pool.copy()
+        newone.active = self.active.copy()
+        return newone
+
+
 def infer_life_time(node):
     try:
-        text = node.toxml().lower()
+        text = etree.tostring(node).lower()
         if 'this act' in text:
-            return None
+            return node.iterancestors('act').next().attrib.get('id')
         if 'this part' in text:
-            return 'part'
+            return node.iterancestors('part').next().attrib.get('id')
         if 'this subpart' in text:
-            return 'subpart'
+            return node.iterancestors('subpart').next().attrib.get('id')
         if 'this section' in text:
-            return 'prov'
+            return node.iterancestors('prov').next().attrib.get('id')
         if 'in subsection' in text:
-            return 'subprov'
+            #prov on purpose
+            return node.iterancestors('prov').next().attrib.get('id')
     except (AttributeError, IndexError):
         pass
     return None
@@ -113,64 +162,24 @@ def process_node(parent, defs, title):
         match.appendChild(doc.createTextNode(word))
         return match
 
-    def gen_xml(node):
-        xml = node.toxml()
-        if node.tagName != 'def-para':
-            xml = '<def-para>%s</def-para>' % xml
-        etree_node = etree.fromstring(xml)
-        try:
-            src_id = etree_node.xpath('.//*[@id]')[0].attrib['id']
-        except IndexError:
-            return etree_node
-        prov_node = node
-        #find parent prov
-        while prov_node != doc and prov_node.tagName not in ['prov', 'schedule'] and prov_node.parentNode:
-            prov_node = prov_node.parentNode
-        if prov_node and prov_node != doc:
-            prov = prov_node.getElementsByTagName('label')[0].childNodes[0].nodeValue
-            src = etree.Element('catalex-src')
-            element_type = {'prov': 's', 'schedule': 'cl'}[prov_node.tagName]
-            src.attrib['src'] = src_id
-            src.text = '%s %s %s' % (title, element_type, prov)
-            etree_node.append(src)
-        return etree_node
-
     for node in parent.childNodes[:]:  # better clone, as we will modify'
+
         if node.nodeType == node.ELEMENT_NODE and node.tagName == 'a':
-            pass
-        if node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-para':
-            key_nodes = node.getElementsByTagName('def-term')
-            for key_node in key_nodes:
-                key = key_node.childNodes[0].nodeValue
-                if len(key) > 1:
-                    base = lmtzr.lemmatize(key.lower())
-                    defs[base] = Definition(
-                        full_word=key,
-                        xml=gen_xml(node),
-                        regex=key_regex(base),
-                        expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
-        elif node.nodeType == node.ELEMENT_NODE and node.tagName == 'def-term':
-            key = node.childNodes[0].nodeValue
-            if key and len(key) > 1:
-                base = lmtzr.lemmatize(key.lower())
-                defs[base] = Definition(
-                    full_word=key,
-                    xml=gen_xml(node.parentNode),
-                    regex=key_regex(base),
-                    expiry_tag=infer_life_time(node.parentNode.childNodes[0]))
+            continue
+        elif node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+            defs.enable_tag(node.getAttribute('id'))
         elif node.nodeType == node.TEXT_NODE:
             lines = [node.nodeValue]
-            ordered_defs = sorted(defs.keys(), key=lambda x: len(x), reverse=True)
-            for definition in ordered_defs:
+            for definition in defs.ordered_defs():
                 i = 0
                 while i < len(lines):
                     line = lines[i]
                     while isinstance(line, basestring):
-                        match = defs[definition].regex.search(line.lower())
+                        match = definition.regex.search(line.lower())
                         if not match:
                             break
                         span = match.span(2)
-                        lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], defs[definition]), line[span[1]:]]
+                        lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition), line[span[1]:]]
                         i += 2
                         line = line[span[1]:]
                     i += 1
@@ -183,14 +192,13 @@ def process_node(parent, defs, title):
         else:
             process_node(node, defs, title)
 
-        if node.nodeType == node.ELEMENT_NODE:
-            defs.expire_tag(node.tagName)
+        if node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+            defs.expire_tag(node.getAttribute('id'))
 
 
-def find_all_definitions(tree):
+def find_all_definitions(tree, definitions, expire=True):
     title = tree.xpath('./cover/title')[0].text
     nodes = tree.xpath(".//def-para[descendant::def-term]")
-    definitions = Definitions()
     # todo, missing def-terms without def-para
     for node in nodes:
         keys = node.xpath('.//def-term')
@@ -200,34 +208,30 @@ def find_all_definitions(tree):
             if len(key.text) > 1:
                 clone = deepcopy(node)
                 src = etree.Element('catalex-src')
+                # todo tricky rules
                 src.attrib['src'] = key.attrib.get('id')
                 src.text = '%s s %s' % (title, prov)
-                #todo add brackets
                 clone.append(src)
-
                 base = lmtzr.lemmatize(key.text.lower())
-                if base not in definitions:
-                    definitions[base] = Definition(full_word=key.text, xml=clone, regex=key_regex(base))
-                if key.text.lower() not in definitions:
-                    definitions[key.text.lower()] = Definition(full_word=key.text, xml=clone, regex=key_regex(base))
-    return definitions
-
-
-def render_definitions(definitions):
-    return {v.id: v.render() for v in definitions.all()}
+                expiry_tag = infer_life_time(node.getparent()) if expire else None
+                definitions.add(Definition(full_word=key.text, key=base, xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
+                if key.text.lower() != base:
+                    definitions.add(Definition(full_word=key.text, key=key.text.lower(), xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
 
 
 #todo rename
 def process_definitions(tree, definitions):
     title = tree.xpath('./cover/title')[0].text
+    find_all_definitions(tree, definitions, expire=True)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     process_node(domxml, definitions, title)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
-    return tree, definitions
+    return tree
 
 
 def insert_definitions(tree):
     interpretation = get_act_exact('Interpretation Act 1999')
-    definitions = find_all_definitions(interpretation)
-    tree, definitions = process_definitions(tree, definitions)
-    return tree, render_definitions(definitions)
+    definitions = Definitions()
+    find_all_definitions(interpretation, definitions, expire=False)
+    tree = process_definitions(tree, definitions)
+    return tree, definitions.render()

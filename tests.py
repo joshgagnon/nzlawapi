@@ -49,18 +49,29 @@ class TestDefinitions(unittest.TestCase):
 
     def test_definition_extraction(self):
         tree = etree.parse('tests/3_definitions.xml', parser=self.parser)
-        definitions = find_all_definitions(tree)
-        self.assertEqual(len(definitions), 3)
-        self.assertTrue('accounting period' in definitions)
-        self.assertTrue('address for service' in definitions)
-        self.assertTrue('annual meeting' in definitions)
+        definitions = Definitions()
+        find_all_definitions(tree, definitions, expire=False)
+        self.assertEqual(len(definitions.items()), 3)
+        self.assertTrue('accounting period' in definitions.active)
+        self.assertTrue('address for service' in definitions.active)
+        self.assertTrue('annual meeting' in definitions.active)
 
     def test_definition_transience_simple(self):
         tree = etree.parse('tests/transient_defs.xml', parser=self.parser)
-        tree, definitions = process_definitions(tree, Definitions())
-        self.assertEqual(len(definitions), 1)
-        self.assertEqual(len(definitions.all()), 4)
+        definitions = Definitions()
+        tree = process_definitions(tree, definitions)
+        self.assertEqual(len(definitions.active), 0)
+        self.assertEqual(len(definitions.items()), 4)
 
+    def test_definition_redefinitions(self):
+        tree = etree.parse('tests/redefinitions.xml', parser=self.parser)
+        definitions = Definitions()
+        tree = process_definitions(tree, definitions)
+        self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
+        self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-id'], 'def-xxx')
+        self.assertEqual(tree.xpath('.//catalex-def')[1].attrib['def-id'], 'def-yyy')
+        self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-id'], 'def-xxx')
+        self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-id'], 'def-zzz')
 
 def transform_eqn(filename, parser):
     transform = etree.XSLT(etree.parse('xslt/equations_root.xslt'))
