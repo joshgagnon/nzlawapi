@@ -8,7 +8,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 #from nltk.corpus import wordnet as wn
 from xml.dom import minidom
 from copy import deepcopy
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 from itertools import chain
 import re
 import os
@@ -26,17 +26,30 @@ def key_regex(string):
     return re.compile(match_string, flags=re.I)
 
 
-class Definition(namedtuple('Definition', ['full_word', 'key', 'xml', 'regex', 'id', 'expiry_tag'])):
+class Definition(object):
 
-    def __new__(self, full_word, key, xml, regex, id=None, expiry_tag=None):
+    def __init__(self, full_word, key, xml, regex, id=None, expiry_tag=None):
         if not id:
             id = 'def-%s' % xml.xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
-        return self.__bases__[0].__new__(self, full_word, key, xml, regex, id, expiry_tag)
+        self.full_word = full_word
+        self.key = key
+        self.xml = xml
+        self.regex = regex
+        self.id = id
+        self.expiry_tag = expiry_tag
 
     def __eq__(self, other):
         return self.id == other.id
 
+    def combine(self, other):
+        root = etree.Element('para')
+        root.append(self.xml)
+        root.append(other.xml)
+        self.xml = root
+
     def render(self):
+        if self.key == 'act':
+            print etree.tostring(self.xml)
         return {
             'title': self.full_word,
             'html': etree.tostring(tohtml(self.xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
@@ -56,6 +69,11 @@ class Definitions(object):
             raise KeyError
 
     def add(self, definition):
+        for d in self.pool[definition.expiry_tag]:
+            if d.full_word == definition.full_word:
+                # same scope, must join together
+                d.combine(definition)
+                return
         self.pool[definition.expiry_tag].append(definition)
         if not definition.expiry_tag:
             self.active[definition.key].append(definition)
@@ -187,6 +205,7 @@ def find_all_definitions(tree, definitions, expire=True):
             return node.iterancestors('def-para').next()
         except StopIteration:
             return node.iterancestors('para').next()
+
     for node in nodes:
         # super ugly hack to prevent placeholders likept 'A'
         text = node.itertext().next()
@@ -200,11 +219,9 @@ def find_all_definitions(tree, definitions, expire=True):
             clone.append(src)
             base = lmtzr.lemmatize(text.lower())
             expiry_tag = infer_life_time(parent) if expire else None
-            if base == 'company':
-                print expiry_tag, etree.tostring(parent)
-            definitions.add(Definition(full_word=text, key=base, xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
+            definitions.add(Definition(full_word=text, key=base, xml=clone, id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
             if text.lower() != base:
-                definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
+                definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
 
 
 #todo rename

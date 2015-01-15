@@ -76,6 +76,11 @@ height:100%;
 .legislation .catalex-src{
   font-style:italic;
 }
+
+.popover{
+    max-width: 500px;
+}
+
 .legislation .row:before, .legislation .row:after{
     content:initial;
 }

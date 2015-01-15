@@ -16,7 +16,7 @@
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
                     <p class="text">
-                         <xsl:apply-templates select="para/text|para/label-para|example|text"/>
+                         <xsl:apply-templates select="para/text|para/label-para|example|text|label-para|def-para"/>
                     </p>
                 </div>
                 <xsl:apply-templates select="catalex-src"/>
@@ -33,8 +33,6 @@
         </a>
         </span>
     </xsl:template>
-
-
 
        <xsl:template match="example">
         <div class="example">
