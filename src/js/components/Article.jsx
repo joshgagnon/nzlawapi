@@ -27,7 +27,7 @@ var ActDisplay = React.createClass({
         $(this.getDOMNode()).popover({
             container: '.act_browser',
             placement: 'auto',
-            trigger: 'focus',
+            trigger: 'click',
             selector: '[data-toggle="popover"]',
             content: function(){
                 return self.props.definitions[$(this).attr('def-id')].html;

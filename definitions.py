@@ -31,6 +31,8 @@ class Definition(object):
     def __init__(self, full_word, key, xml, regex, id=None, expiry_tag=None):
         if not id:
             id = 'def-%s' % xml.xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
+        else:
+            id = 'def-%s' % id
         self.full_word = full_word
         self.key = key
         self.xml = xml
@@ -48,8 +50,6 @@ class Definition(object):
         self.xml = root
 
     def render(self):
-        if self.key == 'act':
-            print etree.tostring(self.xml)
         return {
             'title': self.full_word,
             'html': etree.tostring(tohtml(self.xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
@@ -61,8 +61,9 @@ class Definitions(object):
     def __init__(self):
         self.pool = defaultdict(list)
         self.active = defaultdict(list)
+        self.regex = None
 
-    def active(self, key):
+    def get_active(self, key):
         if key in self.active:
             return self.active[key][-1]
         else:
@@ -84,16 +85,28 @@ class Definitions(object):
     def enable_tag(self, tag):
         for definition in self.pool[tag]:
             self.active[definition.key].append(definition)
+            self.regex = None
 
     def expire_tag(self, tag):
         for definition in self.pool[tag]:
             self.active[definition.key].remove(definition)
             if not len(self.active[definition.key]):
                 del self.active[definition.key]
+            self.regex = None
 
     def ordered_defs(self):
         current = map(lambda x: x[-1], self.active.values())
         return sorted(current, key=lambda x: len(x.key), reverse=True)
+
+    def combined_reg(self):
+        keys = map(lambda x: x.key, self.ordered_defs())
+        match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" % re.sub('[][()]', '', '|'.join(keys))
+        return re.compile(match_string, flags=re.I)
+
+    def get_regex(self):
+        if not self.regex:
+            self.regex = self.combined_reg()
+        return self.regex
 
     def render(self):
         return {v.id: v.render() for v in self.items()}
@@ -117,7 +130,7 @@ class Monitor(object):
 
 
 def process_node(parent, defs, title, monitor):
-    ignore_fields = ['a', 'skeleton']
+    ignore_fields = ['a', 'skeleton', 'history-note']
     doc = parent.ownerDocument
 
     def create_def(word, definition):
@@ -134,20 +147,21 @@ def process_node(parent, defs, title, monitor):
         elif node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
             defs.enable_tag(node.getAttribute('id'))
         if node.nodeType == node.TEXT_NODE:
+            reg = defs.get_regex()
             lines = [node.nodeValue]
-            for definition in defs.ordered_defs():
-                i = 0
-                while i < len(lines):
-                    line = lines[i]
-                    while isinstance(line, basestring):
-                        match = definition.regex.search(line.lower())
-                        if not match:
-                            break
-                        span = match.span(2)
-                        lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition), line[span[1]:]]
-                        i += 2
-                        line = line[span[1]:]
-                    i += 1
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                while isinstance(line, basestring):
+                    match = reg.search(line.lower())
+                    if not match:
+                        break
+                    definition = defs.get_active(lmtzr.lemmatize(match.group(2)))
+                    span = (match.span(2)[0], match.span(3)[1])
+                    lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition), line[span[1]:]]
+                    i += 2
+                    line = line[span[1]:]
+                i += 1
             lines = filter(lambda x: x, lines)
             new_nodes = map(lambda x: doc.createTextNode(x) if isinstance(x, basestring) else x, lines)
 
@@ -173,7 +187,15 @@ def infer_life_time(node):
             parent = node.iterancestors('para').next()
         except StopIteration:
             pass
-        text = etree.tostring(parent).lower()
+        text = parent.xpath('.//text()')[0].strip().lower()
+        if text.startswith('in this act'):
+            return get_id(parent.iterancestors('act').next())
+        if text.startswith('in this part'):
+            return get_id(parent.iterancestors('part').next())
+        if text.startswith('in this subpart'):
+            return get_id(parent.iterancestors('subpart').next())
+        if text.startswith('in the formula'):
+            return get_id(parent.iterancestors('prov').next())
         if 'in subsection' in text or 'of subsection' in text:
             #prov on purpose
             return get_id(parent.iterancestors('prov').next())
@@ -181,18 +203,13 @@ def infer_life_time(node):
             return get_id(parent.iterancestors('prov').next())
         if 'in schedule' in text:
             return get_id(parent.iterancestors('schedule').next())
-        if 'this subpart' in text:
-            return get_id(parent.iterancestors('subpart').next())
-        if 'this part' in text:
-            return get_id(parent.iterancestors('part').next())
-        if 'this act' in text:
-            return get_id(parent.iterancestors('act').next())
+
     except (AttributeError, IndexError), e:
-        print e
+        print 'infer life error', e
     except StopIteration:
         # couldn't find safe parent
         return str(uuid.uuid4())
-    return None
+    return get_id(parent.iterancestors('act').next())
 
 
 
@@ -221,7 +238,7 @@ def find_all_definitions(tree, definitions, expire=True):
             expiry_tag = infer_life_time(parent) if expire else None
             definitions.add(Definition(full_word=text, key=base, xml=clone, id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
             if text.lower() != base:
-                definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
+                definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
 
 
 #todo rename

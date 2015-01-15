@@ -289,7 +289,6 @@ def format_response(args, result):
 
 def full_act_response(act, args):
     xml, definitions = insert_definitions(act)
-    #xml, definitions = act, {}
     return {
         'html_content': etree.tostring(tohtml(xml), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
