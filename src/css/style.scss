@@ -79,6 +79,15 @@ height:100%;
 
 .popover{
     max-width: 500px;
+    .popover-close{
+      position: absolute;
+      top: -1px;
+      right: 10px;
+      font-size: 22px;
+      color: #898989;
+      font-weight: bold;
+      cursor: pointer;
+  }
 }
 
 .legislation .row:before, .legislation .row:after{

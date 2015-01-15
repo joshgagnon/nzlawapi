@@ -29,12 +29,21 @@ var ActDisplay = React.createClass({
             placement: 'auto',
             trigger: 'click',
             selector: '[data-toggle="popover"]',
+            template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title">'+
+                        '</h3><div class="popover-close">&times;</div><div class="popover-content"></div></div>',
             content: function(){
                 return self.props.definitions[$(this).attr('def-id')].html;
             },
             title: function(){
                 return self.props.definitions[$(this).attr('def-id')].title;
             }
+        }).on('shown.bs.popover', function(e){
+            var $target = $(e.target);
+            $target.data('bs.popover').$tip
+                .on('click', '.popover-close', function(){
+                    $target.popover('hide')
+                });
+
         });
      },
      interceptLink: function(e){

@@ -2,7 +2,7 @@ from db import get_db, get_act_exact
 from util import CustomException, tohtml, levenshtein
 from views import mod
 from definitions import insert_definitions
-from cases import get_full_case, get_case_info, case_search
+from cases.cases import get_full_case, get_case_info, case_search
 from lxml import etree
 import sys
 from operator import itemgetter
