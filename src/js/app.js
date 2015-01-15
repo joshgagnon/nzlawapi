@@ -7,6 +7,7 @@ var SearchForm = require('./components/SearchForm.jsx');
 var Results = require('./components/ResultList.jsx');
 var Validator = require('./components/Validator.jsx');
 var Article = require('./components/Article.jsx');
+var Graph = require('./components/Graph.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
@@ -72,6 +73,7 @@ var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
     <ReactRouter.Route name="validator" handler={Validator}/>
     <ReactRouter.Route name="full_article" handler={Article} />
+    <ReactRouter.Route name="graph" handler={Graph} />
     <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );
