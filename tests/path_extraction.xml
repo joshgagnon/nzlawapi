@@ -1,0 +1,38 @@
+<act id="DLM319569">
+    <cover>
+        <title>Test Act 666</title>
+    </cover>
+
+    <part id="DLM319575">
+        <label auto.number="no" denominator="yes">1</label>
+        <heading xml:lang="en-NZ">Preliminary</heading>
+        <prov id="DLM319576" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">2</label>
+            <heading xml:lang="en-NZ">Interpretation</heading>
+            <prov.body>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">1</label>
+                    <para xml:lang="en-NZ">
+                        <text id="xxx">pew pew</text>
+                        <label-para skeleton="no" xml:lang="en-NZ">
+                            <label auto.number="no" denominator="yes">a</label>
+                            <para xml:lang="en-NZ">
+                                <text id="yyy">
+                                    each multi-class output expense appropriation under
+                                </text>
+                                <label-para skeleton="no" xml:lang="en-NZ">
+                                    <label auto.number="no" denominator="yes">i</label>
+                                    <para xml:lang="en-NZ">
+                                        <text id="zzz">
+                                            under the column headed
+                                        </text>
+                                    </para>
+                                </label-para>
+                            </para>
+                        </label-para>
+                    </para>
+                </subprov>
+            </prov.body>
+        </prov>
+    </part>
+</act>

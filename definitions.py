@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from db import get_act_exact
-from util import tohtml
+from util import tohtml, generate_path_string
 #from nltk.stem import *
 from lxml import etree
 #from nltk.stem.snowball import SnowballStemmer
@@ -8,7 +8,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 #from nltk.corpus import wordnet as wn
 from xml.dom import minidom
 from copy import deepcopy
-from collections import namedtuple, MutableMapping, defaultdict
+from collections import namedtuple, defaultdict
 from itertools import chain
 import re
 import os
@@ -155,21 +155,20 @@ def infer_life_time(node):
             parent = node.iterancestors('para').next()
         except StopIteration:
             pass
-        text = etree.tostring(node).lower()
-        if 'this act' in text:
-            return get_id(parent.iterancestors('act').next())
-        if 'this part' in text:
-            return get_id(parent.iterancestors('part').next())
-        if 'this subpart' in text:
-            return get_id(parent.iterancestors('subpart').next())
-        if 'this section' in text:
-            return get_id(parent.iterancestors('prov').next())
+        text = etree.tostring(parent).lower()
         if 'in subsection' in text or 'of subsection' in text:
             #prov on purpose
             return get_id(parent.iterancestors('prov').next())
+        if 'this section' in text:
+            return get_id(parent.iterancestors('prov').next())
         if 'in schedule' in text:
-            #prov on purpose
             return get_id(parent.iterancestors('schedule').next())
+        if 'this subpart' in text:
+            return get_id(parent.iterancestors('subpart').next())
+        if 'this part' in text:
+            return get_id(parent.iterancestors('part').next())
+        if 'this act' in text:
+            return get_id(parent.iterancestors('act').next())
     except (AttributeError, IndexError), e:
         print e
     except StopIteration:
@@ -178,19 +177,9 @@ def infer_life_time(node):
     return None
 
 
-def generate_path_string(node):
-    """label-para -> label
-    label-para -> label
-    subprov -> label
-    prov -> label
-    schedule -> label
-    act -> title
-    regulaion -> title
-    """
 
 
 def find_all_definitions(tree, definitions, expire=True):
-    title = tree.xpath('./cover/title')[0].text
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)]")
 
     def get_parent(node):
@@ -207,11 +196,12 @@ def find_all_definitions(tree, definitions, expire=True):
             src = etree.Element('catalex-src')
             # todo tricky rules
             src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
-            #src.text = '%s s %s' % (title, prov)
-            src.text = title
+            src.text = generate_path_string(node)
             clone.append(src)
             base = lmtzr.lemmatize(text.lower())
             expiry_tag = infer_life_time(parent) if expire else None
+            if base == 'company':
+                print expiry_tag, etree.tostring(parent)
             definitions.add(Definition(full_word=text, key=base, xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
             if text.lower() != base:
                 definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))

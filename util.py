@@ -82,3 +82,30 @@ def text_compare(t1, t2):
     if t1 == '*' or t2 == '*':
         return True
     return (t1 or '').strip() == (t2 or '').strip()
+
+
+def generate_path_string(node):
+    result = ''
+    it = iter(node.iterancestors('label-para'))
+    for n in it:
+        if len(n.xpath('./label')):
+            text = n.xpath('./label')[0].text
+            if text:
+                result = '(%s)' % text + result
+    it = iter(node.iterancestors('subprov'))
+    for n in it:
+        if len(n.xpath('./label')):
+            text = n.xpath('./label')[0].text
+            if text:
+                result = '(%s)' % text + result
+    it = iter(node.iterancestors('prov'))
+    for n in it:
+        if len(n.xpath('./label')):
+            text = n.xpath('./label')[0].text
+            if text:
+                result = 's %s' % text + result
+    it = iter(node.iterancestors('schedule'))
+    for n in it:
+        if len(n.xpath('./schedule')):
+            result = 'sch %s' % n.xpath('./label')[0] + result
+    return '%s %s' % (node.getroottree().xpath('./cover/title')[0].text, result)

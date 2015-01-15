@@ -2,7 +2,7 @@ import unittest
 from xml import etree
 from server import *
 from definitions import *
-from util import xml_compare
+from util import xml_compare, generate_path_string
 import os
 
 
@@ -73,6 +73,7 @@ class TestDefinitions(unittest.TestCase):
         self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-id'], 'def-xxx')
         self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-id'], 'def-zzz')
 
+
 def transform_eqn(filename, parser):
     transform = etree.XSLT(etree.parse('xslt/equations_root.xslt'))
     tree = etree.parse(filename, parser=parser)
@@ -96,6 +97,19 @@ class TestEquations(unittest.TestCase):
             expected = etree.parse(os.path.join('tests/equations', f.replace('.xml', '.html')), parser=self.parser)
             self.assertTrue(xml_compare(result, expected.getroot(), print_error))
 
+
+class TestPathExtraction(unittest.TestCase):
+    def setUp(self):
+        self.parser = etree.XMLParser(remove_blank_text=True)
+
+    def test_equations(self):
+        tree = etree.parse('tests/path_extraction.xml', parser=self.parser)
+        el = tree.xpath('.//*[@id="zzz"]')[0]
+        self.assertEqual(generate_path_string(el), 'Test Act 666 s 2(1)(a)(i)')
+        el = tree.xpath('.//*[@id="yyy"]')[0]
+        self.assertEqual(generate_path_string(el), 'Test Act 666 s 2(1)(a)')
+        el = tree.xpath('.//*[@id="xxx"]')[0]
+        self.assertEqual(generate_path_string(el), 'Test Act 666 s 2(1)')
 
 if __name__ == '__main__':
     #hack
