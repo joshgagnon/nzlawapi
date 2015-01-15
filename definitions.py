@@ -22,7 +22,7 @@ lmtzr = WordNetLemmatizer()
 
 
 def key_regex(string):
-    match_string = u"(^|\W)(%s['’]?[es]{,2}['’]?)($|\W)" % re.sub('[][()]', '', string)
+    match_string = u"(^|\W)(%s[es'’]{,3})($|\W)" % re.sub('[][()]', '', string)
     return re.compile(match_string, flags=re.I)
 
 
@@ -41,53 +41,6 @@ class Definition(namedtuple('Definition', ['full_word', 'key', 'xml', 'regex', '
             'title': self.full_word,
             'html': etree.tostring(tohtml(self.xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
         }
-
-
-class Definitionsxz(MutableMapping):
-
-    def __init__(self):
-        self.store = defaultdict(list)
-        self.retired = []
-
-    def __getitem__(self, key):
-        if key in self.store:
-            return self.store[key][-1]
-        else:
-            raise KeyError
-
-    def __setitem__(self, key, value):
-        self.store[key].append(value)
-
-    def __delitem__(self, key):
-        self.store[key].pop()
-
-    def __iter__(self):
-        return iter(self.store)
-
-    def __len__(self):
-        return len(self.store)
-
-    def all(self):
-        return set(list(chain.from_iterable(self.store.values())) + self.retired)
-
-    def enable_tag(self, tag):
-        pass
-
-    def expire_tag(self, tag):
-        for k in list(self.store):
-            [self.retired.append(d) for d in self.store[k] if d.expiry_tag == tag]
-            self.store[k][:] = [d for d in self.store[k] if d.expiry_tag != tag]
-            if not len(self.store[k]):
-                del self.store[k]
-
-    def __repr__(self):
-        return self.store.__repr__()
-
-    def __deepcopy__(self):
-        newone = type(self)()
-        newone.retired = self.retired[:]
-        newone.store = self.store.copy()
-        return newone
 
 
 class Definitions(object):
@@ -134,26 +87,19 @@ class Definitions(object):
         return newone
 
 
-def infer_life_time(node):
-    try:
-        text = etree.tostring(node).lower()
-        if 'this act' in text:
-            return node.iterancestors('act').next().attrib.get('id')
-        if 'this part' in text:
-            return node.iterancestors('part').next().attrib.get('id')
-        if 'this subpart' in text:
-            return node.iterancestors('subpart').next().attrib.get('id')
-        if 'this section' in text:
-            return node.iterancestors('prov').next().attrib.get('id')
-        if 'in subsection' in text:
-            #prov on purpose
-            return node.iterancestors('prov').next().attrib.get('id')
-    except (AttributeError, IndexError):
-        pass
-    return None
+class Monitor(object):
+    i = 0
+
+    def __init__(self, max):
+        self.max = max
+
+    def cont(self):
+        self.i += 1
+        return self.i < self.max
 
 
-def process_node(parent, defs, title):
+def process_node(parent, defs, title, monitor):
+    ignore_fields = ['a', 'skeleton']
     doc = parent.ownerDocument
 
     def create_def(word, definition):
@@ -163,12 +109,13 @@ def process_node(parent, defs, title):
         return match
 
     for node in parent.childNodes[:]:  # better clone, as we will modify'
-
-        if node.nodeType == node.ELEMENT_NODE and node.tagName == 'a':
+        if not monitor.cont():
+            return
+        if node.nodeType == node.ELEMENT_NODE and node.tagName in ignore_fields:
             continue
         elif node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
             defs.enable_tag(node.getAttribute('id'))
-        elif node.nodeType == node.TEXT_NODE:
+        if node.nodeType == node.TEXT_NODE:
             lines = [node.nodeValue]
             for definition in defs.ordered_defs():
                 i = 0
@@ -190,41 +137,95 @@ def process_node(parent, defs, title):
                 [parent.insertBefore(n, node) for n in new_nodes]
                 parent.removeChild(node)
         else:
-            process_node(node, defs, title)
+            process_node(node, defs, title, monitor)
 
         if node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
             defs.expire_tag(node.getAttribute('id'))
 
 
+def infer_life_time(node):
+    def get_id(node):
+        if not node.attrib.get('id'):
+            node.attrib['id'] = str(uuid.uuid4())
+        return node.attrib.get('id')
+
+    try:
+        parent = node
+        try:
+            parent = node.iterancestors('para').next()
+        except StopIteration:
+            pass
+        text = etree.tostring(node).lower()
+        if 'this act' in text:
+            return get_id(parent.iterancestors('act').next())
+        if 'this part' in text:
+            return get_id(parent.iterancestors('part').next())
+        if 'this subpart' in text:
+            return get_id(parent.iterancestors('subpart').next())
+        if 'this section' in text:
+            return get_id(parent.iterancestors('prov').next())
+        if 'in subsection' in text or 'of subsection' in text:
+            #prov on purpose
+            return get_id(parent.iterancestors('prov').next())
+        if 'in schedule' in text:
+            #prov on purpose
+            return get_id(parent.iterancestors('schedule').next())
+    except (AttributeError, IndexError), e:
+        print e
+    except StopIteration:
+        # couldn't find safe parent
+        return str(uuid.uuid4())
+    return None
+
+
+def generate_path_string(node):
+    """label-para -> label
+    label-para -> label
+    subprov -> label
+    prov -> label
+    schedule -> label
+    act -> title
+    regulaion -> title
+    """
+
+
 def find_all_definitions(tree, definitions, expire=True):
     title = tree.xpath('./cover/title')[0].text
-    nodes = tree.xpath(".//def-para[descendant::def-term]")
-    # todo, missing def-terms without def-para
+    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)]")
+
+    def get_parent(node):
+        try:
+            return node.iterancestors('def-para').next()
+        except StopIteration:
+            return node.iterancestors('para').next()
     for node in nodes:
-        keys = node.xpath('.//def-term')
-        prov = node.iterancestors(tag='prov').next().xpath('./label')[0].text
-        for key in keys:
-            # super ugly hack to prevent placeholders like 'A'
-            if len(key.text) > 1:
-                clone = deepcopy(node)
-                src = etree.Element('catalex-src')
-                # todo tricky rules
-                src.attrib['src'] = key.attrib.get('id')
-                src.text = '%s s %s' % (title, prov)
-                clone.append(src)
-                base = lmtzr.lemmatize(key.text.lower())
-                expiry_tag = infer_life_time(node.getparent()) if expire else None
-                definitions.add(Definition(full_word=key.text, key=base, xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
-                if key.text.lower() != base:
-                    definitions.add(Definition(full_word=key.text, key=key.text.lower(), xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
+        # super ugly hack to prevent placeholders likept 'A'
+        text = node.itertext().next()
+        if len(text) > 1:
+            parent = get_parent(node)
+            clone = deepcopy(parent)
+            src = etree.Element('catalex-src')
+            # todo tricky rules
+            src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
+            #src.text = '%s s %s' % (title, prov)
+            src.text = title
+            clone.append(src)
+            base = lmtzr.lemmatize(text.lower())
+            expiry_tag = infer_life_time(parent) if expire else None
+            definitions.add(Definition(full_word=text, key=base, xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
+            if text.lower() != base:
+                definitions.add(Definition(full_word=text, key=text.lower(), xml=clone, regex=key_regex(base), expiry_tag=expiry_tag))
 
 
 #todo rename
 def process_definitions(tree, definitions):
     title = tree.xpath('./cover/title')[0].text
     find_all_definitions(tree, definitions, expire=True)
+    print 'Completed definition extraction'
+    print '%d nodes to scan' % len(tree.xpath('.//*'))
+    monitor = Monitor(50000)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    process_node(domxml, definitions, title)
+    process_node(domxml, definitions, title, monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree
 
