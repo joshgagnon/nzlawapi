@@ -75,7 +75,25 @@ height:100%;
 
 .legislation .catalex-src{
   font-style:italic;
+  width: 100%;
+text-align: right;
+display: inline-block;
+margin-bottom: 6px;
 }
+
+.popover{
+    max-width: 500px;
+    .popover-close{
+      position: absolute;
+      top: -1px;
+      right: 10px;
+      font-size: 22px;
+      color: #898989;
+      font-weight: bold;
+      cursor: pointer;
+  }
+}
+
 .legislation .row:before, .legislation .row:after{
     content:initial;
 }

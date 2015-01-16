@@ -5,36 +5,37 @@
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
     <xsl:template match="/">
-        <xsl:apply-templates select="def-para"/>
+        <xsl:apply-templates select="catalex-def-para"/>
     </xsl:template>
 
-        <xsl:template match="def-para">   
-        <div class="definition-result">
-            <div class="legislation">
+        <xsl:template match="catalex-def-para">
+            <div class="definition-result">
+                <div class="legislation">
+                    <xsl:apply-templates select="def-para|para|catalex-src"/>
+                </div>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="def-para|para">
                 <div class="def-para">
                      <xsl:attribute name="id">
                         <xsl:value-of select="@id"/>
-                    </xsl:attribute>           
+                    </xsl:attribute>
                     <p class="text">
-                         <xsl:apply-templates select="para/text|para/label-para|example|text"/>
+                         <xsl:apply-templates select="para/text|para/label-para|example|text|label-para"/>
                     </p>
                 </div>
-                <xsl:apply-templates select="catalex-src"/>
-            </div>
-    </div>
     </xsl:template>
 
        <xsl:template match="catalex-src">
         <span class="catalex-src">
         Source: <a >
         <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
-        </xsl:attribute>   
+        </xsl:attribute>
             <xsl:value-of select="."/>
         </a>
         </span>
     </xsl:template>
-
-
 
        <xsl:template match="example">
         <div class="example">
@@ -54,7 +55,7 @@
     <xsl:template match="*[@href]">
         <a>
         <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
-        </xsl:attribute>   
+        </xsl:attribute>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>
@@ -77,7 +78,7 @@
                 <xsl:attribute name="id">
                         <xsl:value-of select="def-term/@id"/>
                     </xsl:attribute>
-                    <xsl:apply-templates/>           
+                    <xsl:apply-templates/>
                 </dfn>
             </xsl:template>
 

@@ -14,7 +14,7 @@ var ResultStore = require('../stores/ResultStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-var TypeAhead = require('./TypeAhead.jsx'); 
+var TypeAhead = require('./TypeAhead.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap')
 
@@ -25,18 +25,28 @@ var ActDisplay = React.createClass({
     componentDidUpdate: function(){
         var self = this;
         $(this.getDOMNode()).popover({
-            container: '.act_browser', 
-            placement: 'auto', 
-            trigger: 'focus', 
+            container: '.act_browser',
+            placement: 'auto',
+            trigger: 'click',
             selector: '[data-toggle="popover"]',
+            template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title">'+
+                        '</h3><div class="popover-close">&times;</div><div class="popover-content"></div></div>',
             content: function(){
                 return self.props.definitions[$(this).attr('def-id')].html;
             },
             title: function(){
                 return self.props.definitions[$(this).attr('def-id')].title;
             }
+        }).on('shown.bs.popover', function(e){
+            var $target = $(e.target);
+            $target.data('bs.popover').$tip
+                .on('click', '.popover-close', function(){
+                    $target.popover('hide')
+                });
+
         });
      },
+     //todo destroy
      interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
@@ -63,7 +73,7 @@ var ArticleScroll = React.createClass({
             var container = $('.legislation-contents');
             console.log(scrollTo.position(), container.position())
             container.scrollTop(scrollTo.offset().top -container.offset().top + container.scrollTop());
-        }); 
+        });
      },
      interceptLink: function(e){
         var link = $(e.target).closest('a');
@@ -94,7 +104,8 @@ module.exports = React.createClass({
         if(localStorage['article']){
             article = JSON.parse(localStorage['article']);
         }
-
+        //perhaps wrong place?
+        this.typeahead_debounce = _.debounce(this.typeahead_query, 300);
     	return {
     		typeahead: [],
             article_name: this.props.article_name || article.article_name,
@@ -108,10 +119,11 @@ module.exports = React.createClass({
         }
     },
     typeahead_query: function(query, process){
+        //_.debounce
         $.get('/act_case_hint.json', {query: query})
             .then(function(results){
                 this.setState({typeahead: results.results});
-                process(results.results)
+                process(results.results);
             }.bind(this));
     },
     submit: function(e){
@@ -128,7 +140,7 @@ module.exports = React.createClass({
     	var n = this.state.acts_typeahead.length;
     	idx = ((idx%n)+n)%n;
     	this.setState({index: idx, act_name: this.state.typeahead[idx]}, this.fetch);
-    },    
+    },
     fetch: function(){
         // for development only, delete
         localStorage['article'] = JSON.stringify({article_name: this.state.article_name, article_type: this.state.article_type});
@@ -142,7 +154,7 @@ module.exports = React.createClass({
     	})
     		.then(function(response){
     			this.setState({
-                    act_html: response.html_content, 
+                    act_html: response.html_content,
                     act_name: response.act_name,
     				contents: response.html_contents_page,
                     act_definitions: response.definitions,
@@ -162,7 +174,7 @@ module.exports = React.createClass({
 					<nav className="navbar navbar-default navbar-fixed-top">
 						<div className="container">
 							<form className="form form-inline">
-								<TypeAhead typeahead={this.typeahead_query}  key="article_name" ref="article_name" name="article_name" 
+								<TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
                                         label='Article' valueLink={linkArticle} appendToSelf={true}
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 							 	<ButtonGroup>
@@ -180,7 +192,7 @@ module.exports = React.createClass({
                             </div>
                             <div className="col-md-2">
                                 <ArticleScroll html={this.state.contents}/>
-                            </div>                           
+                            </div>
 						</div>
 					</div>
 				</div>);
