@@ -71,18 +71,44 @@ height:100%;
 }
 .legislation a.def-popover{
     color:#000;
+    text-decoration: none;
+    border-bottom: 1px dashed #00BD00;
 }
 
-.legislation .catalex-src{
-  font-style:italic;
-  width: 100%;
-text-align: right;
-display: inline-block;
-margin-bottom: 6px;
+
+.definition-result .catalex-src{
+  margin-bottom: 10px;
+  font-style: italic;
+  font-size: 12px;
+  display: inline-block;
 }
 
+// bootstrap
+.modal-backdrop{
+  position: fixed;
+  bottom:0;
+}
+
+.def-popover{
+  z-index:1020;
+}
 .popover{
-    max-width: 500px;
+   max-width: 500px;
+
+  .popover-content{
+
+      max-height:200px;
+      overflow-y:hidden;
+  }
+  .popover-footer{
+      margin-top: 8px;
+      padding: 8px 14px;
+      font-size: 14px;
+      background-color: #f7f7f7;
+      border-top: 1px solid #ebebeb;
+      border-radius: 0 0 5px 5px;
+    }
+
     .popover-close{
       position: absolute;
       top: -1px;

@@ -1,0 +1,1 @@
+ALTER TABLE documents ADD COLUMN processed_document text;

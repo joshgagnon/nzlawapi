@@ -1,0 +1,1 @@
+ALTER TABLE acts DROP COLUMN definitions;

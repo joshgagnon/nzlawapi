@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from db import get_act_exact
 from util import tohtml, generate_path_string
 #from nltk.stem import *
 from lxml import etree
@@ -241,7 +240,7 @@ def find_all_definitions(tree, definitions, expire=True):
                 definitions.add(Definition(full_word=text, key=text.lower(), xmls=[clone, src], id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
 
 
-#todo rename
+
 def process_definitions(tree, definitions):
     title = tree.xpath('./cover/title')[0].text
     find_all_definitions(tree, definitions, expire=True)
@@ -251,12 +250,15 @@ def process_definitions(tree, definitions):
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     process_node(domxml, definitions, title, monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
-    return tree
+    return tree, definitions
 
 
-def insert_definitions(tree):
-    interpretation = get_act_exact('Interpretation Act 1999')
-    definitions = Definitions()
-    find_all_definitions(interpretation, definitions, expire=False)
-    tree = process_definitions(tree, definitions)
-    return tree, definitions.render()
+def populate_definitions(tree, definitions=None, expire=False):
+    if not definitions:
+        definitions = Definitions()
+    find_all_definitions(tree, definitions, expire=expire)
+    return tree, definitions
+
+
+
+
