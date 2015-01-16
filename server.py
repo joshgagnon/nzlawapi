@@ -12,6 +12,7 @@ import datetime
 import os
 import re
 import psycopg2
+import graph
 
 
 def get_title(tree):
@@ -380,6 +381,19 @@ def query():
             result = query_cases(args)
         else:
             raise CustomException('Badly formed query')
+    except CustomException, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
+
+@app.route('/map')
+def map():
+    args = request.args
+    centre_id = args.get('id')
+    status = 200
+    try:
+        result = {'results': graph.get_links(centre_id)}
     except CustomException, e:
         result = {'error': str(e)}
         status = 500
