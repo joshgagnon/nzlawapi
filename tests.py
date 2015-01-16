@@ -1,7 +1,9 @@
 import unittest
 from xml import etree
 from server import *
-from definitions import *
+from acts.definitions import *
+from acts.acts import *
+from acts.traversal import *
 from util import xml_compare, generate_path_string
 import os
 
@@ -66,7 +68,7 @@ class TestDefinitions(unittest.TestCase):
     def test_definition_redefinitions(self):
         tree = etree.parse('tests/redefinitions.xml', parser=self.parser)
         definitions = Definitions()
-        tree = process_definitions(tree, definitions)
+        tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
         self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-id'], 'def-xxx')
         self.assertEqual(tree.xpath('.//catalex-def')[1].attrib['def-id'], 'def-yyy')
