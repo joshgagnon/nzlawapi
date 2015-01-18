@@ -1,6 +1,7 @@
 var React = require('react');
 var d3 = require('d3');
 var $ = require('jquery');
+var events = require('events');
 
 var graph = {
   create: function(el, props, state) {
@@ -11,9 +12,13 @@ var graph = {
     svg.append('g')
       .attr('class', 'graph-articles');
 
-    this.update(el, state);
+    var dispatcher = new events.EventEmitter();
+
+    this.update(el, state, dispatcher);
+
+    return dispatcher;
   },
-  update: function(el, state) {
+  update: function(el, state, dispatcher) {
     var articleGroup = d3.select(el).selectAll('.graph-articles');
 
     var articles = articleGroup.selectAll('.article')
@@ -21,7 +26,10 @@ var graph = {
 
     // Enter
     articles.enter().append('circle')
-      .attr('class', 'article');
+      .attr('class', 'article')
+      .on('click', function(data, index) {
+        dispatcher.emit('graph.article.click', data, index);
+      });
 
     // Update
     articles
@@ -80,21 +88,21 @@ module.exports = React.createClass({
       articles: []
     };
   },
+  dispatcher: null,
   componentDidMount: function() {
-    graph.create(this.getDOMNode(), this.props, this.state);
+    var self = this;
 
-    // Test fetch
-    $.get('/map', {
-      id: 86,
-    })
-    .then(function(response) {
-      this.setState({
-        articles: response.results,
-      });
-    }.bind(this));
+    this.dispatcher = graph.create(this.getDOMNode(), this.props, this.state);
+
+    this.dispatcher.on('graph.article.click', function(data) {
+        self.setCentreArticle(data.id);
+    });
+
+    // Test fetch - TODO: get from url or let be set by parent state
+    this.setCentreArticle(86);
   },
   componentDidUpdate: function() {
-    graph.update(this.getDOMNode(), this.state);
+    graph.update(this.getDOMNode(), this.state, this.dispatcher);
   },
   componentWillUnmount: function() {
     graph.destroy(this.getDOMNode());
@@ -103,5 +111,15 @@ module.exports = React.createClass({
     return (
       <div className="graph" style={{/*TODO:move to css*/height:'100%'}}></div>
     );
+  },
+  setCentreArticle: function(id) {
+    $.get('/map', {
+      id: id,
+    })
+    .then(function(response) {
+      this.setState({
+        articles: response.results,
+      });
+    }.bind(this));
   }
 });
