@@ -1,0 +1,17 @@
+.graph {
+    .article {
+        stroke: #333333;
+        stroke-width: 2;
+
+        &.act {
+            fill: #FFC6B2;
+        }
+        &.regulation {
+            fill: #C5DFFF;
+        }
+    }
+
+    .connection {
+        stroke: #333333;
+    }
+}
