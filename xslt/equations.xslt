@@ -63,7 +63,13 @@
                                 <xsl:if test="@morerows">
                                     <xsl:attribute name="rowspan"><xsl:value-of select="@morerows + 1"/></xsl:attribute>
                                 </xsl:if>
-                                <xsl:if test="@rowsep = '1' or not(@rowsep)">
+                                <xsl:variable name="morerows">
+                                    <xsl:choose>
+                                        <xsl:when test="@morerows"><xsl:value-of select="@morerows"/></xsl:when>
+                                        <xsl:otherwise>0</xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
+                                <xsl:if test="@rowsep = '1' or (not(@rowsep) and count(../following-sibling::row) > $morerows)">
                                     <xsl:attribute name="class">rowsep</xsl:attribute>
                                 </xsl:if>
                                 <xsl:variable name="align">
