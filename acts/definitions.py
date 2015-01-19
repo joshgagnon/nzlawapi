@@ -233,6 +233,13 @@ def find_all_definitions(tree, definitions, expire=True):
         # super ugly hack to prevent placeholders likept 'A'
         text = node.itertext().next()
         if len(text) > 1:
+            # another hack:  if you are in a  label-para which is in a def-para, you aren't the primary definition
+            try:
+                node.iterancestors('label-para').next().iterancestors('def-para').next()
+            except StopIteration:
+                pass
+            else:
+                continue
             parent = get_parent(node)
             clone = deepcopy(parent)
             src = etree.Element('catalex-src')

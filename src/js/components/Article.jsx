@@ -25,26 +25,37 @@ require('bootstrap')
 var ActDisplay = React.createClass({
     mixins: [Definitions.DefMixin],
     componentDidMount: function(){
+        var self = this;
         this.refresh();
+        var find_current = function(){
+            var offset = 30
+            var top = $('body').scrollTop() - offset;
+            var i = _.sortedIndex(self.offsets, top);
+            return self.targets[i];
+        };
+        $(window).on('scroll', _.debounce(function(){
+            // if height changed, refresh
+            var $el = $(find_current());
+            var result =  $el.parents('[data-location]').map(function(){
+                return $(this).attr('data-location');
+            }).toArray().reverse().join('') + $el.attr('data-location');
+            self.props.updatePosition({value: result});
+        }, 200));
     },
     render: function(){
         return <div onClick={this.interceptLink} className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}} />
     },
     refresh: function(){
-        //TODO, check if height has changed
         var self = this;
-        var offsetBase   = $(this.props.scollEl).scrollTop()
         this.offsets = []
         this.targets = []
         //this.scrollHeight = $(this.getDOMNode()).getScrollHeight()
-        var self = this
-
         $(self.getDOMNode())
             .find('[data-location]')
             .map(function() {
                 var $el = $(this)
                 return ( $el.is(':visible') && [
-                    [$el['position']().top + offsetBase, this]
+                    [$el['position']().top, this]
                 ]) || null
             })
             .sort(function(a, b) {
@@ -54,23 +65,21 @@ var ActDisplay = React.createClass({
                     self.offsets.push(this[0])
                     self.targets.push(this[1])
                 });
-        console.log(self.offsets)
-        var find_current = function(){
-            var top = $('body').scrollTop() + 58;
-            var i = _.sortedIndex(self.offsets, top);
-            console.log($(self.targets[i]))
-            return self.targets[i];
-        };
-        $(window).on('scroll', _.debounce(function(){
-            var $el = $(find_current());
-            var result =  $el.parents('[data-location]').map(function(){
-                return $(this).attr('data-location');
-            }).toArray().reverse().join('') + $el.attr('data-location');
-            console.log(result)
-            self.props.updatePosition({value: result});
-        }, 200));
     },
-
+    jumpTo: function(location){
+        var node = $(this.getDOMNode());
+        for(var i=0;i<location.length;i++){
+            node = node.find('[data-location="'+location[i]+'"]');
+        }
+        var offset = 58;
+        var container = $('body');
+        if(node.length){
+            container.animate({scrollTop: (node.offset().top - offset)});
+        }
+        else{
+            return 'Not Found';
+        }
+    },
      //todo destroy
      interceptLink: function(e){
         var link = $(e.target).closest('a');
@@ -87,27 +96,7 @@ var ActDisplay = React.createClass({
         }
      }
 });
-/*
-var JumpTo = React.createClass({
-    mixins: [
-        React.addons.LinkedStateMixin
-    ],
-    getInitialState: function() {
 
-        return {jump_to: null}
-    },
-    componentDidUpdate: function(oldProps){
-        if(oldProps.html!==this.props.html){
-            this.refresh();
-        }
-    },
-
-    render: function(){
-        return <Input ref="jump_to" name="jump_to" type="text" valueLink={this.linkState('jump_to')}
-        buttonAfter={<Button type="submit" className="submit" bsStyle="info" onClick={this.submit}>Jump To</Button>}/>
-    }
-});
-*/
 
 var ArticleScroll = React.createClass({
     componentDidMount: function(){
@@ -189,6 +178,26 @@ module.exports = React.createClass({
     	var index = this.state.typeahead.indexOf(this.state.article_name);
     	this.fetch();
     },
+    jumpTo: function(e){
+        e.preventDefault();
+        var loc = this.state.article_location;
+        var m = _.filter(loc.split(/[,()]/)).map(function(s){
+            s = s.trim();
+            if(s.indexOf('cl') === 0){
+                s = ', '+s;
+            }
+            if(s.indexOf(' ') === -1){
+                s = '('+s+')';
+            }
+            return s;
+        });
+        if(this.refs.article){
+            var error= this.refs.article.jumpTo(m);
+            if(error){
+                this.setState({jumpToError: error})
+            }
+        }
+    },
     fetch: function(){
         // for development only, delete
         localStorage['article'] = JSON.stringify({article_name: this.state.article_name, article_type: this.state.article_type});
@@ -211,13 +220,19 @@ module.exports = React.createClass({
     		}.bind(this))
     },
     handleArticleChange: function(value){
-        this.setState({article_name: value.name, article_type: value.type});
+        if(typeof(value) == 'string'){
+                this.setState({article_name: value})
+        }
+        else{
+            this.setState({article_name: value.name, article_type: value.type});
+        }
     },
     handlePositionChange: function(value){
-        this.setState({article_location: value.value})
+        this.setState({article_location: value.value, jumpToError: null});
+
     },
-    handleJumpToChange: function(value){
-        //this.setState({article_location: value.value})
+    handleJumpToChange: function(e){
+        this.setState({article_location: e.target.value})
     },
 	render: function(){
         var linkArticle = {
@@ -233,9 +248,11 @@ module.exports = React.createClass({
                                         valueLink={linkArticle} appendToSelf={true}
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>} />
                                 </Col>
-                               <Col lg={6} >
-                                <Input ref="jump_to" name="jump_to" type="text" value={this.state.article_location} onChange={ this.handleJumpToChange}
-                                        buttonAfter={<Button type="submit" className="submit" bsStyle="info" onClick={this.submit}>Jump To</Button>}/>
+                               <Col lg={6} className="jump-to-col" >
+                                <Input ref="jump_to" name="jump_to" type="text"
+                                    bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
+                                    value={this.state.article_location} onChange={ this.handleJumpToChange}
+                                    buttonAfter={<Button type="submit" className="submit" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>}/>
                                 </Col>
 							</form>
 						</div>
@@ -244,7 +261,8 @@ module.exports = React.createClass({
                     {this.state.loading ? <div className="csspinner traditional"></div> : null}
 						<div className="row results">
                             <div className="col-md-10">
-								{this.state.act_name ? <ActDisplay html={this.state.act_html} defContainer={'.act_browser'} definitions={this.state.act_definitions} updatePosition={this.handlePositionChange}/> : null}
+								{this.state.act_name ? <ActDisplay html={this.state.act_html} defContainer={'.act_browser'}
+                                definitions={this.state.act_definitions} updatePosition={this.handlePositionChange} ref="article" /> : null}
                             </div>
                             <div className="col-md-2">
                                 <ArticleScroll html={this.state.contents}/>

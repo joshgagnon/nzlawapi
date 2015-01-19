@@ -102,8 +102,9 @@ module.exports = {
         componentDidMount: initPopover,
         componentWillUnmount: function(){
             $(this.getDOMNode())
-                .off('show.bs.popover shown.bs.popover')
-                .popover("destroy")
+                .off('show.bs.popover shown.bs.popover');
+              //due to bug in bs
+            $(this.getDOMNode()).data()['bs.popover']['[data-toggle="popover"]'].destroy();
         }
         }
     }

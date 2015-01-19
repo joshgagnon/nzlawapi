@@ -129,8 +129,14 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <xsl:attribute name="data-location">s <xsl:value-of select="label"/> </xsl:attribute>
-
+            <xsl:choose>
+                <xsl:when test="ancestor::schedule">
+                    <xsl:attribute name="data-location">, cl <xsl:value-of select="label"/></xsl:attribute>
+                </xsl:when>
+                    <xsl:otherwise>
+                    <xsl:attribute name="data-location">s <xsl:value-of select="label"/> </xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:call-template name="current"/>
               <xsl:choose>
                 <xsl:when test="heading != ''">
@@ -189,6 +195,7 @@
         <ul class="label-para">
             <xsl:call-template name="current"/>
             <li>
+                <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
                 <xsl:apply-templates select="label"/>
                 <xsl:apply-templates select="para/label-para"/>
             </li>
@@ -277,7 +284,6 @@
         <p class="labelled label">
             <xsl:call-template name="current"/>
             <xsl:if test="text() != ''">
-                <xsl:attribute name="data-location">(<xsl:value-of select="."/>)</xsl:attribute>
                 <span class="label">
                      <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
                 </span>
