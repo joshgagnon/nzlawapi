@@ -130,28 +130,64 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <xsl:call-template name="current"/>
-            <h5 class="prov labelled">
-                <a>
-                <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
-
-                <span class="label">
-                    <xsl:call-template name="parentquote"/>
-                    <xsl:value-of select="label"/>
-                </span>
-                <xsl:value-of select="heading"/>
-                </a>
-            </h5>
+              <xsl:choose>
+                <xsl:when test="heading != ''">
+                    <h5 class="prov labelled">
+                        <a>
+                        <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
+                        <span class="label">
+                            <xsl:call-template name="parentquote"/>
+                            <xsl:value-of select="label"/>
+                        </span>
+                        <xsl:value-of select="heading"/>
+                        </a>
+                    </h5>
+                </xsl:when>
+            </xsl:choose>
             <ul class="prov">
                 <li>
                     <xsl:choose>
-                <xsl:when test="prov.body != ''">
-                    <xsl:apply-templates select="prov.body/subprov"/>
-                </xsl:when>
+                        <xsl:when test="prov.body != ''">
+                             <xsl:apply-templates select="prov.body/subprov"/>
+                             <xsl:if test="prov.body/para/text != ''">
+                                 <p class="headless label">
+                                        <span class="label">
+                                                <xsl:call-template name="parentquote"/>
+                                                <xsl:value-of select="label"/>
+                                        </span>
+                                         <xsl:value-of select="prov.body/para/text"/>
+                                </p>
+                                    <xsl:apply-templates select="prov.body/para/label-para"/>
+                                    <xsl:apply-templates select="prov.body/notes/history/history-note"/>
+                             </xsl:if>
+                        </xsl:when>
                         <xsl:otherwise>
-                        <span class="deleted label-deleted">[Repealed]</span>
-                    </xsl:otherwise>
+                            <span class="deleted label-deleted">[Repealed]</span>
+                        </xsl:otherwise>
                     </xsl:choose>
                     <xsl:apply-templates select="notes/history/history-note"/>
+                </li>
+            </ul>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="asdfhead1/prov">
+        <div class="prov">
+            <xsl:attribute name="id">
+                <xsl:value-of select="@id"/>
+            </xsl:attribute>
+            <xsl:call-template name="current"/>
+            <ul class="prov">
+                <li>
+                        <p class="headless label">
+                                <span class="label">
+                                        <xsl:call-template name="parentquote"/>
+                                        <xsl:value-of select="label"/>
+                                </span>
+                                 <xsl:value-of select="prov.body/para/text"/>
+                        </p>
+                    <xsl:apply-templates select="prov.body/para/label-para"/>
+                    <xsl:apply-templates select="prov.body/notes/history/history-note"/>
                 </li>
             </ul>
         </div>
@@ -265,6 +301,9 @@
                 <xsl:when test="../para/text != ''">
                     <xsl:apply-templates select="../para/text[1]"/>
                 </xsl:when>
+                 <!-- <xsl:when test="../para/text != ''">
+                    <xsl:apply-templates select="../para/text[1]"/>
+                </xsl:when> -->
                 <xsl:otherwise>
                     <span class="deleted label-deleted">[Repealed]</span>
                 </xsl:otherwise>
@@ -372,7 +411,7 @@
 
     <xsl:template match="schedule.misc">
       <div class="schedule-misc">
-        <xsl:apply-templates select="head1|para/label-para"/>
+        <xsl:apply-templates select="head1|para/label-para|prov|para"/>
       </div>
     </xsl:template>
 
@@ -381,7 +420,7 @@
         <xsl:attribute name="id">
             <xsl:value-of select="@id"/>
         </xsl:attribute>
-            <h2 class="part">
+            <h2 class="head1">
                 <span class="label"><xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
             </h2>
@@ -410,7 +449,7 @@
                     </tr>
                 </tbody>
             </table>
-            <xsl:apply-templates select="schedule.provisions|schedule.misc"/>
+            <xsl:apply-templates select="schedule.provisions|schedule.misc|notes"/>
         </div>
     </xsl:template>
 

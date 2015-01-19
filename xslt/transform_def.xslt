@@ -22,7 +22,7 @@
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
                     <p class="text">
-                         <xsl:apply-templates select="para/text|para/label-para|example|text|label-para"/>
+                         <xsl:apply-templates select="para/text|para/label-para|example|text|label-para|amend"/>
                     </p>
                 </div>
     </xsl:template>

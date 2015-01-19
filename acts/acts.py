@@ -101,7 +101,6 @@ def get_full_act(act):
 
 
 def format_response(args, result):
-    print args
     if args.get('format', 'html') == 'json':
         return {'content': result, 'act_name': args['act_name']}
     else:
