@@ -1,10 +1,9 @@
 from db import get_db
-from acts.acts import query_act, query_acts
+from acts.acts import query_act, query_acts, get_act_node_by_id
 from util import CustomException
 from views import mod
 from cases.cases import get_full_case, get_case_info, case_search
 import graph
-from lxml import etree
 import sys
 from flask import jsonify, g, request, send_from_directory, Flask
 from flask.json import JSONEncoder
@@ -127,9 +126,7 @@ def post_reports():
 def search_by_id(query):
     status = 200
     try:
-        document, title = find_node_by_id(query)
-        result = cull_tree(document)
-        result = {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': title, 'type': 'act'}
+        result = get_act_node_by_id(query)
     except Exception, e:
         result = {'error': str(e)}
         status = 500

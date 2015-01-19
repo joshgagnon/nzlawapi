@@ -27,7 +27,7 @@ def cull_tree(nodes):
             [parent.remove(x) for x in to_remove]
             node = parent
     [fix_parents(n) for n in nodes]
-    return tohtml(nodes[0].getroottree())
+    return nodes[0].getroottree()
 
 
 def generate_range(string):
@@ -117,7 +117,6 @@ def find_node_by_id(node_id, db=None):
             where i.id = %(node_id)s
             order by version desc
             limit 1; """
-
             cur.execute(query, {'node_id': node_id})
             result = cur.fetchone()
             return (etree.fromstring(result[0]).xpath("//*[@id='%s']" % node_id), result[1])

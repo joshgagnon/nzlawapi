@@ -3,8 +3,7 @@ var React = require('react/addons');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var Alert = require('react-bootstrap/Alert');
-var Modal = require('react-bootstrap/Modal');
-var OverlayMixin = require('react-bootstrap/OverlayMixin');
+
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var joinClasses = require('react-bootstrap/utils/joinClasses');
@@ -15,6 +14,7 @@ var ResultStore = require('../stores/ResultStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
+var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap')
@@ -22,93 +22,13 @@ require('bootstrap')
 
 
 
-var DefModal = React.createClass({
-  mixins: [OverlayMixin],
-  getInitialState: function () {
-    return {
-      isModalOpen: false
-    };
-  },
-  handleToggle: function () {
-    this.setState({
-      isModalOpen: !this.state.isModalOpen
-    });
-  },
-  opened: function(){
-    this.setState({
-      isModalOpen: true
-    });
-    this.props.opened();
-  },
-  render: function () {
-    return (
-      <Button onClick={this.opened} bsSize="xsmall" className="show-more">Show More</Button>
-    );
-  },
-  // This is called by the `OverlayMixin` when this component
-  // is mounted or updated and the return value is appended to the body.
-  renderOverlay: function () {
-    if (!this.state.isModalOpen) {
-      return <span/>;
-    }
-    return (
-        <Modal {...this.props} title={"Definition: "+this.props.title}  onRequestHide={this.handleToggle}>
-           <div className="modal-body">
-            <div dangerouslySetInnerHTML={{__html:this.props.html}}/>
-            </div>
-          <div className="modal-footer">
-            <Button onClick={this.handleToggle}>Close</Button>
-          </div>
-        </Modal>
-      );
-  }
-});
 
 
 var ActDisplay = React.createClass({
+    mixins: [Definitions.DefMixin],
     render: function(){
         return <div onClick={this.interceptLink} className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}} />
     },
-    componentDidUpdate: function(){
-        var self = this;
-        $(this.getDOMNode()).popover({
-            container: '.act_browser',
-            placement: 'auto',
-            trigger: 'click',
-            selector: '[data-toggle="popover"]',
-            template: '<div class="popover def-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title">'+
-                '</h3><div class="popover-close">&times;</div><div class="popover-content"></div><div class="popover-footer">' +
-                '</div></div>',
-            content: function(){
-                return self.props.definitions[$(this).attr('def-id')].html;
-            },
-            title: function(){
-                return self.props.definitions[$(this).attr('def-id')].title;
-            }
-        }).on('show.bs.popover', function(e){
-            //fucking hackjob
-            var $target = $(e.target);
-            var data = self.props.definitions[$target.attr('def-id')];
-            var opened = function(){
-                $target.popover('hide');
-            }
-            var closed= function(){
-                //React.unmountComponentAtNode($target.data('bs.popover').$tip.find('.popover-footer')[0]);
-            }
-            var button = <DefModal title={data.title} html={data.html} opened={opened} onRequestHide={closed}/>;
-            React.render(button,
-                $target.data('bs.popover').$tip.find('.popover-footer')[0]);
-
-        }).on('shown.bs.popover', function(e){
-            var $target = $(e.target);
-            $target.data('bs.popover').$tip
-                .on('click', '.popover-close', function(){
-                    $target.popover('hide')
-                })
-                .on('click', '.show-more', function(){
-                });
-        });
-     },
      //todo destroy
      interceptLink: function(e){
         var link = $(e.target).closest('a');
@@ -149,11 +69,18 @@ var ArticleScroll = React.createClass({
         }
      },
      stopPropagation: function(e){
-        // TODO, fix
         e.stopPropagation();
+        var elem = $(this.getDOMNode());
+         if(e.deltaY<0 && elem.scrollTop() == 0) {
+                 e.preventDefault();
+           }
+         if(e.deltaY>0 && elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+                 e.preventDefault();
+           }
+
      },
     render: function(){
-        return <div onClick={this.interceptLink} onWheel={this.stopProp} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+        return <div onClick={this.interceptLink} onWheel={this.stopPropagation} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
     }
 });
 
@@ -194,16 +121,6 @@ module.exports = React.createClass({
     	var index = this.state.typeahead.indexOf(this.state.article_name);
     	this.fetch();
     },
-    next: function(){
-    	var idx = (this.state.index+1) % this.state.typeahead.length;
-    	this.setState({index: idx, act_name: this.state.typeahead[idx]}, this.fetch);
-    },
-    prev: function(){
-    	var idx = this.state.index-1
-    	var n = this.state.acts_typeahead.length;
-    	idx = ((idx%n)+n)%n;
-    	this.setState({index: idx, act_name: this.state.typeahead[idx]}, this.fetch);
-    },
     fetch: function(){
         // for development only, delete
         localStorage['article'] = JSON.stringify({article_name: this.state.article_name, article_type: this.state.article_type});
@@ -240,10 +157,6 @@ module.exports = React.createClass({
 								<TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
                                         label='Article' valueLink={linkArticle} appendToSelf={true}
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
-							 	<ButtonGroup>
-								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
-								 	<Button onClick={this.next}><span className="glyphicon glyphicon-chevron-right"></span></Button>
-							 	</ButtonGroup>
 							</form>
 						</div>
 					</nav>

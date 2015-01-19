@@ -128,7 +128,7 @@ class Monitor(object):
 
 
 def process_node(parent, defs, title, monitor):
-    ignore_fields = ['a', 'skeleton', 'history-note']
+    ignore_fields = ['a', 'skeleton', 'history-note', 'title', 'heading']
     doc = parent.ownerDocument
 
     def create_def(word, definition, index):

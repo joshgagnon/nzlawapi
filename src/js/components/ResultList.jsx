@@ -11,11 +11,11 @@ var $ = require('jquery');
 var ResultList = React.createClass({
     propTypes: {
         results: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-    },    
+    },
     render: function(){
         var content = this.props.results.map(function(result){
           return (
-            <Result key={result.id} data={result} />
+            <Result key={result.id} data={result} definitions={result.content.definitions} />
           )
     });
     return (
@@ -29,17 +29,19 @@ var ResultList = React.createClass({
 var Results = React.createClass({
     mixins: [
         Reflux.listenTo(ResultStore, 'onResults'),
-    ],    
+    ],
     getInitialState: function() {
         return {results: this.props.initialResults || []};
-    }, 
+    },
     onResults: function(data){
         var padding = 20;
         this.setState({results: data.results});
         if(data.current){
             var container = $(this.refs.scrollable.getDOMNode()),
                 scrollTo = $('.'+data.current);
-            container.animate({scrollTop:scrollTo.offset().top -container.offset().top + container.scrollTop()- padding} );
+            if(scrollTo.length){
+                container.animate({scrollTop:scrollTo.offset().top -container.offset().top + container.scrollTop()- padding} );
+            }
         }
     },
     render: function(){
