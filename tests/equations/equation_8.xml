@@ -1,0 +1,29 @@
+<eqn id="DLM1523236">
+    <table align="center" fontsize="10" frame="none" id="DLM4544100" leading="11">
+        <tgroup cols="8">
+            <colspec colname="col1" colwidth="9.00pt"/>
+            <colspec colname="col2" colwidth="115.00pt"/>
+            <colspec colname="col3" colwidth="3.00pt"/>
+            <colspec colname="col4" colwidth="9.00pt"/>
+            <colspec colname="col5" colwidth="2.51pt"/>
+            <colspec colname="col6" colwidth="8.00pt"/>
+            <colspec colname="col7" colwidth="4.00pt"/>
+            <colspec colname="col8" colwidth="120.00pt"/>
+            <tbody>
+                <row>
+                    <entry align="center" colsep="0" morerows="1" valign="middle">(</entry>
+                    <entry align="center" colsep="0" valign="middle">total payment</entry>
+                    <entry align="center" colsep="0" morerows="1" valign="middle"/>
+                    <entry align="center" colsep="0" morerows="1" valign="middle">)</entry>
+                    <entry align="center" colsep="0" morerows="1" valign="middle"/>
+                    <entry align="center" colsep="0" morerows="1" valign="middle">×</entry>
+                    <entry align="center" colsep="0" morerows="1" valign="middle"/>
+                    <entry align="left" colsep="0" morerows="1" valign="middle">weekly PAYE table amount.</entry>
+                </row>
+                <row>
+                    <entry align="center" colsep="0">weekly portion of payment</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+</eqn>
