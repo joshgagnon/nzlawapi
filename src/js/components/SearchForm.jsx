@@ -46,15 +46,15 @@ var Inputs = {
     },
     case_name: function(link, error, typeahead){
         return <TypeAhead type="text" bsStyle={error ? 'error': null}  hasError={!!error} typeahead={typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={link('case_name')}  />
-    },    
+    },
     acts_find: function(link){
-        return <Input type="select" key="acts_find" ref="acts_find" label='Find' name="acts_find" valueLink={link('acts_find')} >
+        return <Input type="select" key="acts_find" ref="find" label='Find' name="acts_find" valueLink={link('acts_find')} >
             <option value="contains">Search</option>
             <option value="definitions">Definition</option>
         </Input>
     },
     act_find: function(link){
-        return <Input type="select" key="act_find" ref="act_find" label='Find' name="act_find" valueLink={link('act_find')}>
+        return <Input type="select" key="act_find" ref="find" label='Find' name="act_find" valueLink={link('act_find')}>
                 <option value="search">Contains</option>
                 <option value="section">Section</option>
                 <option value="part">Part</option>
@@ -64,14 +64,14 @@ var Inputs = {
             </Input>
     },
     case_find: function(link){
-        return <Input type="select" key="case_find" ref="case_find" label='Find' name="case_find" valueLink={link('case_find')} >
+        return <Input type="select" key="case_find" ref="find" label='Find' name="case_find" valueLink={link('case_find')} >
             <option value="contains">Search Within</option>
             <option value="paragraph">Paragraph</option>
             <option value="full">Whole Document</option>
         </Input>
     },
     cases_find: function(link){
-        return <Input type="select" key="case_find" ref="case_find" label='Find' name="case_find" valueLink={link('case_find')} >
+        return <Input type="select" key="case_find" ref="find" label='Find' name="case_find" valueLink={link('case_find')} >
             <option value="case_query">Search Front Pages</option>
             <option value="neutral_citation">Neutral Citation</option>
             <option value="court">Court</option>
@@ -81,7 +81,7 @@ var Inputs = {
             <option value="charge">Charge</option>
             <option value="bench">Bench</option>
         </Input>
-    },   
+    },
 }
 
 
@@ -93,7 +93,7 @@ var SearchForm = React.createClass({
     getInitialState: function() {
         this.count = 0;
         this.errors = {};
-        return _.defaults(this.props.initialForm, 
+        return _.defaults(this.props.initialForm,
             {
             type: 'act', act_find: 'search', acts_find: 'contains', case_find: 'contains', cases_find: 'case_query',
             acts_typeahead: [], cases_typeahead: [],
@@ -109,55 +109,55 @@ var SearchForm = React.createClass({
         $.get('/cases.json')
             .then(function(data){
                 this.setState({cases_typeahead: data.cases.map(function(x){ return x[0]; })});
-            }.bind(this));         
-    },    
+            }.bind(this));
+    },
     onChange: function(state){
         this.setState({type: state.type});
-    },  
+    },
     handleFieldChange: function(evt){
         Actions.queryChange({type: evt.target.value});
-    },   
+    },
     optionalInputs: function(){
         // todo, DRY
         var comps = [];
         if(this.state.type === 'act'){
             comps.push(Inputs['act_name'](
-                this.linkState, 
-                this.state.errors['act_name'], 
+                this.linkState,
+                this.state.errors['act_name'],
                 this.state.acts_typeahead));
             comps.push(Inputs['act_find'](this.linkState));
             if(Inputs[this.state.act_find]){
                 comps.push(Inputs[this.state.act_find](
-                    this.linkState, 
+                    this.linkState,
                     this.state.errors['query']
-                    ));               
+                    ));
             }
         }
         if(this.state.type === 'acts'){
-            comps.push(Inputs['acts_find'](this.linkState));
+            comps.push(Inputs['find'](this.linkState));
             if(Inputs[this.state.acts_find]){
-                comps.push(Inputs[this.state.acts_find](this.linkState));               
+                comps.push(Inputs[this.state.acts_find](this.linkState));
             }
         }
         if(this.state.type === 'case'){
             comps.push(Inputs['case_name'](
-                this.linkState, 
+                this.linkState,
                 this.state.errors['case_name'],
                 this.state.cases_typeahead));
             comps.push(Inputs['case_find'](this.linkState));
             if(Inputs[this.state.case_find]){
-                comps.push(Inputs[this.state.case_find](this.linkState, 
-                    this.state.errors['query']));               
+                comps.push(Inputs[this.state.case_find](this.linkState,
+                    this.state.errors['query']));
             }
-        } 
+        }
         if(this.state.type === 'cases'){
             comps.push(Inputs['cases_find'](this.linkState));
             if(Inputs[this.state.cases_find]){
                 comps.push(Inputs[this.state.cases_find](
-                    this.linkState, 
-                    this.state.errors['query']));               
+                    this.linkState,
+                    this.state.errors['query']));
             }
-        }              
+        }
         return comps
     },
 
@@ -171,7 +171,7 @@ var SearchForm = React.createClass({
                </Alert>
             );
         }
-    }, 
+    },
 
     submit: function(e){
         e.preventDefault();
@@ -187,14 +187,14 @@ var SearchForm = React.createClass({
         if(_.isEmpty(errors)){
             this.setState({loading: true});
             $.get('/query', data)
-                .then(function(result){              
+                .then(function(result){
                     Actions.newResult({query: JSON.stringify(data), src: {url: '/query', get: data}, content: result})
                 }.bind(this),
                     function(result){
                         try{
                             this.setState({error_message: result.responseJSON.error});
                         }catch(e){
-                           this.setState({error_message: 'Server Error'}); 
+                           this.setState({error_message: 'Server Error'});
                         }
                     }.bind(this))
                 .always(function(){

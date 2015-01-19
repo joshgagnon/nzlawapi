@@ -7,6 +7,7 @@ var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var Glyphicon = require('react-bootstrap/Glyphicon');
 var Actions = require('../actions/Actions');
 var ResultForm = require('./ResultForm.jsx');
+var Definitions = require('./Definitions.jsx');
 var findText = require('../util/findText.js');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -14,8 +15,9 @@ var $ = require('jquery');
 
 var Result = React.createClass({
     mixins: [
-        React.addons.LinkedStateMixin
-    ],    
+        React.addons.LinkedStateMixin,
+        Definitions.DefMixin
+    ],
     getInitialState: function(){
         return {
             expanded: false,
@@ -25,12 +27,6 @@ var Result = React.createClass({
             search: ''
         }
     },
-    componentDidMount: function(){
-        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'hover'});
-    },
-     componentDidUpdate: function(){
-        $('[data-toggle="popover"]', this.getDOMNode()).popover({container: '.result_list', placement: 'auto', trigger: 'hover'});
-    },   
     header: function(){
         return <div className="legislation-header">
         <Button className='menu' onClick={this.showForm}><Glyphicon glyph="list" /></Button>
@@ -57,10 +53,9 @@ var Result = React.createClass({
         Actions.removeResult(this.props.data);
     },
     form: function(){
-        return <ResultForm data={this.props} 
+        return <ResultForm data={this.props}
             toggleHistory={this.toggleHistory} history={this.state.history}
             toggleCrossref={this.toggleCrossref} crossref={this.state.crossref}
-            toggleDefinitions={this.toggleDefinitions} definitions={this.state.definitions}
             toggleContext={this.toggleContext} context={this.state.context}
             updateSearch={this.updateSearch} search={this.state.search}/>
     },
@@ -82,21 +77,9 @@ var Result = React.createClass({
     },
     toggleContext: function(){
         this.setState({context: !this.state.context});
-    }, 
+    },
     toggleCrossref: function(){
         this.setState({crossref: !this.state.crossref});
-    }, 
-    toggleDefinitions: function(){
-        this.setState({definitions: !this.state.definitions});
-        if(!this.props.data.content.definitions_processed){
-            $.get('/query', {
-                type: this.props.data.content.type, 
-                act_name: this.props.data.content.act_name, act_find: 'all_definitions', format: 'json'
-                })
-                .then(function(result){
-                    Actions.definitions(this.props.data.id, result.content)
-                }.bind(this));
-        }
     },
     updateSearch: function(e){
         this.setState({search: $(e.target).val()})
@@ -126,22 +109,19 @@ var Result = React.createClass({
         }
         if(this.state.showing_form){
             className += ' showing-form';
-        }  
+        }
          if(this.props.data.current){
             className += ' selected';
-        } 
+        }
         if(this.state.history){
             className += ' history';
-        } 
+        }
         if(this.state.context){
             className += ' context';
-        } 
+        }
         if(this.state.crossrefs){
             className += ' crossrefs';
         }
-         if(this.state.definitions){
-            className += ' definitions';
-        }       
         return <div className={className}>
                 {this.header()}
                 {this.form()}

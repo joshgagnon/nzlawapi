@@ -65,14 +65,17 @@ height:100%;
     white-space: initial;
     border-radius:initial;
 }
-
+.legislation p.label{
+  display:block;
+}
 .legislation a{
     text-decoration: underline;
 }
 .legislation a.def-popover{
     color:#000;
     text-decoration: none;
-    border-bottom: 1px dashed #00BD00;
+    border-bottom: 1px solid #00BD00;
+    cursor:pointer;
 }
 
 
@@ -95,12 +98,30 @@ height:100%;
 .popover{
    max-width: 500px;
 
-  .popover-content{
+   .show-more{
+    cursor: pointer;
+    text-decoration: none;
 
+   }
+  .popover-content>*{
       max-height:200px;
-      overflow-y:hidden;
-  }
+      overflow-y: auto;
+    }
+     /*&.overflowed .popover-content >*:before {
+      content:'';
+      width:100%;
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:40px;
+      background:linear-gradient(transparent 200px, white);
+    }*/
+
+   &.overflowed .popover-footer{
+    display:block
+   }
   .popover-footer{
+    display:none;
       margin-top: 8px;
       padding: 8px 14px;
       font-size: 14px;

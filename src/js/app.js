@@ -70,7 +70,7 @@ if(localStorage['data']){
 
 
 var routes = (
-  <ReactRouter.Route name="app" path="/" handler={App}>
+  <ReactRouter.Route name="app" path="/" handler={Article}>
     <ReactRouter.Route name="validator" handler={Validator}/>
     <ReactRouter.Route name="full_article" handler={Article} />
     <ReactRouter.Route name="graph" handler={Graph} />

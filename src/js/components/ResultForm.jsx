@@ -23,7 +23,6 @@ module.exports = React.createClass({
 	    		</div>
 	    			<div className="col-md-8">
 	    		<ButtonGroup>
-		    		<Button onClick={this.props.toggleDefinitions} className={this.props.definitions ? 'active': ''}>Definitions</Button>
 		    		<Button onClick={this.props.toggleContext} className={this.props.context ? 'active': ''}>Context</Button>
 		    		<Button onClick={this.props.toggleHistory} className={this.props.history ? 'active': ''}>History Notes</Button>
 		    		<Button onClick={this.props.toggleCrossref} className={this.props.crossref ? 'active': ''}>Cross References</Button>

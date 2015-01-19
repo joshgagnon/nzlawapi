@@ -1,7 +1,7 @@
 from db import get_db
 from util import CustomException, tohtml
 from definitions import populate_definitions, process_definitions
-from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query
+from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query, find_node_by_id
 from lxml import etree
 import json
 import os
@@ -71,7 +71,7 @@ def update_definitions(act_name, db=None):
 
 def get_act_object(act_name, db=None, replace=False):
     with (db or get_db()).cursor() as cur:
-        query =  """(SELECT processed_document, definitions::text FROM acts a
+        query = """(SELECT processed_document, definitions::text FROM acts a
                 JOIN documents d on a.document_id = d.id
                 WHERE title = %(act)s and latest_version = True)
             UNION
@@ -86,10 +86,10 @@ def get_act_object(act_name, db=None, replace=False):
             tree, definitions = update_definitions(act_name, db=db)
         else:
             tree, definitions = etree.fromstring(result[0]), json.loads(result[1])
-
         return Act(tree=tree, definitions=definitions)
 
-def get_full_act(act):
+
+def act_response(act):
     return {
         'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
@@ -98,39 +98,40 @@ def get_full_act(act):
         'type': 'act'
     }
 
-
-
 def format_response(args, result):
-    print args
     if args.get('format', 'html') == 'json':
         return {'content': result, 'act_name': args['act_name']}
     else:
         return {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': args['act_name']}
 
+def get_act_node_by_id(query):
+    document, title = get_act_node_by_id(query)
+    result = cull_tree(document)
+    result = {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': title, 'type': 'act'}
 
 def query_act(args):
     act = get_act_object(args.get('act_name', args.get('title')))
     search_type = args.get('find')
     if search_type == 'full':
-        return get_full_act(act)
+        pass
     else:
         query = args.get('query')
         if not query:
             raise CustomException('Query missing')
         if search_type == 'search':
-            tree = find_node_by_query(act, query)
+            act.tree = find_node_by_query(act.tree, query)
         elif search_type == 'section':
-            tree = find_section_node(act, query)
+            act.tree = find_section_node(act.tree, query)
         elif search_type == 'part':
-            tree = find_part_node(act, query)
+            act.tree = find_part_node(act.tree, query)
         elif search_type == 'schedule':
-            tree = find_schedule_node(act, query)
+            act.tree = find_schedule_node(act.tree, query)
         elif search_type == 'definitions':
-            tree = find_definitions(act, query)
+            act.tree = find_definitions(act.tree, query)
         else:
             raise CustomException('Invalid search type')
-        result = cull_tree(tree)
-    return format_response(args, result)
+        act.tree = cull_tree(act.tree)
+    return act_response(act)
 
 
 def query_acts(args):

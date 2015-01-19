@@ -48,7 +48,6 @@ class Definition(object):
     def render(self):
         xml = etree.Element('catalex-def-para')
         [xml.append(x) for x in self.xmls]
-        print etree.tostring(xml)
         return {
             'title': self.full_word,
             'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
@@ -129,12 +128,13 @@ class Monitor(object):
 
 
 def process_node(parent, defs, title, monitor):
-    ignore_fields = ['a', 'skeleton', 'history-note']
+    ignore_fields = ['a', 'skeleton', 'history-note', 'title', 'heading']
     doc = parent.ownerDocument
 
-    def create_def(word, definition):
+    def create_def(word, definition, index):
         match = doc.createElement('catalex-def')
         match.setAttribute('def-id', definition.id)
+        match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
 
@@ -149,6 +149,7 @@ def process_node(parent, defs, title, monitor):
             reg = defs.get_regex()
             lines = [node.nodeValue]
             i = 0
+            count = 0
             while i < len(lines):
                 line = lines[i]
                 while isinstance(line, basestring):
@@ -157,8 +158,9 @@ def process_node(parent, defs, title, monitor):
                         break
                     definition = defs.get_active(lmtzr.lemmatize(match.group(2)))
                     span = (match.span(2)[0], match.span(3)[1])
-                    lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition), line[span[1]:]]
+                    lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition, count), line[span[1]:]]
                     i += 2
+                    count += 1
                     line = line[span[1]:]
                 i += 1
             lines = filter(lambda x: x, lines)
@@ -203,6 +205,13 @@ def infer_life_time(node):
         if 'in schedule' in text:
             return get_id(parent.iterancestors('schedule').next())
 
+        if 'in this subpart' in text:
+            return get_id(parent.iterancestors('subpart').next())
+        if 'in this part' in text:
+            return get_id(parent.iterancestors('part').next())
+
+
+
     except (AttributeError, IndexError), e:
         print 'infer life error', e
     except StopIteration:
@@ -211,10 +220,8 @@ def infer_life_time(node):
     return get_id(parent.iterancestors('act').next())
 
 
-
-
 def find_all_definitions(tree, definitions, expire=True):
-    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)]")
+    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)]")
 
     def get_parent(node):
         try:
@@ -235,10 +242,11 @@ def find_all_definitions(tree, definitions, expire=True):
 
             base = lmtzr.lemmatize(text.lower())
             expiry_tag = infer_life_time(parent) if expire else None
-            definitions.add(Definition(full_word=text, key=base, xmls=[clone, src], id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
+            definitions.add(Definition(full_word=text, key=base, xmls=[clone, src],
+                            id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
             if text.lower() != base:
-                definitions.add(Definition(full_word=text, key=text.lower(), xmls=[clone, src], id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
-
+                definitions.add(Definition(full_word=text, key=text.lower(), xmls=[clone, src],
+                                id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
 
 
 def process_definitions(tree, definitions):
@@ -246,7 +254,7 @@ def process_definitions(tree, definitions):
     find_all_definitions(tree, definitions, expire=True)
     print 'Completed definition extraction'
     print '%d nodes to scan' % len(tree.xpath('.//*'))
-    monitor = Monitor(50000)
+    monitor = Monitor(500000)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     process_node(domxml, definitions, title, monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
@@ -258,7 +266,3 @@ def populate_definitions(tree, definitions=None, expire=False):
         definitions = Definitions()
     find_all_definitions(tree, definitions, expire=expire)
     return tree, definitions
-
-
-
-
