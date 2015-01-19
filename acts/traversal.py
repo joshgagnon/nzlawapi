@@ -111,9 +111,9 @@ def find_title_by_id(node_id, db=None):
     with (db or get_db()).cursor() as cur:
         try:
             query = """
-            select a.titlefrom documents d
+            select a.title from documents d
             join acts a on a.document_id = d.id
-            join id_lookup i on i.parent_id = a.id and i.mapper = 'acts'
+            join id_lookup i on i.parent_id = a.source_id and i.mapper = 'acts'
             where i.id = %(node_id)s
             order by version desc
             limit 1; """

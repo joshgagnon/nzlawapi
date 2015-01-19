@@ -129,6 +129,8 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+            <xsl:attribute name="data-location">s <xsl:value-of select="label"/> </xsl:attribute>
+
             <xsl:call-template name="current"/>
               <xsl:choose>
                 <xsl:when test="heading != ''">
@@ -171,31 +173,13 @@
         </div>
     </xsl:template>
 
-    <xsl:template match="asdfhead1/prov">
-        <div class="prov">
-            <xsl:attribute name="id">
-                <xsl:value-of select="@id"/>
-            </xsl:attribute>
-            <xsl:call-template name="current"/>
-            <ul class="prov">
-                <li>
-                        <p class="headless label">
-                                <span class="label">
-                                        <xsl:call-template name="parentquote"/>
-                                        <xsl:value-of select="label"/>
-                                </span>
-                                 <xsl:value-of select="prov.body/para/text"/>
-                        </p>
-                    <xsl:apply-templates select="prov.body/para/label-para"/>
-                    <xsl:apply-templates select="prov.body/notes/history/history-note"/>
-                </li>
-            </ul>
-        </div>
-    </xsl:template>
 
     <xsl:template match='prov.body/subprov'>
         <div class="subprov">
             <xsl:call-template name="current"/>
+            <xsl:if test="label != ''">
+                <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates select="label"/>
             <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov" />
         </div>
@@ -293,6 +277,7 @@
         <p class="labelled label">
             <xsl:call-template name="current"/>
             <xsl:if test="text() != ''">
+                <xsl:attribute name="data-location">(<xsl:value-of select="."/>)</xsl:attribute>
                 <span class="label">
                      <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
                 </span>
@@ -438,6 +423,7 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+            <xsl:attribute name="data-location">sch <xsl:value-of select="label"/></xsl:attribute>
             <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
                 <tbody><tr>
                     <td class="header">

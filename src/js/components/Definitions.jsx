@@ -99,7 +99,12 @@ var $ = require('jquery');
          }
 module.exports = {
     DefMixin: {
-        componentDidMount: initPopover
+        componentDidMount: initPopover,
+        componentWillUnmount: function(){
+            $(this.getDOMNode())
+                .off('show.bs.popover shown.bs.popover')
+                .popover("destroy")
+        }
         }
     }
     DefModal: DefModal

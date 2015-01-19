@@ -8,8 +8,11 @@
 		label{
 			padding-right: 10px;
 		}
-		input.form-control {
-			width:300px  !important;
+		input.form-control[type="text"] {
+
+		}
+		.input-group button{
+		line-height: 20px;
 		}
 		.form-group,
 		.btn-group{
@@ -41,7 +44,7 @@
 		}
 		.page:last-child{
 			border-bottom:none;
-		}		
+		}
 	}
 
 	.legislation-contents{
@@ -54,7 +57,7 @@
 
 			white-space: nowrap;
 			overflow: hidden;
-			text-overflow: ellipsis;		
+			text-overflow: ellipsis;
 
 			.nav>li>a{
 				padding:0
