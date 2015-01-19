@@ -15,7 +15,7 @@ var ResultList = React.createClass({
     render: function(){
         var content = this.props.results.map(function(result){
           return (
-            <Result key={result.id} data={result} definitions={result.content.definitions} />
+            <Result key={result.id} data={result} definitions={result.content.definitions} defContainer={'.act_browser'}/>
           )
     });
     return (

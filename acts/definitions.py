@@ -205,6 +205,13 @@ def infer_life_time(node):
         if 'in schedule' in text:
             return get_id(parent.iterancestors('schedule').next())
 
+        if 'in this subpart' in text:
+            return get_id(parent.iterancestors('subpart').next())
+        if 'in this part' in text:
+            return get_id(parent.iterancestors('part').next())
+
+
+
     except (AttributeError, IndexError), e:
         print 'infer life error', e
     except StopIteration:

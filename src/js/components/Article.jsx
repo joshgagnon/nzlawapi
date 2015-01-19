@@ -35,7 +35,12 @@ var ActDisplay = React.createClass({
         if(link.length){
             e.preventDefault();
             if(link.attr('href') !== '#'){
-
+                if(link.attr('data-linkid')){
+                    var offset = 58;
+                    var container = $('body'),
+                        scrollTo = $('#'+link.attr('data-linkid'));
+                    container.animate({scrollTop: (scrollTo.offset().top - offset)});
+                }
             }
         }
      }
@@ -164,7 +169,7 @@ module.exports = React.createClass({
                     {this.state.loading ? <div className="csspinner traditional"></div> : null}
 						<div className="row results">
                             <div className="col-md-10">
-								<ActDisplay html={this.state.act_html} definitions={this.state.act_definitions} />
+								<ActDisplay html={this.state.act_html} defContainer={'.act_browser'} definitions={this.state.act_definitions} />
                             </div>
                             <div className="col-md-2">
                                 <ArticleScroll html={this.state.contents}/>

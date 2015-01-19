@@ -360,6 +360,10 @@
         <a>
             <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
             </xsl:attribute>
+            <xsl:if test="name() = 'intref'">
+                 <xsl:attribute name="class">internal_ref</xsl:attribute>
+                 <xsl:attribute name="data-linkid"><xsl:value-of select="@href"/></xsl:attribute>
+            </xsl:if>
             <xsl:if test="name() = 'extref'">
                  <xsl:attribute name="class">external_ref</xsl:attribute>
             </xsl:if>
