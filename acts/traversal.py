@@ -107,19 +107,18 @@ def find_definition(tree, query):
         raise CustomException("Path for definition not found")
 
 
-def find_node_by_id(node_id, db=None):
+def find_title_by_id(node_id, db=None):
     with (db or get_db()).cursor() as cur:
         try:
             query = """
-            select document, title from documents d
+            select a.titlefrom documents d
             join acts a on a.document_id = d.id
             join id_lookup i on i.parent_id = a.id and i.mapper = 'acts'
             where i.id = %(node_id)s
             order by version desc
             limit 1; """
             cur.execute(query, {'node_id': node_id})
-            result = cur.fetchone()
-            return (etree.fromstring(result[0]).xpath("//*[@id='%s']" % node_id), result[1])
+            return cur.fetchone()[0]
         except Exception, e:
             print e
             raise CustomException("Result not found")

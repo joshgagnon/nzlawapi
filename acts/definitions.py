@@ -221,7 +221,7 @@ def infer_life_time(node):
 
 
 def find_all_definitions(tree, definitions, expire=True):
-    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)]")
+    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::schedule.amendments)]")
 
     def get_parent(node):
         try:

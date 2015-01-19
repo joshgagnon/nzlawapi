@@ -20,10 +20,6 @@ require('bootstrap3-typeahead');
 require('bootstrap')
 
 
-
-
-
-
 var ActDisplay = React.createClass({
     mixins: [Definitions.DefMixin],
     render: function(){

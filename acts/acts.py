@@ -1,7 +1,7 @@
 from db import get_db
 from util import CustomException, tohtml
 from definitions import populate_definitions, process_definitions
-from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query, find_node_by_id
+from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query, find_title_by_id
 from lxml import etree
 import json
 import os
@@ -105,9 +105,10 @@ def format_response(args, result):
         return {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': args['act_name']}
 
 def get_act_node_by_id(query):
-    document, title = get_act_node_by_id(query)
-    result = cull_tree(document)
-    result = {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': title, 'type': 'act'}
+    title = find_title_by_id(query)
+    act = get_act_object(title)
+    act.tree= cull_tree(act.tree)
+    return act_response(act)
 
 def query_act(args):
     act = get_act_object(args.get('act_name', args.get('title')))
