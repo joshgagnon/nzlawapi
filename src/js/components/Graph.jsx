@@ -8,6 +8,7 @@ var graph = {
   yScale: null,
   rScale: null,
   sScale: null,
+  xAxis: null,
   links: function(d) {
     return d.inbound + d.references.reduce(function(s, r) { return s + r.weight }, 0);
   },
@@ -22,12 +23,19 @@ var graph = {
     svg.append('g')
       .attr('class', 'graph-articles');
 
-    var dispatcher = new events.EventEmitter();
+    svg.append('g')
+      .attr('class', 'x-axis axis');
 
     this.xScale = d3.scale.linear();
     this.yScale = d3.scale.linear();
     this.rScale = d3.scale.linear();
     this.sScale = d3.scale.linear();
+
+    this.xAxis = d3.svg.axis()
+      .scale(this.xScale)
+      .orient('bottom');
+
+    var dispatcher = new events.EventEmitter();
 
     this.update(el, state, dispatcher);
 
@@ -39,11 +47,14 @@ var graph = {
     var animLength = 700,
         appearAnimLength = 400;
 
+    var w = el.offsetWidth,
+        h = el.offsetHeight;
+
     // Set up scales
     var xScale = this.xScale;
     xScale.domain(d3.extent(state.articles, function(d) { return d.year; }));
     // Articles can be centered in middle 90% of the graph
-    xScale.range([el.offsetWidth * 0.05, el.offsetWidth * 0.95]);
+    xScale.range([w * 0.05, w * 0.95]);
 
     var linkExtents = d3.extent(state.articles, this.links);
 
@@ -52,7 +63,7 @@ var graph = {
     // TODO: sort based on user selection
     yScale.domain(linkExtents);
     // Articles can be centered in middle 90% of the graph
-    yScale.range([el.offsetHeight * 0.95, el.offsetHeight * 0.05]);
+    yScale.range([h * 0.95, h * 0.05]);
 
     var rScale = this.rScale;
     rScale.domain(linkExtents);
@@ -123,6 +134,12 @@ var graph = {
       .transition().duration(appearAnimLength)
         .attr('opacity', 0)
         .remove();
+
+    // Draw axes
+    d3.select(el).select('.x-axis')
+      .attr('transform', 'translate(0,' + (h - 21) + ')')
+      .transition().duration(animLength)
+        .call(this.xAxis);
   },
   destroy: function(el) {
     // Cleanup here if required

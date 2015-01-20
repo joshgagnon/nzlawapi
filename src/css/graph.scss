@@ -1,6 +1,8 @@
 .graph {
+    $colour-dark: #333333;
+
     .article {
-        stroke: #333333;
+        stroke: $colour-dark;
         stroke-width: 2;
 
         &.act {
@@ -12,6 +14,17 @@
     }
 
     .connection {
-        stroke: #333333;
+        stroke: $colour-dark;
+    }
+
+    .axis {
+        path, line {
+            fill: none;
+            stroke: $colour-dark;
+            shape-rendering: crispEdges;
+        }
+        text {
+            font-size: 11px;
+        }
     }
 }
