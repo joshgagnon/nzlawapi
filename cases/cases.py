@@ -100,16 +100,16 @@ def process_case(tree):
 
 def process_case_contents(tree):
     results = []
-    start = tree.xpath('.//div')[0]
     div_id = str(uuid.uuid4())
+    tree.xpath('.//div')[0].insert(0, etree.Element('div', {'id': div_id, 'data-location': 'Intituling'}))
     results.append(('Intituling', div_id))
-    start.attrib['id'] = div_id
     i = 1
     for span in tree.xpath('.//span'):
         if span.text and re.match('^ *\[%d+\]' % i, span.text):
             span_id = str(uuid.uuid4())
             results.append(('Paragraph %d' % i, span_id))
             span.attrib['id'] = span_id
+            span.attrib['data-location'] = 'Paragraph %d' % i
             i += 1
     return tree, render_template('case_contents.html', results=results)
 
@@ -124,8 +124,9 @@ def get_full_case(case):
             tree = process_case(etree.HTML(f.read()))
             tree, contents = process_case_contents(tree)
             return {
-                'html_content': etree.tostring(tree),
+                'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
                 'html_contents_page': contents,
-                'full_citation': results.get('full_citation')
+                'full_citation': results.get('full_citation'),
+                'type': 'case'
             }
     return results

@@ -15,7 +15,7 @@ class Act(object):
 
 
 def get_title(tree):
-    return tree.xpath('/act/cover/title')[0].text
+    return tree.xpath('/act/cover/title|/regulation/cover/title')[0].text
 
 
 def get_act(act, db=None):

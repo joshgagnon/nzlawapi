@@ -18,10 +18,11 @@
 		.btn-group{
 			padding:0 8px;
 		}
-		.jump-to-col .form-control-feedback{
+		&.jump-to .form-control-feedback{
 			right: 85px;
 		}
 	}
+
 	.top-bar{
 		background-color:#f8f8f8;
 		border-bottom:1px solid #e7e7e7;

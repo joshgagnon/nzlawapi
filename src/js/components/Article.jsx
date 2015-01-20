@@ -29,12 +29,15 @@ var ActDisplay = React.createClass({
         this.refresh();
         var find_current = function(){
             var offset = 30
-            var top = $('body').scrollTop() - offset;
+            var top = $(self.props.scrollEl).scrollTop() - offset;
             var i = _.sortedIndex(self.offsets, top);
-            return self.targets[i];
+            return self.targets[(i>=self.targets.length ? self.targets.length-1 : i)];
         };
         $(window).on('scroll', _.debounce(function(){
             // if height changed, refresh
+            if(self.scrollHeight !== $(self.getDOMNode()).height()){
+                self.refresh();
+            }
             var $el = $(find_current());
             var result =  $el.parents('[data-location]').map(function(){
                 return $(this).attr('data-location');
@@ -47,15 +50,16 @@ var ActDisplay = React.createClass({
     },
     refresh: function(){
         var self = this;
+        var pos = this.props.article_type === 'case' ? 'offset' : 'position';
         this.offsets = []
         this.targets = []
-        //this.scrollHeight = $(this.getDOMNode()).getScrollHeight()
+        this.scrollHeight = $(self.getDOMNode()).height();
         $(self.getDOMNode())
             .find('[data-location]')
             .map(function() {
-                var $el = $(this)
+                var $el = $(this);
                 return ( $el.is(':visible') && [
-                    [$el['position']().top, this]
+                    [$el[pos]().top, this]
                 ]) || null
             })
             .sort(function(a, b) {
@@ -166,7 +170,6 @@ module.exports = React.createClass({
         }
     },
     typeahead_query: function(query, process){
-        //_.debounce
         $.get('/act_case_hint.json', {query: query})
             .then(function(results){
                 this.setState({typeahead: results.results});
@@ -175,27 +178,31 @@ module.exports = React.createClass({
     },
     submit: function(e){
     	e.preventDefault();
-    	var index = this.state.typeahead.indexOf(this.state.article_name);
     	this.fetch();
     },
     jumpTo: function(e){
         e.preventDefault();
         var loc = this.state.article_location;
-        var m = _.filter(loc.split(/[,()]/)).map(function(s){
-            s = s.trim();
-            if(s.indexOf('cl') === 0){
-                s = ', '+s;
+        if(loc){
+            var m = _.filter(loc.split(/[,()]/)).map(function(s){
+                s = s.trim();
+                if(s.indexOf('cl') === 0){
+                    s = ', '+s;
+                }
+                if(s.indexOf(' ') === -1){
+                    s = '('+s+')';
+                }
+                return s;
+            });
+            if(this.refs.article){
+                var error= this.refs.article.jumpTo(m);
+                if(error){
+                    this.setState({jumpToError: error})
+                }
             }
-            if(s.indexOf(' ') === -1){
-                s = '('+s+')';
-            }
-            return s;
-        });
-        if(this.refs.article){
-            var error= this.refs.article.jumpTo(m);
-            if(error){
-                this.setState({jumpToError: error})
-            }
+        }
+        else{
+            this.setState({jumpToError: 'Empty'})
         }
     },
     fetch: function(){
@@ -211,10 +218,11 @@ module.exports = React.createClass({
     	})
     		.then(function(response){
     			this.setState({
-                    act_html: response.html_content,
-                    act_name: response.act_name,
+                    html: response.html_content,
+                    name: response.act_name || response.full_citation,
     				contents: response.html_contents_page,
-                    act_definitions: response.definitions,
+                    definitions: response.definitions,
+                    article_type: response.type,
                     loading: false
     			});
     		}.bind(this))
@@ -242,27 +250,30 @@ module.exports = React.createClass({
 		return (<div className="act_browser">
 					<nav className="navbar navbar-default navbar-fixed-top">
 						<div className="container">
-							<form className="form ">
+
                             <Col lg={6}>
-								<TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
+                                <form className="form ">
+								    <TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
                                         valueLink={linkArticle} appendToSelf={true}
-										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>} />
-                                </Col>
-                               <Col lg={6} className="jump-to-col" >
-                                <Input ref="jump_to" name="jump_to" type="text"
-                                    bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
-                                    value={this.state.article_location} onChange={ this.handleJumpToChange}
-                                    buttonAfter={<Button type="submit" className="submit" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>}/>
-                                </Col>
-							</form>
+										buttonAfter={<Button type="input" bsStyle="primary" onClick={this.submit}>Search</Button>} />
+                                </form>
+                            </Col>
+                            <Col lg={6} >
+                                <form className="form jump-to">
+                                    <Input ref="jump_to" name="jump_to" type="text"
+                                        bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
+                                        value={this.state.article_location} onChange={ this.handleJumpToChange}
+                                        buttonAfter={<Button type="input" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>} />
+                                </form>
+                            </Col>
 						</div>
 					</nav>
 					<div className="container">
                     {this.state.loading ? <div className="csspinner traditional"></div> : null}
 						<div className="row results">
                             <div className="col-md-10">
-								{this.state.act_name ? <ActDisplay html={this.state.act_html} defContainer={'.act_browser'}
-                                definitions={this.state.act_definitions} updatePosition={this.handlePositionChange} ref="article" /> : null}
+								{this.state.name ? <ActDisplay html={this.state.html} article_type={this.state.article_type} defContainer={'.act_browser'} scrollEl={'body'}
+                                definitions={this.state.definitions} updatePosition={this.handlePositionChange} ref="article" /> : null}
                             </div>
                             <div className="col-md-2">
                                 <ArticleScroll html={this.state.contents}/>
