@@ -109,7 +109,7 @@ def process_case_contents(tree):
             span_id = str(uuid.uuid4())
             results.append(('Paragraph %d' % i, span_id))
             span.attrib['id'] = span_id
-            span.attrib['data-location'] = 'Paragraph %d' % i
+            span.attrib['data-location'] = '[%d]' % i
             i += 1
     return tree, render_template('case_contents.html', results=results)
 

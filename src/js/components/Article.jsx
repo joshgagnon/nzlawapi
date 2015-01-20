@@ -29,19 +29,22 @@ var ActDisplay = React.createClass({
         this.refresh();
         var find_current = function(){
             var offset = 30
-            var top = $(self.props.scrollEl).scrollTop() - offset;
+            var top = $(window).scrollTop() - offset;
             var i = _.sortedIndex(self.offsets, top);
             return self.targets[(i>=self.targets.length ? self.targets.length-1 : i)];
         };
         $(window).on('scroll', _.debounce(function(){
-            // if height changed, refresh
+            var result = ''
             if(self.scrollHeight !== $(self.getDOMNode()).height()){
                 self.refresh();
             }
             var $el = $(find_current());
-            var result =  $el.parents('[data-location]').map(function(){
-                return $(this).attr('data-location');
-            }).toArray().reverse().join('') + $el.attr('data-location');
+            if(!$el.attr('data-location-no-path')){
+                result =  $el.parents('[data-location]').map(function(){
+                    return $(this).attr('data-location');
+                }).toArray().reverse().join('');
+            }
+            result += $el.attr('data-location');
             self.props.updatePosition({value: result});
         }, 200));
     },
@@ -124,7 +127,7 @@ var ArticleScroll = React.createClass({
         if(link.length){
             e.preventDefault();
             var offset = 58;
-            var container = $('body'),
+            var container = $(window),
                 scrollTo = $(link.attr('href'));
             container.scrollTop(scrollTo.offset().top - offset);
         }

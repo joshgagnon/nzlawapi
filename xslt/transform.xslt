@@ -276,6 +276,11 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+            <xsl:if test="ancestor::def-para/para/text">
+                <xsl:attribute name="data-location">define: <xsl:value-of select="."/>
+                </xsl:attribute>
+                <xsl:attribute name="data-location-no-path">true</xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates/>
         </dfn>
     </xsl:template>
