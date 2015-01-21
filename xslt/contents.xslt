@@ -19,8 +19,8 @@
     <xsl:template match="part[@toc]">
         <li>
             <a>
-              <xsl:attribute name="href">#<xsl:value-of select="@id"/>
-            </xsl:attribute>                 
+              <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
+              <xsl:attribute name="title">Part <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
             <span class="part-label">Part <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
@@ -32,7 +32,8 @@
     <xsl:template match="schedule[@toc]">
         <li>
             <a>
-                <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>                 
+                <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
+                <xsl:attribute name="title">Schedule <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
                 <span class="schedule-label">Schedule <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
@@ -44,7 +45,8 @@
     <xsl:template match="subpart[@toc]">
         <li>
             <a>
-                <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>                 
+                <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
+                <xsl:attribute name="title">Subpart <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
                 <span class="subart-label">Subpart <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
@@ -56,7 +58,8 @@
     <xsl:template match="crosshead">
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
-                </xsl:attribute>     
+            </xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="."/></xsl:attribute>
             <span class="crosshead"><xsl:value-of select="."/></span>
             </a>
     </xsl:template>
@@ -66,9 +69,9 @@
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
             </xsl:attribute>
-
+            <xsl:attribute name="title"><xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
             <span class="prov-label"><span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
-            </a>     
+            </a>
         </li>
     </xsl:template>
 
