@@ -30,6 +30,7 @@ var ActDisplay = React.createClass({
         var find_current = function(){
             var offset = 30
             var top = $(window).scrollTop() - offset;
+            console.log(top)
             var i = _.sortedIndex(self.offsets, top);
             return self.targets[(i>=self.targets.length ? self.targets.length-1 : i)];
         };
@@ -79,7 +80,7 @@ var ActDisplay = React.createClass({
             node = node.find('[data-location="'+location[i]+'"]');
         }
         var offset = 58;
-        var container = $('body');
+        var container = $("html, body");
         if(node.length){
             container.animate({scrollTop: (node.offset().top - offset)});
         }
@@ -127,7 +128,7 @@ var ArticleScroll = React.createClass({
         if(link.length){
             e.preventDefault();
             var offset = 58;
-            var container = $(window),
+            var container = $("html, body"),
                 scrollTo = $(link.attr('href'));
             container.scrollTop(scrollTo.offset().top - offset);
         }
@@ -192,7 +193,7 @@ module.exports = React.createClass({
                 if(s.indexOf('cl') === 0){
                     s = ', '+s;
                 }
-                if(s.indexOf(' ') === -1){
+                else if(s.indexOf(' ') === -1 && s.indexOf('[') === -1){
                     s = '('+s+')';
                 }
                 return s;
@@ -286,3 +287,13 @@ module.exports = React.createClass({
 				</div>);
 	}
 });
+
+/*
+
+glyphicon glyphicon-search
+glyphicon glyphicon-floppy-open
+glyphicon glyphicon-floppy-save
+glyphicon glyphicon-print
+glyphicon glyphicon-star
+glyphicon glyphicon-trash
+*/
