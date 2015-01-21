@@ -104,7 +104,7 @@ module.exports = {
             $(this.getDOMNode())
                 .off('show.bs.popover shown.bs.popover');
               //due to bug in bs
-            $(this.getDOMNode()).data()['bs.popover']['[data-toggle="popover"]'].destroy();
+            $(this.getDOMNode()).data()['bs.popover'].destroy();
         }
         }
     }

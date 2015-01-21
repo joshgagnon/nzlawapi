@@ -1,13 +1,19 @@
+
+@import "bootstrap/variables";
+
+
 .act_browser{
 	   position:relative;
 	padding-top:80px;
 	padding-bottom:80px;
-	form{
-		padding-top: 6px;
+	padding-left: 65px;
 
-		label{
-			padding-right: 10px;
-		}
+	@media (min-width: $screen-md-min) {
+		padding-right:310px;
+	}
+
+	form{
+
 		input.form-control[type="text"] {
 
 		}
@@ -23,10 +29,51 @@
 		}
 	}
 
-	.top-bar{
-		background-color:#f8f8f8;
-		border-bottom:1px solid #e7e7e7;
-		height:80px;
+	.navbar-brand{
+		margin:0;
+		padding:0;
+
+		.logo{
+			height: 44px;
+			margin: 3px 16px;
+		}
+	}
+
+
+	.sidebar-wrapper {
+		height: 100%;
+		width: 65px;
+		position: fixed;
+		top: 0;
+		padding-top: 65px;
+		background-color: $gray;
+		text-align: center;
+		left: 65px;
+		margin-left: -65px;
+
+		a{
+			color: $gray-lighter;
+			font-size: 40px;
+			margin:6px;
+			cursor:pointer
+		}
+		a:hover{
+			color:#ffffff;
+		}
+	}
+	.contents-bar-wrapper{
+		height: 100%;
+		width: 300px;
+		position: fixed;
+		top: 0;
+		right: 0;
+		padding-left: 16px;
+		padding-top: 65px;
+		border-left-width: 1px;
+		border-left-style:solid;
+	}
+	.container-fluid{
+		max-width:1170px;
 	}
 
 	.case{
@@ -52,19 +99,19 @@
 	}
 
 	.legislation-contents{
-		max-height: calc(100% - 100px);
-		position: fixed;
-		width: 25%;
-		overflow: auto;
-
+		height: 100%;
+		overflow-y: auto;
 		.contents{
-
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-
+			a{
+			color:$gray;
+			}
 			.nav>li>a{
-				padding:0
+				padding:0;
+
+
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
 			}
 			&>ul{
 				padding-left:0;

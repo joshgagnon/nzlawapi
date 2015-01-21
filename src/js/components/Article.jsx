@@ -4,6 +4,9 @@ var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var Alert = require('react-bootstrap/Alert');
 var Col = require('react-bootstrap/Col');
+var Glyphicon= require('react-bootstrap/Glyphicon');
+var TabbedArea = require('react-bootstrap/TabbedArea');
+var TabPane = require('react-bootstrap/TabPane');
 
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
@@ -30,7 +33,6 @@ var ActDisplay = React.createClass({
         var find_current = function(){
             var offset = 30
             var top = $(window).scrollTop() - offset;
-            console.log(top)
             var i = _.sortedIndex(self.offsets, top);
             return self.targets[(i>=self.targets.length ? self.targets.length-1 : i)];
         };
@@ -108,17 +110,16 @@ var ActDisplay = React.createClass({
 
 var ArticleScroll = React.createClass({
     componentDidMount: function(){
-        $('.legislation-contents').affix({
-          offset: {
-            top: 0
-          }
-        })
+        var self = this;
          $('body').scrollspy({ target:'.legislation-contents .contents', offset:90});
-        $('body').on('activate.bs.scrollspy', function (e) {
-            var scrollTo = $(e.target);
-            var container = $('.legislation-contents');
-            container.scrollTop(scrollTo.offset().top -container.offset().top + container.scrollTop());
-        });
+        $('body').on('activate.bs.scrollspy', _.debounce(function (e) {
+                var container = $(self.getDOMNode());
+                var scrollTo = container.find('.active:last');
+                if(!scrollTo.length){
+                    scrollTo = container.find('a:first')
+                }
+                container.scrollTop(scrollTo.offset().top -container.offset().top -container.height()/2 + container.scrollTop());
+        }, 100));
     },
     componentWillUnmount: function(){
          $('body').scrollspy('destroy').off('activate.bs.scrollspy');
@@ -128,7 +129,7 @@ var ArticleScroll = React.createClass({
         if(link.length){
             e.preventDefault();
             var offset = 58;
-            var container = $("html, body"),
+            var container = $(window),
                 scrollTo = $(link.attr('href'));
             container.scrollTop(scrollTo.offset().top - offset);
         }
@@ -153,7 +154,7 @@ module.exports = React.createClass({
 	mixins: [
       //  React.addons.LinkedStateMixin,
     ],
-    getInitialState: function(){
+    load: function(){
         // for development only, delete
         var article = {article_name: 'Companies Act 1993', article_type: 'act'}
         if(localStorage['article']){
@@ -165,13 +166,13 @@ module.exports = React.createClass({
     		typeahead: [],
             article_name: this.props.article_name || article.article_name,
     		article_type: this.props.article_type || article.article_type,
-    		index: 0,
     	}
     },
+    getInitialState: function(){
+        return {};
+    },
     componentDidMount: function(){
-        if(this.state.article_name){
-            this.fetch();
-        }
+        this.setState(this.load(), this.fetch)
     },
     typeahead_query: function(query, process){
         $.get('/act_case_hint.json', {query: query})
@@ -212,6 +213,9 @@ module.exports = React.createClass({
     fetch: function(){
         // for development only, delete
         localStorage['article'] = JSON.stringify({article_name: this.state.article_name, article_type: this.state.article_type});
+        if(!this.state.article_name){
+            return;
+        }
         this.setState({
             loading: true
         });
@@ -246,54 +250,71 @@ module.exports = React.createClass({
     handleJumpToChange: function(e){
         this.setState({article_location: e.target.value})
     },
+    reset: function(){
+        this.setState({
+            html: null,
+            name: null,
+            contents: null,
+            definitions: null,
+            article_type: null,
+            loading: false,
+            article_name: null,
+        });
+    },
 	render: function(){
         var linkArticle = {
           value: this.state.article_name,
           requestChange: this.handleArticleChange
         };
 		return (<div className="act_browser">
-					<nav className="navbar navbar-default navbar-fixed-top">
-						<div className="container">
+                        <div className="container-fluid">
 
-                            <Col lg={6}>
-                                <form className="form ">
+                         <nav className="navbar navbar-default navbar-fixed-top">
+
+                            <div className="navbar-header">
+                              <a className="navbar-brand" href="#">
+                                   <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
+                                 </a>
+                            </div>
+
+                                <form className="navbar-form navbar-left ">
 								    <TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
                                         valueLink={linkArticle} appendToSelf={true}
 										buttonAfter={<Button type="input" bsStyle="primary" onClick={this.submit}>Search</Button>} />
-                                </form>
-                            </Col>
-                            <Col lg={6} >
-                                <form className="form jump-to">
+
                                     <Input ref="jump_to" name="jump_to" type="text"
                                         bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
                                         value={this.state.article_location} onChange={ this.handleJumpToChange}
                                         buttonAfter={<Button type="input" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>} />
                                 </form>
-                            </Col>
-						</div>
-					</nav>
-					<div className="container">
-                    {this.state.loading ? <div className="csspinner traditional"></div> : null}
-						<div className="row results">
-                            <div className="col-md-10">
-								{this.state.name ? <ActDisplay html={this.state.html} article_type={this.state.article_type} defContainer={'.act_browser'} scrollEl={'body'}
-                                definitions={this.state.definitions} updatePosition={this.handlePositionChange} ref="article" /> : null}
-                            </div>
-                            <div className="col-md-2">
-                                <ArticleScroll html={this.state.contents}/>
-                            </div>
-						</div>
+					       </nav>
+                        </div>
+                    <div className="sidebar-wrapper">
+                        <a><Glyphicon glyph="search" /></a>
+                        <a><Glyphicon glyph="floppy-open" /></a>
+                        <a><Glyphicon glyph="floppy-save" /></a>
+                        <a><Glyphicon glyph="print" /></a>
+                        <a><Glyphicon glyph="star" /></a>
+                        <a onClick={this.reset}><Glyphicon glyph="trash" /></a>
+                    </div>
+                    <div className="container-wrapper">
+    					<div className="container-fluid">
+                        {this.state.loading ? <div className="csspinner traditional"></div> : null}
+    						<div className="results">
+
+
+                                    {this.state.name ? <ActDisplay html={this.state.html} article_type={this.state.article_type} defContainer={'.act_browser'} scrollEl={'body'}
+                                    definitions={this.state.definitions} updatePosition={this.handlePositionChange} ref="article" /> : null}
+
+
+
+    						</div>
+                        </div>
 					</div>
+                    <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
+                        <ArticleScroll html={this.state.contents}/>
+                    </div>
 				</div>);
 	}
 });
 
-/*
-
-glyphicon glyphicon-search
-glyphicon glyphicon-floppy-open
-glyphicon glyphicon-floppy-save
-glyphicon glyphicon-print
-glyphicon glyphicon-star
-glyphicon glyphicon-trash
-*/
