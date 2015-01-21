@@ -190,7 +190,7 @@ def map():
     centre_id = args.get('id')
     status = 200
     try:
-        result = {'results': graph.get_links(centre_id)}
+        result = {'results': graph.get_links(graph.get_connected('act', centre_id))}
     except CustomException, e:
         result = {'error': str(e)}
         status = 500
