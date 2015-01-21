@@ -9,15 +9,11 @@
 	padding-left: 65px;
 
 	@media (min-width: $screen-md-min) {
-			padding-right:310px;
+		padding-right:310px;
 	}
 
 	form{
-		padding-top: 6px;
 
-		label{
-			padding-right: 10px;
-		}
 		input.form-control[type="text"] {
 
 		}
@@ -33,6 +29,15 @@
 		}
 	}
 
+	.navbar-brand{
+		margin:0;
+		padding:0;
+
+		.logo{
+			height: 44px;
+			margin: 3px 16px;
+		}
+	}
 
 
 	.sidebar-wrapper {
