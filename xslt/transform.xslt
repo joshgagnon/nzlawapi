@@ -102,6 +102,15 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <xsl:call-template name="current"/>
+                <xsl:attribute name="data-location-no-path"></xsl:attribute>
+                <xsl:choose>
+                    <xsl:when test="ancestor::schedule">
+                        <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
+                    </xsl:when>
+                        <xsl:otherwise>
+                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/> </xsl:attribute>
+                    </xsl:otherwise>
+                </xsl:choose>
             <h2 class="part">
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
@@ -116,6 +125,15 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <xsl:call-template name="current"/>
+                <xsl:attribute name="data-location-no-path"></xsl:attribute>
+                <xsl:choose>
+                    <xsl:when test="ancestor::schedule">
+                        <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
+                    </xsl:when>
+                        <xsl:otherwise>
+                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/> </xsl:attribute>
+                    </xsl:otherwise>
+                </xsl:choose>
             <h3 class="subpart">
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
                 <xsl:value-of select="heading"/>
