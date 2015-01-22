@@ -15,20 +15,19 @@
 	form{
 
 		input.form-control[type="text"] {
+			width:400px
+		}
 
-		}
-		.input-group button{
-		line-height: 20px;
-		}
-		.form-group,
-		.btn-group{
+		.form-group{
 			padding:0 8px;
 		}
 		&.jump-to .form-control-feedback{
 			right: 85px;
 		}
 	}
-
+	.input-group button{
+		line-height: 20px;
+	}
 	.navbar-brand{
 		margin:0;
 		padding:0;
@@ -61,6 +60,7 @@
 			color:#ffffff;
 		}
 	}
+
 	.contents-bar-wrapper{
 		height: 100%;
 		width: 300px;
@@ -71,9 +71,17 @@
 		padding-top: 65px;
 		border-left-width: 1px;
 		border-left-style:solid;
+		&>div{
+			height:100%;
+		}
+		.form-group{
+			margin-right:16px;
+		}
 	}
+
+
 	.container-fluid{
-		max-width:1170px;
+		max-width:1170px; /* todo */
 	}
 
 	.case{
@@ -99,7 +107,7 @@
 	}
 
 	.legislation-contents{
-		height: 100%;
+		height: calc(100% - 70px);
 		overflow-y: auto;
 		.contents{
 			a{

@@ -12,7 +12,9 @@ var Actions = Reflux.createActions([
 	'definitions',
 	'articleName',
 	'articlePosition',
-	'articleJumpTo'
+	'articleJumpTo',
+	'linkOpened',
+	'linkClosed',
 ]);
 
 

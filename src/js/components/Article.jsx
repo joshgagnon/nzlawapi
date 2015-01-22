@@ -7,6 +7,7 @@ var Col = require('react-bootstrap/Col');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var TabbedArea = require('react-bootstrap/TabbedArea');
 var TabPane = require('react-bootstrap/TabPane');
+var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
 
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
@@ -33,11 +34,96 @@ var ArticleJumpStore = Reflux.createStore({
     }
 });
 
+var OpenLinksStore = Reflux.createStore({
+    listenables: Actions,
+    init: function(){
+        this.openLinks = [];
+    },
+    onLinkOpened: function(link){
+        this.openLinks.push(link);
+        this.trigger(this.openLinks);
+    },
+    onLinkClosed: function(link){
+        this.openLinks = _.reject(this.openLinks, function(l){ return l.id === link.id});
+        this.trigger(this.openLinks);
+    }
+});
+
+var PositionedPop = React.createClass({
+        mixins: [BootstrapMixin],
+        getInitialState: function () {
+        return {
+          placement: 'bottom'
+        };
+      },
+       componentDidMount: function(){
+        var self = this;
+        var $el = $(this.getDOMNode());
+        var $target = $('[data-link-id='+this.props.id+']');
+        //TODO use bootstrap layout algorithm
+        $el.css({'left': '-='+$el.outerWidth()/2})
+        //jQuery.fn.tooltip.Constructor.prototype.show.call(obj);
+
+       },
+      close: function(){
+        Actions.linkClosed(this.props)
+      },
+      scrollTo: function(){
+        Actions.articleJumpTo({id: '#'+this.props.target});
+        Actions.linkClosed(this.props)
+      },
+      render: function () {
+        var classes = 'popover def-popover '+this.state.placement;
+        var style = {};
+        style['left'] = this.props.positionLeft;
+        style['top'] = this.props.positionTop+16;
+        style['display'] = 'block';
+
+        var arrowStyle = {};
+        arrowStyle['left'] = this.props.arrowOffsetLeft;
+        arrowStyle['top'] = this.props.arrowOffsetTop;
+
+        var html;
+        if(this.props.target){
+            html = $('#'+this.props.target)[0].outerHTML;
+        }
+        else{
+            html = ''
+        }
+        return (
+            <div className={classes} role="tooltip" style={style}>
+                <div className="arrow"  style={arrowStyle}></div>
+                <h3 className="popover-title">{this.props.title}</h3>
+                <div className="popover-close" onClick={this.close}>&times;</div>
+                <div className="popover-content">
+                    <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
+                </div>
+                <div className="popover-footer">
+                <div className="row">
+
+                <Col md={6}>
+                    <Button onClick={this.scrollTo}>Scroll To</Button >
+                    </Col>
+                <Col md={6}>
+                <Button  onClick={this.open}>Open</Button >
+                </Col>
+                </div>
+                </div>
+            </div>
+        );
+      }
+
+    });
+
+
 var ActDisplay = React.createClass({
     mixins: [
         Definitions.DefMixin,
-        Reflux.listenTo(ArticleJumpStore,"onJumpTo")
+        Reflux.listenTo(ArticleJumpStore, "onJumpTo")
     ],
+    propTypes: {
+        open_links: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    },
     componentDidMount: function(){
         this.offset = 56;
         var self = this;
@@ -66,7 +152,13 @@ var ActDisplay = React.createClass({
         $(window).on('scroll', this.debounce_scroll);
     },
     render: function(){
-        return <div onClick={this.interceptLink} className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}} />
+        var links = this.props.open_links.map(function(link){
+                    return (<PositionedPop placement="auto" {...link} key={link.id}/>)
+                });
+        return <div className="legislation-result" >
+                <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.html}} />
+                {links}
+            </div>
     },
     refresh: function(){
         var self = this;
@@ -120,10 +212,17 @@ var ActDisplay = React.createClass({
         if(link.length){
             e.preventDefault();
             if(link.attr('href') !== '#'){
-                if(link.attr('data-linkid')){
+                if(link.attr('data-link-id')){
                     var container = $('body'),
-                        scrollTo = $('#'+link.attr('data-linkid'));
-                    container.animate({scrollTop: (scrollTo.offset().top - self.offset)});
+                        scrollTo = $('#'+link.attr('data-target-id'));
+                   // container.animate({scrollTop: (scrollTo.offset().top - self.offset)});
+                   Actions.linkOpened({
+                        title: link.text(),
+                        id: link.attr('data-link-id'),
+                        target: link.attr('data-target-id'),
+                        positionLeft: link.offset().left,
+                        positionTop:link.offset().top
+                    });
                 }
             }
         }
@@ -131,14 +230,50 @@ var ActDisplay = React.createClass({
 });
 
 
-var ArticleScroll = React.createClass({
+var JumpTo = React.createClass({
+    mixins: [
+      Reflux.listenTo(ArticleStore,"onPositionChange"),
+      React.addons.LinkedStateMixin
+    ],
+    getInitialState: function(){
+        return {};
+    },
+    onPositionChange: function(value){
+        this.setState({article_location: value.repr});
+    },
+    jumpTo: function(e){
+        e.preventDefault();
+        var loc = this.state.article_location;
+        if(loc){
+            var m = _.filter(loc.split(/[,()]/)).map(function(s){
+                s = s.trim();
+                if(s.indexOf('cl') === 0){
+                    s = ', '+s;
+                }
+                else if(s.indexOf(' ') === -1 && s.indexOf('[') === -1){
+                    s = '('+s+')';
+                }
+                return s;
+            });
+            Actions.articleJumpTo({location: m});
+        }
+    },
+    render: function(){
+        return <Input ref="jump_to" name="jump_to" type="text"
+            bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
+            valueLink={this.linkState('article_location')}
+            buttonAfter={<Button type="input" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>} />
+    }
+})
+
+var ArticleScrollSpy = React.createClass({
     mixins: [
       Reflux.listenTo(ArticleStore,"onPositionChange")
     ],
 
     onPositionChange: function(value){
         var self = this;
-        var $el = $(this.getDOMNode());
+        var $el = $('.legislation-contents', this.getDOMNode());
         $el.find('.active').each(function(){
             $(this).removeClass('active');
         });
@@ -172,13 +307,16 @@ var ArticleScroll = React.createClass({
 
     },
     render: function(){
-        return <div onClick={this.interceptLink} onWheel={this.stopPropagation} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+        return <div onClick={this.interceptLink} onWheel={this.stopPropagation} >
+                <JumpTo />
+                <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+            </div>
     }
 });
 
 module.exports = React.createClass({
-	mixins: [
-      Reflux.listenTo(ArticleStore,"onPositionChange")
+    mixins: [
+      Reflux.listenTo(OpenLinksStore,"onLinkOpened")
     ],
     load: function(){
         // for development only, delete
@@ -195,7 +333,9 @@ module.exports = React.createClass({
     	}
     },
     getInitialState: function(){
-        return {};
+        return {
+            open_links: []
+        };
     },
     componentDidMount: function(){
         this.setState(this.load(), this.fetch)
@@ -210,23 +350,6 @@ module.exports = React.createClass({
     submit: function(e){
     	e.preventDefault();
     	this.fetch();
-    },
-    jumpTo: function(e){
-        e.preventDefault();
-        var loc = this.state.article_location;
-        if(loc){
-            var m = _.filter(loc.split(/[,()]/)).map(function(s){
-                s = s.trim();
-                if(s.indexOf('cl') === 0){
-                    s = ', '+s;
-                }
-                else if(s.indexOf(' ') === -1 && s.indexOf('[') === -1){
-                    s = '('+s+')';
-                }
-                return s;
-            });
-            Actions.articleJumpTo({location: m});
-        }
     },
     fetch: function(){
         // for development only, delete
@@ -249,9 +372,13 @@ module.exports = React.createClass({
     				contents: response.html_contents_page,
                     definitions: response.definitions,
                     article_type: response.type,
-                    loading: false
+                    loading: false,
+                    open_links: []
     			});
     		}.bind(this));
+    },
+    onLinkOpened: function(links){
+        this.setState({open_links: links});
     },
     handleArticleChange: function(value){
         if(typeof(value) == 'string'){
@@ -260,13 +387,6 @@ module.exports = React.createClass({
         else{
             this.setState({article_name: value.name, article_type: value.type});
         }
-    },
-    onPositionChange: function(value){
-        this.setState({article_location: value.repr});
-
-    },
-    handleJumpToChange: function(e){
-        this.setState({article_location: e.target.value})
     },
     reset: function(){
         this.setState({
@@ -295,13 +415,25 @@ module.exports = React.createClass({
                                  </a>
                             </div>
                                 <form className="navbar-form navbar-left ">
-								    <TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
+								    <TypeAhead typeahead={this.typeahead_debounce}  className='article_name' key="article_name" ref="article_name" name="article_name"
                                         valueLink={linkArticle} appendToSelf={true}
-										buttonAfter={<Button type="input" bsStyle="primary" onClick={this.submit}>Search</Button>} />
-                                    <Input ref="jump_to" name="jump_to" type="text"
-                                        bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
-                                        value={this.state.article_location} onChange={ this.handleJumpToChange}
-                                        buttonAfter={<Button type="input" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>} />
+										buttonAfter={
+                                            <div className="btn-group">
+                                                <Button type="input" bsStyle="primary" onClick={this.submit} >Search</Button>
+                                             <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                              <span className="caret"></span>
+                                              <span className="sr-only">Toggle Dropdown</span>
+                                            </Button>
+                                            <ul className="dropdown-menu" role="menu">
+                                                <li><a href="#">Search All</a></li>
+                                                <li><a href="#">Search Acts</a></li>
+                                                <li><a href="#">Search Regulations</a></li>
+                                                <li><a href="#">Search Cases</a></li>
+                                                <li className="divider"></li>
+                                                <li><a href="#">Advanced Search</a></li>
+                                              </ul>
+                                            </div>
+                                    } />
                                 </form>
 					       </nav>
                         </div>
@@ -317,18 +449,18 @@ module.exports = React.createClass({
     					<div className="container-fluid">
                         {this.state.loading ? <div className="csspinner traditional"></div> : null}
     						<div className="results">
+                                    {this.state.name ?
+                                        <ActDisplay html={this.state.html} article_type={this.state.article_type}
+                                        popupContainer={'.act_browser'} scrollEl={'body'} open_links={this.state.open_links}
+                                        definitions={this.state.definitions} ref="article" /> :
 
-
-                                    {this.state.name ? <ActDisplay html={this.state.html} article_type={this.state.article_type} defContainer={'.act_browser'} scrollEl={'body'}
-                                    definitions={this.state.definitions} updatePosition={this.handlePositionChange} ref="article" /> : null}
-
-
+                                    null}
 
     						</div>
                         </div>
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        <ArticleScroll html={this.state.contents}/>
+                        <ArticleScrollSpy html={this.state.contents}/>
                     </div>
 				</div>);
 	}

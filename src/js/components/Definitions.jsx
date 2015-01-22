@@ -2,6 +2,7 @@ var React = require('react/addons');
 var Button = require('react-bootstrap/Button');
 var Modal = require('react-bootstrap/Modal');
 var OverlayMixin = require('react-bootstrap/OverlayMixin');
+var Col = require('react-bootstrap/Col');
 var $ = require('jquery');
 
 
@@ -26,7 +27,7 @@ var $ = require('jquery');
       },
       render: function () {
         return (
-          <a onClick={this.opened} className="show-more">Show More</a>
+          <Button onClick={this.opened}>Show More</Button>
         );
       },
       // This is called by the `OverlayMixin` when this component
@@ -47,12 +48,21 @@ var $ = require('jquery');
           );
       }
     });
-
+              /* <Col xs={4}>
+                      <DefModal title={data.title} html={data.html} opened={opened} onRequestHide={closed} />
+                      </Col>
+                  <Col xs={4}>
+                      <Button >Scroll To</Button>
+                      </Col>
+                  <Col xs={4}>
+                      <Button >Open Result</Button>
+                      </Col>
+                    </div> */
 
     var initPopover = function(){
             var self = this;
             $(this.getDOMNode()).popover({
-                container:   this.props.defContainer,
+                container:   this.props.popupContainer,
                 placement: 'auto',
                 trigger: 'click',
                 selector: '[data-toggle="popover"]',
@@ -80,13 +90,15 @@ var $ = require('jquery');
                     //React.unmountComponentAtNode($target.data('bs.popover').$tip.find('.popover-footer')[0]);
                 }
 
-                var button = <DefModal title={data.title} html={data.html} opened={opened} onRequestHide={closed}/>;
+                var button = <div className="row">
+                      <DefModal title={data.title} html={data.html} opened={opened} onRequestHide={closed} />
+                      </div>
                 React.render(button, $target.data('bs.popover').$tip.find('.popover-footer')[0]);
+                console.log(self.props.definitions[$target.attr('def-id')])
 
             }).on('shown.bs.popover', function(e){
                 var $target = $(e.target);
                         var elem = $target.data('bs.popover').$tip.find('.popover-content>*');
-                        console.log(elem[0].scrollHeight - elem.scrollTop() , elem.outerHeight())
                         if(elem[0].scrollHeight - elem.scrollTop() > elem.outerHeight()){
                             $target.data('bs.popover').$tip.addClass('overflowed')
                         }

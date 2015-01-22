@@ -93,6 +93,7 @@ height:100%;
 }
 .popover{
    max-width: 500px;
+   min-width:200px;
 
    .show-more{
     cursor: pointer;
@@ -113,17 +114,13 @@ height:100%;
       background:linear-gradient(transparent 200px, white);
     }*/
 
-   &.overflowed .popover-footer{
-    display:block
-   }
   .popover-footer{
-    display:none;
       margin-top: 8px;
       padding: 8px 14px;
-      font-size: 14px;
       background-color: #f7f7f7;
       border-top: 1px solid #ebebeb;
       border-radius: 0 0 5px 5px;
+      text-align: center;
     }
 
     .popover-close{
