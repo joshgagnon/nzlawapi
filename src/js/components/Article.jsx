@@ -15,48 +15,62 @@ var classSet = require('react-bootstrap/utils/classSet');
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
 var ResultStore = require('../stores/ResultStore');
+var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
 require('bootstrap3-typeahead');
-require('bootstrap')
+require('bootstrap');
 
-
+var ArticleJumpStore = Reflux.createStore({
+    listenables: Actions,
+    init: function(){
+    },
+    onArticleJumpTo: function(state){
+        this.trigger(state);
+    }
+});
 
 var ActDisplay = React.createClass({
-    mixins: [Definitions.DefMixin],
+    mixins: [
+        Definitions.DefMixin,
+        Reflux.listenTo(ArticleJumpStore,"onJumpTo")
+    ],
     componentDidMount: function(){
+        this.offset = 56;
         var self = this;
         this.refresh();
         var find_current = function(){
-            var offset = 30
-            var top = $(window).scrollTop() - offset;
-            var i = _.sortedIndex(self.offsets, top);
-            return self.targets[(i>=self.targets.length ? self.targets.length-1 : i)];
+            var top = $(window).scrollTop() + self.offset;
+            var i = _.sortedIndex(self.offsets, top) -1;
+            return self.targets[Math.min(Math.max(0, i), self.targets.length -1)];
+
         };
-        $(window).on('scroll', _.debounce(function(){
+        this.debounce_scroll = _.debounce(function(){
             var result = ''
             if(self.scrollHeight !== $(self.getDOMNode()).height()){
                 self.refresh();
             }
             var $el = $(find_current());
             if(!$el.attr('data-location-no-path')){
-                result =  $el.parents('[data-location]').map(function(){
+                result =  $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
                     return $(this).attr('data-location');
                 }).toArray().reverse().join('');
             }
             result += $el.attr('data-location');
-            self.props.updatePosition({value: result});
-        }, 200));
+            var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id]').attr('id');
+            Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
+        }, 0);
+        $(window).on('scroll', this.debounce_scroll);
     },
     render: function(){
         return <div onClick={this.interceptLink} className="legislation-result" dangerouslySetInnerHTML={{__html:this.props.html}} />
     },
     refresh: function(){
         var self = this;
-        var pos = this.props.article_type === 'case' ? 'offset' : 'position';
+        var pos = 'offset';
         this.offsets = []
         this.targets = []
         this.scrollHeight = $(self.getDOMNode()).height();
@@ -76,31 +90,41 @@ var ActDisplay = React.createClass({
                     self.targets.push(this[1])
                 });
     },
-    jumpTo: function(location){
-        var node = $(this.getDOMNode());
-        for(var i=0;i<location.length;i++){
-            node = node.find('[data-location="'+location[i]+'"]');
+    onJumpTo: function(jump){
+        var target;
+        if(jump.location && jump.location.length){
+            var node = $(this.getDOMNode());
+            for(var i=0;i<jump.location.length;i++){
+                node = node.find('[data-location="'+jump.location[i]+'"]');
+            }
+            target = node;
         }
-        var offset = 58;
-        var container = $("html, body");
-        if(node.length){
-            container.animate({scrollTop: (node.offset().top - offset)});
+        else if(jump.id){
+            target = $(this.getDOMNode()).find(jump.id);
+        }
+        if(target && target.length){
+            var fudge = 4; //why fudge?  probably because scrolling on body
+            //not $(window), as it can't animate
+            var container = $('body, html');
+            console.log(target)
+            container.animate({scrollTop: (target.offset().top - this.offset + fudge)});
         }
         else{
             return 'Not Found';
         }
     },
-     //todo destroy
+    componentWillUnmount: function(){
+        $(window).off('scroll', this.debounce_scroll);
+    },
      interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
             if(link.attr('href') !== '#'){
                 if(link.attr('data-linkid')){
-                    var offset = 58;
                     var container = $('body'),
                         scrollTo = $('#'+link.attr('data-linkid'));
-                    container.animate({scrollTop: (scrollTo.offset().top - offset)});
+                    container.animate({scrollTop: (scrollTo.offset().top - self.offset)});
                 }
             }
         }
@@ -109,32 +133,35 @@ var ActDisplay = React.createClass({
 
 
 var ArticleScroll = React.createClass({
-    componentDidMount: function(){
+    mixins: [
+      Reflux.listenTo(ArticleStore,"onPositionChange")
+    ],
+
+    onPositionChange: function(value){
         var self = this;
-         $('body').scrollspy({ target:'.legislation-contents .contents', offset:90});
-        $('body').on('activate.bs.scrollspy', _.debounce(function (e) {
-                var container = $(self.getDOMNode());
-                var scrollTo = container.find('.active:last');
-                if(!scrollTo.length){
-                    scrollTo = container.find('a:first')
-                }
-                container.scrollTop(scrollTo.offset().top -container.offset().top -container.height()/2 + container.scrollTop());
-        }, 100));
+        var $el = $(this.getDOMNode());
+        $el.find('.active').each(function(){
+            $(this).removeClass('active');
+        });
+        this.active = [];
+        var active = $el.find('[href=#'+value.id+']').parent();
+        if(active.length){
+            active.addClass('active');
+            active.parentsUntil( '.contents', 'li').each(function(){
+                $(this).addClass('active');
+            });
+            $el.scrollTop(active.offset().top -$el.offset().top - $el.height()/2 + $el.scrollTop());
+        }
+
     },
-    componentWillUnmount: function(){
-         $('body').scrollspy('destroy').off('activate.bs.scrollspy');
-    },
-     interceptLink: function(e){
+    interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
-            var offset = 58;
-            var container = $(window),
-                scrollTo = $(link.attr('href'));
-            container.scrollTop(scrollTo.offset().top - offset);
+            Actions.articleJumpTo({id: link.attr('href')});
         }
-     },
-     stopPropagation: function(e){
+    },
+    stopPropagation: function(e){
         e.stopPropagation();
         var elem = $(this.getDOMNode());
          if(e.deltaY<0 && elem.scrollTop() == 0) {
@@ -144,7 +171,7 @@ var ArticleScroll = React.createClass({
                  e.preventDefault();
            }
 
-     },
+    },
     render: function(){
         return <div onClick={this.interceptLink} onWheel={this.stopPropagation} className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
     }
@@ -152,7 +179,7 @@ var ArticleScroll = React.createClass({
 
 module.exports = React.createClass({
 	mixins: [
-      //  React.addons.LinkedStateMixin,
+      Reflux.listenTo(ArticleStore,"onPositionChange")
     ],
     load: function(){
         // for development only, delete
@@ -199,15 +226,7 @@ module.exports = React.createClass({
                 }
                 return s;
             });
-            if(this.refs.article){
-                var error= this.refs.article.jumpTo(m);
-                if(error){
-                    this.setState({jumpToError: error})
-                }
-            }
-        }
-        else{
-            this.setState({jumpToError: 'Empty'})
+            Actions.articleJumpTo({location: m});
         }
     },
     fetch: function(){
@@ -233,7 +252,7 @@ module.exports = React.createClass({
                     article_type: response.type,
                     loading: false
     			});
-    		}.bind(this))
+    		}.bind(this));
     },
     handleArticleChange: function(value){
         if(typeof(value) == 'string'){
@@ -243,8 +262,8 @@ module.exports = React.createClass({
             this.setState({article_name: value.name, article_type: value.type});
         }
     },
-    handlePositionChange: function(value){
-        this.setState({article_location: value.value, jumpToError: null});
+    onPositionChange: function(value){
+        this.setState({article_location: value.repr});
 
     },
     handleJumpToChange: function(e){
@@ -258,7 +277,7 @@ module.exports = React.createClass({
             definitions: null,
             article_type: null,
             loading: false,
-            article_name: null,
+            article_name: null
         });
     },
 	render: function(){
@@ -276,12 +295,10 @@ module.exports = React.createClass({
                                    <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
                                  </a>
                             </div>
-
                                 <form className="navbar-form navbar-left ">
 								    <TypeAhead typeahead={this.typeahead_debounce}  key="article_name" ref="article_name" name="article_name"
                                         valueLink={linkArticle} appendToSelf={true}
 										buttonAfter={<Button type="input" bsStyle="primary" onClick={this.submit}>Search</Button>} />
-
                                     <Input ref="jump_to" name="jump_to" type="text"
                                         bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
                                         value={this.state.article_location} onChange={ this.handleJumpToChange}

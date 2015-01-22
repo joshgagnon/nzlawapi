@@ -98,7 +98,7 @@ class Definitions(object):
 
     def combined_reg(self):
         keys = map(lambda x: x.key, self.ordered_defs())
-        match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" % re.sub('[][()]', '', '|'.join(keys))
+        match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" %  '|'.join(keys)
         return re.compile(match_string, flags=re.I)
 
     def get_regex(self):
@@ -231,7 +231,7 @@ def find_all_definitions(tree, definitions, expire=True):
 
     for node in nodes:
         # super ugly hack to prevent placeholders likept 'A'
-        text = node.itertext().next()
+        text = re.sub('[][()]', '', node.itertext().next())
         if len(text) > 1:
             # another hack:  if you are in a  label-para which is in a def-para, you aren't the primary definition
             try:
