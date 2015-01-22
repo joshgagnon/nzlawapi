@@ -202,7 +202,7 @@ var ActDisplay = React.createClass({
             var fudge = 4; //why fudge?  probably because scrolling on body
             //not $(window), as it can't animate
             var container = $('body, html');
-            container.animate({scrollTop: (target.offset().top - this.offset + fudge)});
+            container.animate({scrollTop: (target.offset().top - this.offset + fudge)}, jump.noscroll ? 0: 300);
         }
         else{
             return 'Not Found';
@@ -296,7 +296,7 @@ var ArticleScrollSpy = React.createClass({
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
-            Actions.articleJumpTo({id: link.attr('href')});
+            Actions.articleJumpTo({id: link.attr('href'), noscroll: true});
         }
     },
     stopPropagation: function(e){

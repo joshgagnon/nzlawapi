@@ -45,9 +45,17 @@ class Definition(object):
     def combine(self, other):
         self.xmls += other.xmls
 
+    def apply_definitions(self, dicttree):
+        for i, x in enumerate(self.xmls):
+            if isinstance(x, str):
+                self.xmls[i] = dicttree[x]
+
+
     def render(self):
         xml = etree.Element('catalex-def-para')
-        [xml.append(x) for x in self.xmls]
+        [xml.append(deepcopy(x)) for x in self.xmls]
+        if self.key == 'advertisement':
+            print etree.tostring(xml)
         return {
             'title': self.full_word,
             'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
@@ -98,7 +106,7 @@ class Definitions(object):
 
     def combined_reg(self):
         keys = map(lambda x: x.key, self.ordered_defs())
-        match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" %  '|'.join(keys)
+        match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" % '|'.join(keys)
         return re.compile(match_string, flags=re.I)
 
     def get_regex(self):
@@ -108,6 +116,13 @@ class Definitions(object):
 
     def render(self):
         return {v.id: v.render() for v in self.items()}
+
+    def apply_definitions(self, tree):
+        dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}
+        print sorted(dicttree.keys())
+        for p in self.pool:
+            for d in self.pool[p]:
+                d.apply_definitions(dicttree)
 
     def __deepcopy__(self):
         newone = type(self)()
@@ -210,14 +225,13 @@ def infer_life_time(node):
         if 'in this part' in text:
             return get_id(parent.iterancestors('part').next())
 
-
-
     except (AttributeError, IndexError), e:
         print 'infer life error', e
     except StopIteration:
         # couldn't find safe parent
         return str(uuid.uuid4())
     return get_id(parent.iterancestors('act').next())
+
 
 
 def find_all_definitions(tree, definitions, expire=True):
@@ -241,7 +255,9 @@ def find_all_definitions(tree, definitions, expire=True):
             else:
                 continue
             parent = get_parent(node)
-            clone = deepcopy(parent)
+            temp_id = parent.attrib.get('temp-def-id', str(uuid.uuid4()))
+            parent.attrib['temp-def-id'] = temp_id
+
             src = etree.Element('catalex-src')
             # todo tricky rules
             src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
@@ -249,10 +265,10 @@ def find_all_definitions(tree, definitions, expire=True):
 
             base = lmtzr.lemmatize(text.lower())
             expiry_tag = infer_life_time(parent) if expire else None
-            definitions.add(Definition(full_word=text, key=base, xmls=[clone, src],
+            definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
                             id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
             if text.lower() != base:
-                definitions.add(Definition(full_word=text, key=text.lower(), xmls=[clone, src],
+                definitions.add(Definition(full_word=text, key=text.lower(), xmls=[temp_id, src],
                                 id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
 
 
@@ -265,6 +281,7 @@ def process_definitions(tree, definitions):
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     process_node(domxml, definitions, title, monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
+    definitions.apply_definitions(tree)
     return tree, definitions
 
 
@@ -272,4 +289,5 @@ def populate_definitions(tree, definitions=None, expire=False):
     if not definitions:
         definitions = Definitions()
     find_all_definitions(tree, definitions, expire=expire)
+    definitions.apply_definitions(tree)
     return tree, definitions

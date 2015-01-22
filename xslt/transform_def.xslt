@@ -37,6 +37,15 @@
         </span>
     </xsl:template>
 
+   <xsl:template match="catalex-def">
+        <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
+            <xsl:attribute name="def-id">
+               <xsl:value-of select="@def-id"/>
+            </xsl:attribute>
+            <xsl:value-of select="."/>
+        </a>
+    </xsl:template>
+
        <xsl:template match="example">
         <div class="example">
             <h6 class="heading"><strong>Example</strong></h6>
