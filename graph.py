@@ -64,13 +64,70 @@ def get_connected(type, id):
         return cur.fetchall()
 
 
-def get_links(collection):
-    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        # Prep collection with extra keys required to build graph
-        for result in collection:
-            result['name'] = '{}_{}'.format(result['type'], result['id'])
-            result['inbound'] = 0
+# TODO: Merge this and get_all_links properly
+def get_links(collection, touching=None):
+    # Prep collection with extra keys required to build graph
+    for result in collection:
+        result['name'] = '{}_{}'.format(result['type'], result['id'])
+        result['inbound'] = 0
 
+    if touching is None:
+        return get_all_links(collection)
+
+    central = filter(lambda r: r['type'] == touching['type'] and int(r['id']) == int(touching['id']), collection)[0]
+
+    # Outbound links
+    query = """
+        SELECT CONCAT(%(central_type)s, '_', source_id) AS source_name, CONCAT(mapper, '_', target_id) AS target_name, count
+        FROM {0}_references
+        WHERE source_id = %(central_id)s
+    """.format(central['type'])
+
+    parameters = {
+        'central_type': central['type'],
+        'central_id': central['id'],
+    }
+
+    # Inbound links
+    for article_type, _, _ in __article_types:
+        query += """
+            UNION ALL
+            SELECT CONCAT(%({0}_type)s, '_', source_id) AS source_name, CONCAT(%(central_type)s, '_', target_id) AS target_name, count
+            FROM {0}_references
+            WHERE mapper = %(central_type)s
+            AND target_id = %(central_id)s
+        """.format(article_type)
+        parameters[article_type + '_type'] = article_type
+
+    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(query, parameters)
+        links = cur.fetchall()
+        for link in links:
+            try:
+                target_idx = [target['name'] for target in collection].index(link['target_name'])
+                for source in collection:
+                    if source['name'] == link['source_name']:
+                        target_link = dict(index=target_idx, weight=link['count'])
+                        collection[target_idx]['inbound'] = link['count']
+                        try:
+                            source['references'].append(target_link)
+                        except KeyError:
+                            source['references'] = [target_link]
+                        break
+            except ValueError:
+                # Some targets might not be in our result set due to id collisions between acts/regulations/etc. - ignore them
+                pass
+
+    # Ensure there's a references key even if it's empty
+    for result in collection:
+        if 'references' not in result:
+            result['references'] = []
+
+    return collection
+
+
+def get_all_links(collection):
+    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         query = """
             SELECT CONCAT('act_', source_id) AS source_name, CONCAT(mapper, '_', target_id) AS target_name, count FROM act_references
             WHERE source_id IN %(source_acts)s

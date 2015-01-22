@@ -170,11 +170,11 @@ module.exports = React.createClass({
     this.dispatcher = graph.create(this.getDOMNode(), this.props, this.state);
 
     this.dispatcher.on('graph.article.click', function(data) {
-      self.setCentreArticle(data.id);
+      self.setCentreArticle(data.id, data.type);
     });
 
     // Test fetch - TODO: get from url or let be set by parent state
-    this.setCentreArticle(1899);
+    this.setCentreArticle(1899, 'act');
   },
   componentDidUpdate: function() {
     graph.update(this.getDOMNode(), this.state, this.dispatcher);
@@ -187,9 +187,10 @@ module.exports = React.createClass({
       <div className="graph" style={{/*TODO:move to css*/height:'100%',overflow:'hidden'}}></div>
     );
   },
-  setCentreArticle: function(id) {
+  setCentreArticle: function(id, type) {
     $.get('/map', {
       id: id,
+      type: type,
     })
     .then(function(response) {
       this.setState({
