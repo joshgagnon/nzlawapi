@@ -101,7 +101,8 @@ def process_case(tree):
 def process_case_contents(tree):
     results = []
     div_id = str(uuid.uuid4())
-    tree.xpath('.//div')[0].insert(0, etree.Element('div', {'id': div_id, 'data-location': 'Intituling'}))
+    tree.xpath('.//div')[0].insert(0, etree.Element('div', {'id': div_id,
+        'data-location': 'Intituling', 'class': 'case-para'}))
     results.append(('Intituling', div_id))
     i = 1
     for span in tree.xpath('.//span'):
@@ -110,6 +111,7 @@ def process_case_contents(tree):
             results.append(('Paragraph %d' % i, span_id))
             span.attrib['id'] = span_id
             span.attrib['data-location'] = '[%d]' % i
+            span.attrib['class'] = '%s %s' % (span.attrib['class'], 'case-para')
             i += 1
     return tree, render_template('case_contents.html', results=results)
 

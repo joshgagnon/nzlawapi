@@ -60,7 +60,7 @@ var ActDisplay = React.createClass({
                 }).toArray().reverse().join('');
             }
             result += $el.attr('data-location');
-            var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id]').attr('id');
+            var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id]').attr('id');
             Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
         }, 0);
         $(window).on('scroll', this.debounce_scroll);
@@ -106,7 +106,6 @@ var ActDisplay = React.createClass({
             var fudge = 4; //why fudge?  probably because scrolling on body
             //not $(window), as it can't animate
             var container = $('body, html');
-            console.log(target)
             container.animate({scrollTop: (target.offset().top - this.offset + fudge)});
         }
         else{
