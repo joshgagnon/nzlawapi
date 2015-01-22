@@ -7,6 +7,7 @@ var Col = require('react-bootstrap/Col');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var TabbedArea = require('react-bootstrap/TabbedArea');
 var TabPane = require('react-bootstrap/TabPane');
+var GraphModal = require('./GraphModal.jsx')
 
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
@@ -311,6 +312,9 @@ module.exports = React.createClass({
                         <a><Glyphicon glyph="floppy-save" /></a>
                         <a><Glyphicon glyph="print" /></a>
                         <a><Glyphicon glyph="star" /></a>
+                        <ModalTrigger modal={<GraphModal />}>
+                            <a><Glyphicon glyph="globe" /></a>
+                        </ModalTrigger>
                         <a onClick={this.reset}><Glyphicon glyph="trash" /></a>
                     </div>
                     <div className="container-wrapper">

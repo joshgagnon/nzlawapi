@@ -44,8 +44,8 @@ var graph = {
   update: function(el, state, dispatcher) {
     var self = this;
 
-    var animLength = 700,
-        appearAnimLength = 400;
+    var animLength = 1200,
+        appearAnimLength = 500;
 
     var w = el.offsetWidth,
         h = el.offsetHeight;
