@@ -188,9 +188,10 @@ def query():
 def map():
     args = request.args
     centre_id = args.get('id')
+    centre_type = args.get('type')
     status = 200
     try:
-        result = {'results': graph.get_links(centre_id)}
+        result = {'results': graph.get_links(graph.get_connected(centre_type, centre_id), {'type': centre_type, 'id': centre_id})}
     except CustomException, e:
         result = {'error': str(e)}
         status = 500

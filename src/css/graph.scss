@@ -1,6 +1,8 @@
 .graph {
+    $colour-dark: #333333;
+
     .article {
-        stroke: #333333;
+        stroke: $colour-dark;
         stroke-width: 2;
 
         &.act {
@@ -12,6 +14,38 @@
     }
 
     .connection {
-        stroke: #333333;
+        stroke: $colour-dark;
+    }
+
+    .axis {
+        path, line {
+            fill: none;
+            stroke: $colour-dark;
+            shape-rendering: crispEdges;
+        }
+        text {
+            font-size: 11px;
+        }
+    }
+}
+
+.graph-modal {
+    .modal-dialog {
+        width: 90%;
+        height: 90%;
+        left: 5%;
+        top: 5%;
+        margin: 0;
+        padding: 0;
+    }
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        display: table;
+    }
+    .modal-body {
+        display: table-row;
+        height: 100%;
+        padding: 0;
     }
 }
