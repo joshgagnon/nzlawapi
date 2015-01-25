@@ -27,9 +27,9 @@ def get_migrations(db):
         return sorted(list(files.difference(map(lambda x: x[0], cur.fetchall()))))
 
 
-def run_py_migration(db, filename):
+def run_py_migration(db, filename, config):
     mod = importlib.import_module('migrations.%s' % filename.replace('.py', ''))
-    mod.run(db)
+    mod.run(db, config)
 
 
 def run_sql_migration(db, filename):
@@ -37,10 +37,10 @@ def run_sql_migration(db, filename):
         cur.execute(f.read())
 
 
-def run_migration(db, filename):
+def run_migration(db, filename, config):
     print('Executing %s' % filename)
     if filename.endswith('.py'):
-        run_py_migration(db, filename)
+        run_py_migration(db, filename, config)
     elif filename.endswith('.sql'):
         run_sql_migration(db, filename)
     else:
@@ -58,7 +58,7 @@ def run():
     db = connect_db(config)
     prep_table(db)
     migrations = get_migrations(db)
-    map(lambda m: run_migration(db, m), migrations)
+    map(lambda m: run_migration(db, m, config), migrations)
     db.commit()
     print('Migrations Complete')
 

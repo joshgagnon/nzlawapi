@@ -20,9 +20,8 @@ def get_title(tree):
 
 def get_act(act, db=None):
     with (db or get_db()).cursor() as cur:
-        query = """select document from acts a
-        join documents d on a.document_id = d.id
-        where lower(replace(title, ' ', '')) = lower(%(act)s) and latest_version = True """
+        query = """select document from latest_instruments where
+        where lower(replace(title, ' ', '')) = lower(%(act)s) """
         cur.execute(query, {'act': act})
         try:
             return etree.fromstring(cur.fetchone()[0])
@@ -33,17 +32,13 @@ def get_act(act, db=None):
 def get_act_exact(act, db=None):
     with (db or get_db()).cursor() as cur:
         query = """
-            (select document, version, path
-        from acts a join documents d on a.document_id = d.id
-            where title = %(act)s and latest_version = True)
-        union
-            (select document, version, path
-        from regulations a join documents d on  a.document_id = d.id
-            where title = %(act)s and latest_version = True)
+            select document from latest_instruments
+            where title = %(act)s
              """
         cur.execute(query, {'act': act})
         try:
             result = cur.fetchone()
+            print result
             return etree.fromstring(result[0])
         except:
             raise CustomException("Act not found")
@@ -53,6 +48,7 @@ import re
 from xml.dom import minidom
 #TODO finish
 def process_act_links(tree, db=None):
+    return tree
     with (db or get_db()).cursor() as cur:
         query = """
             SELECT title, source_id FROM
@@ -96,13 +92,8 @@ def update_definitions(act_name, db=None):
 
 def get_act_object(act_name, db=None, replace=False):
     with (db or get_db()).cursor() as cur:
-        query = """(SELECT processed_document, definitions::text FROM acts a
-                JOIN documents d on a.document_id = d.id
-                WHERE title = %(act)s and latest_version = True)
-            UNION
-                (SELECT processed_document, definitions::text
-            from regulations a join documents d on a.document_id = d.id
-                where title = %(act)s and latest_version = True)
+        query = """SELECT processed_document, definitions::text FROM latest_instruments
+                where title = %(act)s
             """
         if not replace:
             cur.execute(query, {'act': act_name})

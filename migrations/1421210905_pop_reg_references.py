@@ -2,7 +2,7 @@ from lxml import etree
 from collections import defaultdict
 
 
-def run(db):
+def run(db, config):
     with db.cursor() as cur, db.cursor() as out:
         result_to_dict = lambda r: (r[0], (r[1], r[2]))
         cur.execute("""SELECT i.id, a.id, 'act' FROM id_lookup i
