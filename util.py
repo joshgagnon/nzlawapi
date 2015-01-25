@@ -109,3 +109,58 @@ def generate_path_string(node):
         if len(n.xpath('./schedule')):
             result = 'sch %s' % n.xpath('./label')[0] + result
     return '%s %s' % (node.getroottree().xpath('./cover/title')[0].text, result)
+
+
+import re
+from xml.dom import minidom
+
+#TODO finish writing this
+def node_replace(tree, create_wrapper, ignore_fields=None):
+    ignore_fields = ignore_fields or ['a', 'skeleton', 'history-note', 'title', 'heading']
+
+    def process_node(parent, defs, monitor=None):
+        doc = parent.ownerDocument
+
+        def create_def(word, definition, index):
+            match = doc.createElement('catalex-def')
+            match.setAttribute('def-id', definition.id)
+            match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
+            match.appendChild(doc.createTextNode(word))
+            return match
+
+        for node in parent.childNodes[:]:  # better clone, as we will modify
+            if monitor and not monitor.cont():
+                return
+            if node.nodeType == node.ELEMENT_NODE and node.tagName in ignore_fields:
+                continue
+            elif node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+                defs.enable_tag(node.getAttribute('id'))
+            if node.nodeType == node.TEXT_NODE:
+                reg = defs.get_regex()
+                lines = [node.nodeValue]
+                i = 0
+                count = 0
+                while i < len(lines):
+                    line = lines[i]
+                    while isinstance(line, basestring):
+                        match = reg.search(line.lower())
+                        if not match:
+                            break
+                        definition = defs.get_active(lmtzr.lemmatize(match.group(2)))
+                        span = (match.span(2)[0], match.span(3)[1])
+                        lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition, count), line[span[1]:]]
+                        i += 2
+                        count += 1
+                        line = line[span[1]:]
+                    i += 1
+                lines = filter(lambda x: x, lines)
+                new_nodes = map(lambda x: doc.createTextNode(x) if isinstance(x, basestring) else x, lines)
+
+                if len(new_nodes) > 1:
+                    [parent.insertBefore(n, node) for n in new_nodes]
+                    parent.removeChild(node)
+            else:
+                process_node(node, defs, monitor)
+
+            if node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+                defs.expire_tag(node.getAttribute('id'))

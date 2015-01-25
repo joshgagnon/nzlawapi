@@ -49,9 +49,34 @@ def get_act_exact(act, db=None):
             raise CustomException("Act not found")
 
 
+import re
+from xml.dom import minidom
+#TODO finish
+def process_act_links(tree, db=None):
+    with (db or get_db()).cursor() as cur:
+        query = """
+            SELECT title, source_id FROM
+                acts WHERE latest_version = True
+                UNION
+            SELECT title, source_id
+                regulations WHERE latest_version = True
+            """
+        cur.execute(query)
+        results = {v[1]: v[0] for v in cur.fetchall()}
+        regex = re.compile('(%s)' % results.values().join('|'))
+        domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+        nodes = tree.xpath('//*[text()]')
+        for node in nodes:
+            if node.text.matches(reges):
+                pass
+
+    return tree
+
+
 def update_definitions(act_name, db=None):
     tree = get_act_exact(act_name, db)
     _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999'))
+    tree =  process_act_links(tree, db)
     tree, definitions = process_definitions(tree, definitions)
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents SET processed_document =  %(doc)s,
