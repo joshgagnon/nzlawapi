@@ -76,12 +76,10 @@ def update_definitions(act_name, db=None):
     tree =  process_act_links(tree, db)
     tree, definitions = process_definitions(tree, definitions)
     with (db or get_db()).cursor() as cur:
-        query = """UPDATE documents SET processed_document =  %(doc)s,
+        query = """UPDATE documents d SET processed_document =  %(doc)s,
                          definitions = %(defs)s
-                    FROM (SELECT document_id, title FROM acts WHERE latest_version = True
-                        UNION
-                        SELECT document_id, title FROM regulations WHERE latest_version = True) s
-                    WHERE s.document_id = id and s.title = %(act)s """
+                    FROM latest_instruments s
+                    WHERE s.id = d.id and s.title = %(act)s """
         cur.execute(query, {
             'act': act_name,
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
@@ -111,7 +109,7 @@ def act_response(act):
         'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': act.definitions,
-        'act_name': act.title,
+        'article_name': act.title,
         'type': 'act'
     }
 

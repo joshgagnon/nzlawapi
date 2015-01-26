@@ -64,7 +64,7 @@ var App = React.createClass({
 // load results
 if(localStorage['data']){
 	_.forEach(JSON.parse(localStorage['data']).results, function(r){
-		Actions.newResult(r);
+		//Actions.newResult(r);
 	});
 }
 

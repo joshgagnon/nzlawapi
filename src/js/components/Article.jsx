@@ -7,12 +7,8 @@ var Col = require('react-bootstrap/Col');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var TabbedArea = require('react-bootstrap/TabbedArea');
 var TabPane = require('react-bootstrap/TabPane');
-
 var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
-
 var GraphModal = require('./GraphModal.jsx')
-
-
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var joinClasses = require('react-bootstrap/utils/joinClasses');
@@ -28,6 +24,7 @@ var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap');
+
 
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
@@ -67,7 +64,6 @@ var PositionedPop = React.createClass({
         //TODO use bootstrap layout algorithm
         $el.css({'left': '-='+$el.outerWidth()/2})
         //jQuery.fn.tooltip.Constructor.prototype.show.call(obj);
-
        },
       close: function(){
         Actions.linkClosed(this.props)
@@ -120,13 +116,13 @@ var PositionedPop = React.createClass({
     });
 
 
-var ActDisplay = React.createClass({
+var Article = React.createClass({
     mixins: [
         Definitions.DefMixin,
         Reflux.listenTo(ArticleJumpStore, "onJumpTo")
     ],
     propTypes: {
-        open_links: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+        result: React.PropTypes.object.isRequired,
     },
     componentDidMount: function(){
         this.offset = 56;
@@ -156,19 +152,19 @@ var ActDisplay = React.createClass({
         $(window).on('scroll', this.debounce_scroll);
     },
     render: function(){
-        var links = this.props.open_links.map(function(link){
+        var links = (this.props.result.open_links || []).map(function(link){
                     return (<PositionedPop placement="auto" {...link} key={link.id}/>)
                 });
         return <div className="legislation-result" >
-                <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.html}} />
+                <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
                 {links}
             </div>
     },
     refresh: function(){
         var self = this;
         var pos = 'offset';
-        this.offsets = []
-        this.targets = []
+        this.offsets = [];
+        this.targets = [];
         this.scrollHeight = $(self.getDOMNode()).height();
         $(self.getDOMNode())
             .find('[data-location]')
@@ -320,7 +316,8 @@ var ArticleScrollSpy = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-      Reflux.listenTo(OpenLinksStore,"onLinkOpened")
+     // Reflux.listenTo(OpenLinksStore,"onLinkOpened")
+        Reflux.listenTo(ResultStore, 'onResults'),
     ],
     load: function(){
         // for development only, delete
@@ -338,7 +335,9 @@ module.exports = React.createClass({
     },
     getInitialState: function(){
         return {
-            open_links: []
+            //open_links: [],
+            results: [],
+            active: null
         };
     },
     componentDidMount: function(){
@@ -350,6 +349,11 @@ module.exports = React.createClass({
                 this.setState({typeahead: results.results});
                 process(results.results);
             }.bind(this));
+    },
+    onResults: function(data){
+        var current_result = _.find(data.results, function(d){ return d.id == data.current});
+        this.setState({results: data.results, current: data.current, current_result: current_result});
+        console.log(data.results);
     },
     submit: function(e){
     	e.preventDefault();
@@ -364,26 +368,19 @@ module.exports = React.createClass({
         this.setState({
             loading: true
         });
-    	$.get('/query', {
-    		type: this.state.article_type,
+        var query = {
+            type: this.state.article_type,
             find: 'full',
-    		title: this.state.article_name
-    	})
-    		.then(function(response){
-    			this.setState({
-                    html: response.html_content,
-                    name: response.act_name || response.full_citation,
-    				contents: response.html_contents_page,
-                    definitions: response.definitions,
-                    article_type: response.type,
-                    loading: false,
-                    open_links: []
-    			});
-    		}.bind(this));
+            title: this.state.article_name
+        };
+    	$.get('/query', query)
+            .then(function(data){
+                Actions.newResult({query: query, content: data})
+            });
     },
-    onLinkOpened: function(links){
+    /*onLinkOpened: function(links){
         this.setState({open_links: links});
-    },
+    },*/
     handleArticleChange: function(value){
         if(typeof(value) == 'string'){
                 this.setState({article_name: value})
@@ -403,11 +400,16 @@ module.exports = React.createClass({
             article_name: null
         });
     },
+    handleTab: function(current){
+        var current_result = _.find(this.state.results, function(d){ return d.id == data.current});
+        this.setState({current: current, current_result: current_result});
+    },
 	render: function(){
         var linkArticle = {
           value: this.state.article_name,
           requestChange: this.handleArticleChange
         };
+        console.log(this.state)
 		return (<div className="act_browser">
                         <div className="container-fluid">
 
@@ -453,21 +455,23 @@ module.exports = React.createClass({
                         <a onClick={this.reset}><Glyphicon glyph="trash" /></a>
                     </div>
                     <div className="container-wrapper">
-    					<div className="container-fluid">
-                        {this.state.loading ? <div className="csspinner traditional"></div> : null}
-    						<div className="results">
-                                    {this.state.name ?
-                                        <ActDisplay html={this.state.html} article_type={this.state.article_type}
-                                        popupContainer={'.act_browser'} scrollEl={'body'} open_links={this.state.open_links}
-                                        definitions={this.state.definitions} ref="article" /> :
-
-                                    null}
-
-    						</div>
-                        </div>
+						<div className="results">
+                            <TabbedArea activeKey={this.state.current} onSelect={this.handleTab}>
+                                {   this.state.results.map(function(result){
+                                          return (
+                                             <TabPane key={result.id} eventKey={result.id} tab={result.content.article_name} >
+                                                <Article key={result.id} result={result}  />
+                                            </TabPane>
+                                          )
+                                      })
+                            }
+                            </TabbedArea>
+						</div>
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        <ArticleScrollSpy html={this.state.contents}/>
+                        { this.state.current_result ?
+                        <ArticleScrollSpy html={this.state.current_result.content.html_contents_page} />  : null
+                        }
                     </div>
 				</div>);
 	}

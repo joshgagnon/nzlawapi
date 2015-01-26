@@ -54,8 +54,6 @@ class Definition(object):
     def render(self):
         xml = etree.Element('catalex-def-para')
         [xml.append(deepcopy(x)) for x in self.xmls]
-        if self.key == 'advertisement':
-            print etree.tostring(xml)
         return {
             'title': self.full_word,
             'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
@@ -119,7 +117,6 @@ class Definitions(object):
 
     def apply_definitions(self, tree):
         dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}
-        print sorted(dicttree.keys())
         for p in self.pool:
             for d in self.pool[p]:
                 d.apply_definitions(dicttree)
@@ -205,7 +202,7 @@ def infer_life_time(node):
             pass
         text = parent.xpath('.//text()')[0].strip().lower()
         if text.startswith('in this act'):
-            return get_id(parent.iterancestors('act').next())
+            return get_id(parent.iterancestors('act', 'regulation').next())
         if text.startswith('in this part'):
             return get_id(parent.iterancestors('part').next())
         if text.startswith('in this subpart'):
@@ -230,7 +227,7 @@ def infer_life_time(node):
     except StopIteration:
         # couldn't find safe parent
         return str(uuid.uuid4())
-    return get_id(parent.iterancestors('act').next())
+    return get_id(parent.iterancestors('act', 'regulation').next())
 
 
 

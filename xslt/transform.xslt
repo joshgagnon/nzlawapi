@@ -15,11 +15,11 @@
     </xsl:template>
 
     <xsl:template name="quote">
-        <xsl:if test="@quote = '1'">“</xsl:if>
+        <xsl:if test="@quote = '1'"><xsl:attribute name="quote"></xsl:attribute>“</xsl:if>
     </xsl:template>
 
     <xsl:template name="parentquote">
-        <xsl:if test="../@quote = '1'">“</xsl:if>
+        <xsl:if test="../@quote = '1'"><xsl:attribute name="quote"></xsl:attribute>“</xsl:if>
     </xsl:template>
 
     <xsl:template match="act">
@@ -104,6 +104,8 @@
             <xsl:call-template name="current"/>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
+                     <xsl:when test="ancestor::*[@quote]">
+                     </xsl:when>
                     <xsl:when test="ancestor::schedule">
                         <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:when>
@@ -148,6 +150,8 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <xsl:choose>
+                     <xsl:when test="ancestor::*[@quote]">
+                     </xsl:when>
                 <xsl:when test="ancestor::schedule">
                     <xsl:attribute name="data-location">, cl <xsl:value-of select="label"/></xsl:attribute>
                 </xsl:when>
@@ -201,7 +205,7 @@
     <xsl:template match='prov.body/subprov'>
         <div class="subprov">
             <xsl:call-template name="current"/>
-            <xsl:if test="label != ''">
+            <xsl:if test="label != '' and not(ancestor::*[@quote])">
                 <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="label"/>
@@ -213,7 +217,9 @@
         <ul class="label-para">
             <xsl:call-template name="current"/>
             <li>
-                <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
+                <xsl:if test="not(ancestor::*[@quote])">
+                    <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
+                </xsl:if>
                 <xsl:apply-templates select="label"/>
                 <xsl:apply-templates select="para/label-para"/>
             </li>

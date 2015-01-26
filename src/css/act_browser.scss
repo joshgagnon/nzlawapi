@@ -4,12 +4,12 @@
 
 .act_browser{
 	   position:relative;
-	padding-top:80px;
+	padding-top: 60px;
 	padding-bottom:80px;
 	padding-left: 65px;
 
 	@media (min-width: $screen-md-min) {
-		padding-right:310px;
+		padding-right: 300px;
 	}
 
 	form{
@@ -79,9 +79,22 @@
 		}
 	}
 
+	.results .nav-tabs{
+		padding-left: 10px;
+		li{
+			max-width: 200px;
+			a{
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+			}
+		}
+	}
 
-	.container-fluid{
-		max-width:1170px; /* todo */
+	.results .legislation-result{
+		max-width:1170px;
+		margin: 0 auto;
+		margin-top:20px;
 	}
 
 	.case{

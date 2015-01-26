@@ -128,7 +128,7 @@ def get_full_case(case):
             return {
                 'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
                 'html_contents_page': contents,
-                'full_citation': results.get('full_citation'),
+                'article_name': results.get('full_citation'),
                 'type': 'case'
             }
     return results

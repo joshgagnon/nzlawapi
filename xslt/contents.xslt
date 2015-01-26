@@ -64,7 +64,7 @@
             </a>
     </xsl:template>
 
-    <xsl:template match="prov[@toc]">
+    <xsl:template match="prov[@toc][not(@quote)]">
         <li>
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
