@@ -12,6 +12,41 @@ var graph = {
   links: function(d) {
     return d.inbound + d.references.reduce(function(s, r) { return s + r.weight }, 0);
   },
+  showTooltip: function(d, h, el) {
+    var position, direction;
+    var cx = +d3.select(el).attr('cx');
+    var cy = +d3.select(el).attr('cy');
+    var r = +d3.select(el).attr('r');
+
+    if(cy < h / 2) {
+      position = cy + r + 6;
+      direction = 'bottom';
+    }
+    else {
+      // Extra 10px from arrow negative margin
+      position = h - cy + r + 16;
+      direction = 'top';
+    }
+
+    // Set text content first for accurate width later
+    d3.select('.graph-tooltip .popover-title')
+      .text(d.title);
+    d3.select('.graph-tooltip .popover-content')
+      .text('Other information from act data can go here');
+
+    d3.select('.graph-tooltip')
+      .attr('class', 'graph-tooltip ' + direction)
+      .style(direction, 'auto')
+      .style(direction === 'top' ? 'bottom' : 'top', position + 'px')
+      .style('left', function() { return (cx - this.offsetWidth / 2) + 'px' })
+      .transition().duration(400)
+        .style('opacity', 1);
+  },
+  hideTooltip: function() {
+    d3.select('.graph-tooltip')
+      .transition().duration(400)
+        .style('opacity', 0);
+  },
   create: function(el, props, state) {
     var svg = d3.select(el).append('svg')
       .attr('width', props.width)
@@ -25,6 +60,14 @@ var graph = {
 
     svg.append('g')
       .attr('class', 'x-axis axis');
+
+    // Create a tooltip container and structure in front of svg
+    var tooltip = d3.select(el).append('div')
+      .attr('class', 'graph-tooltip')
+      .style('opacity', 0);
+    tooltip.append('div').attr('class', 'arrow');
+    tooltip.append('h3').attr('class', 'popover-title');
+    tooltip.append('div').attr('class', 'popover-content');
 
     this.xScale = d3.scale.linear();
     this.yScale = d3.scale.linear();
@@ -81,7 +124,9 @@ var graph = {
       .attr('opacity', 0)
       .on('click', function(data, index) {
         dispatcher.emit('graph.article.click', data, index);
-      });
+      })
+      .on('mouseover', function(d) { self.showTooltip(d, h, this); })
+      .on('mouseout', this.hideTooltip);
 
     // Update
     articles

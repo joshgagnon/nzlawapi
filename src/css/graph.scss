@@ -29,6 +29,13 @@
     }
 }
 
+.graph-tooltip {
+    @extend .popover;
+    display: block;
+    min-width: 100px;
+    min-height: 40px;
+}
+
 .graph-modal {
     .modal-dialog {
         width: 90%;
