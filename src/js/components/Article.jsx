@@ -345,7 +345,7 @@ module.exports = React.createClass({
         this.setState(this.load(), this.fetch)
     },
     typeahead_query: function(query, process){
-        $.get('/act_case_hint.json', {query: query})
+        $.get('/article_auto_complete', {query: query})
             .then(function(results){
                 this.setState({typeahead: results.results});
                 process(results.results);

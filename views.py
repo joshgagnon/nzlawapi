@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template
 
-mod = Blueprint('base', __name__, template_folder='templates')
+Base = Blueprint('base', __name__, template_folder='templates')
 
 
-@mod.route('/')
-@mod.route('/validator')
-@mod.route('/browser')
-@mod.route('/full_article')
-@mod.route('/graph')
+@Base.route('/')
+@Base.route('/validator')
+@Base.route('/browser')
+@Base.route('/full_article')
+@Base.route('/graph')
 def browser(act='', query=''):
     return render_template('browser.html')

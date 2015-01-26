@@ -8,7 +8,8 @@ import os
 
 
 class Act(object):
-    def __init__(self, tree, definitions):
+    def __init__(self, id, tree, definitions):
+        self.id = id
         self.tree = tree
         self.definitions = definitions or {}
         self.title = get_title(self.tree)
@@ -92,17 +93,17 @@ def update_definitions(act_name, db=None):
 
 def get_act_object(act_name, db=None, replace=False):
     with (db or get_db()).cursor() as cur:
-        query = """SELECT processed_document, definitions::text FROM latest_instruments
+        query = """SELECT id, processed_document, definitions::text FROM latest_instruments
                 where title = %(act)s
             """
         if not replace:
             cur.execute(query, {'act': act_name})
             result = cur.fetchone()
-        if not result[0] or replace:
+        if replace or not result[1]:
             tree, definitions = update_definitions(act_name, db=db)
         else:
-            tree, definitions = etree.fromstring(result[0]), json.loads(result[1])
-        return Act(tree=tree, definitions=definitions)
+            tree, definitions = etree.fromstring(result[1]), json.loads(result[2])
+        return Act(id=result[0], tree=tree, definitions=definitions)
 
 
 def act_response(act):
