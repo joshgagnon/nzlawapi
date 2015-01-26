@@ -80,7 +80,13 @@
 	}
 
 	.results .nav-tabs{
+		position:fixed;
 		padding-left: 10px;
+		padding-top: 5px;
+		top: 51px;
+		left: 65px;
+		right: 300px;
+		background-color: #fff;
 		li{
 			max-width: 200px;
 			a{
@@ -94,7 +100,7 @@
 	.results .legislation-result{
 		max-width:1170px;
 		margin: 0 auto;
-		margin-top:20px;
+		margin-top: 60px;
 	}
 
 	.case{

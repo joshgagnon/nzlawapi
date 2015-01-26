@@ -125,7 +125,7 @@ var Article = React.createClass({
         result: React.PropTypes.object.isRequired,
     },
     componentDidMount: function(){
-        this.offset = 56;
+        this.offset = 100;
         var self = this;
         this.refresh();
         var find_current = function(){
@@ -401,7 +401,7 @@ module.exports = React.createClass({
         });
     },
     handleTab: function(current){
-        var current_result = _.find(this.state.results, function(d){ return d.id == data.current});
+        var current_result = _.find(this.state.results, function(d){ return d.id == current});
         this.setState({current: current, current_result: current_result});
     },
 	render: function(){
