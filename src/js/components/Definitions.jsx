@@ -74,15 +74,15 @@ var $ = require('jquery');
                     padding: 50
                 },
                 content: function(){
-                    return self.props.definitions[$(this).attr('def-id')].html;
+                    return self.get_definition($(this).attr('def-id')).html;
                 },
                 title: function(){
-                    return self.props.definitions[$(this).attr('def-id')].title;
+                    return self.get_definition($(this).attr('def-id')).title;
                 }
             }).on('show.bs.popover', function(e){
                 //fucking hackjob
                 var $target = $(e.target);
-                var data = self.props.definitions[$target.attr('def-id')];
+                var data = self.get_definition($target.attr('def-id'));
                 var opened = function(){
                     $target.popover('hide');
                 }
@@ -94,7 +94,6 @@ var $ = require('jquery');
                       <DefModal title={data.title} html={data.html} opened={opened} onRequestHide={closed} />
                       </div>
                 React.render(button, $target.data('bs.popover').$tip.find('.popover-footer')[0]);
-                console.log(self.props.definitions[$target.attr('def-id')])
 
             }).on('shown.bs.popover', function(e){
                 var $target = $(e.target);

@@ -124,6 +124,9 @@ var Article = React.createClass({
     propTypes: {
         result: React.PropTypes.object.isRequired,
     },
+    get_definition: function(id){
+        return this.props.result.content.definitions[id];
+    },
     componentDidMount: function(){
         this.offset = 100;
         var self = this;
@@ -460,7 +463,7 @@ module.exports = React.createClass({
                                 {   this.state.results.map(function(result){
                                           return (
                                              <TabPane key={result.id} eventKey={result.id} tab={result.content.article_name} >
-                                                <Article key={result.id} result={result}  />
+                                                <Article key={result.id} result={result}  popupContainer='.act_browser' />
                                             </TabPane>
                                           )
                                       })
