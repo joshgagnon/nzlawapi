@@ -13,5 +13,4 @@ DB_PW = ''
 HOST = 'localhost'
 DB = 'legislation'
 
-ES_BIN = os.path.join(home, 'elasticsearch-1.4.0/bin/elasticsearch')
 ES_SERVER = {"host": "localhost", "port": 9200}
