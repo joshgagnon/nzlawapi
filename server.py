@@ -8,7 +8,7 @@ from flask import jsonify, g, request, Flask
 from flask.json import JSONEncoder
 import datetime
 import time
-
+import elasticsearch
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -67,4 +67,5 @@ def teardown_request(exception=None):
 
 
 if __name__ == '__main__':
+    app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
     app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])

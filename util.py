@@ -98,16 +98,23 @@ def generate_path_string(node):
             text = n.xpath('./label')[0].text
             if text:
                 result = '(%s)' % text + result
+
+    prov_str = 's'
+    if len(node.xpath('ancestor::schedule')):
+        prov_str = ' cl'
+
     it = iter(node.iterancestors('prov'))
     for n in it:
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
             if text:
-                result = 's %s' % text + result
+                result = '%s %s' % (prov_str, text + result)
+
     it = iter(node.iterancestors('schedule'))
     for n in it:
-        if len(n.xpath('./schedule')):
-            result = 'sch %s' % n.xpath('./label')[0] + result
+        if len(n.xpath('./label')):
+            result = 'sch %s' % n.xpath('./label')[0].text + result
+
     return '%s %s' % (node.getroottree().xpath('./cover/title')[0].text, result)
 
 

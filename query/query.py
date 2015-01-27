@@ -49,13 +49,31 @@ def query_cases(args):
     if not query:
         raise CustomException('Query missing')
     results = case_search(re.escape(args.get('query', '')))
-    return {'results': results}
+    return {'results': results, 'title': 'Search: %s' % query}
 
 
 def query_all(args):
-    #title = args.get('article_name')
-    results = []
-    return {'results': results}
+    query = args.get('query')
+    es = current_app.extensions['elasticsearch']
+    offset = 25
+    results = es.search(
+        index="legislation",
+        body={
+            "from": offset, "size": 25,
+            "fields": ["id", "title", "full_citation"],
+            "sort": [
+                "_score",
+            ],
+            "query": {"match_phrase": {"document": query}},
+            "highlight" : {
+                "pre_tags": ["<span class='search_match'>"],
+                "post_tags": ["</span>"],
+                "fields" : {
+                    "document" : {}
+                }
+            }
+        })
+    return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
 
 
 @Query.route('/case/file/<path:filename>')
@@ -70,7 +88,9 @@ def query():
     query_type = args.get('type')
     status = 200
     try:
-        if query_type == 'act' or query_type == 'regulation':
+        if not query_type:
+            result = query_all(args)
+        elif query_type == 'act' or query_type == 'regulation':
             result = query_act(args)
         elif query_type == 'acts' or query_type == 'regulations':
             result = query_acts(args)

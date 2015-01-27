@@ -39,7 +39,6 @@ def get_act_exact(act, db=None):
         cur.execute(query, {'act': act})
         try:
             result = cur.fetchone()
-            print result
             return etree.fromstring(result[0])
         except:
             raise CustomException("Act not found")
@@ -109,7 +108,7 @@ def act_response(act):
         'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html",),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': act.definitions,
-        'article_name': act.title,
+        'title': act.title,
         'type': 'act'
     }
 

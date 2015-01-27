@@ -43,12 +43,7 @@ var ResultStore = Reflux.createStore({
 		var id;
 		if(!_.find(this.results, {query: result.query})){
 			result.id = 'result-'+this.counter++;
-			if(result.content.html_content){
-				var $content = $(result.content.html_content.replace(/<br\/>/, ' ' ));
-				var title = $content.find('h1.title').text();
-				result.title = title;
-			}
-			this.results.push(result)
+			this.results.push(result);
 		}
 		else{
 			result = _.find(this.results, {query: result.query});
@@ -59,18 +54,11 @@ var ResultStore = Reflux.createStore({
 		result.current = true;
 		this.trigger({results: this.results, current: result.id});
 	},
-	onRemoveResult: function(result){		
+	onRemoveResult: function(result){
 		this.results = _.without(this.results, result)
 		this.trigger({results: this.results});
-	},
-	onDefinitions: function(id, definitions){
-		var result = _.find(this.results, {id: id});
-		result.definitions = definitions;
-		insertDefinitions(result);
-		result.definitions_processed=true;
-		this.trigger({results: this.results});
 	}
-});	
+});
 
 
 

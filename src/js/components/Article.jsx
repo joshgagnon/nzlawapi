@@ -22,6 +22,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
+var SearchResults = require('./SearchResults.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap');
 
@@ -371,11 +372,20 @@ module.exports = React.createClass({
         this.setState({
             loading: true
         });
-        var query = {
-            type: this.state.article_type,
-            find: 'full',
-            title: this.state.article_name
-        };
+        var query;
+        if(this.state.article_type){
+            var query = {
+                type: this.state.article_type,
+                find: 'full',
+                title: this.state.article_name
+            };
+        }
+        else{
+            var query = {
+                find: 'search',
+                query: this.state.article_name
+            };
+        }
     	$.get('/query', query)
             .then(function(data){
                 Actions.newResult({query: query, content: data})
@@ -385,8 +395,9 @@ module.exports = React.createClass({
         this.setState({open_links: links});
     },*/
     handleArticleChange: function(value){
+        console.log(value)
         if(typeof(value) == 'string'){
-                this.setState({article_name: value})
+                this.setState({article_name: value, article_type: null})
         }
         else{
             this.setState({article_name: value.name, article_type: value.type});
@@ -412,7 +423,6 @@ module.exports = React.createClass({
           value: this.state.article_name,
           requestChange: this.handleArticleChange
         };
-        console.log(this.state)
 		return (<div className="act_browser">
                         <div className="container-fluid">
 
@@ -462,8 +472,11 @@ module.exports = React.createClass({
                             <TabbedArea activeKey={this.state.current} onSelect={this.handleTab}>
                                 {   this.state.results.map(function(result){
                                           return (
-                                             <TabPane key={result.id} eventKey={result.id} tab={result.content.article_name} >
-                                                <Article key={result.id} result={result}  popupContainer='.act_browser' />
+                                             <TabPane key={result.id} eventKey={result.id} tab={result.content.title} >
+                                                { result.content.type=='search' ?
+                                                    <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
+                                                    <Article key={result.id} result={result}  popupContainer='.act_browser' />
+                                                }
                                             </TabPane>
                                           )
                                       })

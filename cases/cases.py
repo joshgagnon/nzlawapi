@@ -7,7 +7,7 @@ import uuid
 from lxml import etree
 import re
 
-es = elasticsearch.Elasticsearch()
+
 
 
 def act_full_search(query):
@@ -128,7 +128,7 @@ def get_full_case(case):
             return {
                 'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
                 'html_contents_page': contents,
-                'article_name': results.get('full_citation'),
+                'title': results.get('full_citation'),
                 'type': 'case'
             }
     return results

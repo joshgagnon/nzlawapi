@@ -35,4 +35,28 @@
             </prov.body>
         </prov>
     </part>
+    <schedule.group xml:lang="en-NZ">
+        <schedule>
+            <label auto.number="no" denominator="yes">1</label>
+            <heading xml:lang="en-NZ">Proceedings at meetings of shareholders</heading>
+            <schedule.provisions>
+                <prov id="DLM323289" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">1</label>
+                    <heading xml:lang="en-NZ">Chairperson</heading>
+                    <prov.body>
+                        <subprov skeleton="no" xml:lang="en-NZ">
+                            <label auto.number="no" denominator="yes">1</label>
+                            <para xml:lang="en-NZ">
+                                <text id="aaa">
+                                    If the directors have elected a chairperson of the board, and the chairperson of the board is present at a meeting of shareholders, he or she must chair the meeting.
+                                </text>
+                            </para>
+                        </subprov>
+
+                    </prov.body>
+                </prov>
+            </schedule.provisions>
+        </schedule>
+    </schedule.group>
+
 </act>

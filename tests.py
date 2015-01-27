@@ -112,7 +112,8 @@ class TestPathExtraction(unittest.TestCase):
         self.assertEqual(generate_path_string(el), 'Test Act 666 s 2(1)(a)')
         el = tree.xpath('.//*[@id="xxx"]')[0]
         self.assertEqual(generate_path_string(el), 'Test Act 666 s 2(1)')
-
+        el = tree.xpath('.//*[@id="aaa"]')[0]
+        self.assertEqual(generate_path_string(el), 'Test Act 666 sch 1 cl 1(1)')
 if __name__ == '__main__':
     #hack
     unittest.main(argv=[sys.argv[0]])

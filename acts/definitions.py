@@ -214,7 +214,7 @@ def infer_life_time(node):
             return get_id(parent.iterancestors('prov').next())
         if 'this section' in text:
             return get_id(parent.iterancestors('prov').next())
-        if 'in schedule' in text:
+        if 'in schedule' in text or 'in this schedule':
             return get_id(parent.iterancestors('schedule').next())
 
         if 'in this subpart' in text:
