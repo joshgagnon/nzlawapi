@@ -32,7 +32,7 @@ app.register_blueprint(Base)
 app.register_blueprint(Validator)
 app.register_blueprint(Query)
 app.json_encoder = CustomJSONEncoder
-
+app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
 
 @app.route('/map')
 def map():
@@ -67,5 +67,5 @@ def teardown_request(exception=None):
 
 
 if __name__ == '__main__':
-    app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
+
     app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])
