@@ -68,14 +68,17 @@ def query_all(args):
                 "_score",
             ],
             "query": {"match_phrase": {"document": query}},
-            "highlight" : {
+            "highlight": {
                 "pre_tags": ["<span class='search_match'>"],
                 "post_tags": ["</span>"],
-                "fields" : {
-                    "document" : {}
+                "fields": {
+                    "document": {},
+                    "full_citation": {},
+                    "title": {}
                 }
             }
         })
+    print results
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
 
 

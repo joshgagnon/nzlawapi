@@ -7,7 +7,7 @@ var Actions = require('../actions/Actions');
 
 var SearchResult = React.createClass({
     getTitle: function(){
-        return (this.props.data.fields.title || this.props.data.fields.full_citation)[0]
+        return (this.props.data.fields.title || this.props.data.fields.full_citation || [''])[0]
     },
     handleLinkClick: function(e){
         e.preventDefault();
@@ -31,6 +31,7 @@ module.exports = React.createClass({
 
     render: function(){
         var total = this.props.result.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        console.log(this.props)
         return <div className="search-results">
         <div className="search-count">{total} Results Found</div>
             { this.props.result.content.search_results.hits.map(function(r){
