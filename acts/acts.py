@@ -34,7 +34,7 @@ def get_act_exact(act, id=None, db=None):
     with (db or get_db()).cursor() as cur:
         query = """
             select document from latest_instruments
-            where (%(act)s is not null and title = %(act)s) or (%(id)s is not null and id =  %(id)s)
+            where (%(act)s is  null or title = %(act)s) and (%(id)s is null or id =  %(id)s)
              """
         cur.execute(query, {'act': act, 'id': id})
         try:
@@ -78,7 +78,7 @@ def update_definitions(act_name, id=None, db=None):
         query = """UPDATE documents d SET processed_document =  %(doc)s,
                          definitions = %(defs)s
                     FROM latest_instruments s
-                    WHERE (%(act)s is not null and title= %(act)s) or (%(id)s is not null and d.id =  %(id)s)"""
+                    WHERE d.id = s.id and (%(act)s is null or title = %(act)s) and (%(id)s is null or d.id =  %(id)s)"""
         cur.execute(query, {
             'act': act_name,
             'id': id,
@@ -92,9 +92,8 @@ def update_definitions(act_name, id=None, db=None):
 def get_act_object(act_name=None, id=None, db=None, replace=False):
     with (db or get_db()).cursor() as cur:
         query = """SELECT id, processed_document, definitions::text FROM latest_instruments
-                where (%(act)s is not null and title= %(act)s) or (%(id)s is not null and id =  %(id)s)
+                where (%(act)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
             """
-
         if not replace:
             cur.execute(query, {'act': act_name, 'id': id})
             result = cur.fetchone()

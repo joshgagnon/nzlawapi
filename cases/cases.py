@@ -118,7 +118,7 @@ def process_case_contents(tree):
 
 def get_full_case(case=None, id=None):
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        query = """select * from cases where (%(case)s is not null and full_citation = %(case)s) or (%(id)s is not null and id =  %(id)s)"""
+        query = """select * from cases where (%(case)s is null or full_citation = %(case)s) and (%(id)s is null or id =  %(id)s)"""
         cur.execute(query, {'case': case, 'id': id})
         results = cur.fetchone()
         print os.path.join(current_app.config['CASE_DIR'], results.get('source_id'))
