@@ -41,6 +41,9 @@ def query_case(args):
         return get_case_info(case)
     if case:
         return get_full_case(case)
+    # TODO id
+    if args.get('id'):
+        return get_full_case(id=args.get('id'))
     raise CustomException('Invalid search type')
 
 
@@ -88,9 +91,9 @@ def query():
     query_type = args.get('type')
     status = 200
     try:
-        if not query_type:
+        if query_type == 'search':
             result = query_all(args)
-        elif query_type == 'act' or query_type == 'regulation':
+        elif query_type in ['act'  'regulation', 'instrument']:
             result = query_act(args)
         elif query_type == 'acts' or query_type == 'regulations':
             result = query_acts(args)

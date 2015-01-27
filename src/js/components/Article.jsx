@@ -382,7 +382,7 @@ module.exports = React.createClass({
         }
         else{
             var query = {
-                find: 'search',
+                type: 'search',
                 query: this.state.article_name
             };
         }

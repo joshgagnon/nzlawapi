@@ -30,13 +30,13 @@ def get_act(act, db=None):
             raise CustomException("Act not found")
 
 
-def get_act_exact(act, db=None):
+def get_act_exact(act, id=None, db=None):
     with (db or get_db()).cursor() as cur:
         query = """
             select document from latest_instruments
-            where title = %(act)s
+            where (%(act)s is not null and title = %(act)s) or (%(id)s is not null and id =  %(id)s)
              """
-        cur.execute(query, {'act': act})
+        cur.execute(query, {'act': act, 'id': id})
         try:
             result = cur.fetchone()
             return etree.fromstring(result[0])
@@ -69,8 +69,8 @@ def process_act_links(tree, db=None):
     return tree
 
 
-def update_definitions(act_name, db=None):
-    tree = get_act_exact(act_name, db)
+def update_definitions(act_name, id=None, db=None):
+    tree = get_act_exact(act_name, id, db)
     _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999'))
     tree =  process_act_links(tree, db)
     tree, definitions = process_definitions(tree, definitions)
@@ -78,9 +78,10 @@ def update_definitions(act_name, db=None):
         query = """UPDATE documents d SET processed_document =  %(doc)s,
                          definitions = %(defs)s
                     FROM latest_instruments s
-                    WHERE s.id = d.id and s.title = %(act)s """
+                    WHERE (%(act)s is not null and title= %(act)s) or (%(id)s is not null and d.id =  %(id)s)"""
         cur.execute(query, {
             'act': act_name,
+            'id': id,
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
             'defs': json.dumps(definitions.render())
         })
@@ -88,18 +89,22 @@ def update_definitions(act_name, db=None):
     return tree, definitions.render()
 
 
-def get_act_object(act_name, db=None, replace=False):
+def get_act_object(act_name=None, id=None, db=None, replace=False):
     with (db or get_db()).cursor() as cur:
         query = """SELECT id, processed_document, definitions::text FROM latest_instruments
-                where title = %(act)s
+                where (%(act)s is not null and title= %(act)s) or (%(id)s is not null and id =  %(id)s)
             """
+
         if not replace:
-            cur.execute(query, {'act': act_name})
+            cur.execute(query, {'act': act_name, 'id': id})
             result = cur.fetchone()
+            if not result:
+                raise CustomException('Act not found')
         if replace or not result[1]:
-            tree, definitions = update_definitions(act_name, db=db)
+            tree, definitions = update_definitions(act_name, id, db=db)
         else:
             tree, definitions = etree.fromstring(result[1]), json.loads(result[2])
+
         return Act(id=result[0], tree=tree, definitions=definitions)
 
 
@@ -125,7 +130,7 @@ def get_act_node_by_id(query):
     return act_response(act)
 
 def query_act(args):
-    act = get_act_object(args.get('act_name', args.get('title')))
+    act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'))
     search_type = args.get('find')
     if search_type == 'full':
         pass
