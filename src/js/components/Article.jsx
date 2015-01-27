@@ -23,6 +23,7 @@ var $ = require('jquery');
 var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
 var SearchResults = require('./SearchResults.jsx');
+var AutoComplete = require('./AutoComplete.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap');
 
@@ -453,6 +454,7 @@ module.exports = React.createClass({
                                               </ul>
                                             </div>
                                     } />
+                                    <AutoComplete endpoint="/article_auto_complete" onChoose={this.handleArticleChange} onSearch={this.handleArticleChange} />
                                 </form>
 					       </nav>
                         </div>
