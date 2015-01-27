@@ -93,7 +93,7 @@ def query():
     try:
         if query_type == 'search':
             result = query_all(args)
-        elif query_type in ['act'  'regulation', 'instrument']:
+        elif query_type in ['act',  'regulation', 'instrument']:
             result = query_act(args)
         elif query_type == 'acts' or query_type == 'regulations':
             result = query_acts(args)
