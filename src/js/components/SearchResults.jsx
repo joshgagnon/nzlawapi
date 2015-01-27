@@ -31,7 +31,6 @@ module.exports = React.createClass({
 
     render: function(){
         var total = this.props.result.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        console.log(this.props)
         return <div className="search-results">
         <div className="search-count">{total} Results Found</div>
             { this.props.result.content.search_results.hits.map(function(r){

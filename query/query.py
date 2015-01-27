@@ -58,7 +58,7 @@ def query_cases(args):
 def query_all(args):
     query = args.get('query')
     es = current_app.extensions['elasticsearch']
-    offset = 25
+    offset = 0
     results = es.search(
         index="legislation",
         body={

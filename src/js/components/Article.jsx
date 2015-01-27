@@ -5,8 +5,6 @@ var Button = require('react-bootstrap/Button');
 var Alert = require('react-bootstrap/Alert');
 var Col = require('react-bootstrap/Col');
 var Glyphicon= require('react-bootstrap/Glyphicon');
-var TabbedArea = require('react-bootstrap/TabbedArea');
-var TabPane = require('react-bootstrap/TabPane');
 var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
 var GraphModal = require('./GraphModal.jsx')
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
@@ -24,6 +22,8 @@ var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
 var SearchResults = require('./SearchResults.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
+var TabbedArea = require('./TabbedArea.jsx');
+var TabPane = require('./TabPane.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap');
 
@@ -319,6 +319,7 @@ var ArticleScrollSpy = React.createClass({
     }
 });
 
+
 module.exports = React.createClass({
     mixins: [
      // Reflux.listenTo(OpenLinksStore,"onLinkOpened")
@@ -356,9 +357,18 @@ module.exports = React.createClass({
             }.bind(this));
     },
     onResults: function(data){
-        var current_result = _.find(data.results, function(d){ return d.id == data.current});
-        this.setState({results: data.results, current: data.current, current_result: current_result});
-        console.log(data.results);
+        var active_result, active;
+        if(data.newest){
+            active_result = _.find(data.results, function(d){ return d.id == data.newest});
+            active = data.newest;
+        }
+        else if( _.isFinite(data.removed_index) && data.results.length){
+            active_result = data.results[Math.max(0, data.removed_index-1)]
+            active = active_result.id;
+        }
+       console.log({results: data.results, active: active, active_result: active_result})
+        this.setState({results: data.results, active: active, active_result: active_result});
+
     },
     submit: function(e){
     	e.preventDefault();
@@ -396,7 +406,6 @@ module.exports = React.createClass({
         this.setState({open_links: links});
     },*/
     handleArticleChange: function(value){
-        console.log(value)
         if(typeof(value) == 'string'){
                 this.setState({article_name: value, article_type: null})
         }
@@ -415,15 +424,22 @@ module.exports = React.createClass({
             article_name: null
         });
     },
-    handleTab: function(current){
-        var current_result = _.find(this.state.results, function(d){ return d.id == current});
-        this.setState({current: current, current_result: current_result});
+    handleTab: function(active){
+        if(active !== this.state.active){
+            var active_result = _.find(this.state.results, function(d){ return d.id === active});
+            this.setState({active: active, active_result: active_result});
+        }
+    },
+    closeTab: function(id){
+        var result = _.find(this.state.results, function(d){ return d.id === id});
+        Actions.removeResult(result);
     },
 	render: function(){
         var linkArticle = {
           value: this.state.article_name,
           requestChange: this.handleArticleChange
         };
+        console.log(this.state.active)
 		return (<div className="act_browser">
                         <div className="container-fluid">
 
@@ -471,7 +487,7 @@ module.exports = React.createClass({
                     </div>
                     <div className="container-wrapper">
 						<div className="results">
-                            <TabbedArea activeKey={this.state.current} onSelect={this.handleTab}>
+                            <TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
                                 {   this.state.results.map(function(result){
                                           return (
                                              <TabPane key={result.id} eventKey={result.id} tab={result.content.title} >
@@ -487,8 +503,8 @@ module.exports = React.createClass({
 						</div>
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        { this.state.current_result ?
-                        <ArticleScrollSpy html={this.state.current_result.content.html_contents_page} />  : null
+                        { this.state.active_result ?
+                        <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} />  : null
                         }
                     </div>
 				</div>);

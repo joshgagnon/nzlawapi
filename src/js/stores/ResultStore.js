@@ -6,29 +6,6 @@ var _ = require('lodash');
 var $ = require('jquery');
 var findText = require('../util/findText.js');
 
-function insertDefinitions(result){
-	var content = $(result.content.html_content);
-	var reg = new RegExp('('+_.keys(result.definitions).join('|')+')[s]?', 'ig');
-	findText(content.get(0), reg, function(highlighted){
-		var key = highlighted.textContent.toLowerCase();
-		//ugly ugly, need to be smarter about this later
-		if(!result.definitions[key]){
-			key = key.substring(0, key.length - 1);
-		}
-		var def = result.definitions[key];
-		var span = document.createElement('span');
-		span.appendChild(highlighted);
-		span.setAttribute('data-toggle', 'popover');
-		span.setAttribute('title', def.key);
-		span.setAttribute('data-html', true);
-		span.className = 'defined-word';
-		span.setAttribute('data-content', def.html_content);
-		return span;
-    });
-	result.content.html_content = content.prop('outerHTML');
-}
-
-
 
 var ResultStore = Reflux.createStore({
 	listenables: Actions,
@@ -48,15 +25,12 @@ var ResultStore = Reflux.createStore({
 		else{
 			result = _.find(this.results, {query: result.query});
 		}
-		_.map(this.results, function(r){
-			r.current = false;
-		});
-		result.current = true;
-		this.trigger({results: this.results, current: result.id});
+		this.trigger({results: this.results, newest: result.id});
 	},
 	onRemoveResult: function(result){
-		this.results = _.without(this.results, result)
-		this.trigger({results: this.results});
+		var index = _.findIndex(this.results, result)
+		this.results = _.without(this.results, result);
+		this.trigger({results: this.results, removed_index: index});
 	}
 });
 
