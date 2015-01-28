@@ -331,7 +331,6 @@ module.exports = React.createClass({
             article = JSON.parse(localStorage['article']);
         }
         //perhaps wrong place?
-        this.typeahead_debounce = _.debounce(this.typeahead_query, 300);
     	return {
     		typeahead: [],
             article_name: this.props.article_name || article.article_name,
@@ -346,7 +345,8 @@ module.exports = React.createClass({
         };
     },
     componentDidMount: function(){
-        this.setState(this.load(), this.fetch)
+        this.typeahead_debounce = _.debounce(this.typeahead_query, 300);
+        //this.setState(this.load(), this.fetch)
     },
     typeahead_query: function(query, process){
         $.get('/article_auto_complete', {query: query})
@@ -409,6 +409,7 @@ module.exports = React.createClass({
             article_type: null,
             article_name: null
         });
+        Actions.clearResults();
     },
     handleTab: function(active){
         if(active !== this.state.active){

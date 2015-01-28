@@ -63,6 +63,10 @@ var ResultStore = Reflux.createStore({
 		}
 
 	},
+	onClearResults: function(){
+		this.results = [];
+		this.trigger({results: this.results})
+	},
 	onRemoveResult: function(result){
 		var index = _.findIndex(this.results, result);
 		this.results = _.without(this.results, result);

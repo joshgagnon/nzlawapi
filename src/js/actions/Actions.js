@@ -13,7 +13,7 @@ var Actions = Reflux.createActions([
 	'removeResult',
 	'activateResult',
 	'getMoreResult',
-
+	'clearResults',
 
 	'articleName',
 	'articlePosition',

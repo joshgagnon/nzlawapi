@@ -67,7 +67,12 @@ def query_all(args):
             "sort": [
                 "_score",
             ],
-            "query": {"match_phrase": {"document": query}},
+            "query": {
+                "multi_match": {
+                    "query": query,
+                    "fields": ["title^3", "full_citation^3", "docunent"]
+                }
+            },
             "highlight": {
                 "pre_tags": ["<span class='search_match'>"],
                 "post_tags": ["</span>"],
@@ -96,7 +101,7 @@ def query():
     try:
         if query_type == 'search':
             result = query_all(args)
-        elif query_type in ['act',  'regulation', 'instrument']:
+        elif query_type in ['act', 'regulation', 'instrument']:
             result = query_act(args)
         elif query_type == 'acts' or query_type == 'regulations':
             result = query_acts(args)
