@@ -7,15 +7,18 @@ var $ = require('jquery');
 
 var Actions = Reflux.createActions([
 	'queryChange',
+
 	'newResult',
+	'updateResult',
 	'removeResult',
-	'definitions',
+	'activateResult',
+
+
 	'articleName',
 	'articlePosition',
 	'articleJumpTo',
 	'linkOpened',
 	'linkClosed',
 ]);
-
 
 module.exports = Actions;

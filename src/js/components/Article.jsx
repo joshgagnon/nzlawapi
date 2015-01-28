@@ -358,17 +358,11 @@ module.exports = React.createClass({
     },
     onResults: function(data){
         var active_result, active;
-        if(data.newest){
-            active_result = _.find(data.results, function(d){ return d.id == data.newest});
-            active = data.newest;
-        }
-        else if( _.isFinite(data.removed_index) && data.results.length){
-            active_result = data.results[Math.max(0, data.removed_index-1)]
+        active_result = _.find(data.results, function(d){ return d.active}) || data.results[0];
+        if(active_result){
             active = active_result.id;
         }
-       console.log({results: data.results, active: active, active_result: active_result})
         this.setState({results: data.results, active: active, active_result: active_result});
-
     },
     submit: function(e){
     	e.preventDefault();
@@ -384,27 +378,24 @@ module.exports = React.createClass({
             loading: true
         });
         var query;
+        var title;
         if(this.state.article_type){
-            var query = {
+            query = {
                 type: this.state.article_type,
                 find: 'full',
                 title: this.state.article_name
             };
+            title = this.state.article_name
         }
         else{
-            var query = {
+            query = {
                 type: 'search',
                 query: this.state.article_name
             };
+            title = 'Search: '+this.state.article_name
         }
-    	$.get('/query', query)
-            .then(function(data){
-                Actions.newResult({query: query, content: data})
-            });
+        Actions.newResult({query: query, title: title});
     },
-    /*onLinkOpened: function(links){
-        this.setState({open_links: links});
-    },*/
     handleArticleChange: function(value){
         if(typeof(value) == 'string'){
                 this.setState({article_name: value, article_type: null})
@@ -415,19 +406,14 @@ module.exports = React.createClass({
     },
     reset: function(){
         this.setState({
-            html: null,
-            name: null,
-            contents: null,
-            definitions: null,
+            //todo, resutls = [] in action
             article_type: null,
-            loading: false,
             article_name: null
         });
     },
     handleTab: function(active){
         if(active !== this.state.active){
-            var active_result = _.find(this.state.results, function(d){ return d.id === active});
-            this.setState({active: active, active_result: active_result});
+            Actions.activateResult(_.find(this.state.results, function(d){ return d.id === active}));
         }
     },
     closeTab: function(id){
@@ -439,7 +425,6 @@ module.exports = React.createClass({
           value: this.state.article_name,
           requestChange: this.handleArticleChange
         };
-        console.log(this.state.active)
 		return (<div className="act_browser">
                         <div className="container-fluid">
 
@@ -489,12 +474,18 @@ module.exports = React.createClass({
 						<div className="results">
                             <TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
                                 {   this.state.results.map(function(result){
-                                          return (
-                                             <TabPane key={result.id} eventKey={result.id} tab={result.content.title} >
-                                                { result.content.type=='search' ?
+                                        var el;
+                                        if(result.content){
+                                            el = result.query.type=='search' ?
                                                     <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
                                                     <Article key={result.id} result={result}  popupContainer='.act_browser' />
-                                                }
+                                        }
+                                        else{
+                                            el = <div className="search-results csspinner traditional"/>
+                                        }
+                                          return (
+                                             <TabPane key={result.id} eventKey={result.id} tab={result.title} >
+                                                { el }
                                             </TabPane>
                                           )
                                       })
@@ -503,7 +494,7 @@ module.exports = React.createClass({
 						</div>
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        { this.state.active_result ?
+                        { this.state.active_result && this.state.active_result.content ?
                         <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} />  : null
                         }
                     </div>

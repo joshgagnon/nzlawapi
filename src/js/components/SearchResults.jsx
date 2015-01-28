@@ -12,10 +12,7 @@ var SearchResult = React.createClass({
     handleLinkClick: function(e){
         e.preventDefault();
         var query = {find: 'full', type: this.props.data._type, id: this.props.data.fields.id[0]};
-        $.get('/query', query)
-            .then(function(data){
-                Actions.newResult({query: query, content: data})
-            });
+        Actions.newResult({query: query, title: this.getTitle()});
     },
     render: function(){
         var html = (this.props.data.highlight.document).join(''),
@@ -34,7 +31,7 @@ module.exports = React.createClass({
         return <div className="search-results">
         <div className="search-count">{total} Results Found</div>
             { this.props.result.content.search_results.hits.map(function(r){
-                    return <SearchResult key={r.fields.id[0]} data={r} />
+                    return <SearchResult key={r.fields.id[0]} data={ r} />
                 })
             }
         </div>
