@@ -55,10 +55,10 @@ var OpenLinksStore = Reflux.createStore({
 var PositionedPop = React.createClass({
         mixins: [BootstrapMixin],
         getInitialState: function () {
-        return {
-          placement: 'bottom'
-        };
-      },
+            return {
+              placement: 'bottom'
+            };
+        },
        componentDidMount: function(){
         var self = this;
         var $el = $(this.getDOMNode());
@@ -137,7 +137,6 @@ var Article = React.createClass({
             var top = $(window).scrollTop() + self.offset;
             var i = _.sortedIndex(self.offsets, top) -1;
             return self.targets[Math.min(Math.max(0, i), self.targets.length -1)];
-
         };
         this.debounce_scroll = _.debounce(function(){
             var result = ''
@@ -158,8 +157,8 @@ var Article = React.createClass({
     },
     render: function(){
         var links = (this.props.result.open_links || []).map(function(link){
-                    return (<PositionedPop placement="auto" {...link} key={link.id}/>)
-                });
+                        return (<PositionedPop placement="auto" {...link} key={link.id}/>)
+                    });
         return <div className="legislation-result" >
                 <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
                 {links}

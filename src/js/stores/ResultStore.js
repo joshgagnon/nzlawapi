@@ -48,6 +48,21 @@ var ResultStore = Reflux.createStore({
 				}
 			}.bind(this));
 	},
+	onGetMoreResult: function(result){
+		result.fetching = true;
+		Actions.updateResult(result);
+		if(result.query.type === 'search'){
+			$.get('/query', _.extend({offset: result.content.search_results.hits.length}, result.query))
+				.then(function(data){
+					result.offset = data.offset;
+					result.content.search_results.hits = result.content.search_results.hits.concat(data.search_results.hits);
+					result.fetching = false;
+					console.log(result.content)
+					Actions.updateResult(result);
+				})
+		}
+
+	},
 	onRemoveResult: function(result){
 		var index = _.findIndex(this.results, result);
 		this.results = _.without(this.results, result);
