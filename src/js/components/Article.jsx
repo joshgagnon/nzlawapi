@@ -173,12 +173,12 @@ var Article = React.createClass({
         $(window).on('scroll', this.debounce_scroll);
     },
     calculate_height: function(count, width){
-        return count/width * 50 -450;
+        return Math.max(count/width * 50 -450, 300);
     },
     calculate_parts: function(){
         var self = this;
         var $el = $(this.getDOMNode());
-        var $nodes  = $el.find('[cata-hook!=""]');
+        var $nodes  = $el.find('[cata-hook][cata-hook!=""]');
         $nodes.each(function(){
             var $this = $(this);
             $(this).height(self.calculate_height(parseInt($this.attr('cata-hook-length'), 10),$el.width()));
