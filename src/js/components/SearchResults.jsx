@@ -32,7 +32,7 @@ module.exports = React.createClass({
         this.debounce_scroll = _.debounce(function(){
             if(!self.props.result.finished &&
                 !self.props.result.fetching &&
-                $(window).scrollTop() + offset > $(self.getDOMNode()).height() - threshold){
+                $(window).scrollTop() + offset +$(window).height() > $(self.getDOMNode()).height() - threshold){
                 Actions.getMoreResult(self.props.result);
             }
 

@@ -7,6 +7,8 @@ var $ = require('jquery');
 var findText = require('../util/findText.js');
 
 
+var partial_docs = ['act', 'regulation'];
+
 var ResultStore = Reflux.createStore({
 	listenables: Actions,
 	init: function(){
@@ -48,8 +50,9 @@ var ResultStore = Reflux.createStore({
 				}
 			}.bind(this));
 	},
-	onGetMoreResult: function(result){
+	onGetMoreResult: function(result, to_add){
 		result.fetching = true;
+		_.extend(result, to_add);
 		Actions.updateResult(result);
 		if(result.query.type === 'search'){
 			$.get('/query', _.extend({offset: result.content.search_results.hits.length}, result.query))
@@ -60,6 +63,14 @@ var ResultStore = Reflux.createStore({
 					console.log(result.content)
 					Actions.updateResult(result);
 				})
+		}
+		else if(_.contains(partial_docs, result.query.type)){
+			$.get('/query', _.defaults({find: 'more', requested_parts: result.requested_parts}, result.query))
+				.then(function(data){
+					result.new_parts = data.parts;
+					Actions.updateResult(result);
+				})
+
 		}
 
 	},

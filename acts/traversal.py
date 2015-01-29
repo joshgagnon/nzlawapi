@@ -1,14 +1,14 @@
-from lxml import etree
-from util import tohtml, CustomException, levenshtein
+from util import CustomException, levenshtein
 from db import get_db
 from operator import itemgetter
 
 
-def cull_tree(nodes):
-    [n.attrib.update({'current': 'true'}) for n in nodes]
+def cull_tree(nodes_to_keep):
+    """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
+    [n.attrib.update({'current': 'true'}) for n in nodes_to_keep]
 
     all_parents = set()
-    [all_parents.update(list(x.iterancestors()) + [x]) for x in nodes]
+    [all_parents.update(list(x.iterancestors()) + [x]) for x in nodes_to_keep]
 
     def test_inclusion(node, current):
         inclusion = node == current or node.tag in ['label', 'heading', 'cover', 'text']
@@ -26,22 +26,23 @@ def cull_tree(nodes):
             to_remove = filter(lambda x: not test_inclusion(x, node), parent.getchildren())
             [parent.remove(x) for x in to_remove]
             node = parent
-    [fix_parents(n) for n in nodes]
-    return nodes[0].getroottree()
+    [fix_parents(n) for n in nodes_to_keep]
+    return nodes_to_keep[0].getroottree()
 
 
 def generate_range(string):
     tokens = string.split('-')
-    #do stuff
+    # do stuff
     return tokens
 
 
 def find_sub_node(tree, keys):
+    """depth first down the tree matching labels in keys"""
     node = tree
     try:
         for i, a in enumerate(keys):
             if a:
-                #if '-' in :
+                # if '-' in :
                 #    a = " or ".join(["label = '%s'" % x for x in generate_range(a)])
                 if '+' in a:
 

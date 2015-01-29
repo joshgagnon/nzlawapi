@@ -3,6 +3,7 @@ from util import CustomException, tohtml
 from definitions import populate_definitions, process_definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query, find_title_by_id
 from lxml import etree
+from copy import deepcopy
 import json
 import os
 
@@ -13,6 +14,22 @@ class Act(object):
         self.tree = tree
         self.definitions = definitions or {}
         self.title = get_title(self.tree)
+        self.hook_match = '/*/*/part|/*/*/*/schdule'
+        self.parts = {}
+
+    def calculate_hooks(self):
+        self.skeleton = deepcopy(self.tree)
+        for i, e in enumerate(self.skeleton.xpath(self.hook_match)):
+            e.attrib['cata-hook'] = '%d' % i
+            e.attrib['cata-hook-length'] = '%d' % len(etree.tostring(tohtml(e)))
+            self.parts[e.attrib['cata-hook']] = deepcopy(e)
+            e[:] = []
+            e.text = e.tail = None
+            # todo, dont cull first parts
+
+
+    def select(self, requested):
+        return [self.parts[i] for i in requested]
 
 
 def get_title(tree):
@@ -63,7 +80,7 @@ def process_act_links(tree, db=None):
         domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
         nodes = tree.xpath('//*[text()]')
         for node in nodes:
-            if node.text.matches(reges):
+            if node.text.matches(regex):
                 pass
 
     return tree
@@ -109,11 +126,18 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
 
 def act_response(act):
     return {
-        'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html",),
+        'html_content': etree.tostring(tohtml(act.skeleton), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': act.definitions,
         'title': act.title,
         'type': 'act'
+    }
+
+def act_part_response(act, parts):
+    print [act.parts[e] for e in parts]
+    return {
+        'parts': { act.parts[e].attrib['cata-hook']: etree.tostring(tohtml(act.parts[e]),
+            encoding='UTF-8', method="html") for e in parts or [] }
     }
 
 def format_response(args, result):
@@ -130,9 +154,12 @@ def get_act_node_by_id(query):
 
 def query_act(args):
     act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'))
+    act.calculate_hooks()
     search_type = args.get('find')
     if search_type == 'full':
         pass
+    elif search_type == "more":
+        return act_part_response(act, args.getlist('requested_parts[]'))
     else:
         query = args.get('query')
         if not query:

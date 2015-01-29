@@ -5,7 +5,7 @@
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
     <xsl:template match="/">
-        <xsl:apply-templates select="act|regulation"/>
+        <xsl:apply-templates />
     </xsl:template>
 
     <xsl:template name="current">
@@ -64,6 +64,12 @@
 
     <xsl:template match="cover">
         <div class="cover reprint">
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
             <!-- <p class="reprint-date">
                 Reprint as at <xsl:value-of select="reprint-date"/>
             </p> -->
@@ -92,6 +98,12 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
              <xsl:apply-templates select="part|prov|amend/prov"/>
         </div>
     </xsl:template>
@@ -101,6 +113,12 @@
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
             <xsl:call-template name="current"/>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
@@ -126,6 +144,12 @@
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
             <xsl:call-template name="current"/>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
@@ -149,6 +173,12 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
             <xsl:choose>
                      <xsl:when test="ancestor::*[@quote]">
                      </xsl:when>
@@ -423,12 +453,24 @@
 
     <xsl:template match="schedule.group">
       <div class="schedule-group">
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
         <xsl:apply-templates select="schedule"/>
       </div>
     </xsl:template>
 
     <xsl:template match="schedule.provisions">
       <div class="schedule-provisions">
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
         <xsl:apply-templates select="prov|part"/>
       </div>
     </xsl:template>
@@ -454,6 +496,12 @@
 
     <xsl:template match="schedule">
         <div class="schedule">
+                <xsl:attribute name="cata-hook">
+                    <xsl:value-of select="@cata-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="cata-hook-length">
+                    <xsl:value-of select="@cata-hook-length"/>
+                </xsl:attribute>
             <xsl:call-template name="current"/>
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>

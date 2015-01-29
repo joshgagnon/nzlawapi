@@ -24,6 +24,7 @@ var SearchResults = require('./SearchResults.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
+var JumpTo= require('./JumpTo.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap');
 
@@ -115,13 +116,14 @@ var PositionedPop = React.createClass({
         );
       }
 
-    });
+});
 
 
 var Article = React.createClass({
     mixins: [
         Definitions.DefMixin,
-        Reflux.listenTo(ArticleJumpStore, "onJumpTo")
+        Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
+        Reflux.listenTo(ResultStore, "onResultUpdate"),
     ],
     propTypes: {
         result: React.PropTypes.object.isRequired,
@@ -130,30 +132,73 @@ var Article = React.createClass({
         return this.props.result.content.definitions[id];
     },
     componentDidMount: function(){
+        this.mounted = true;
+        this.setup_scroll();
+        this.calculate_parts();
+    },
+    setup_scroll: function(){
         this.offset = 100;
         var self = this;
         this.refresh();
-        var find_current = function(){
+        var find_current = function(store){
             var top = $(window).scrollTop() + self.offset;
-            var i = _.sortedIndex(self.offsets, top) -1;
-            return self.targets[Math.min(Math.max(0, i), self.targets.length -1)];
+            var i = _.sortedIndex(store.offsets, top) -1;
+            return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
         this.debounce_scroll = _.debounce(function(){
             var result = ''
             if(self.scrollHeight !== $(self.getDOMNode()).height()){
                 self.refresh();
             }
-            var $el = $(find_current());
+            var $el = $(find_current(self.locations));
             if(!$el.attr('data-location-no-path')){
-                result =  $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
+                result = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
                     return $(this).attr('data-location');
                 }).toArray().reverse().join('');
             }
             result += $el.attr('data-location');
             var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id]').attr('id');
             Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
+
+
+            var top = $(window).scrollTop() + self.offset;
+            var i = Math.max(_.sortedIndex(self.hooks.offsets, top) -1, 0);
+            var $hook = $(self.hooks.targets[i]);
+            var hook_num = $hook.attr('cata-hook');
+            if(!$hook.hasClass('loaded') && !_.contains(self.props.result.requested_parts, hook_num)){
+                Actions.getMoreResult(self.props.result, {requested_parts: [hook_num]});
+            }
+
         }, 0);
         $(window).on('scroll', this.debounce_scroll);
+    },
+    calculate_height: function(count, width){
+        return count/width * 50 -450;
+    },
+    calculate_parts: function(){
+        var self = this;
+        var $el = $(this.getDOMNode());
+        var $nodes  = $el.find('[cata-hook!=""]');
+        $nodes.each(function(){
+            var $this = $(this);
+            $(this).height(self.calculate_height(parseInt($this.attr('cata-hook-length'), 10),$el.width()));
+        })
+
+    },
+    onResultUpdate: function(results){
+        if(this.isMounted() && this.props.result.active && !_.isEmpty(this.props.result.new_parts)){
+            var $el = $(this.getDOMNode());
+            var parts = this.props.result.new_parts;
+            // super naughty wtf fix this
+            this.props.result.new_parts = {};
+
+            _.map(parts, function(v , k){
+                var $hook = $el.find('[cata-hook='+k+']');
+                var $new_hook = $(v).addClass('loaded');
+                $hook.replaceWith($new_hook);
+
+            })
+        }
     },
     render: function(){
         var links = (this.props.result.open_links || []).map(function(link){
@@ -167,8 +212,10 @@ var Article = React.createClass({
     refresh: function(){
         var self = this;
         var pos = 'offset';
-        this.offsets = [];
-        this.targets = [];
+        this.locations = {
+            offsets: [],
+            targets: []
+        };
         this.scrollHeight = $(self.getDOMNode()).height();
         $(self.getDOMNode())
             .find('[data-location]')
@@ -182,8 +229,24 @@ var Article = React.createClass({
                 return a[0] - b[0]
             })
             .each(function() {
-                    self.offsets.push(this[0])
-                    self.targets.push(this[1])
+                    self.locations.offsets.push(this[0])
+                    self.locations.targets.push(this[1])
+                });
+        this.hooks = {
+            offsets: [],
+            targets: []
+        };
+        $(self.getDOMNode())
+            .find('[cata-hook][cata-hook!=""]')
+            .map(function() {
+                var $el = $(this);
+                return ( $el.is(':visible') && [
+                    [$el[pos]().top, this]
+                ]) || null
+            })
+            .each(function() {
+                    self.hooks.offsets.push(this[0])
+                    self.hooks.targets.push(this[1])
                 });
     },
     onJumpTo: function(jump){
@@ -234,42 +297,6 @@ var Article = React.createClass({
 });
 
 
-var JumpTo = React.createClass({
-    mixins: [
-      Reflux.listenTo(ArticleStore,"onPositionChange"),
-      React.addons.LinkedStateMixin
-    ],
-    getInitialState: function(){
-        return {};
-    },
-    onPositionChange: function(value){
-        this.setState({article_location: value.repr});
-    },
-    jumpTo: function(e){
-        e.preventDefault();
-        var loc = this.state.article_location;
-        if(loc){
-            var m = _.filter(loc.split(/[,()]/)).map(function(s){
-                s = s.trim();
-                if(s.indexOf('cl') === 0){
-                    s = ', '+s;
-                }
-                else if(s.indexOf(' ') === -1 && s.indexOf('[') === -1){
-                    s = '('+s+')';
-                }
-                return s;
-            });
-            Actions.articleJumpTo({location: m});
-        }
-    },
-    render: function(){
-        return <Input ref="jump_to" name="jump_to" type="text"
-            bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
-            valueLink={this.linkState('article_location')}
-            buttonAfter={<Button type="input" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>} />
-    }
-})
-
 var ArticleScrollSpy = React.createClass({
     mixins: [
       Reflux.listenTo(ArticleStore,"onPositionChange")
@@ -301,7 +328,7 @@ var ArticleScrollSpy = React.createClass({
     },
     stopPropagation: function(e){
         e.stopPropagation();
-        var elem = $(this.getDOMNode());
+        var elem = $(this.getDOMNode()).find('.legislation-contents');
          if(e.deltaY<0 && elem.scrollTop() == 0) {
                  e.preventDefault();
            }
@@ -483,7 +510,7 @@ module.exports = React.createClass({
                                         else{
                                             el = <div className="search-results csspinner traditional"/>
                                         }
-                                          return (
+                                        return (
                                              <TabPane key={result.id} eventKey={result.id} tab={result.title} >
                                                 { el }
                                             </TabPane>
@@ -494,11 +521,10 @@ module.exports = React.createClass({
 						</div>
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        { this.state.active_result && this.state.active_result.content ?
+                        { this.state.active_result && this.state.active_result.content && this.state.active_result.query.type !== 'search' ?
                         <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} />  : null
                         }
                     </div>
 				</div>);
-	}
+    }
 });
-
