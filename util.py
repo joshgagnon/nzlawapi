@@ -1,4 +1,5 @@
 from lxml import etree
+from collections import defaultdict
 import os
 
 
@@ -171,3 +172,14 @@ def node_replace(tree, create_wrapper, ignore_fields=None):
 
             if node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
                 defs.expire_tag(node.getAttribute('id'))
+
+
+def etree_to_dict(t):
+    d = {'children' : map(etree_to_dict, iter(t)), 'tag': t.tag}
+    d.update(('@' + k, v) for k, v in t.attrib.iteritems())
+    if (t.text or '').strip():
+        d['#text'] = (t.text or '').strip()
+    if (t.tail or '').strip():
+        d['#tail'] = (t.tail or '').strip()
+    return d
+

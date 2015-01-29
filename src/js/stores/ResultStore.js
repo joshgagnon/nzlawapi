@@ -48,7 +48,12 @@ var ResultStore = Reflux.createStore({
 					result.content = data;
 					Actions.updateResult(result);
 				}
-			}.bind(this));
+			}.bind(this),
+			function(){
+				result.content = {error: 'Could not retrieve result'};
+				Actions.updateResult(result);
+			})
+
 	},
 	onGetMoreResult: function(result, to_add){
 		result.fetching = true;
@@ -60,7 +65,6 @@ var ResultStore = Reflux.createStore({
 					result.offset = data.offset;
 					result.content.search_results.hits = result.content.search_results.hits.concat(data.search_results.hits);
 					result.fetching = false;
-					console.log(result.content)
 					Actions.updateResult(result);
 				})
 		}

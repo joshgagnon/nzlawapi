@@ -1,5 +1,5 @@
 from db import get_db
-from util import CustomException, tohtml
+from util import CustomException, tohtml, etree_to_dict
 from definitions import populate_definitions, process_definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query, find_title_by_id
 from lxml import etree
@@ -14,19 +14,19 @@ class Act(object):
         self.tree = tree
         self.definitions = definitions or {}
         self.title = get_title(self.tree)
-        self.hook_match = '/*/*/part|/*/*/*/schdule'
+        self.hook_match = '/*/*/*/*/*[not(h1)]'
         self.parts = {}
 
     def calculate_hooks(self):
-        self.skeleton = deepcopy(self.tree)
-        for i, e in enumerate(self.skeleton.xpath(self.hook_match)):
-            e.attrib['cata-hook'] = '%d' % i
-            e.attrib['cata-hook-length'] = '%d' % len(etree.tostring(tohtml(e)))
-            self.parts[e.attrib['cata-hook']] = deepcopy(e)
+        html = tohtml(self.tree)
+        for i, e in enumerate(html.xpath(self.hook_match)):
+            e.attrib['data-hook'] = '%d' % i
+            e.attrib['data-hook-length'] = '%d' % len(etree.tostring(e))
+            self.parts[e.attrib['data-hook']] = deepcopy(e)
             e[:] = []
-            e.text = e.tail = None
+            #e.text = e.tail = None
             # todo, dont cull first parts
-
+        self.skeleton = etree_to_dict(html.getroot())
 
     def select(self, requested):
         return [self.parts[i] for i in requested]
@@ -126,7 +126,8 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
 
 def act_response(act):
     return {
-        'html_content': etree.tostring(tohtml(act.skeleton), encoding='UTF-8', method="html"),
+        'skeleton': act.skeleton,
+        'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': act.definitions,
         'title': act.title,
@@ -136,7 +137,7 @@ def act_response(act):
 def act_part_response(act, parts):
     print [act.parts[e] for e in parts]
     return {
-        'parts': { act.parts[e].attrib['cata-hook']: etree.tostring(tohtml(act.parts[e]),
+        'parts': { act.parts[e].attrib['data-hook']: etree.tostring(tohtml(act.parts[e]),
             encoding='UTF-8', method="html") for e in parts or [] }
     }
 

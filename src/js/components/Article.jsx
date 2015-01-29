@@ -164,7 +164,7 @@ var Article = React.createClass({
             var top = $(window).scrollTop() + self.offset;
             var i = Math.max(_.sortedIndex(self.hooks.offsets, top) -1, 0);
             var $hook = $(self.hooks.targets[i]);
-            var hook_num = $hook.attr('cata-hook');
+            var hook_num = $hook.attr('data-hook');
             if(!$hook.hasClass('loaded') && !_.contains(self.props.result.requested_parts, hook_num)){
                 Actions.getMoreResult(self.props.result, {requested_parts: [hook_num]});
             }
@@ -178,10 +178,10 @@ var Article = React.createClass({
     calculate_parts: function(){
         var self = this;
         var $el = $(this.getDOMNode());
-        var $nodes  = $el.find('[cata-hook][cata-hook!=""]');
+        var $nodes  = $el.find('[data-hook][data-hook!=""]');
         $nodes.each(function(){
             var $this = $(this);
-            $(this).height(self.calculate_height(parseInt($this.attr('cata-hook-length'), 10),$el.width()));
+            $(this).height(self.calculate_height(parseInt($this.attr('data-hook-length'), 10),$el.width()));
         })
 
     },
@@ -193,7 +193,7 @@ var Article = React.createClass({
             this.props.result.new_parts = {};
 
             _.map(parts, function(v , k){
-                var $hook = $el.find('[cata-hook='+k+']');
+                var $hook = $el.find('[data-hook='+k+']');
                 var $new_hook = $(v).addClass('loaded');
                 $hook.replaceWith($new_hook);
 
@@ -201,6 +201,14 @@ var Article = React.createClass({
         }
     },
     render: function(){
+        if(this.props.result.content.skeleton){
+            return this.skeleton_render();
+        }
+        else{
+            return this.standard_render();
+        }
+    },
+    standard_render: function(){
         var links = (this.props.result.open_links || []).map(function(link){
                         return (<PositionedPop placement="auto" {...link} key={link.id}/>)
                     });
@@ -208,6 +216,20 @@ var Article = React.createClass({
                 <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
                 {links}
             </div>
+    },
+    skeleton_render: function(){
+        var attrib_transform = {'@class': 'className', '@style': 'pewpew'}
+        function to_components(v){
+            var attributes = {}
+            _.each(v, function(v, k){
+                if(attrib_transform[k]) return  attributes[attrib_transform[k]] = v
+                else if(k[0] === '@') return attributes[k.substring(1)] = v;
+            });
+            console.log(attributes)
+            return React.DOM[v.tag](attributes, v['#text'], _.map(v.children, to_components) )
+        }
+        console.log(this.props.result.content.skeleton)
+        return <div className="legislation-result" >{to_components(this.props.result.content.skeleton)}</div>
     },
     refresh: function(){
         var self = this;
@@ -237,7 +259,7 @@ var Article = React.createClass({
             targets: []
         };
         $(self.getDOMNode())
-            .find('[cata-hook][cata-hook!=""]')
+            .find('[data-hook][data-hook!=""]')
             .map(function() {
                 var $el = $(this);
                 return ( $el.is(':visible') && [
