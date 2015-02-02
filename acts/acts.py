@@ -14,7 +14,7 @@ class Act(object):
         self.tree = tree
         self.definitions = definitions or {}
         self.title = get_title(self.tree)
-        self.hook_match = '/*/*/*/*/*/*[not(h1)]'
+        self.hook_match = '/*/*/*/*/*'
         self.parts = {}
 
     def calculate_hooks(self):
@@ -126,15 +126,32 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
         return Act(id=result[0], tree=tree, definitions=definitions)
 
 
-def act_response(act):
+def act_skeleton_response(act):
     return {
         'skeleton': act.skeleton,
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': act.definitions,
         'title': act.title,
         'parts': {},
+        'type': 'act',
+        'partial': True
+    }
+
+
+def act_full_response(act):
+    return {
+        'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
+        'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'definitions': act.definitions,
+        'title': act.title,
         'type': 'act'
     }
+
+def act_response(act):
+    if len(act.tree.xpath('.//*')) > 50000: # move magic number somewhere
+        return act_skeleton_response(act)
+    else:
+        return act_full_response(act)
 
 def act_part_response(act, parts):
     def render_inner(el):

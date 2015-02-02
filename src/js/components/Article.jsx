@@ -37,7 +37,7 @@ var ArticleJumpStore = Reflux.createStore({
         this.trigger(state);
     }
 });
-
+/*
 var OpenLinksStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
@@ -51,7 +51,7 @@ var OpenLinksStore = Reflux.createStore({
         this.openLinks = _.reject(this.openLinks, function(l){ return l.id === link.id});
         this.trigger(this.openLinks);
     }
-});
+});*/
 
 var PositionedPop = React.createClass({
         mixins: [BootstrapMixin],
@@ -131,10 +131,10 @@ $.fn.isOnScreen = function(tolerance){
 
 var Article = React.createClass({
     mixins: [
-        Definitions.DefMixin,
+      //  Definitions.DefMixin,
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
     ],
-    scroll_threshold: 5000,
+    scroll_threshold: 20000,
     propTypes: {
         result: React.PropTypes.object.isRequired,
     },
@@ -146,13 +146,17 @@ var Article = React.createClass({
         return this.props.result.content.definitions[id];
     },
     componentDidMount: function(){
-        this.mounted = true;
         this.setup_scroll();
-        this.resize_skeleton();
-        this.check_sub_visibility();
+        if(this.isPartial()){
+            this.resize_skeleton();
+            this.check_sub_visibility();
+        }
     },
     componentDidUpdate: function(){
         this.resize_skeleton();
+    },
+    isPartial: function(){
+        return this.props.result.content.partial;
     },
     setup_scroll: function(){
         this.offset = 100;
@@ -163,7 +167,8 @@ var Article = React.createClass({
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
-        var debounce_visibility = _.debounce(this.check_sub_visibility, 10, {
+
+        this.debounce_visibility = _.debounce(this.check_sub_visibility, 10, {
           'maxWait': 300
         });
         this.debounce_scroll = _.debounce(function(){
@@ -180,26 +185,27 @@ var Article = React.createClass({
             result += $el.attr('data-location');
             var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id]').attr('id');
             Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
-            debounce_visibility();
         }, 0);
 
         $(window).on('scroll', this.debounce_scroll);
+        if(this.isPartial()){
+            this.debounce_visibility();
+            $(window).on('scroll', this.debounce_visibility);
+            $(window).on('resize', this.reset_heights);
+        }
+    },
+    reset_heights: function(){
+        this.heights = {};
     },
     calculate_height: function(count, width){
         return Math.max(count/width * 50 -450, 28);
     },
     resize_skeleton: function(){
         var self = this;
-        var width = $(this.getDOMNode()).width();
-
-        _.each(this.refs, function(v, k){
-
-            if(self.state.visible[k] && self.props.result.content.parts[k]){
-                $(v.getDOMNode()).css('height', 'auto');
-                self.heights[k] = $(v.getDOMNode()).outerHeight();
-            }
-            else{
-                $(v.getDOMNode()).css('height', self.heights[k] || self.calculate_height(v.props['data-hook-length']|0, width));
+        _.each(this.state.visible, function(v, k){
+            if(self.props.result.content.parts[k]){
+                self.heights[k] = $(self.refs[k].getDOMNode()).height();
+                //console.log(k, self.heights[k], self.heights)
             }
         });
     },
@@ -208,41 +214,53 @@ var Article = React.createClass({
         var visible = {};
         var top = $(window).scrollTop() + self.offset;
         var height = $(window).height();
+        var change = false;
         _.each(this.refs, function(r, k){
             if($(r.getDOMNode()).isOnScreen(self.scroll_threshold)){
                 visible[k] = true;
             }
         });
-        this.setState({visible: visible}, function(){
-            var to_fetch = _.reject(_.keys(self.state.visible), function(k){
-                return _.contains(self.props.result.requested_parts, k) || self.props.result.content.parts[k];
+        if(!_.isEqual(visible, this.state.visible)){
+            //console.log(visible, this.state.visible)
+            this.setState({visible: visible}, function(){
+                var to_fetch = _.reject(_.keys(self.state.visible), function(k){
+                    return _.contains(self.props.result.requested_parts, k) || self.props.result.content.parts[k];
+                });
+                if(to_fetch.length){
+                    Actions.getMoreResult(this.props.result, {requested_parts: to_fetch});
+                }
             });
-            if(to_fetch.length){
-                Actions.getMoreResult(this.props.result, {requested_parts: to_fetch});
-            }
-        });
+        }
     },
     render: function(){
-        if(this.props.result.content.skeleton){
-            return this.skeleton_render();
+        if(this.isPartial()){
+            return this.render_skeleton();
         }
         else{
-            return this.standard_render();
+            return this.render_standard();
         }
     },
-    standard_render: function(){
-        var links = (this.props.result.open_links || []).map(function(link){
-                        return (<PositionedPop placement="auto" {...link} key={link.id}/>)
-                    });
+    render_link_popovers: function(){
+        return (this.props.result.open_links || []).map(function(link){
+                    return (<PositionedPop placement="auto" {...link} key={link.id}/>)
+                });
+    },
+    render_definition_popovers: function(){
+        return (this.props.result.open_definitions || []).map(function(link){
+                    return (<PositionedPop placement="auto" {...link} key={link.id}/>)
+                });
+    },
+    render_standard: function(){
         return <div className="legislation-result" >
                 <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
-                {links}
+                {this.render_link_popovers()}
+                {this.render_definition_popovers()}
             </div>
     },
-    skeleton_render: function(){
+    render_skeleton: function(){
         var self = this;
         var attrib_transform = {'@class': 'className', '@style': 'fauxstyle', '@tabindex': 'tabIndex', '@colspan': 'colSpan'};
-
+        //console.log('render')
         var id = 0;
         function to_components(v){
             var attributes = {}
@@ -253,17 +271,17 @@ var Article = React.createClass({
             });
 
             if(attributes['data-hook']){
-                var hook = attributes['data-hook'] | 0;
+                var hook = attributes['data-hook'];
                 attributes['ref'] = hook;
                 if(self.state.visible[hook] && self.props.result.content.parts[hook]){
-                    attributes.style = {height: 'auto'};
+                    //attributes.style = {height: 'auto'};
                     attributes['dangerouslySetInnerHTML'] = {__html: self.props.result.content.parts[hook]};
                 }
                 else if(self.state.visible[hook]){
                     attributes.className = (attributes.className || '') + ' csspinner traditional';
                 }
                 else{
-                    //do, nothing i guess
+                    attributes.style = {height: self.heights[hook] || self.calculate_height(attributes['data-hook-length']|0, 1000)};
                 }
             }
             if(attributes['data-hook']){
@@ -273,11 +291,12 @@ var Article = React.createClass({
         }
         return <div className="legislation-result" onClick={this.interceptLink}>
                 {to_components(this.props.result.content.skeleton)}
+                {this.render_link_popovers()}
+                {this.render_definition_popovers()}
             </div>
     },
     refresh: function(){
         var self = this;
-
         var pos = 'offset';
         this.locations = {
             offsets: [],
@@ -303,7 +322,6 @@ var Article = React.createClass({
             offsets: [],
             targets: []
         };
-        this.heights = {};
     },
     onJumpTo: function(jump){
         var target;
@@ -329,6 +347,10 @@ var Article = React.createClass({
     },
     componentWillUnmount: function(){
         $(window).off('scroll', this.debounce_scroll);
+        if(this.isPartial()){
+            $(window).off('scroll', this.debounce_visibility);
+            $(window).off('resize', this.debounce.reset_heights);
+        }
     },
      interceptLink: function(e){
         var link = $(e.target).closest('a');
@@ -338,8 +360,8 @@ var Article = React.createClass({
                 if(link.attr('data-link-id')){
                     var container = $('body'),
                         scrollTo = $('#'+link.attr('data-target-id'));
-                   // container.animate({scrollTop: (scrollTo.offset().top - self.offset)});
-                   Actions.linkOpened({
+                   Actions.linkOpened(this.props.result,
+                        {
                         title: link.text(),
                         id: link.attr('data-link-id'),
                         target: link.attr('data-target-id'),
@@ -347,6 +369,16 @@ var Article = React.createClass({
                         positionTop:link.offset().top
                     });
                 }
+            }
+            else if(link.attr('def-id')){
+                   Actions.definitionOpened(this.props.result,
+                        {
+                        title: link.text(),
+                        id: link.attr('data-link-id'),
+                        target: link.attr('data-target-id'),
+                        positionLeft: link.offset().left,
+                        positionTop:link.offset().top
+                    });
             }
         }
      }
@@ -404,7 +436,6 @@ var ArticleScrollSpy = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-     // Reflux.listenTo(OpenLinksStore,"onLinkOpened")
         Reflux.listenTo(ResultStore, 'onResults'),
     ],
     load: function(){

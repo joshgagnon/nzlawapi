@@ -90,6 +90,14 @@ var ResultStore = Reflux.createStore({
             this.results[Math.max(0, index-1)].active = true;
         }
 		this.trigger({results: this.results});
+	},
+	onLinkOpened: function(result, link){
+		console.log(result)
+		if(_.contains(this.results, result)){
+			result.open_links =result.open_links || [];
+			result.open_links.push(link);
+			this.trigger({results: this.results});
+		}
 	}
 });
 
