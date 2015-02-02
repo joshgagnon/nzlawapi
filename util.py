@@ -177,9 +177,9 @@ def node_replace(tree, create_wrapper, ignore_fields=None):
 def etree_to_dict(t):
     d = {'children' : map(etree_to_dict, iter(t)), 'tag': t.tag}
     d.update(('@' + k, v) for k, v in t.attrib.iteritems())
-    if (t.text or '').strip():
-        d['#text'] = (t.text or '').strip()
-    if (t.tail or '').strip():
-        d['#tail'] = (t.tail or '').strip()
+    if (t.text or ''):
+        d['#text'] = t.text or ''
+    if (t.tail or ''):
+        d['#tail'] = t.tail or ''
     return d
 

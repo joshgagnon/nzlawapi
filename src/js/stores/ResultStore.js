@@ -57,8 +57,6 @@ var ResultStore = Reflux.createStore({
 	},
 	onGetMoreResult: function(result, to_add){
 		result.fetching = true;
-		_.extend(result, to_add);
-		Actions.updateResult(result);
 		if(result.query.type === 'search'){
 			$.get('/query', _.extend({offset: result.content.search_results.hits.length}, result.query))
 				.then(function(data){
@@ -69,14 +67,17 @@ var ResultStore = Reflux.createStore({
 				})
 		}
 		else if(_.contains(partial_docs, result.query.type)){
-			$.get('/query', _.defaults({find: 'more', requested_parts: result.requested_parts}, result.query))
-				.then(function(data){
-					result.new_parts = data.parts;
-					Actions.updateResult(result);
-				})
-
+			var to_fetch = _.difference(to_add.requested_parts, result.requested_parts);
+			result.requested_parts = _.union(result.requested_parts, to_add.requested_parts);
+			if(to_fetch.length){
+				$.get('/query', _.defaults({find: 'more', requested_parts: to_fetch}, result.query))
+					.then(function(data){
+						result.content.parts = _.extend({}, result.content.parts, data.parts);
+						Actions.updateResult(result);
+					});
+			}
 		}
-
+		Actions.updateResult(result);
 	},
 	onClearResults: function(){
 		this.results = [];

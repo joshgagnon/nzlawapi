@@ -14,18 +14,20 @@ class Act(object):
         self.tree = tree
         self.definitions = definitions or {}
         self.title = get_title(self.tree)
-        self.hook_match = '/*/*/*/*/*[not(h1)]'
+        self.hook_match = '/*/*/*/*/*/*[not(h1)]'
         self.parts = {}
 
     def calculate_hooks(self):
         html = tohtml(self.tree)
-        for i, e in enumerate(html.xpath(self.hook_match)):
-            e.attrib['data-hook'] = '%d' % i
-            e.attrib['data-hook-length'] = '%d' % len(etree.tostring(e))
-            self.parts[e.attrib['data-hook']] = deepcopy(e)
-            e[:] = []
-            #e.text = e.tail = None
-            # todo, dont cull first parts
+        i = 0
+        for e in html.xpath(self.hook_match):
+            length = len(etree.tostring(e))
+            if length > 1000:
+                e.attrib['data-hook'] = '%d' % i
+                e.attrib['data-hook-length'] = '%d' % length
+                self.parts[e.attrib['data-hook']] = deepcopy(e)
+                e[:] = []
+                i += 1
         self.skeleton = etree_to_dict(html.getroot())
 
     def select(self, requested):
@@ -127,18 +129,25 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
 def act_response(act):
     return {
         'skeleton': act.skeleton,
-        'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'definitions': act.definitions,
         'title': act.title,
+        'parts': {},
         'type': 'act'
     }
 
 def act_part_response(act, parts):
-    print [act.parts[e] for e in parts]
+    def render_inner(el):
+        s = ''
+        for node in el.xpath('node()'):
+            if isinstance(node, basestring):
+                s += node
+            else:
+                s += etree.tostring(node, encoding='UTF-8', method="html")
+        return s
+
     return {
-        'parts': { act.parts[e].attrib['data-hook']: etree.tostring(tohtml(act.parts[e]),
-            encoding='UTF-8', method="html") for e in parts or [] }
+        'parts': { act.parts[e].attrib['data-hook']: render_inner(act.parts[e]) for e in parts or [] }
     }
 
 def format_response(args, result):

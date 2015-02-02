@@ -118,15 +118,29 @@ var PositionedPop = React.createClass({
 
 });
 
+$.fn.isOnScreen = function(tolerance){
+    tolerance = tolerance || 0;
+    var viewport = {};
+    viewport.top = $(window).scrollTop();
+    viewport.bottom = viewport.top + $(window).height();
+    var bounds = {};
+    bounds.top = this.offset().top;
+    bounds.bottom = bounds.top + this.outerHeight();
+    return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
+};
 
 var Article = React.createClass({
     mixins: [
         Definitions.DefMixin,
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
-        Reflux.listenTo(ResultStore, "onResultUpdate"),
     ],
+    scroll_threshold: 5000,
     propTypes: {
         result: React.PropTypes.object.isRequired,
+    },
+    getInitialState: function(){
+        this.heights = {};
+        return {visible: {}};
     },
     get_definition: function(id){
         return this.props.result.content.definitions[id];
@@ -134,7 +148,11 @@ var Article = React.createClass({
     componentDidMount: function(){
         this.mounted = true;
         this.setup_scroll();
-        this.calculate_parts();
+        this.resize_skeleton();
+        this.check_sub_visibility();
+    },
+    componentDidUpdate: function(){
+        this.resize_skeleton();
     },
     setup_scroll: function(){
         this.offset = 100;
@@ -145,6 +163,9 @@ var Article = React.createClass({
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
+        var debounce_visibility = _.debounce(this.check_sub_visibility, 10, {
+          'maxWait': 300
+        });
         this.debounce_scroll = _.debounce(function(){
             var result = ''
             if(self.scrollHeight !== $(self.getDOMNode()).height()){
@@ -159,46 +180,47 @@ var Article = React.createClass({
             result += $el.attr('data-location');
             var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id]').attr('id');
             Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
-
-
-            var top = $(window).scrollTop() + self.offset;
-            var i = Math.max(_.sortedIndex(self.hooks.offsets, top) -1, 0);
-            var $hook = $(self.hooks.targets[i]);
-            var hook_num = $hook.attr('data-hook');
-            if(!$hook.hasClass('loaded') && !_.contains(self.props.result.requested_parts, hook_num)){
-                Actions.getMoreResult(self.props.result, {requested_parts: [hook_num]});
-            }
-
+            debounce_visibility();
         }, 0);
+
         $(window).on('scroll', this.debounce_scroll);
     },
     calculate_height: function(count, width){
-        return Math.max(count/width * 50 -450, 300);
+        return Math.max(count/width * 50 -450, 28);
     },
-    calculate_parts: function(){
+    resize_skeleton: function(){
         var self = this;
-        var $el = $(this.getDOMNode());
-        var $nodes  = $el.find('[data-hook][data-hook!=""]');
-        $nodes.each(function(){
-            var $this = $(this);
-            $(this).height(self.calculate_height(parseInt($this.attr('data-hook-length'), 10),$el.width()));
-        })
+        var width = $(this.getDOMNode()).width();
 
+        _.each(this.refs, function(v, k){
+
+            if(self.state.visible[k] && self.props.result.content.parts[k]){
+                $(v.getDOMNode()).css('height', 'auto');
+                self.heights[k] = $(v.getDOMNode()).outerHeight();
+            }
+            else{
+                $(v.getDOMNode()).css('height', self.heights[k] || self.calculate_height(v.props['data-hook-length']|0, width));
+            }
+        });
     },
-    onResultUpdate: function(results){
-        if(this.isMounted() && this.props.result.active && !_.isEmpty(this.props.result.new_parts)){
-            var $el = $(this.getDOMNode());
-            var parts = this.props.result.new_parts;
-            // super naughty wtf fix this
-            this.props.result.new_parts = {};
-
-            _.map(parts, function(v , k){
-                var $hook = $el.find('[data-hook='+k+']');
-                var $new_hook = $(v).addClass('loaded');
-                $hook.replaceWith($new_hook);
-
-            })
-        }
+    check_sub_visibility: function(){
+        var self = this;
+        var visible = {};
+        var top = $(window).scrollTop() + self.offset;
+        var height = $(window).height();
+        _.each(this.refs, function(r, k){
+            if($(r.getDOMNode()).isOnScreen(self.scroll_threshold)){
+                visible[k] = true;
+            }
+        });
+        this.setState({visible: visible}, function(){
+            var to_fetch = _.reject(_.keys(self.state.visible), function(k){
+                return _.contains(self.props.result.requested_parts, k) || self.props.result.content.parts[k];
+            });
+            if(to_fetch.length){
+                Actions.getMoreResult(this.props.result, {requested_parts: to_fetch});
+            }
+        });
     },
     render: function(){
         if(this.props.result.content.skeleton){
@@ -218,21 +240,44 @@ var Article = React.createClass({
             </div>
     },
     skeleton_render: function(){
-        var attrib_transform = {'@class': 'className', '@style': 'pewpew'}
+        var self = this;
+        var attrib_transform = {'@class': 'className', '@style': 'fauxstyle', '@tabindex': 'tabIndex', '@colspan': 'colSpan'};
+
+        var id = 0;
         function to_components(v){
             var attributes = {}
             _.each(v, function(v, k){
-                if(attrib_transform[k]) return  attributes[attrib_transform[k]] = v
-                else if(k[0] === '@') return attributes[k.substring(1)] = v;
+                attributes['key'] = id++;
+                if(attrib_transform[k]) attributes[attrib_transform[k]] = v
+                else if(k[0] === '@') attributes[k.substring(1)] = v;
             });
-            console.log(attributes)
-            return React.DOM[v.tag](attributes, v['#text'], _.map(v.children, to_components) )
+
+            if(attributes['data-hook']){
+                var hook = attributes['data-hook'] | 0;
+                attributes['ref'] = hook;
+                if(self.state.visible[hook] && self.props.result.content.parts[hook]){
+                    attributes.style = {height: 'auto'};
+                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.result.content.parts[hook]};
+                }
+                else if(self.state.visible[hook]){
+                    attributes.className = (attributes.className || '') + ' csspinner traditional';
+                }
+                else{
+                    //do, nothing i guess
+                }
+            }
+            if(attributes['data-hook']){
+                return React.DOM[v.tag](attributes);
+            }
+            return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
         }
-        console.log(this.props.result.content.skeleton)
-        return <div className="legislation-result" >{to_components(this.props.result.content.skeleton)}</div>
+        return <div className="legislation-result" onClick={this.interceptLink}>
+                {to_components(this.props.result.content.skeleton)}
+            </div>
     },
     refresh: function(){
         var self = this;
+
         var pos = 'offset';
         this.locations = {
             offsets: [],
@@ -250,26 +295,15 @@ var Article = React.createClass({
             .sort(function(a, b) {
                 return a[0] - b[0]
             })
-            .each(function() {
-                    self.locations.offsets.push(this[0])
-                    self.locations.targets.push(this[1])
+            .each(function(){
+                    self.locations.offsets.push(this[0]);
+                    self.locations.targets.push(this[1]);
                 });
         this.hooks = {
             offsets: [],
             targets: []
         };
-        $(self.getDOMNode())
-            .find('[data-hook][data-hook!=""]')
-            .map(function() {
-                var $el = $(this);
-                return ( $el.is(':visible') && [
-                    [$el[pos]().top, this]
-                ]) || null
-            })
-            .each(function() {
-                    self.hooks.offsets.push(this[0])
-                    self.hooks.targets.push(this[1])
-                });
+        this.heights = {};
     },
     onJumpTo: function(jump){
         var target;
