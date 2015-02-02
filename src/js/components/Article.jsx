@@ -24,7 +24,8 @@ var SearchResults = require('./SearchResults.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
-var JumpTo= require('./JumpTo.jsx');
+var Popover = require('./Popover.jsx');
+var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
 require('bootstrap3-typeahead');
 require('bootstrap');
 
@@ -33,84 +34,11 @@ var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
     },
-    onArticleJumpTo: function(state){
-        this.trigger(state);
+    onArticleJumpTo: function(result, jump){
+        this.trigger(result, jump);
     }
 });
 
-
-var PositionedPop = React.createClass({
-    mixins: [BootstrapMixin],
-    getInitialState: function() {
-        return {
-            placement: 'bottom'
-        };
-    },
-    componentDidMount: function() {
-        var self = this;
-        var $el = $(this.getDOMNode());
-        var $target = $('[data-link-id=' + this.props.id + ']');
-        //TODO use bootstrap layout algorithm
-        $el.css({
-                'left': '-=' + $el.outerWidth() / 2
-            })
-            //jQuery.fn.tooltip.Constructor.prototype.show.call(obj);
-    },
-    close: function() {
-        this.props.onClose(this.props.id)
-    },
-    scrollTo: function() {
-        Actions.articleJumpTo({
-            id: '#' + this.props.target
-        });
-         this.props.onClose(this.props.id);
-    },
-    render: function() {
-        var classes = 'popover def-popover ' + this.state.placement;
-        var contentClasses = 'popover-content'
-        var style = {};
-        style['left'] = this.props.positionLeft;
-        style['top'] = this.props.positionTop + 16;
-        style['display'] = 'block';
-
-        var arrowStyle = {};
-        arrowStyle['left'] = this.props.arrowOffsetLeft;
-        arrowStyle['top'] = this.props.arrowOffsetTop;
-
-        var html = '';
-        if (this.props.target && $('#' + this.props.target)[0]) {
-            html = $('#' + this.props.target)[0].outerHTML;
-        }
-        else if(this.props.html){
-            html = this.props.html;
-        }
-        else if(this.props.fetch){
-            contentClasses += ' csspinner traditional loading';
-        }
-        return (
-            <div className={classes} role="tooltip" style={style}>
-                <div className="arrow"  style={arrowStyle}></div>
-                <h3 className="popover-title">{this.props.title}</h3>
-                <div className="popover-close" onClick={this.close}>&times;</div>
-                <div className={contentClasses}>
-                    <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
-                </div>
-                <div className="popover-footer">
-                <div className="row">
-
-                <Col md={6}>
-                    <Button onClick={this.scrollTo}>Scroll To</Button >
-                    </Col>
-                <Col md={6}>
-                    <Button  onClick={this.open}>Open</Button >
-                </Col>
-                </div>
-                </div>
-            </div>
-        );
-      }
-
-});
 
 $.fn.isOnScreen = function(tolerance){
     tolerance = tolerance || 0;
@@ -125,7 +53,6 @@ $.fn.isOnScreen = function(tolerance){
 
 var Article = React.createClass({
     mixins: [
-      //  Definitions.DefMixin,
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
     ],
     scroll_threshold: 20000,
@@ -238,7 +165,7 @@ var Article = React.createClass({
     renderPopovers: function(){
         var self = this;
         return (this.props.result.open_popovers || []).map(function(link){
-                return (<PositionedPop placement="auto" {...link} onClose={self.popoverClose} key={link.id}/>)
+                return (<Popover placement="auto" {...link} onClose={self.popoverClose} onJumpTo={self.popoverJumpTo} key={link.id}/>)
             });
     },
     popoverClose: function(popover_id){
@@ -316,7 +243,13 @@ var Article = React.createClass({
             targets: []
         };
     },
-    onJumpTo: function(jump){
+    popoverJumpTo: function(){
+        Actions.articleJumpTo(this.props.result, {
+            id: '#' + this.props.target
+        });
+    },
+    onJumpTo: function(result, jump){
+        if(result !== this.props.result) return;
         var target;
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
@@ -384,53 +317,7 @@ var Article = React.createClass({
 });
 
 
-var ArticleScrollSpy = React.createClass({
-    mixins: [
-      Reflux.listenTo(ArticleStore,"onPositionChange")
-    ],
 
-    onPositionChange: function(value){
-        var self = this;
-        var $el = $('.legislation-contents', this.getDOMNode());
-        $el.find('.active').each(function(){
-            $(this).removeClass('active');
-        });
-        this.active = [];
-        var active = $el.find('[href=#'+value.id+']').parent();
-        if(active.length){
-            active.addClass('active');
-            active.parentsUntil( '.contents', 'li').each(function(){
-                $(this).addClass('active');
-            });
-            $el.scrollTop(active.offset().top -$el.offset().top - $el.height()/2 + $el.scrollTop());
-        }
-
-    },
-    interceptLink: function(e){
-        var link = $(e.target).closest('a');
-        if(link.length){
-            e.preventDefault();
-            Actions.articleJumpTo({id: link.attr('href'), noscroll: true});
-        }
-    },
-    stopPropagation: function(e){
-        e.stopPropagation();
-        var elem = $(this.getDOMNode()).find('.legislation-contents');
-         if(e.deltaY<0 && elem.scrollTop() == 0) {
-                 e.preventDefault();
-           }
-         if(e.deltaY>0 && elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
-                 e.preventDefault();
-           }
-
-    },
-    render: function(){
-        return <div onClick={this.interceptLink} onWheel={this.stopPropagation} >
-                <JumpTo />
-                <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
-            </div>
-    }
-});
 
 
 module.exports = React.createClass({
@@ -608,7 +495,7 @@ module.exports = React.createClass({
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
                         { this.state.active_result && this.state.active_result.content && this.state.active_result.query.type !== 'search' ?
-                        <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} />  : null
+                        <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} result={this.state.active_result} />  : null
                         }
                     </div>
 				</div>);
