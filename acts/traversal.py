@@ -108,16 +108,13 @@ def find_definition(tree, query):
         raise CustomException("Path for definition not found")
 
 
-def find_title_by_id(node_id, db=None):
+def find_document_id_by_govt_id(node_id, db=None):
     with (db or get_db()).cursor() as cur:
         try:
             query = """
-            select a.title from documents d
-            join acts a on a.document_id = d.id
-            join id_lookup i on i.parent_id = a.source_id and i.mapper = 'acts'
-            where i.id = %(node_id)s
-            order by version desc
-            limit 1; """
+            select a.id from latest_instruments a
+            join id_lookup i on i.parent_id = a.id
+            where i.govt_id = %(node_id)s """
             cur.execute(query, {'node_id': node_id})
             return cur.fetchone()[0]
         except Exception, e:

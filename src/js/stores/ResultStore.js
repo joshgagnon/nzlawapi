@@ -52,7 +52,7 @@ var ResultStore = Reflux.createStore({
 			function(){
 				result.content = {error: 'Could not retrieve result'};
 				Actions.updateResult(result);
-			})
+			});
 
 	},
 	onGetMoreResult: function(result, to_add){
@@ -92,11 +92,17 @@ var ResultStore = Reflux.createStore({
 		this.trigger({results: this.results}, result);
 	},
 	addPopover: function(result, link){
+		var self = this;
 		if(_.contains(this.results, result)){
 			result.open_popovers = result.open_popovers || [];
 			result.open_popovers.push(link);
 			if(link.fetch){
-
+				$.get(link.url)
+					.then(function(data){
+						_.extend(link, data);
+						link.fetch = false;
+						self.trigger({results: self.results})
+					});
 			}
 		}
 	},

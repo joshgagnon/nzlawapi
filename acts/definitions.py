@@ -262,11 +262,12 @@ def find_all_definitions(tree, definitions, expire=True):
 
             base = lmtzr.lemmatize(text.lower())
             expiry_tag = infer_life_time(parent) if expire else None
+
             definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
                             id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
-            if text.lower() != base:
-                definitions.add(Definition(full_word=text, key=text.lower(), xmls=[temp_id, src],
-                                id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
+            #if text.lower() != base:
+            #    definitions.add(Definition(full_word=text, key=text.lower(), xmls=[temp_id, src],
+            #                    id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
 
 
 def process_definitions(tree, definitions):

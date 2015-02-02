@@ -18,7 +18,7 @@ var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-var Definitions = require('./Definitions.jsx');
+//var Definitions = require('./Definitions.jsx');
 var TypeAhead = require('./TypeAhead.jsx');
 var SearchResults = require('./SearchResults.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
@@ -37,21 +37,7 @@ var ArticleJumpStore = Reflux.createStore({
         this.trigger(state);
     }
 });
-/*
-var OpenLinksStore = Reflux.createStore({
-    listenables: Actions,
-    init: function(){
-        this.openLinks = [];
-    },
-    onLinkOpened: function(link){
-        this.openLinks.push(link);
-        this.trigger(this.openLinks);
-    },
-    onLinkClosed: function(link){
-        this.openLinks = _.reject(this.openLinks, function(l){ return l.id === link.id});
-        this.trigger(this.openLinks);
-    }
-});*/
+
 
 var PositionedPop = React.createClass({
     mixins: [BootstrapMixin],
@@ -77,11 +63,11 @@ var PositionedPop = React.createClass({
         Actions.articleJumpTo({
             id: '#' + this.props.target
         });
-        Actions.linkClosed(this.props)
-
+         this.props.onClose(this.props.id);
     },
     render: function() {
         var classes = 'popover def-popover ' + this.state.placement;
+        var contentClasses = 'popover-content'
         var style = {};
         style['left'] = this.props.positionLeft;
         style['top'] = this.props.positionTop + 16;
@@ -99,14 +85,14 @@ var PositionedPop = React.createClass({
             html = this.props.html;
         }
         else if(this.props.fetch){
-            classes += ' csspiner traditional';
+            contentClasses += ' csspinner traditional loading';
         }
         return (
             <div className={classes} role="tooltip" style={style}>
                 <div className="arrow"  style={arrowStyle}></div>
                 <h3 className="popover-title">{this.props.title}</h3>
                 <div className="popover-close" onClick={this.close}>&times;</div>
-                <div className="popover-content">
+                <div className={contentClasses}>
                     <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
                 </div>
                 <div className="popover-footer">
@@ -243,10 +229,10 @@ var Article = React.createClass({
     render: function(){
         console.log(this.props.result);
         if(this.isPartial()){
-            return this.render_skeleton();
+            return this.renderSkeleton();
         }
         else{
-            return this.render_standard();
+            return this.renderStandard();
         }
     },
     renderPopovers: function(){
@@ -258,13 +244,13 @@ var Article = React.createClass({
     popoverClose: function(popover_id){
         Actions.popoverClosed(this.props.result, _.find(this.props.result.open_popovers, {id: popover_id}));
     },
-    render_standard: function(){
+    renderStandard: function(){
         return <div className="legislation-result" >
                 <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
                 {this.renderPopovers()}
             </div>
     },
-    render_skeleton: function(){
+    renderSkeleton: function(){
         var self = this;
         var attrib_transform = {'@class': 'className', '@style': 'fauxstyle', '@tabindex': 'tabIndex', '@colspan': 'colSpan'};
         //console.log('render')
@@ -375,7 +361,7 @@ var Article = React.createClass({
                         target: link.attr('data-target-id'),
                         positionLeft: link.offset().left,
                         positionTop:link.offset().top,
-                        fetch: link.hasClass('external_ref'),
+                        fetch: true,
                         url: link.attr('href')
                     });
                 }
@@ -389,8 +375,9 @@ var Article = React.createClass({
                     positionLeft: link.offset().left,
                     positionTop:link.offset().top,
                     fetch: true,
-                    url: link.attr('href')
+                    url: '/definition/'+this.props.result.content.id+'/'+link.attr('data-def-id')
                 });
+               console.log(link.attr('href'));
             }
         }
      }
@@ -548,8 +535,8 @@ module.exports = React.createClass({
     },
 	render: function(){
         var linkArticle = {
-          value: this.state.article_name,
-          requestChange: this.handleArticleChange
+            value: this.state.article_name,
+            requestChange: this.handleArticleChange
         };
 		return (<div className="act_browser">
                         <div className="container-fluid">

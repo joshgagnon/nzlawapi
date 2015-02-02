@@ -35,6 +35,26 @@ def search_by_id(query):
     return jsonify(result), status
 
 
+@Query.route('/definition/<int:document_id>/<string:key>')
+def get_definition_route(document_id, key):
+    status = 200
+    try:
+        result = get_definition(document_id, key)
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
+
+def get_definition(document_id, key):
+    with get_db().cursor() as cur:
+        cur.execute('SELECT data FROM definitions WHERE document_id=%(id)s and key=%(key)s', {
+            'id': document_id,
+            'key': key
+        })
+        return cur.fetchone()[0]
+
+
 def query_case(args):
     case = args.get('title')
     if case and args.get('validator'):
