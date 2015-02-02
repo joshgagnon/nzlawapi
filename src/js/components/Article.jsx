@@ -54,44 +54,52 @@ var OpenLinksStore = Reflux.createStore({
 });*/
 
 var PositionedPop = React.createClass({
-        mixins: [BootstrapMixin],
-        getInitialState: function () {
-            return {
-              placement: 'bottom'
-            };
-        },
-       componentDidMount: function(){
+    mixins: [BootstrapMixin],
+    getInitialState: function() {
+        return {
+            placement: 'bottom'
+        };
+    },
+    componentDidMount: function() {
         var self = this;
         var $el = $(this.getDOMNode());
-        var $target = $('[data-link-id='+this.props.id+']');
+        var $target = $('[data-link-id=' + this.props.id + ']');
         //TODO use bootstrap layout algorithm
-        $el.css({'left': '-='+$el.outerWidth()/2})
-        //jQuery.fn.tooltip.Constructor.prototype.show.call(obj);
-       },
-      close: function(){
+        $el.css({
+                'left': '-=' + $el.outerWidth() / 2
+            })
+            //jQuery.fn.tooltip.Constructor.prototype.show.call(obj);
+    },
+    close: function() {
+        this.props.onClose(this.props.id)
+    },
+    scrollTo: function() {
+        Actions.articleJumpTo({
+            id: '#' + this.props.target
+        });
         Actions.linkClosed(this.props)
-      },
-      scrollTo: function(){
-        Actions.articleJumpTo({id: '#'+this.props.target});
-        Actions.linkClosed(this.props)
-      },
-      render: function () {
-        var classes = 'popover def-popover '+this.state.placement;
+
+    },
+    render: function() {
+        var classes = 'popover def-popover ' + this.state.placement;
         var style = {};
         style['left'] = this.props.positionLeft;
-        style['top'] = this.props.positionTop+16;
+        style['top'] = this.props.positionTop + 16;
         style['display'] = 'block';
 
         var arrowStyle = {};
         arrowStyle['left'] = this.props.arrowOffsetLeft;
         arrowStyle['top'] = this.props.arrowOffsetTop;
 
-        var html;
-        if(this.props.target){
-            html = $('#'+this.props.target)[0].outerHTML;
+        var html = '';
+        if (this.props.target && $('#' + this.props.target)[0]) {
+            html = $('#' + this.props.target)[0].outerHTML;
         }
-        else{
-            html = ''
+        else if(this.props.html){
+            html = this.props.html;
+        }
+        else if(this.props.fetch){
+            classes += ' csspiner traditional';
         }
         return (
             <div className={classes} role="tooltip" style={style}>
@@ -108,7 +116,7 @@ var PositionedPop = React.createClass({
                     <Button onClick={this.scrollTo}>Scroll To</Button >
                     </Col>
                 <Col md={6}>
-                <Button  onClick={this.open}>Open</Button >
+                    <Button  onClick={this.open}>Open</Button >
                 </Col>
                 </div>
                 </div>
@@ -233,6 +241,7 @@ var Article = React.createClass({
         }
     },
     render: function(){
+        console.log(this.props.result);
         if(this.isPartial()){
             return this.render_skeleton();
         }
@@ -240,21 +249,19 @@ var Article = React.createClass({
             return this.render_standard();
         }
     },
-    render_link_popovers: function(){
-        return (this.props.result.open_links || []).map(function(link){
-                    return (<PositionedPop placement="auto" {...link} key={link.id}/>)
-                });
+    renderPopovers: function(){
+        var self = this;
+        return (this.props.result.open_popovers || []).map(function(link){
+                return (<PositionedPop placement="auto" {...link} onClose={self.popoverClose} key={link.id}/>)
+            });
     },
-    render_definition_popovers: function(){
-        return (this.props.result.open_definitions || []).map(function(link){
-                    return (<PositionedPop placement="auto" {...link} key={link.id}/>)
-                });
+    popoverClose: function(popover_id){
+        Actions.popoverClosed(this.props.result, _.find(this.props.result.open_popovers, {id: popover_id}));
     },
     render_standard: function(){
         return <div className="legislation-result" >
                 <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
-                {this.render_link_popovers()}
-                {this.render_definition_popovers()}
+                {this.renderPopovers()}
             </div>
     },
     render_skeleton: function(){
@@ -352,7 +359,7 @@ var Article = React.createClass({
             $(window).off('resize', this.debounce.reset_heights);
         }
     },
-     interceptLink: function(e){
+    interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
@@ -360,25 +367,30 @@ var Article = React.createClass({
                 if(link.attr('data-link-id')){
                     var container = $('body'),
                         scrollTo = $('#'+link.attr('data-target-id'));
-                   Actions.linkOpened(this.props.result,
+                    Actions.linkOpened(this.props.result,
                         {
+                        type: 'link',
                         title: link.text(),
                         id: link.attr('data-link-id'),
                         target: link.attr('data-target-id'),
                         positionLeft: link.offset().left,
-                        positionTop:link.offset().top
+                        positionTop:link.offset().top,
+                        fetch: link.hasClass('external_ref'),
+                        url: link.attr('href')
                     });
                 }
             }
-            else if(link.attr('def-id')){
-                   Actions.definitionOpened(this.props.result,
-                        {
-                        title: link.text(),
-                        id: link.attr('data-link-id'),
-                        target: link.attr('data-target-id'),
-                        positionLeft: link.offset().left,
-                        positionTop:link.offset().top
-                    });
+            else if(link.attr('data-def-id')){
+               Actions.definitionOpened(this.props.result,
+                    {
+                    type: 'definition',
+                    title: link.text(),
+                    id: link.attr('data-def-idx'),
+                    positionLeft: link.offset().left,
+                    positionTop:link.offset().top,
+                    fetch: true,
+                    url: link.attr('href')
+                });
             }
         }
      }

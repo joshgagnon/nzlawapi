@@ -15,8 +15,8 @@ var ResultStore = Reflux.createStore({
 		this.results = [];
 		this.counter = 0;
 	},
-	onUpdateResult: function(result_id, content){
-		this.trigger({results: this.results});
+	onUpdateResult: function(result){
+		this.trigger({results: this.results}, result);
 	},
 	onNewResult: function(result){
 		var id, do_fetch = false;
@@ -89,14 +89,31 @@ var ResultStore = Reflux.createStore({
 		if(_.isFinite(index) && result.active && this.results.length){
             this.results[Math.max(0, index-1)].active = true;
         }
-		this.trigger({results: this.results});
+		this.trigger({results: this.results}, result);
+	},
+	addPopover: function(result, link){
+		if(_.contains(this.results, result)){
+			result.open_popovers = result.open_popovers || [];
+			result.open_popovers.push(link);
+			if(link.fetch){
+
+			}
+		}
 	},
 	onLinkOpened: function(result, link){
-		console.log(result)
+		//$
+		this.addPopover(result, link);
+		this.trigger({results: this.results}, result);
+	},
+	onDefinitionOpened: function(result, link){
+		//$
+		this.addPopover(result, link);
+		this.trigger({results: this.results}, result);
+	},
+	onPopoverClosed: function(result, link){
 		if(_.contains(this.results, result)){
-			result.open_links =result.open_links || [];
-			result.open_links.push(link);
-			this.trigger({results: this.results});
+			result.open_popovers = _.without(result.open_popovers, link);
+			this.trigger({results: this.results}, result);
 		}
 	}
 });

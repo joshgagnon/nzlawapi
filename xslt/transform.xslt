@@ -409,9 +409,13 @@
 
    <xsl:template match="catalex-def">
         <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
-            <xsl:attribute name="def-id">
+            <xsl:attribute name="data-def-id">
                <xsl:value-of select="@def-id"/>
             </xsl:attribute>
+             <xsl:attribute name="data-def-idx">
+               <xsl:value-of select="@def-idx"/>
+            </xsl:attribute>
+
             <xsl:value-of select="."/>
         </a>
     </xsl:template>
@@ -420,11 +424,11 @@
         <a data-link-id="{generate-id()}">
             <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
             </xsl:attribute>
-            <xsl:if test="name() = 'intref'">
+            <xsl:if test="local-name() = 'intref'">
                  <xsl:attribute name="class">internal_ref</xsl:attribute>
                  <xsl:attribute name="data-target-id"><xsl:value-of select="@href"/></xsl:attribute>
             </xsl:if>
-            <xsl:if test="name() = 'extref'">
+            <xsl:if test="local-name() = 'extref'">
                  <xsl:attribute name="class">external_ref</xsl:attribute>
             </xsl:if>
             <xsl:value-of select="."/>

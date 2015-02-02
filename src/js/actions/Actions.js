@@ -20,9 +20,8 @@ var Actions = Reflux.createActions([
 	'articleJumpTo',
 
 	'linkOpened',
-	'linkClosed',
 	'definitionOpened',
-	'definitionClosed',
+	'popoverClosed',
 ]);
 
 module.exports = Actions;
