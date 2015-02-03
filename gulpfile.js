@@ -1,16 +1,16 @@
 console.time('Loading plugins');
-var gulp = require('gulp'); 
+var gulp = require('gulp');
 var bower = require('gulp-bower');
 var browserify = require('browserify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var notify = require("gulp-notify")
-var plumber = require('gulp-plumber');  
+var plumber = require('gulp-plumber');
 var react = require('gulp-react');
-var reactify = require('reactify'); 
+var reactify = require('reactify');
 var rename = require("gulp-rename");
 var sass = require('gulp-ruby-sass');
-var source = require('vinyl-source-stream') 
+var source = require('vinyl-source-stream')
 var transform = require('vinyl-transform');
 var shim = require('browserify-shim');
 var postcss      = require('gulp-postcss');
@@ -38,13 +38,13 @@ gulp.task('jshint', function() {
 
 gulp.task('js-prod', function() {
   return browserify(
-   {debug: true,
+   {debug: false,
     entries: ['./src/js/app.js'],
     transform: [reactify],
     cache: {}, packageCache: {}, fullPaths: true})
     .bundle()
     .pipe(source('app.js'))
-    .pipe(streamify(uglify()))    
+    .pipe(streamify(uglify()))
     .pipe(gulp.dest('./build/js/'));
 });
 
@@ -63,7 +63,7 @@ gulp.task('js', function() {
         .bundle() // Create new bundle that uses the cache for high performance
        .on('error', function(error){
           notify.onError("Error: <%= error.message %>").apply(this, arguments);
-      })       
+      })
         .pipe(source('app.js'))
         .pipe(gulp.dest('./build/js/'));
         console.log('Updated!', (Date.now() - updateStart) + 'ms');
@@ -72,7 +72,7 @@ gulp.task('js', function() {
     .on('error', function(error){
         notify.onError("Error: <%= error.message %>").apply(this, arguments);
     })
-    .pipe(source('app.js'))  
+    .pipe(source('app.js'))
     .pipe(gulp.dest('./build/js/'));
 });
 
@@ -109,7 +109,7 @@ gulp.task('sass', function() { 
                  './src/css',
                  './bower_components/bootstrap-sass-official/assets/stylesheets'
              ]
-         }) ) 
+         }) )
         .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
          .pipe(gulp.dest('./build/css')); 
 });
