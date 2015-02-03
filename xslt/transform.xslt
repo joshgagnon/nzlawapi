@@ -495,7 +495,7 @@
 
     <xsl:template match="schedule.misc">
       <div class="schedule-misc">
-        <xsl:apply-templates select="head1|para/label-para|prov|para"/>
+        <xsl:apply-templates select="head1|para|prov"/>
       </div>
     </xsl:template>
 

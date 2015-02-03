@@ -1,17 +1,17 @@
 .definition-result,
 .legislation-result{
-
+    font-size: 16px;
+    line-height: 1.5em;
 .legislation *,
 .definition * {
     margin: 0;
     padding: 0;
     border: 0;
     outline: 0;
-    font-size: 100%;
+
     font: inherit;
     vertical-align: baseline;
     box-sizing: initial;
-    -webkit-box-sizing: initial;
     font-family: "Times New Roman", serif;
 
 }

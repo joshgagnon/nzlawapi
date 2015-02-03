@@ -49,8 +49,8 @@ var ResultStore = Reflux.createStore({
 					Actions.updateResult(result);
 				}
 			}.bind(this),
-			function(){
-				result.content = {error: 'Could not retrieve result'};
+			function(response){
+				result.content = response.responseJSON || {error: 'A problem occurred'};
 				Actions.updateResult(result);
 			});
 
@@ -74,6 +74,9 @@ var ResultStore = Reflux.createStore({
 					.then(function(data){
 						result.content.parts = _.extend({}, result.content.parts, data.parts);
 						Actions.updateResult(result);
+					},function(){
+						console.log(args);
+						result.error = 'x'
 					});
 			}
 		}

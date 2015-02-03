@@ -12,6 +12,7 @@ var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
+var SearchForm = require('./SearchForm.jsx');
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -35,7 +36,8 @@ module.exports = React.createClass({
     ],
     getInitialState: function(){
         return {
-            results: []
+            results: [],
+            advanced_search: true
         };
     },
     onResults: function(data){
@@ -136,6 +138,9 @@ module.exports = React.createClass({
             }
             </TabbedArea>)
     },
+    toggleAdvanced: function(){
+        this.setState({advanced_search: !this.state.advanced_search});
+    },
     renderBody: function(){
         var self = this;
         if(this.state.results.length > 1){
@@ -193,7 +198,7 @@ module.exports = React.createClass({
 					       </nav>
                         </div>
                     <div className="sidebar-wrapper">
-                        <a><Glyphicon glyph="search" /></a>
+                        <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
                         <a><Glyphicon glyph="floppy-open" onClick={Actions.loadState} title="Open"/></a>
                         <a><Glyphicon glyph="floppy-save" onClick={Actions.saveState} title="Save"/></a>
                         <a><Glyphicon glyph="print" title="Print"/></a>

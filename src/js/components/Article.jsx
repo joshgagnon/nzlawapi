@@ -1,15 +1,11 @@
 "use strict";
 var React = require('react/addons');
-var Input = require('react-bootstrap/Input');
-var Button = require('react-bootstrap/Button');
-var Alert = require('react-bootstrap/Alert');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
 var ResultStore = require('../stores/ResultStore');
 var ArticleStore = require('../stores/ArticleStore');
-var Serialization = require('../stores/Serialization.js');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -44,17 +40,7 @@ $.fn.isOnScreen = function(tolerance){
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
 };
 
-$.fn.focusNextInputField = function() {
-    return this.each(function() {
-        var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
-        var index = fields.index( this );
 
-        if ( index > -1 && ( index + 1 ) < fields.length ) {
-            fields.eq( index + 1 ).focus();
-        }
-        return false;
-    });
-};
 
 module.exports = React.createClass({
     mixins: [
@@ -159,12 +145,18 @@ module.exports = React.createClass({
         }
     },
     render: function(){
-        if(this.isPartial()){
+        if(this.props.result.content.error){
+            return this.renderError()
+        }
+        else if(this.isPartial()){
             return this.renderSkeleton();
         }
         else{
             return this.renderStandard();
         }
+    },
+    renderError: function(){
+        return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.result.content.error}</p></div></div>
     },
     renderPopovers: function(){
         var self = this;

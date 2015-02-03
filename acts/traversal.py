@@ -6,6 +6,7 @@ import re
 
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
+
     [n.attrib.update({'current': 'true'}) for n in nodes_to_keep]
 
     all_parents = set()
@@ -37,16 +38,16 @@ def generate_range(string):
     return tokens
 
 def nodes_from_path_string(tree, path):
-    parts = re.compile('(s|sch) (\d+)(cl )?(.*)').match(path).groups()
-    # actually, maybe easier just to get it in canonicalform
+    parts = re.compile('(s|sch) (\d+)\W*(cl )?(.*)?').match(path).groups()
+    # actually, maybe easier just to get it in canonical form
     keys = []
     if parts[0] == 'sch':
-        tree = tree.xpath(".//schedule[label='%s']" % parts[1])
+        tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
     else:
         tree = tree.xpath(".//body")[0]
         keys.append(parts[1])
-    if parts[2]:
-        keys += filter(lambda x: len(x), re.split('\W+', parts[2]))
+    if parts[3]:
+        keys += filter(lambda x: len(x), re.split('\W+', parts[3]))
     return find_sub_node(tree, keys)
 
 
@@ -75,7 +76,7 @@ def find_sub_node(tree, keys):
         if not len(node):
             raise CustomException("Empty")
         return node
-    except Exception:
+    except Exception, e:
         raise CustomException("Path not found")
 
 
