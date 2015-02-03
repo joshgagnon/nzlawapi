@@ -6,7 +6,7 @@ var Alert = require('react-bootstrap/Alert');
 var Col = require('react-bootstrap/Col');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
-var GraphModal = require('./GraphModal.jsx')
+//var GraphModal = require('./GraphModal.jsx')
 var ModalTrigger = require('react-bootstrap/ModalTrigger');
 var ButtonGroup = require('react-bootstrap/ButtonGroup');
 var joinClasses = require('react-bootstrap/utils/joinClasses');
@@ -494,9 +494,9 @@ module.exports = React.createClass({
                         <a><Glyphicon glyph="floppy-save" /></a>
                         <a><Glyphicon glyph="print" /></a>
                         <a><Glyphicon glyph="star" /></a>
-                        <ModalTrigger modal={<GraphModal />}>
+                        {/*<ModalTrigger modal={<GraphModal />}>
                             <a><Glyphicon glyph="globe" /></a>
-                        </ModalTrigger>
+                        </ModalTrigger>*/}
                         <a onClick={this.reset}><Glyphicon glyph="trash" /></a>
                     </div>
                     <div className="container-wrapper">

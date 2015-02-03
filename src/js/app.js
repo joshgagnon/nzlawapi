@@ -3,11 +3,11 @@
 var React = require('react');
 var Actions = require('./actions/Actions');
 var ReactRouter = require('react-router');
-var SearchForm = require('./components/SearchForm.jsx');
-var Results = require('./components/ResultList.jsx');
-var Validator = require('./components/Validator.jsx');
+//var SearchForm = require('./components/SearchForm.jsx');
+//var Results = require('./components/ResultList.jsx');
+//var Validator = require('./components/Validator.jsx');
 var Article = require('./components/Article.jsx');
-var Graph = require('./components/Graph.jsx');
+//var Graph = require('./components/Graph.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
@@ -23,7 +23,7 @@ var initialForm = {
 function scrollTo($element){
 	$element.scrollintoview();
 }
-
+/*
 var Browser = React.createClass({
 	render: function(){
 		return (
@@ -45,7 +45,7 @@ var Browser = React.createClass({
 	       )
 	}
 })
-
+*/
  /*<header>
   <ul>
     <li><ReactRouter.Link to="app">Browser</ReactRouter.Link></li>
@@ -68,13 +68,13 @@ if(localStorage['data']){
 	});
 }
 
+    /*<ReactRouter.Route name="validator" handler={Validator}/>
+    <ReactRouter.Route name="browser" handler={Validator}/>
+    <ReactRouter.Route name="full_article" handler={Article} />
+    <ReactRouter.Route name="graph" handler={Graph} />*/
 
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
-    <ReactRouter.Route name="validator" handler={Validator}/>
-    <ReactRouter.Route name="browser" handler={Validator}/>
-    <ReactRouter.Route name="full_article" handler={Article} />
-    <ReactRouter.Route name="graph" handler={Graph} />
     <ReactRouter.DefaultRoute handler={Article}/>
   </ReactRouter.Route>
 );
