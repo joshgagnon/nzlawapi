@@ -18,15 +18,13 @@ var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-//var Definitions = require('./Definitions.jsx');
-var TypeAhead = require('./TypeAhead.jsx');
+
 var SearchResults = require('./SearchResults.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Popover = require('./Popover.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
-require('bootstrap3-typeahead');
 require('bootstrap');
 
 
@@ -39,6 +37,10 @@ var ArticleJumpStore = Reflux.createStore({
     }
 });
 
+function stopPropagation(e){
+    e.stopPropagation();
+}
+
 
 $.fn.isOnScreen = function(tolerance){
     tolerance = tolerance || 0;
@@ -49,6 +51,18 @@ $.fn.isOnScreen = function(tolerance){
     bounds.top = this.offset().top;
     bounds.bottom = bounds.top + this.outerHeight();
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
+};
+
+$.fn.focusNextInputField = function() {
+    return this.each(function() {
+        var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+        var index = fields.index( this );
+
+        if ( index > -1 && ( index + 1 ) < fields.length ) {
+            fields.eq( index + 1 ).focus();
+        }
+        return false;
+    });
 };
 
 var Article = React.createClass({
@@ -154,7 +168,6 @@ var Article = React.createClass({
         }
     },
     render: function(){
-        console.log(this.props.result);
         if(this.isPartial()){
             return this.renderSkeleton();
         }
@@ -323,37 +336,12 @@ var Article = React.createClass({
 module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(ResultStore, 'onResults'),
+        React.addons.LinkedStateMixin
     ],
-    load: function(){
-        // for development only, delete
-        var article = {article_name: 'Companies Act 1993', article_type: 'act'}
-        if(localStorage['article']){
-            article = JSON.parse(localStorage['article']);
-        }
-        //perhaps wrong place?
-    	return {
-    		typeahead: [],
-            article_name: this.props.article_name || article.article_name,
-    		article_type: this.props.article_type || article.article_type,
-    	}
-    },
     getInitialState: function(){
         return {
-            //open_links: [],
-            results: [],
-            active: null
+            results: []
         };
-    },
-    componentDidMount: function(){
-        this.typeahead_debounce = _.debounce(this.typeahead_query, 300);
-        //this.setState(this.load(), this.fetch)
-    },
-    typeahead_query: function(query, process){
-        $.get('/article_auto_complete', {query: query})
-            .then(function(results){
-                this.setState({typeahead: results.results});
-                process(results.results);
-            }.bind(this));
     },
     onResults: function(data){
         var active_result, active;
@@ -368,9 +356,8 @@ module.exports = React.createClass({
     	this.fetch();
     },
     fetch: function(){
-        // for development only, delete
-        localStorage['article'] = JSON.stringify({article_name: this.state.article_name, article_type: this.state.article_type});
-        if(!this.state.article_name){
+        console.log(this.state)
+        if(!this.state.search_query){
             return;
         }
         this.setState({
@@ -378,36 +365,45 @@ module.exports = React.createClass({
         });
         var query;
         var title;
-        if(this.state.article_type){
+        console.log(this.state.location)
+        if(this.state.document_id){
             query = {
                 type: this.state.article_type,
-                find: 'full',
-                title: this.state.article_name
+                find: !this.state.location ? 'full' : 'location',
+                query: this.state.location,
+                id: this.state.document_id
             };
-            title = this.state.article_name
+            title = this.state.search_query
         }
         else{
             query = {
                 type: 'search',
                 query: this.state.article_name
             };
-            title = 'Search: '+this.state.article_name
+            title = 'Search: '+this.state.search_query
         }
         Actions.newResult({query: query, title: title});
     },
     handleArticleChange: function(value){
-        if(typeof(value) == 'string'){
-                this.setState({article_name: value, article_type: null})
-        }
-        else{
-            this.setState({article_name: value.name, article_type: value.type});
-        }
+        var self = this;
+        // ID means they clicked or hit enter, so focus on next
+        this.setState({search_query: value.text, document_id: value.id, article_type: value.type}, function(){
+            if(value.id){
+                // hack!
+                setTimeout(function(){
+                    $(self.refs.autocomplete.getInputDOMNode()).focusNextInputField();
+                }, 0);
+            }
+        });
+    },
+    handleLocation: function(e){
+        e.stopPropagation();
+        this.setState({location: e.target.value});
     },
     reset: function(){
         this.setState({
-            //todo, resutls = [] in action
             article_type: null,
-            article_name: null
+            search_query: null
         });
         Actions.clearResults();
     },
@@ -421,10 +417,10 @@ module.exports = React.createClass({
         Actions.removeResult(result);
     },
 	render: function(){
-        var linkArticle = {
-            value: this.state.article_name,
-            requestChange: this.handleArticleChange
-        };
+        var formClasses = "navbar-form navbar-left ";
+        if(this.state.document_id){
+            formClasses += 'showing-location';
+        }
 		return (<div className="act_browser">
                         <div className="container-fluid">
 
@@ -435,9 +431,10 @@ module.exports = React.createClass({
                                    <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
                                  </a>
                             </div>
-                                <form className="navbar-form navbar-left ">
-								    <TypeAhead typeahead={this.typeahead_debounce}  className='article_name' key="article_name" ref="article_name" name="article_name"
-                                        valueLink={linkArticle} appendToSelf={true}
+                                <form className={formClasses}>
+								     <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onSubmit={this.submit}
+                                        searchValue={{search_query: this.state.search_query, document_id: this.state.document_id}}
+                                        appendToSelf={true} ref="autocomplete"
 										buttonAfter={
                                             <div className="btn-group">
                                                 <Button type="input" bsStyle="primary" onClick={this.submit} >Search</Button>
@@ -454,8 +451,11 @@ module.exports = React.createClass({
                                                 <li><a href="#">Advanced Search</a></li>
                                               </ul>
                                             </div>
-                                    } />
-                                    <AutoComplete endpoint="/article_auto_complete" onChoose={this.handleArticleChange} onSearch={this.handleArticleChange} />
+                                    } >
+                                    { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." onChange={this.handleLocation}
+                                        ref="location"  /> : <Input/> }
+                                    </AutoComplete>
+
                                 </form>
 					       </nav>
                         </div>

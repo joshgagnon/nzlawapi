@@ -4,10 +4,11 @@
 
     ul.results {
         @extend .dropdown-menu;
-
+        display:block;
+        overflow-y: auto;
         margin: 0;
-        left: 8px;
-        max-width: calc(100% - 16px);
+        left: 0;
+        max-width: 100%;
 
         li {
             list-style: none;

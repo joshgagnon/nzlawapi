@@ -1,7 +1,8 @@
 from db import get_db
 from util import CustomException, tohtml, etree_to_dict
 from definitions import populate_definitions, process_definitions
-from traversal import cull_tree, find_definitions, find_part_node, find_section_node, find_schedule_node, find_node_by_query, find_document_id_by_govt_id
+from traversal import cull_tree, find_definitions, find_part_node, find_section_node, \
+    find_schedule_node, find_node_by_query, find_document_id_by_govt_id, find_node_by_location
 from lxml import etree
 from copy import deepcopy
 import json
@@ -199,7 +200,7 @@ def get_act_node_by_id(node_id):
 
 def query_act(args):
     act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'))
-    act.calculate_hooks()
+    # act.calculate_hooks()
     search_type = args.get('find')
     if search_type == 'full':
         pass
@@ -211,6 +212,8 @@ def query_act(args):
             raise CustomException('Query missing')
         if search_type == 'search':
             act.tree = find_node_by_query(act.tree, query)
+        if search_type == 'location':
+            act.tree = find_node_by_location(act.tree, query)
         elif search_type == 'section':
             act.tree = find_section_node(act.tree, query)
         elif search_type == 'part':

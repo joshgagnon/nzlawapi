@@ -18,12 +18,19 @@
 		input.form-control[type="text"] {
 			width:400px
 		}
-
+		&.showing-location input.form-control[type="text"]{
+			width:301px;
+		}
 		.form-group{
-			padding:0 8px;
+
 		}
 		&.jump-to .form-control-feedback{
 			right: 85px;
+		}
+		&.showing-location input.location.form-control[type="text"] {
+			width:100px;
+			margin-left: -1px;
+
 		}
 	}
 	.input-group button{

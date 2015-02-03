@@ -1,6 +1,7 @@
 from util import CustomException, levenshtein
 from db import get_db
 from operator import itemgetter
+import re
 
 
 def cull_tree(nodes_to_keep):
@@ -34,6 +35,19 @@ def generate_range(string):
     tokens = string.split('-')
     # do stuff
     return tokens
+
+def nodes_from_path_string(tree, path):
+    parts = re.compile('(s|sch) (\d+)(cl )?(.*)').match(path).groups()
+    # actually, maybe easier just to get it in canonicalform
+    keys = []
+    if parts[0] == 'sch':
+        tree = tree.xpath(".//schedule[label='%s']" % parts[1])
+    else:
+        tree = tree.xpath(".//body")[0]
+        keys.append(parts[1])
+    if parts[2]:
+        keys += filter(lambda x: len(x), re.split('\W+', parts[2]))
+    return find_sub_node(tree, keys)
 
 
 def find_sub_node(tree, keys):
@@ -89,6 +103,10 @@ def find_section_node(tree, query):
     keys = query.split('/')
     tree = tree.xpath(".//body")[0]
     return find_sub_node(tree, keys)
+
+
+def find_node_by_location(tree, query):
+    return nodes_from_path_string(tree, query)
 
 
 def find_definitions(tree, query):

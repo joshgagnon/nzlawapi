@@ -1,11 +1,16 @@
 var React = require('react');
 var Input = require('react-bootstrap/Input');
+var EventListener = require('react-bootstrap/utils/EventListener');
 var $ = require('jquery');
+var _ = require('lodash');
+
+// TODO, scroll overflow on arrows
 
 var AutoComplete = React.createClass({
     getInitialState: function() {
         return {
-            value: '',
+            value: this.props.searchValue.search_query,
+            id: this.props.searchValue.id,
             results: [],
             oldResults: [],
             activeIndex: -1,
@@ -16,66 +21,117 @@ var AutoComplete = React.createClass({
             endpoint: '/article_auto_complete',
         };
     },
-    onChange: function(event) {
-        var value = event.target.value;
-
-        this.setState({ value: value });
-
-        if(!value.length) {
-            this.setState({ results: [] });
-        }
-        else {
-            $.get(this.props.endpoint, { query: value })
+    componentDidMount: function(){
+        var self = this;
+        this.debounceFetch = _.debounce(function(value){
+             $.get(self.props.endpoint, {
+                    query: value
+                })
                 .then(function(response) {
-                    this.setState({ results: response.results });
-                }.bind(this));
+                    self.bindRootCloseHandlers();
+                    self.setState({
+                        results: response.results
+                    });
+                });
+        }, 250)
+    },
+    onChange: function(event) {
+        if(this.refs.search.refs.input.getDOMNode() === event.target){
+            var value = event.target.value;
+            this.setState({
+                search_query: value,
+                id: null,
+                type: null
+            });
+            this.props.onUpdate({
+                search_query: value,
+                id: null,
+                type: null
+            });
+            if (!value.length) {
+                this.setState({
+                    results: []
+                });
+            } else {
+                this.debounceFetch(value);
+            }
         }
     },
-    onBlur: function() {
-        // Delay so that trying to click doesn't clear results immediately
-        setTimeout(function() {
-            this.setState({ results: [], oldResults: this.state.results });
-        }.bind(this), 100);
+    handleDocumentClick: function(e) {
+        // If the click originated from within this component
+        // don't do anything.
+        if (this.getDOMNode().contains(e.target)) {
+            return;
+        }
+        this.setState({
+            results: [],
+            oldResults: this.state.results
+        });
+    },
+    bindRootCloseHandlers: function() {
+        this._onDocumentClickListener =
+            EventListener.listen(document, 'click', this.handleDocumentClick);
+    },
+    unbindRootCloseHandlers: function() {
+        if (this._onDocumentClickListener) {
+            this._onDocumentClickListener.remove();
+            this._onDocumentClickListener = null;
+        }
     },
     onFocus: function() {
-        this.setState({ results: this.state.oldResults });
+        this.setState({
+            results: this.state.oldResults
+        });
     },
     onKeyDown: function(event) {
         // Handle arrow keys
         var newIndex = this.state.activeIndex;
-        if(event.key === 'ArrowDown')
+        if (event.key === 'ArrowDown')
             newIndex++;
-        if(event.key === 'ArrowUp')
+        if (event.key === 'ArrowUp')
             newIndex--;
 
-        if(newIndex !== this.state.activeIndex) {
-            if(newIndex < -1) newIndex = this.state.results.length - 1;
-            if(newIndex >= this.state.results.length) newIndex = 0;
+        if (newIndex !== this.state.activeIndex) {
+            if (newIndex < -1) newIndex = this.state.results.length - 1;
+            if (newIndex >= this.state.results.length) newIndex = 0;
 
-            this.setState({ activeIndex: newIndex });
+            this.setState({
+                activeIndex: newIndex
+            });
         }
 
         // Handle enter key
-        if(event.key === 'Enter') {
-            if(newIndex > -1) {
+        if (event.key === 'Enter') {
+            if (newIndex > -1) {
                 // Choosing an active item from the list
-                var selectedText = $(this.getDOMNode()).find('li.active a').text();
+                var a = $(this.getDOMNode()).find('li.active a');
+                var selectedText = a.text();
 
                 this.setState({
-                    value: selectedText,
-                    results: [],
+                    search_query: selectedText,
+                    results: []
                 });
 
-                if(this.props.onChoose) {
-                    this.props.onChoose(selectedText);
+                if (this.props.onChoose) {
+                    this.props.onChoose({
+                        id: a.attr('data-doc-id'),
+                        type: a.attr('data-doc-type'),
+                        text: selectedText
+                    });
+                    this.props.onUpdate({
+                        id: a.attr('data-doc-id'),
+                        type: a.attr('data-doc-type'),
+                        text: selectedText
+                    });
                 }
-            }
-            else {
+            } else {
                 // Searching on current text
-                if(this.props.onSearch) {
-                    this.props.onSearch(this.state.value);
-                    this.setState({ results: [] });
-                }
+               /* if (this.props.onSubmit) {
+                    this.props.onSubmit();
+                    this.setState({
+                        results: []
+                    });
+                }*/
             }
         }
     },
@@ -83,20 +139,23 @@ var AutoComplete = React.createClass({
         var groups = [];
 
         results.forEach(function(result) {
-            for(var i = 0; i < groups.length; i++) {
-                if(groups[i].type === result.type) {
+            for (var i = 0; i < groups.length; i++) {
+                if (groups[i].type === result.type) {
                     groups[i].entries.push(result);
                     return;
                 }
             }
-            groups.push({ type: result.type, entries: [result] });
+            groups.push({
+                type: result.type,
+                entries: [result]
+            });
         });
 
         return groups;
     },
     getResultListItem: function(groupIndex, result, index) {
         var title = result.name;
-        var value = this.state.value;
+        var value = this.state.search_query;
 
         // Calcuate letter offsets for bolding search query
         var startIndex = title.toLowerCase().indexOf(value.toLowerCase());
@@ -104,46 +163,74 @@ var AutoComplete = React.createClass({
 
         // Calculate total index of this result amongst all groups
         var groups = this.groupCategories(this.state.results);
-        for(var i = 0; i < groupIndex; i++) {
+        for (var i = 0; i < groupIndex; i++) {
             index += groups[i].entries.length;
         }
 
-        if(startIndex > -1)
-            return <li className={index === this.state.activeIndex ? 'active' : ''} key={result.id}><a href="#">{title.substring(0, startIndex)}<strong>{title.substring(startIndex, endIndex)}</strong>{title.substring(endIndex)}</a></li>;
+        if (startIndex > -1)
+            return <li className={index === this.state.activeIndex ? 'active' : ''}
+                key={result.id}>
+                    <a href="#" data-doc-id={result.id} data-doc-type={result.type}>{title.substring(0, startIndex)}<strong>{title.substring(startIndex, endIndex)}</strong>{title.substring(endIndex)}</a>
+                </li>;
 
-        return <li key={result.id || undefined}><a href="#">{title}</a></li>;
+        return <li key = {result.id || undefined}><a href="#">{title}</a></li>;
     },
     clickResult: function(event) {
-        var selectedText = $(event.target).closest('a').text();
-
+        var a = $(event.target).closest('a');
+        var selectedText = a.text();
         this.setState({
-            value: selectedText,
+            search_query: selectedText,
+            id: a.attr('data-doc-id'),
+            type: a.attr('data-doc-type'),
             results: [],
         });
-
+        console.log(a.attr('data-doc-id'))
         // Initiate action by callback
-        if(this.props.onChoose) {
-            this.props.onChoose(selectedText);
+        if (this.props.onUpdate) {
+            this.props.onUpdate({
+                id: a.attr('data-doc-id'),
+                type: a.attr('data-doc-type'),
+                text: selectedText
+            });
         }
+    },
+
+    getInputDOMNode: function(){
+        return this.refs.search.getInputDOMNode();
     },
     render: function() {
         return (
             <div className="autocomplete">
-                <Input type="text" value={this.state.value} onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} />
-                <ul className="results" style={{ display: this.state.results.length ? 'block' : 'none' }}>
+                <Input type="text" placeholder="Search..." ref="search" value={this.state.search_query} onChange={this.onChange} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
+                { this.state.results.length ?
+                <ul className="results" ref="dropdown" onMouseDown={this.clickResult}>
                     {
                         this.groupCategories(this.state.results).map(function(group, index) {
                             return (
                                 <li key={group.type}>
                                     <h4 className="title">{group.type}</h4>
-                                    <ul className="result-group" onClick={this.clickResult}>{group.entries.map(this.getResultListItem.bind(this, index))}</ul>
+                                    <ul className="result-group">{group.entries.map(this.getResultListItem.bind(this, index))}</ul>
                                 </li>
                             );
                         }.bind(this))
                     }
-                </ul>
+                </ul> : null }
             </div>
         );
+    },
+    componentDidUpdate: function(props, state){
+        if(this.refs.dropdown){
+            $(this.refs.dropdown.getDOMNode()).css('max-height', $(window).height() - 60);
+        }
+        if(!this.state.results.length && this._onDocumentClickListener){
+            this.unbindRootCloseHandlers();
+        }
+        else if(this.state.results.length && !this._onDocumentClickListener){
+            this.bindRootCloseHandlers();
+        }
+    },
+    componentWillUnmount: function(){
+        this.unbindRootCloseHandlers();
     }
 });
 
