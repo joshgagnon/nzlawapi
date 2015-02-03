@@ -9,8 +9,8 @@ var _ = require('lodash');
 var AutoComplete = React.createClass({
     getInitialState: function() {
         return {
-            value: this.props.searchValue.search_query,
-            id: this.props.searchValue.id,
+            //search_query: this.props.searchValue.search_query,
+            //id: this.props.searchValue.id,
             results: [],
             oldResults: [],
             activeIndex: -1,
@@ -35,14 +35,18 @@ var AutoComplete = React.createClass({
                 });
         }, 250)
     },
+    /*componentWillReceiveProps: function(props){
+        if(props.searchValue){
+            this.setState({
+                search_query: props.searchValue.search_query,
+                id: props.searchValue.id,
+                type: props.searchValue.type
+            })
+        }
+    },*/
     onChange: function(event) {
         if(this.refs.search.refs.input.getDOMNode() === event.target){
             var value = event.target.value;
-            this.setState({
-                search_query: value,
-                id: null,
-                type: null
-            });
             this.props.onUpdate({
                 search_query: value,
                 id: null,
@@ -108,22 +112,13 @@ var AutoComplete = React.createClass({
                 var selectedText = a.text();
 
                 this.setState({
-                    search_query: selectedText,
                     results: []
                 });
-
-                if (this.props.onChoose) {
-                    this.props.onChoose({
-                        id: a.attr('data-doc-id'),
-                        type: a.attr('data-doc-type'),
-                        text: selectedText
-                    });
-                    this.props.onUpdate({
-                        id: a.attr('data-doc-id'),
-                        type: a.attr('data-doc-type'),
-                        text: selectedText
-                    });
-                }
+                this.props.onUpdate({
+                    id: a.attr('data-doc-id'),
+                    type: a.attr('data-doc-type'),
+                    search_query: selectedText
+                });
             } else {
                 // Searching on current text
                /* if (this.props.onSubmit) {
@@ -137,7 +132,6 @@ var AutoComplete = React.createClass({
     },
     groupCategories: function(results) {
         var groups = [];
-
         results.forEach(function(result) {
             for (var i = 0; i < groups.length; i++) {
                 if (groups[i].type === result.type) {
@@ -155,7 +149,7 @@ var AutoComplete = React.createClass({
     },
     getResultListItem: function(groupIndex, result, index) {
         var title = result.name;
-        var value = this.state.search_query;
+        var value = this.props.search_query ||'';
 
         // Calcuate letter offsets for bolding search query
         var startIndex = title.toLowerCase().indexOf(value.toLowerCase());
@@ -178,21 +172,14 @@ var AutoComplete = React.createClass({
     clickResult: function(event) {
         var a = $(event.target).closest('a');
         var selectedText = a.text();
-        this.setState({
-            search_query: selectedText,
+        // Initiate action by callback
+
+        this.props.onUpdate({
             id: a.attr('data-doc-id'),
             type: a.attr('data-doc-type'),
-            results: [],
+            search_query: selectedText
         });
-        console.log(a.attr('data-doc-id'))
-        // Initiate action by callback
-        if (this.props.onUpdate) {
-            this.props.onUpdate({
-                id: a.attr('data-doc-id'),
-                type: a.attr('data-doc-type'),
-                text: selectedText
-            });
-        }
+
     },
 
     getInputDOMNode: function(){
@@ -201,7 +188,7 @@ var AutoComplete = React.createClass({
     render: function() {
         return (
             <div className="autocomplete">
-                <Input type="text" placeholder="Search..." ref="search" value={this.state.search_query} onChange={this.onChange} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
+                <Input type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query} onChange={this.onChange} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
                 { this.state.results.length ?
                 <ul className="results" ref="dropdown" onMouseDown={this.clickResult}>
                     {

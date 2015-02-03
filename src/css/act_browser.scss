@@ -12,11 +12,29 @@
 		padding-right: 300px;
 	}
 
+	.navbar-form{
+		width: auto;
+		border: 0;
+		margin-left: 0;
+		margin-right: 0;
+		padding-top: 0;
+		padding-bottom: 0;
+		box-shadow: none;
 
+		.input-group-btn{
+				width: auto;
+		}
+	}
+	.navbar-form .form-group {
+display: inline-block;
+margin-bottom: 0;
+vertical-align: middle;
+}
 	form{
-
-		input.form-control[type="text"] {
-			width:400px
+		@media (min-width: $screen-md-min) {
+			input.form-control[type="text"] {
+				width:400px
+			}
 		}
 		&.showing-location input.form-control[type="text"]{
 			width:301px;

@@ -387,7 +387,7 @@ module.exports = React.createClass({
     handleArticleChange: function(value){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
-        this.setState({search_query: value.text, document_id: value.id, article_type: value.type}, function(){
+        this.setState({search_query: value.search_query, document_id: value.id, article_type: value.type}, function(){
             if(value.id){
                 // hack!
                 setTimeout(function(){
@@ -403,7 +403,8 @@ module.exports = React.createClass({
     reset: function(){
         this.setState({
             article_type: null,
-            search_query: null
+            search_query: null,
+            location: null
         });
         Actions.clearResults();
     },
@@ -416,6 +417,34 @@ module.exports = React.createClass({
         var result = _.find(this.state.results, function(d){ return d.id === id});
         Actions.removeResult(result);
     },
+    renderResult: function(result){
+        if(result.content){
+            return result.query.type=='search' ?
+                    <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
+                    <Article key={result.id} result={result}  popupContainer='.act_browser' />
+        }
+        else{
+            return <div className="search-results csspinner traditional"/>;
+        }
+
+    },
+    renderBody: function(){
+        var self = this;
+        if(this.state.results.length > 1)
+            return <TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
+                {   this.state.results.map(function(result){
+                        return (
+                             <TabPane key={result.id} eventKey={result.id} tab={result.title} >
+                                { self.renderResult(result) }
+                            </TabPane>
+                          )
+                      })
+            }
+            </TabbedArea>
+        else if(this.state.results.length == 1){
+            return  this.renderResult(this.state.results[0]);
+        }
+    },
 	render: function(){
         var formClasses = "navbar-form navbar-left ";
         if(this.state.document_id){
@@ -427,13 +456,13 @@ module.exports = React.createClass({
                          <nav className="navbar navbar-default navbar-fixed-top">
 
                             <div className="navbar-header">
-                              <a className="navbar-brand" href="#">
+                              <a className="navbar-brand hidden-xs" href="#">
                                    <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
                                  </a>
                             </div>
                                 <form className={formClasses}>
 								     <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onSubmit={this.submit}
-                                        searchValue={{search_query: this.state.search_query, document_id: this.state.document_id}}
+                                        search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                                         appendToSelf={true} ref="autocomplete"
 										buttonAfter={
                                             <div className="btn-group">
@@ -472,25 +501,7 @@ module.exports = React.createClass({
                     </div>
                     <div className="container-wrapper">
 						<div className="results">
-                            <TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
-                                {   this.state.results.map(function(result){
-                                        var el;
-                                        if(result.content){
-                                            el = result.query.type=='search' ?
-                                                    <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
-                                                    <Article key={result.id} result={result}  popupContainer='.act_browser' />
-                                        }
-                                        else{
-                                            el = <div className="search-results csspinner traditional"/>
-                                        }
-                                        return (
-                                             <TabPane key={result.id} eventKey={result.id} tab={result.title} >
-                                                { el }
-                                            </TabPane>
-                                          )
-                                      })
-                            }
-                            </TabbedArea>
+                            {this.renderBody() }
 						</div>
 					</div>
                     <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
