@@ -3,28 +3,19 @@ var React = require('react/addons');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var Alert = require('react-bootstrap/Alert');
-var Col = require('react-bootstrap/Col');
 var Glyphicon= require('react-bootstrap/Glyphicon');
-var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
-//var GraphModal = require('./GraphModal.jsx')
-var ModalTrigger = require('react-bootstrap/ModalTrigger');
-var ButtonGroup = require('react-bootstrap/ButtonGroup');
-var joinClasses = require('react-bootstrap/utils/joinClasses');
-var classSet = require('react-bootstrap/utils/classSet');
+
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
 var ResultStore = require('../stores/ResultStore');
 var ArticleStore = require('../stores/ArticleStore');
+var Serialization = require('../stores/Serialization.js');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 
-var SearchResults = require('./SearchResults.jsx');
-var AutoComplete = require('./AutoComplete.jsx');
-var TabbedArea = require('./TabbedArea.jsx');
-var TabPane = require('./TabPane.jsx');
 var Popover = require('./Popover.jsx');
-var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
+
 require('bootstrap');
 
 
@@ -65,7 +56,7 @@ $.fn.focusNextInputField = function() {
     });
 };
 
-var Article = React.createClass({
+module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
     ],
@@ -327,188 +318,4 @@ var Article = React.createClass({
             }
         }
      }
-});
-
-
-
-
-
-module.exports = React.createClass({
-    mixins: [
-        Reflux.listenTo(ResultStore, 'onResults'),
-        React.addons.LinkedStateMixin
-    ],
-    getInitialState: function(){
-        return {
-            results: []
-        };
-    },
-    onResults: function(data){
-        var active_result, active;
-        active_result = _.find(data.results, function(d){ return d.active}) || data.results[0];
-        if(active_result){
-            active = active_result.id;
-        }
-        this.setState({results: data.results, active: active, active_result: active_result});
-    },
-    submit: function(e){
-    	e.preventDefault();
-    	this.fetch();
-    },
-    fetch: function(){
-        console.log(this.state)
-        if(!this.state.search_query){
-            return;
-        }
-        this.setState({
-            loading: true
-        });
-        var query;
-        var title;
-        console.log(this.state.location)
-        if(this.state.document_id){
-            query = {
-                type: this.state.article_type,
-                find: !this.state.location ? 'full' : 'location',
-                query: this.state.location,
-                id: this.state.document_id
-            };
-            title = this.state.search_query
-        }
-        else{
-            query = {
-                type: 'search',
-                query: this.state.article_name
-            };
-            title = 'Search: '+this.state.search_query
-        }
-        Actions.newResult({query: query, title: title});
-    },
-    handleArticleChange: function(value){
-        var self = this;
-        // ID means they clicked or hit enter, so focus on next
-        this.setState({search_query: value.search_query, document_id: value.id, article_type: value.type}, function(){
-            if(value.id){
-                // hack!
-                setTimeout(function(){
-                    $(self.refs.autocomplete.getInputDOMNode()).focusNextInputField();
-                }, 0);
-            }
-        });
-    },
-    handleLocation: function(e){
-        e.stopPropagation();
-        this.setState({location: e.target.value});
-    },
-    reset: function(){
-        this.setState({
-            article_type: null,
-            search_query: null,
-            location: null
-        });
-        Actions.clearResults();
-    },
-    handleTab: function(active){
-        if(active !== this.state.active){
-            Actions.activateResult(_.find(this.state.results, function(d){ return d.id === active}));
-        }
-    },
-    closeTab: function(id){
-        var result = _.find(this.state.results, function(d){ return d.id === id});
-        Actions.removeResult(result);
-    },
-    renderResult: function(result){
-        if(result.content){
-            return result.query.type=='search' ?
-                    <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
-                    <Article key={result.id} result={result}  popupContainer='.act_browser' />
-        }
-        else{
-            return <div className="search-results csspinner traditional"/>;
-        }
-
-    },
-    renderBody: function(){
-        var self = this;
-        if(this.state.results.length > 1)
-            return <TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
-                {   this.state.results.map(function(result){
-                        return (
-                             <TabPane key={result.id} eventKey={result.id} tab={result.title} >
-                                { self.renderResult(result) }
-                            </TabPane>
-                          )
-                      })
-            }
-            </TabbedArea>
-        else if(this.state.results.length == 1){
-            return  this.renderResult(this.state.results[0]);
-        }
-    },
-	render: function(){
-        var formClasses = "navbar-form navbar-left ";
-        if(this.state.document_id){
-            formClasses += 'showing-location';
-        }
-		return (<div className="act_browser">
-                        <div className="container-fluid">
-
-                         <nav className="navbar navbar-default navbar-fixed-top">
-
-                            <div className="navbar-header">
-                              <a className="navbar-brand hidden-xs" href="#">
-                                   <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
-                                 </a>
-                            </div>
-                                <form className={formClasses}>
-								     <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onSubmit={this.submit}
-                                        search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
-                                        appendToSelf={true} ref="autocomplete"
-										buttonAfter={
-                                            <div className="btn-group">
-                                                <Button type="input" bsStyle="primary" onClick={this.submit} >Search</Button>
-                                             <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                              <span className="caret"></span>
-                                              <span className="sr-only">Toggle Dropdown</span>
-                                            </Button>
-                                            <ul className="dropdown-menu" role="menu">
-                                                <li><a href="#">Search All</a></li>
-                                                <li><a href="#">Search Acts</a></li>
-                                                <li><a href="#">Search Regulations</a></li>
-                                                <li><a href="#">Search Cases</a></li>
-                                                <li className="divider"></li>
-                                                <li><a href="#">Advanced Search</a></li>
-                                              </ul>
-                                            </div>
-                                    } >
-                                    { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." onChange={this.handleLocation}
-                                        ref="location"  /> : <Input/> }
-                                    </AutoComplete>
-
-                                </form>
-					       </nav>
-                        </div>
-                    <div className="sidebar-wrapper">
-                        <a><Glyphicon glyph="search" /></a>
-                        <a><Glyphicon glyph="floppy-open" /></a>
-                        <a><Glyphicon glyph="floppy-save" /></a>
-                        <a><Glyphicon glyph="print" /></a>
-                        <a><Glyphicon glyph="star" /></a>
-                        {/*<ModalTrigger modal={<GraphModal />}>
-                            <a><Glyphicon glyph="globe" /></a>
-                        </ModalTrigger>*/}
-                        <a onClick={this.reset}><Glyphicon glyph="trash" /></a>
-                    </div>
-                    <div className="container-wrapper">
-						<div className="results">
-                            {this.renderBody() }
-						</div>
-					</div>
-                    <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        { this.state.active_result && this.state.active_result.content && this.state.active_result.query.type !== 'search' ?
-                        <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} result={this.state.active_result} />  : null
-                        }
-                    </div>
-				</div>);
-    }
 });

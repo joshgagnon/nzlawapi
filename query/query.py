@@ -90,7 +90,7 @@ def query_all(args):
             "query": {
                 "multi_match": {
                     "query": query,
-                    "fields": ["title^3", "full_citation^3", "docunent"]
+                    "fields": ["title^3", "full_citation^3", "document"]
                 }
             },
             "highlight": {

@@ -6,7 +6,7 @@ var ReactRouter = require('react-router');
 //var SearchForm = require('./components/SearchForm.jsx');
 //var Results = require('./components/ResultList.jsx');
 //var Validator = require('./components/Validator.jsx');
-var Article = require('./components/Article.jsx');
+var Browser = require('./components/Browser.jsx');
 //var Graph = require('./components/Graph.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -62,11 +62,7 @@ var App = React.createClass({
 
 
 // load results
-if(localStorage['data']){
-	_.forEach(JSON.parse(localStorage['data']).results, function(r){
-		Actions.newResult(r);
-	});
-}
+
 
     /*<ReactRouter.Route name="validator" handler={Validator}/>
     <ReactRouter.Route name="browser" handler={Validator}/>
@@ -75,7 +71,7 @@ if(localStorage['data']){
 
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
-    <ReactRouter.DefaultRoute handler={Article}/>
+    <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );
 
