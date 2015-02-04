@@ -35,11 +35,11 @@ var ResultStore = Reflux.createStore({
 		Actions.activateResult(result);
 	},
 	onActivateResult: function(result){
-		this.results.map(function(r){
+		/*his.results.map(function(r){
 			r.active = false;
 		})
 		result.active = true;
-		this.trigger({results: this.results});
+		this.trigger({results: this.results});*/
 	},
 	fetchResult: function(result){
 		$.get('/query', result.query)
@@ -62,12 +62,18 @@ var ResultStore = Reflux.createStore({
 	},
 	onGetMoreResult: function(result, to_add){
 		result.fetching = true;
-		if(result.query.type === 'search'){
+		if(!result.finished && (result.query.type === 'search' || result.query.advanced)){
 			$.get('/query', _.extend({offset: result.content.search_results.hits.length}, result.query))
 				.then(function(data){
 					result.offset = data.offset;
 					result.content.search_results.hits = result.content.search_results.hits.concat(data.search_results.hits);
 					result.fetching = false;
+					if(result.content.search_results.hits.length >= result.content.search_results.total){
+						result.finished = true;
+					}
+					Actions.updateResult(result);
+				},function(){
+					result.finished = true;
 					Actions.updateResult(result);
 				})
 		}

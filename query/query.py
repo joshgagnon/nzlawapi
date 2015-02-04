@@ -105,8 +105,37 @@ def query_all(args):
                 }
             }
         })
-    print results
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
+
+
+def query_act_fields(args):
+    should = []
+    fields = {}
+    if args.get('title'):
+        should.append({"match" : {"title": args.get(title)}})
+    es = current_app.extensions['elasticsearch']
+    offset = args.get('offset', 0)
+    results = es.search(
+        index="legislation",
+        body={
+            "from": offset, "size": 25,
+            "fields": ["id", "title", "full_citation"],
+            "sort": [
+                "_score",
+            ],
+            "query": {
+                "bool": {
+                    "should": should
+                }
+            },
+            "highlight": {
+                "pre_tags": ["<span class='search_match'>"],
+                "post_tags": ["</span>"],
+                "fields": fields
+            }
+        })
+    return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
+
 
 
 @Query.route('/case/file/<path:filename>')
@@ -126,7 +155,10 @@ def query():
         elif query_type in ['act', 'regulation', 'instrument']:
             result = query_act(args)
         elif query_type in ['acts', 'regulations', 'instruments']:
-            result = query_acts(args)
+            if args.get('advanced'):
+                result = query_act_fields(args)
+            else:
+                result = query_acts(args)
         elif query_type == 'case':
             result = query_case(args)
         elif query_type == 'cases':

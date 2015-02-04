@@ -15,8 +15,11 @@ var SearchResult = React.createClass({
         Actions.newResult({query: query, title: this.getTitle()});
     },
     render: function(){
-        var html = (this.props.data.highlight.document).join(''),
+        var html = '',
             id = this.props.data.fields.id[0];
+        if( this.props.data.highlight){
+            html = (this.props.data.highlight.document).join('');
+        }
         return <div className="search-result">
                 <h4><a href={"/open_article/"+this.props.data._type+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
                 <div dangerouslySetInnerHTML={{__html: html}} />

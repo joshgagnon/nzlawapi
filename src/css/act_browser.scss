@@ -9,7 +9,9 @@
 	padding-left: 65px;
 
 	@media (min-width: $screen-md-min) {
-		padding-right: 300px;
+		&.sidebar-visible{
+			padding-right: 300px;
+		}
 	}
 
 	.navbar-form{
@@ -26,11 +28,13 @@
 		}
 	}
 	.navbar-form .form-group {
-display: inline-block;
-margin-bottom: 0;
-vertical-align: middle;
-}
-	form{
+		display: inline-block;
+		margin-bottom: 0;
+		vertical-align: middle;
+		}
+
+
+	.navbar form{
 		@media (min-width: $screen-md-min) {
 			input.form-control[type="text"] {
 				width:400px
@@ -164,7 +168,19 @@ vertical-align: middle;
 		}
 	}
 
+	.advanced-search{
+		margin-left: -15px;
+		margin-right: -15px;
+		background-color: $navbar-default-bg;
+		border-color: $gray;
+		margin-top: -10px;
+		border-bottom: 1px solid $navbar-default-border;
+		.btn-toolbar{
+			text-align:center;
+			padding-bottom:15px;
+		}
 
+	}
 	.case{
 		line-height:1;
 

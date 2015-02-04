@@ -12,7 +12,7 @@ var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
-var SearchForm = require('./SearchForm.jsx');
+var AdvancedSearch = require('./AdvancedSearch.jsx');
 var ReactRouter = require('react-router')
 var _ = require('lodash');
 var $ = require('jquery');
@@ -127,7 +127,7 @@ module.exports = React.createClass({
     },
     renderResult: function(result){
         if(result.content){
-            return result.query.type=='search' ?
+            return result.query.type==='search' || result.query.advanced ?
                     <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
                     <Article key={result.id} result={result}  popupContainer='.act_browser' />
         }
@@ -167,13 +167,17 @@ module.exports = React.createClass({
     },
 	render: function(){
         var formClasses = "navbar-form navbar-left ";
+        var show_side_bar =  this.state.active_result && this.state.active_result.content && this.state.active_result.query.type !== 'search';
         if(this.state.document_id){
             formClasses += 'showing-location';
         }
-        var show_side_bar =  this.state.active_result && this.state.active_result.content && this.state.active_result.query.type !== 'search';
-		return (<div className="act_browser">
+        var parentClass ="act_browser ";
+        if(show_side_bar){
+            parentClass += 'sidebar-visible ';
+        }
+		return (<div className className={parentClass}>
                         <div className="container-fluid">
-
+                        { this.state.advanced_search ? <AdvancedSearch /> : null }
                          <nav className="navbar navbar-default navbar-fixed-top">
 
                             <div className="navbar-header">
@@ -198,7 +202,7 @@ module.exports = React.createClass({
                                                 <li><a href="#">Search Regulations</a></li>
                                                 <li><a href="#">Search Cases</a></li>
                                                 <li className="divider"></li>
-                                                <li><a href="#">Advanced Search</a></li>
+                                                <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
                                               </ul>
                                             </div>
                                     } >

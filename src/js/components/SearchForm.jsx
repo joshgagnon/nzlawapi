@@ -93,7 +93,8 @@ var SearchForm = React.createClass({
     getInitialState: function() {
         this.count = 0;
         this.errors = {};
-        return _.defaults(this.props.initialForm,
+        console.log();
+        return _.defaults({}, this.props.initialForm,
             {
             type: 'act', act_find: 'search', acts_find: 'contains', case_find: 'contains', cases_find: 'case_query',
             acts_typeahead: [], cases_typeahead: [],
