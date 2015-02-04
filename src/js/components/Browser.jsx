@@ -13,6 +13,7 @@ var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
 var SearchForm = require('./SearchForm.jsx');
+var ReactRouter = require('react-router')
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -32,13 +33,23 @@ $.fn.focusNextInputField = function() {
 module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(ResultStore, 'onResults'),
-        React.addons.LinkedStateMixin
+        React.addons.LinkedStateMixin,
+        ReactRouter.State
     ],
     getInitialState: function(){
         return {
             results: [],
             advanced_search: true
         };
+    },
+    componentDidMount: function(){
+        console.log(this.getParams())
+        if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
+            Actions.newResult({query: this.getQuery(), title: this.getQuery.title});
+        }
+        else if(this.getParams().type){
+            Actions.newResult({query: {type: this.getParams().type,  query: this.getParams().id, find: 'id'}});
+        }
     },
     onResults: function(data){
         var active_result, active;
@@ -127,6 +138,7 @@ module.exports = React.createClass({
     },
     renderTabs: function(results){
         var self = this;
+
         return (<TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
                 { this.state.results.map(function(result){
                         return (

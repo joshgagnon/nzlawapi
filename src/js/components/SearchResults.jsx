@@ -18,7 +18,7 @@ var SearchResult = React.createClass({
         var html = (this.props.data.highlight.document).join(''),
             id = this.props.data.fields.id[0];
         return <div className="search-result">
-                <h4><a href={"/document/"+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
+                <h4><a href={"/open_article/"+this.props.data._type+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
                 <div dangerouslySetInnerHTML={{__html: html}} />
             </div>
     }

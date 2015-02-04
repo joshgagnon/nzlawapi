@@ -69,6 +69,8 @@ def query_case(args):
 
 def query_cases(args):
     query = args.get('query')
+    if args.get('find') == 'id':
+        return get_full_case(id=query)
     if not query:
         raise CustomException('Query missing')
     results = case_search(re.escape(args.get('query', '')))
@@ -123,7 +125,7 @@ def query():
             result = query_all(args)
         elif query_type in ['act', 'regulation', 'instrument']:
             result = query_act(args)
-        elif query_type == 'acts' or query_type == 'regulations':
+        elif query_type in ['acts', 'regulations', 'instruments']:
             result = query_acts(args)
         elif query_type == 'case':
             result = query_case(args)

@@ -1,6 +1,6 @@
 from db import get_db
 from util import CustomException, tohtml, etree_to_dict
-from definitions import populate_definitions, process_definitions
+from definitions import populate_definitions, process_definitions, Definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, \
     find_schedule_node, find_node_by_query, find_document_id_by_govt_id, find_node_by_location
 from lxml import etree
@@ -90,7 +90,10 @@ def process_act_links(tree, db=None):
 
 def update_definitions(act_name, id=None, db=None):
     tree = get_act_exact(act_name, id, db)
-    _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999'))
+    if act_name != 'Interpretation Act 1999':
+        _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999'))
+    else:
+        definitions = Definitions()
     tree = process_act_links(tree, db)
     tree, definitions = process_definitions(tree, definitions)
     with (db or get_db()).cursor() as cur:
@@ -156,6 +159,7 @@ def act_fragment_response(act):
         'html': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
         'title': act.title,
         'id': act.id,
+        'type': 'instrument',
     }
 
 def act_response(act):
@@ -195,10 +199,12 @@ def get_act_node_by_id(node_id):
         act.tree = cull_tree(act.tree.xpath('.//cover'))
     else:
         act.tree = cull_tree(act.tree.xpath('.//*[@id="' + node_id + '"]'))
-    return act_fragment_response(act)
+    return act_full_response(act)
 
 
 def query_act(args):
+    if not any((args.get('act_name', args.get('title')), args.get('id'))):
+        raise CustomException('No instrument specified')
     act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'))
     # act.calculate_hooks()
     search_type = args.get('find')
@@ -229,8 +235,10 @@ def query_act(args):
 
 
 def query_acts(args):
-    search_type = args.get('acts_find')
-    #query = args.get('query')
+    search_type = args.get('find')
+    query = args.get('query')
+    if search_type == 'id':
+        return get_act_node_by_id(query)
     if search_type == 'contains':
         #result = act_full_search(query)
         raise CustomException('Not Implemented')

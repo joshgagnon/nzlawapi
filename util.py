@@ -1,7 +1,7 @@
 from lxml import etree
 from collections import defaultdict
 import os
-
+import urllib
 
 class CustomException(Exception):
     pass
@@ -115,8 +115,10 @@ def generate_path_string(node):
     for n in it:
         if len(n.xpath('./label')):
             result = 'sch %s' % n.xpath('./label')[0].text + result
+    title = node.getroottree().xpath('./cover/title')[0].text
+    return ('%s %s' % (title, result),
+        'query?%s' % urllib.urlencode({'query': result, 'type': 'instrument', 'find': 'location', 'title': title}))
 
-    return '%s %s' % (node.getroottree().xpath('./cover/title')[0].text, result)
 
 
 import re

@@ -46,10 +46,15 @@ var ResultStore = Reflux.createStore({
 			.then(function(data){
 				if(_.contains(this.results, result)){
 					result.content = data;
+					if(data.title){
+						result.title = data.title;
+					}
 					Actions.updateResult(result);
+
 				}
 			}.bind(this),
 			function(response){
+				result.title = 'Error';
 				result.content = response.responseJSON || {error: 'A problem occurred'};
 				Actions.updateResult(result);
 			});

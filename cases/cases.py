@@ -2,6 +2,7 @@ from db import get_db
 import elasticsearch
 import psycopg2
 from flask import render_template, current_app
+from util import CustomException
 import os
 import uuid
 from lxml import etree
@@ -117,18 +118,21 @@ def process_case_contents(tree):
 
 
 def get_full_case(case=None, id=None):
-    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        query = """select * from cases where (%(case)s is null or full_citation = %(case)s) and (%(id)s is null or id =  %(id)s)"""
-        cur.execute(query, {'case': case, 'id': id})
-        results = cur.fetchone()
-        print os.path.join(current_app.config['CASE_DIR'], results.get('source_id'))
-        with open(os.path.join(current_app.config['CASE_DIR'], results.get('source_id')), 'U') as f:
-            tree = process_case(etree.HTML(f.read()))
-            tree, contents = process_case_contents(tree)
-            return {
-                'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
-                'html_contents_page': contents,
-                'title': results.get('full_citation'),
-                'type': 'case'
-            }
-    return results
+    try:
+        with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            query = """select * from cases where (%(case)s is null or full_citation = %(case)s) and (%(id)s is null or id =  %(id)s)"""
+            cur.execute(query, {'case': case, 'id': id})
+            results = cur.fetchone()
+            print os.path.join(current_app.config['CASE_DIR'], results.get('source_id'))
+            with open(os.path.join(current_app.config['CASE_DIR'], results.get('source_id')), 'U') as f:
+                tree = process_case(etree.HTML(f.read()))
+                tree, contents = process_case_contents(tree)
+                return {
+                    'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
+                    'html_contents_page': contents,
+                    'title': results.get('full_citation'),
+                    'type': 'case'
+                }
+        return results
+    except (psycopg2.DataError, AttributeError):
+        raise CustomException('Case not found')

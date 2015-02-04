@@ -204,7 +204,7 @@
                 <xsl:when test="heading != ''">
                     <h5 class="prov labelled">
                         <a>
-                        <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@id"/></xsl:attribute>
+                        <xsl:attribute name="href">/open_article/instruments/<xsl:value-of select="@id"/></xsl:attribute>
                         <span class="label">
                             <xsl:call-template name="parentquote"/>
                             <xsl:value-of select="label"/>
@@ -422,15 +422,26 @@
 
     <xsl:template match="*[@href]">
         <a data-link-id="{generate-id()}">
-            <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
+
+            <xsl:attribute name="data-href"><xsl:value-of select="@href"/>
             </xsl:attribute>
-            <xsl:if test="local-name() = 'intref'">
+            <xsl:choose>
+            <xsl:when test="local-name() = 'intref'">
+                  <xsl:attribute name="href">/open_article/instruments/<xsl:value-of select="@href"/>
+                </xsl:attribute>
                  <xsl:attribute name="class">internal_ref</xsl:attribute>
                  <xsl:attribute name="data-target-id"><xsl:value-of select="@href"/></xsl:attribute>
-            </xsl:if>
-            <xsl:if test="local-name() = 'extref'">
+            </xsl:when>
+            <xsl:when test="local-name() = 'extref'">
+                  <xsl:attribute name="href">/open_article/instruments/<xsl:value-of select="@href"/>
+                </xsl:attribute>
                  <xsl:attribute name="class">external_ref</xsl:attribute>
-            </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+                  <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/>
+                </xsl:attribute>
+            </xsl:otherwise>
+        </xsl:choose>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>

@@ -11,14 +11,6 @@ var Browser = require('./components/Browser.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
-var initialResults = [];
-
-var initialForm = {
-	act_name: 'Companies Act 1993',
-	act_find: 'section',
-	query: 47
-}
-
 
 function scrollTo($element){
 	$element.scrollintoview();
@@ -71,6 +63,8 @@ var App = React.createClass({
 
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App}>
+  <ReactRouter.Route name="open_article" path="/open_article/:query" handler={Browser}/>
+  <ReactRouter.Route name="open_article_subtype" path="/open_article/:type/:id" handler={Browser}/>
     <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );
