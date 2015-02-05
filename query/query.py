@@ -109,32 +109,77 @@ def query_all(args):
 
 
 def query_act_fields(args):
-    should = []
+    must = []
     fields = {}
-    if args.get('title'):
-        should.append({"match" : {"title": args.get(title)}})
-    es = current_app.extensions['elasticsearch']
-    offset = args.get('offset', 0)
-    results = es.search(
-        index="legislation",
-        body={
-            "from": offset, "size": 25,
-            "fields": ["id", "title", "full_citation"],
-            "sort": [
-                "_score",
-            ],
-            "query": {
-                "bool": {
-                    "should": should
+    try:
+        if args.get('title'):
+            must.append({"simple_query_string": {
+                "query": args.get('title'),
+                "fields": ['title'],
+                "default_operator": 'AND'}
+            })
+        if args.get('contains'):
+            fields['document'] = {}
+            if args.get('contains_type') == 'all_words':
+                must.append({"simple_query_string": {
+                    "query": args.get('contains'),
+                    "fields": ['document'],
+                    "default_operator": 'AND'}
+                })
+            if args.get('contains_type') == 'any_words':
+                must.append({"simple_query_string": {
+                    "query": args.get('contains'),
+                    "fields": ['document'],
+                    "default_operator": 'OR'}
+                })
+            if args.get('contains_type') == 'exact':
+                must.append({"match_phrase": {
+                        "document": args.get('contains')
+                    }
+                })
+        if args.get('year'):
+            if '-' in args.get('year'):
+                years = args.get('year').split('-')
+                must.append({"range": {
+                     "year": {
+                        "gte": years[0].strip(),
+                        'lte': years[1].strip()
+                     }
+                }})
+            else:
+                must.append({"query_string": {
+                     "query": args.get('year'),
+                    "fields": ['year']
+                }})
+        print args
+        print must
+        es = current_app.extensions['elasticsearch']
+        offset = args.get('offset', 0)
+        results = es.search(
+            index="legislation",
+            body={
+                #"doc_type": "instrument",
+                "from": offset, "size": 25,
+                "fields": ["id", "title"],
+                "sort": [
+                    "_score",
+                ],
+                "query": {
+                    "bool": {
+                        "must": must
+                    }
                 }
-            },
-            "highlight": {
-                "pre_tags": ["<span class='search_match'>"],
-                "post_tags": ["</span>"],
-                "fields": fields
-            }
-        })
-    return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
+                ,
+                "highlight": {
+                    "pre_tags": ["<span class='search_match'>"],
+                    "post_tags": ["</span>"],
+                    "fields": fields
+                }
+            })
+        return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
+    except Exception, e:
+        print e
+        raise CustomException('There was a problem with your query')
 
 
 

@@ -35,11 +35,11 @@ var ResultStore = Reflux.createStore({
 		Actions.activateResult(result);
 	},
 	onActivateResult: function(result){
-		/*his.results.map(function(r){
+		this.results.map(function(r){
 			r.active = false;
 		})
 		result.active = true;
-		this.trigger({results: this.results});*/
+		this.trigger({results: this.results});
 	},
 	fetchResult: function(result){
 		$.get('/query', result.query)
@@ -50,7 +50,6 @@ var ResultStore = Reflux.createStore({
 						result.title = data.title;
 					}
 					Actions.updateResult(result);
-
 				}
 			}.bind(this),
 			function(response){
@@ -86,8 +85,8 @@ var ResultStore = Reflux.createStore({
 						result.content.parts = _.extend({}, result.content.parts, data.parts);
 						Actions.updateResult(result);
 					},function(){
-						console.log(args);
-						result.error = 'x'
+						result.content = response.responseJSON || {error: 'A problem occurred'};
+						Actions.updateResult(result);
 					});
 			}
 		}

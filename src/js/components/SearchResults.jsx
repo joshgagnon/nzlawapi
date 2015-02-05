@@ -21,8 +21,8 @@ var SearchResult = React.createClass({
             html = (this.props.data.highlight.document).join('');
         }
         return <div className="search-result">
-                <h4><a href={"/open_article/"+this.props.data._type+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
-                <div dangerouslySetInnerHTML={{__html: html}} />
+                <h4><a href={"/open_article/"+this.props.data._type+'s/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
+                <div dangerouslySetInnerHTML={{__html: html}}/>
             </div>
     }
 });
@@ -38,7 +38,6 @@ module.exports = React.createClass({
                 $(window).scrollTop() + offset +$(window).height() > $(self.getDOMNode()).height() - threshold){
                 Actions.getMoreResult(self.props.result);
             }
-
         }, 100);
         $(window).on('scroll', this.debounce_scroll);
     },
@@ -46,15 +45,20 @@ module.exports = React.createClass({
         $(window).off('scroll', this.debounce_scroll);
     },
     render: function(){
-        var total = this.props.result.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return <div className="search-results">
-            <div className="search-count">{total} Results Found</div>
-                { this.props.result.content.search_results.hits.map(function(r){
-                        return <SearchResult key={r.fields.id[0]} data={r} />
-                    })
-                }
-                {this.props.result.fetching ?  <div className="csspinner traditional" /> : null }
-            </div>
+        if(this.props.result.content.search_results){
+            var total = this.props.result.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return <div className="search-results">
+                <div className="search-count">{total} Results Found</div>
+                    { this.props.result.content.search_results.hits.map(function(r){
+                            return <SearchResult key={r.fields.id[0]} data={r} />
+                        })
+                    }
+                    {this.props.result.fetching ?  <div className="csspinner traditional" /> : null }
+                </div>
+        }
+        else{
+            return <div className="search-results"><div className="article-error"><p className="text-danger">{this.props.result.content.error}</p></div></div>
+        }
     }
 
 });

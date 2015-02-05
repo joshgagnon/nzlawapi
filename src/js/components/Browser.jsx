@@ -117,6 +117,7 @@ module.exports = React.createClass({
         Actions.clearResults();
     },
     handleTab: function(active){
+
         if(active !== this.state.active){
             Actions.activateResult(_.find(this.state.results, function(d){ return d.id === active}));
         }
@@ -134,7 +135,6 @@ module.exports = React.createClass({
         else{
             return <div className="search-results csspinner traditional"/>;
         }
-
     },
     renderTabs: function(results){
         var self = this;
@@ -167,7 +167,7 @@ module.exports = React.createClass({
     },
 	render: function(){
         var formClasses = "navbar-form navbar-left ";
-        var show_side_bar =  this.state.active_result && this.state.active_result.content && this.state.active_result.query.type !== 'search';
+        var show_side_bar =  this.state.active_result && this.state.active_result.content && (this.state.active_result.query.type !== 'search' && !this.state.active_result.query.advanced);
         if(this.state.document_id){
             formClasses += 'showing-location';
         }

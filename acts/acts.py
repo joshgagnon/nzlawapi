@@ -192,10 +192,15 @@ def format_response(args, result):
 
 
 def get_act_node_by_id(node_id):
-    id = find_document_id_by_govt_id(node_id)
+    if node_id.startswith('D'):
+        id = find_document_id_by_govt_id(node_id)
+    else:
+        id = node_id
     act = get_act_object(id=id)
     """ if the node is root, just get cover """
-    if act.tree.attrib['id'] == node_id:
+    if node_id == id:
+        pass
+    elif act.tree.attrib['id'] == node_id:
         act.tree = cull_tree(act.tree.xpath('.//cover'))
     else:
         act.tree = cull_tree(act.tree.xpath('.//*[@id="' + node_id + '"]'))
