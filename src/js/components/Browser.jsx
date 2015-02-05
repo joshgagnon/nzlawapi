@@ -169,7 +169,7 @@ module.exports = React.createClass({
     },
     render: function(){
         var formClasses = "navbar-form navbar-left ";
-        var show_side_bar =  this.state.active_result && this.state.active_result.content && (this.state.active_result.querysearch);
+        var show_side_bar =  this.state.active_result && this.state.active_result.content && !this.state.active_result.query.search;
         if(this.state.document_id){
             formClasses += 'showing-location';
         }
