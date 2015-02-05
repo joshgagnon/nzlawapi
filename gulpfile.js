@@ -41,7 +41,7 @@ gulp.task('js-prod', function() {
    {debug: false,
     entries: ['./src/js/app.js'],
     transform: [reactify],
-    cache: {}, packageCache: {}, fullPaths: true})
+    cache: {}, packageCache: {}, fullPaths: false})
     .bundle()
     .pipe(source('app.js'))
     .pipe(streamify(uglify()))
@@ -78,7 +78,7 @@ gulp.task('js', function() {
 
 
 gulp.task('fonts', function() {
-  return gulp.src('./src/fonts/*')
+  return gulp.src('./node_modules/bootstrap/fonts/*')
     .pipe(gulp.dest('./build/fonts/bootstrap'))
 });
 
@@ -92,7 +92,7 @@ gulp.task('bower', function() { 
          .pipe(gulp.dest('./bower_components' ) );
 });
 
-gulp.task('sass', function() { 
+gulp.task('sass-prod', function() { 
     return gulp.src('./src/css/style.scss')
         .pipe(dont_break_on_errors())
          .pipe(sass({
@@ -107,6 +107,20 @@ gulp.task('sass', function() { 
          .pipe(gulp.dest('./build/css')); 
 });
 
+gulp.task('sass', function() { 
+    return gulp.src('./src/css/style.scss')
+        .pipe(dont_break_on_errors())
+         .pipe(sass({
+          //  "sourcemap=none": true, //hack to allow autoprefixer to work
+             loadPath: [
+                 './src/css',
+                 './bower_components/bootstrap-sass-official/assets/stylesheets'
+             ]
+         }) )
+       // .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
+         .pipe(gulp.dest('./build/css')); 
+});
+
 gulp.task('watch', function(){
   gulp.watch('src/css/*.scss', ['sass']);
   gulp.watch('src/fonts/*', ['fonts']);
@@ -114,4 +128,4 @@ gulp.task('watch', function(){
 });
 
 gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images'])
-gulp.task('prod', ['js-prod', 'sass', 'fonts', 'images'])
+gulp.task('prod', ['js-prod', 'sass-prod', 'fonts', 'images'])
