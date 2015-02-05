@@ -45,6 +45,11 @@ $.fn.isOnScreen = function(tolerance){
 module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
+        /*     mixins: [Reflux.connectFilter(postStore,"post", function(posts) {
+        posts.filter(function(post) {
+           post.id === this.props.id;
+        });
+    }], */
     ],
     scroll_threshold: 20000,
     propTypes: {

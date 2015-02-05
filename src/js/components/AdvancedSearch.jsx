@@ -16,6 +16,7 @@ var strings ={
     'exact': 'Exact',
     'bench': 'Bench',
     'neutral_citation': 'Neutral Citation',
+    'courtfile': 'Court File Number',
     'court': 'Court',
     'parties': 'Parties',
     'matter': 'Matter',
@@ -28,6 +29,7 @@ var strings ={
     'provincial': 'Provincial',
     'imperial': 'Imperial',
 
+    'courts': 'Courts',
     'supreme_court': 'Supreme Court',
     'high_court': 'High Court',
     'appeal_court': 'Appeal Court',
@@ -115,7 +117,7 @@ var CaseSearch = React.createClass({
         FormHelper,
         ToggleHelper
     ],
-    fields: ['neutral_citation', 'court', 'bench', 'parties', 'matter', 'charge'],
+    fields: ['neutral_citation', 'courtfile', , 'year', 'court', 'bench', 'parties', 'matter', 'charge'],
     courts: ['supreme_court', 'appeal_court', 'high_court'],
     getInitialState: function(){
         return {contains_type: 'all_words', 'supreme_court': true, 'appeal_court': true, 'high_court': true}
@@ -286,7 +288,7 @@ module.exports = React.createClass({
     ],
     getInitialState: function(){
         return {
-            type: 'instruments',
+            type: 'cases',
             acts: 'true',
             bills: 'true',
             other: 'true'
@@ -297,7 +299,7 @@ module.exports = React.createClass({
     },
     search: function(){
         var title = 'Advanced Search';
-        var query = _.extend({advanced: true}, _.pick(this.getValue(), _.identity));
+        var query = _.extend({search: 'advanced'}, _.pick(this.getValue(), _.identity));
         Actions.newResult({query: query, title: title});
     },
     render: function(){

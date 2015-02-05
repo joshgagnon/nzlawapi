@@ -61,7 +61,7 @@ var ResultStore = Reflux.createStore({
 	},
 	onGetMoreResult: function(result, to_add){
 		result.fetching = true;
-		if(!result.finished && (result.query.type === 'search' || result.query.advanced)){
+		if(!result.finished && result.query.search){
 			$.get('/query', _.extend({offset: result.content.search_results.hits.length}, result.query))
 				.then(function(data){
 					result.offset = data.offset;

@@ -77,6 +77,47 @@ def query_cases(args):
     return {'results': results, 'title': 'Search: %s' % query}
 
 
+def year_query(args):
+    if '-' in args.get('year'):
+        years = args.get('year').split('-')
+        return {
+            "range": {
+                "year": {
+                    "gte": years[0].strip(),
+                    "lte": years[1].strip()
+                }
+            }}
+    else:
+        return {
+            "query_string": {
+                "query": args.get('year'),
+                "fields": ['year']
+            }
+        }
+
+
+def contains_query(args):
+    if args.get('contains_type') == 'all_words':
+        return {
+            "simple_query_string": {
+                "query": args.get('contains'),
+                "fields": ['document'],
+                "default_operator": 'AND'
+            }}
+    if args.get('contains_type') == 'any_words':
+        return {
+            "simple_query_string": {
+                "query": args.get('contains'),
+                "fields": ['document'],
+                "default_operator": 'OR'
+            }}
+    if args.get('contains_type') == 'exact':
+        return {
+            "match_phrase": {
+                "document": args.get('contains')
+            }}
+
+
 def query_all(args):
     query = args.get('query')
     es = current_app.extensions['elasticsearch']
@@ -108,6 +149,53 @@ def query_all(args):
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
 
 
+def query_case_fields(args):
+    must = []
+    fields = {}
+    try:
+        if args.get('full_citation'):
+            must.append({"simple_query_string": {
+                "query": args.get('full_citation'),
+                "fields": ['full_citation'],
+                "default_operator": 'AND'}
+            })
+        if args.get('contains'):
+            fields['document'] = {}
+            must.append(contains_query(args))
+        if args.get('year'):
+            must.append(year_query(args))
+
+
+        """'neutral_citation', 'courtfile', , 'year', 'court', 'bench', 'parties', 'matter', 'charge']"""
+        es = current_app.extensions['elasticsearch']
+        offset = args.get('offset', 0)
+        results = es.search(
+            index="legislation",
+            doc_type="case",
+            body={
+                "from": offset, "size": 25,
+                "fields": ["id", "full_citation"],
+                "sort": [
+                    "_score",
+                ],
+                "query": {
+                    "bool": {
+                        "must": must
+                    }
+                },
+                "highlight": {
+                    "pre_tags": ["<span class='search_match'>"],
+                    "post_tags": ["</span>"],
+                    "fields": fields
+                }
+            })
+        print must
+        return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
+    except Exception, e:
+        print e
+        raise CustomException('There was a problem with your query')
+
+
 def query_act_fields(args):
     must = []
     fields = {}
@@ -120,45 +208,16 @@ def query_act_fields(args):
             })
         if args.get('contains'):
             fields['document'] = {}
-            if args.get('contains_type') == 'all_words':
-                must.append({"simple_query_string": {
-                    "query": args.get('contains'),
-                    "fields": ['document'],
-                    "default_operator": 'AND'}
-                })
-            if args.get('contains_type') == 'any_words':
-                must.append({"simple_query_string": {
-                    "query": args.get('contains'),
-                    "fields": ['document'],
-                    "default_operator": 'OR'}
-                })
-            if args.get('contains_type') == 'exact':
-                must.append({"match_phrase": {
-                        "document": args.get('contains')
-                    }
-                })
+            must.append(contains_query(args))
         if args.get('year'):
-            if '-' in args.get('year'):
-                years = args.get('year').split('-')
-                must.append({"range": {
-                     "year": {
-                        "gte": years[0].strip(),
-                        'lte': years[1].strip()
-                     }
-                }})
-            else:
-                must.append({"query_string": {
-                     "query": args.get('year'),
-                    "fields": ['year']
-                }})
-        print args
-        print must
+            must.append(year_query(args))
+
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset', 0)
         results = es.search(
             index="legislation",
+            doc_type="instrument",
             body={
-                #"doc_type": "instrument",
                 "from": offset, "size": 25,
                 "fields": ["id", "title"],
                 "sort": [
@@ -168,8 +227,7 @@ def query_act_fields(args):
                     "bool": {
                         "must": must
                     }
-                }
-                ,
+                },
                 "highlight": {
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
@@ -180,7 +238,6 @@ def query_act_fields(args):
     except Exception, e:
         print e
         raise CustomException('There was a problem with your query')
-
 
 
 @Query.route('/case/file/<path:filename>')
@@ -195,19 +252,22 @@ def query():
     query_type = args.get('type')
     status = 200
     try:
-        if query_type == 'search':
+        if query_type == 'all':
             result = query_all(args)
         elif query_type in ['act', 'regulation', 'instrument']:
             result = query_act(args)
         elif query_type in ['acts', 'regulations', 'instruments']:
-            if args.get('advanced'):
+            if args.get('search') == 'advanced':
                 result = query_act_fields(args)
             else:
                 result = query_acts(args)
         elif query_type == 'case':
             result = query_case(args)
         elif query_type == 'cases':
-            result = query_cases(args)
+            if args.get('search') == 'advanced':
+                result = query_case_fields(args)
+            else:
+                result = query_cases(args)
         else:
             raise CustomException('Badly formed query')
     except CustomException, e:

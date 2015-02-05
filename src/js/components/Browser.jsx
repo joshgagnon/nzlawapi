@@ -39,7 +39,8 @@ module.exports = React.createClass({
     getInitialState: function(){
         return {
             results: [],
-            advanced_search: true
+            advanced_search: true,
+            underlines: false
         };
     },
     componentDidMount: function(){
@@ -60,8 +61,8 @@ module.exports = React.createClass({
         this.setState({results: data.results, active: active, active_result: active_result});
     },
     submit: function(e){
-    	e.preventDefault();
-    	this.fetch();
+        e.preventDefault();
+        this.fetch();
     },
     fetch: function(){
         console.log(this.state)
@@ -73,7 +74,6 @@ module.exports = React.createClass({
         });
         var query;
         var title;
-        console.log(this.state.location)
         if(this.state.document_id){
             query = {
                 type: this.state.article_type,
@@ -85,7 +85,8 @@ module.exports = React.createClass({
         }
         else{
             query = {
-                type: 'search',
+                type: 'all',
+                search: 'basic',
                 query: this.state.search_query
             };
             title = 'Search: '+this.state.search_query
@@ -108,6 +109,9 @@ module.exports = React.createClass({
         e.stopPropagation();
         this.setState({location: e.target.value});
     },
+    toggleUnderlines: function(e){
+        this.setState({underlines: !this.state.underlines})
+    },
     reset: function(){
         this.setState({
             article_type: null,
@@ -117,7 +121,6 @@ module.exports = React.createClass({
         Actions.clearResults();
     },
     handleTab: function(active){
-
         if(active !== this.state.active){
             Actions.activateResult(_.find(this.state.results, function(d){ return d.id === active}));
         }
@@ -128,7 +131,7 @@ module.exports = React.createClass({
     },
     renderResult: function(result){
         if(result.content){
-            return result.query.type==='search' || result.query.advanced ?
+            return result.query.search ?
                     <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
                     <Article key={result.id} result={result}  popupContainer='.act_browser' />
         }
@@ -138,7 +141,6 @@ module.exports = React.createClass({
     },
     renderTabs: function(results){
         var self = this;
-
         return (<TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
                 { this.state.results.map(function(result){
                         return (
@@ -165,9 +167,9 @@ module.exports = React.createClass({
             return  this.renderResult(this.state.results[0]);
         }
     },
-	render: function(){
+    render: function(){
         var formClasses = "navbar-form navbar-left ";
-        var show_side_bar =  this.state.active_result && this.state.active_result.content && (this.state.active_result.query.type !== 'search' && !this.state.active_result.query.advanced);
+        var show_side_bar =  this.state.active_result && this.state.active_result.content && (this.state.active_result.querysearch);
         if(this.state.document_id){
             formClasses += 'showing-location';
         }
@@ -175,64 +177,67 @@ module.exports = React.createClass({
         if(show_side_bar){
             parentClass += 'sidebar-visible ';
         }
-		return (<div className className={parentClass}>
-                        <div className="container-fluid">
-                        { this.state.advanced_search ? <AdvancedSearch /> : null }
-                         <nav className="navbar navbar-default navbar-fixed-top">
+        if(!this.state.underlines){
+            parentClass += 'hide-underlines';
+        }
+        return (<div className className={parentClass}>
+                <div className="container-fluid">
+                { this.state.advanced_search ? <AdvancedSearch /> : null }
+                 <nav className="navbar navbar-default navbar-fixed-top">
 
-                            <div className="navbar-header">
-                              <a className="navbar-brand hidden-xs" href="#">
-                                   <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
-                                 </a>
-                            </div>
-                                <form className={formClasses}>
-								     <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onSubmit={this.submit}
-                                        search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
-                                        appendToSelf={true} ref="autocomplete"
-										buttonAfter={
-                                            <div className="btn-group">
-                                                <Button type="input" bsStyle="primary" onClick={this.submit} >Search</Button>
-                                             <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                              <span className="caret"></span>
-                                              <span className="sr-only">Toggle Dropdown</span>
-                                            </Button>
-                                            <ul className="dropdown-menu" role="menu">
-                                                <li><a href="#">Search All</a></li>
-                                                <li><a href="#">Search Acts</a></li>
-                                                <li><a href="#">Search Regulations</a></li>
-                                                <li><a href="#">Search Cases</a></li>
-                                                <li className="divider"></li>
-                                                <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
-                                              </ul>
-                                            </div>
-                                    } >
-                                    { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." onChange={this.handleLocation}
-                                        ref="location"  /> : <Input/> }
-                                    </AutoComplete>
-
-                                </form>
-					       </nav>
-                        </div>
-                    <div className="sidebar-wrapper">
-                        <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
-                        <a><Glyphicon glyph="floppy-open" onClick={Actions.loadState} title="Open"/></a>
-                        <a><Glyphicon glyph="floppy-save" onClick={Actions.saveState} title="Save"/></a>
-                        <a><Glyphicon glyph="print" title="Print"/></a>
-                        <a><Glyphicon glyph="star" /></a>
-                        {/*<ModalTrigger modal={<GraphModal />}>
-                            <a><Glyphicon glyph="globe" /></a>
-                        </ModalTrigger>*/}
-                        <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
+                    <div className="navbar-header">
+                      <a className="navbar-brand hidden-xs" href="#">
+                           <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
+                         </a>
                     </div>
-                    <div className="container-wrapper">
-						<div className="results">
-                            {this.renderBody() }
-						</div>
-					</div>
-                    { show_side_bar ?
-                    <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                        <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} result={this.state.active_result} />  : null
-                    </div> : null }
-				</div>);
+                        <form className={formClasses}>
+                             <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onSubmit={this.submit}
+                                search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
+                                appendToSelf={true} ref="autocomplete"
+                                buttonAfter={
+                                    <div className="btn-group">
+                                        <Button type="input" bsStyle="primary" onClick={this.submit} >Search</Button>
+                                     <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                      <span className="caret"></span>
+                                      <span className="sr-only">Toggle Dropdown</span>
+                                    </Button>
+                                    <ul className="dropdown-menu" role="menu">
+                                        <li><a href="#">Search All</a></li>
+                                        <li><a href="#">Search Acts</a></li>
+                                        <li><a href="#">Search Regulations</a></li>
+                                        <li><a href="#">Search Cases</a></li>
+                                        <li className="divider"></li>
+                                        <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
+                                      </ul>
+                                    </div>
+                            } >
+                            { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." value={this.state.location} onChange={this.handleLocation}
+                                ref="location"  /> : <Input/> }
+                            </AutoComplete>
+                        </form>
+                   </nav>
+                </div>
+            <div className="sidebar-wrapper">
+                <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
+                <a><Glyphicon glyph="text-color" onClick={this.toggleUnderlines} title="Underlines"/></a>
+                <a><Glyphicon glyph="floppy-open" onClick={Actions.loadState} title="Open"/></a>
+                <a><Glyphicon glyph="floppy-save" onClick={Actions.saveState} title="Save"/></a>
+                <a><Glyphicon glyph="print" title="Print"/></a>
+                <a><Glyphicon glyph="star" /></a>
+                {/*<ModalTrigger modal={<GraphModal />}>
+                    <a><Glyphicon glyph="globe" /></a>
+                </ModalTrigger>*/}
+                <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
+            </div>
+            <div className="container-wrapper">
+                <div className="results">
+                    {this.renderBody() }
+                </div>
+            </div>
+            { show_side_bar ?
+            <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
+                <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} result={this.state.active_result} />  : null
+            </div> : null }
+        </div>);
     }
 });
