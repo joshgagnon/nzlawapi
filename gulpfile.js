@@ -2,7 +2,7 @@ console.time('Loading plugins');
 var gulp = require('gulp');
 var bower = require('gulp-bower');
 var browserify = require('browserify');
-var concat = require('gulp-concat');
+//var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var notify = require("gulp-notify")
 var plumber = require('gulp-plumber');
@@ -76,13 +76,6 @@ gulp.task('js', function() {
     .pipe(gulp.dest('./build/js/'));
 });
 
-
-gulp.task('css', function() {
-  return gulp.src('./src/css/*.css')
-  	.pipe(plumber())
-    .pipe(concat('style.css'))
-    .pipe(gulp.dest('./build/css/'))
-});
 
 gulp.task('fonts', function() {
   return gulp.src('./src/fonts/*')

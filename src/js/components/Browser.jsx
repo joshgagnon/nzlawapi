@@ -39,7 +39,7 @@ module.exports = React.createClass({
     getInitialState: function(){
         return {
             results: [],
-            advanced_search: true,
+            advanced_search: false,
             underlines: false
         };
     },
@@ -177,8 +177,8 @@ module.exports = React.createClass({
         if(show_side_bar){
             parentClass += 'sidebar-visible ';
         }
-        if(!this.state.underlines){
-            parentClass += 'hide-underlines';
+        if(this.state.underlines){
+            parentClass += 'underlines ';
         }
         return (<div className className={parentClass}>
                 <div className="container-fluid">

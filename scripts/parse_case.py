@@ -1,7 +1,7 @@
 from __future__ import division
 from bs4 import BeautifulSoup
 import os
-import json 
+import json
 import re
 import pprint
 from PIL import Image
@@ -101,7 +101,7 @@ def full_citation(soup):
         el = next_tag(el, 'div')
     # can't be bold
     while is_bold(el):
-        el = next_tag(el, 'div')    
+        el = next_tag(el, 'div')
     top = get_top_position(el)
     while top <= get_top_position(el):
         result += [el.text]
@@ -137,14 +137,14 @@ def parse_between(soup):
     between = ['AND BETWEEN', 'BETWEEN']
     el = (e for e in soup.find_all('div') if e.text in between).next()
     plantiff_patterns = [
-        re.compile('.*Plaintiff[s]?'), 
-        re.compile('.*Applicant[s]?'), 
+        re.compile('.*Plaintiff[s]?'),
+        re.compile('.*Applicant[s]?'),
         re.compile('.*Appellant[s]?'),
         re.compile('.*Insolvent[s]?')
         ]
 
     # while not at next section
-    
+
     while el.text in between:
         # look back to get court_num
         try:
@@ -170,7 +170,7 @@ def parse_between(soup):
         }
 
     return results
-            
+
 
 def parse_versus(soup):
     results = {}
@@ -225,7 +225,7 @@ def texts_after_column(soup, strings):
         els = consecutive_align(element_after_column(soup, strings))
         return ' '.join(els[0])
     except StopIteration:
-        pass        
+        pass
 
 def judgment(soup):
     return text_after_column(soup, ['Judgment:', 'Sentence:', 'Sentenced:'])
@@ -263,7 +263,7 @@ def find_bars(soup):
         image_path = os.path.join(path, image_el.attrs['src'])
         im = Image.open(image_path)
         width, height = int(image_el.attrs['width']), int(image_el.attrs['height'])
-        im = im.resize((width, height), Image.NEAREST) 
+        im = im.resize((width, height), Image.NEAREST)
         pixels = im.load()
         x = im.size[0]//2
         previous = 0
@@ -296,7 +296,7 @@ def first_el_after_bar(soup, bars):
     el = soup.select('img[name=%d]'%bars[0][0])[0]
     line_gap = 50
     top = bars[0][1]
-    return (div for div in el.find_next_siblings('div') 
+    return (div for div in el.find_next_siblings('div')
         if top < get_top_position(div) < top + line_gap
         ).next()
 
@@ -322,11 +322,11 @@ def waistband_el(soup):
             while is_bold(el):
                 if letters.match(el.text):
                     results.append(el.text)
-                el = next_tag(el, 'div')  
+                el = next_tag(el, 'div')
         else:
             while not underscore.match(el.text):
                 results.append(el.text)
-                el = next_tag(el, 'div')  
+                el = next_tag(el, 'div')
     else: #maybe they used underscores
         try:
             el = next_tag((el for el in soup.find_all('div') if underscore.match(el.text)).next(), 'div')
@@ -373,7 +373,7 @@ def matter(soup):
     result['UNDER'] = texts_after_column(soup, ['UNDER'])
     result['IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
     result['AND IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
-    result['IN THE ESTATE OF'] = texts_after_column(soup, ['IN THE ESTATE OF']) 
+    result['IN THE ESTATE OF'] = texts_after_column(soup, ['IN THE ESTATE OF'])
     for k, i in result.items():
         if not i:
             del result[k]
@@ -401,7 +401,7 @@ def appeal_result(soup):
             results = {'key': key}
             break
 
-    return results  
+    return results
 
 def mangle_format(soup):
     flat_soup = BeautifulSoup('<div/>').select('div')[0]
@@ -409,7 +409,7 @@ def mangle_format(soup):
     for div in soup.select('body > div'):
         div.find('img').attrs['name'] = div.find_previous_sibling('a').attrs['name']
     [flat_soup.append(x) for x in soup.select('body > div > *')]
-    # remove things with white text.  
+    # remove things with white text.
     [el.extract() for el in flat_soup.select('div') if el_class_style(el).get('color') == '#ffffff']
     #confirm text exists
     text_re = re.compile('[a-zA-Z]+')
@@ -423,9 +423,9 @@ def delete_db(cur, data):
     return
 
 def insert_db(cur, data):
-    query = """INSERT INTO cases (id, neutral_citation, court, full_citation, parties, 
+    query = """INSERT INTO cases (id, neutral_citation, court, full_citation, parties,
         counsel, judgment, waistband, hearing, received, matter, charge, plea, bench)
-        VALUES (%(id)s, %(neutral_citation)s, %(court)s, %(full_citation)s, %(parties)s, 
+        VALUES (%(id)s, %(neutral_citation)s, %(court)s, %(full_citation)s, %(parties)s,
         %(counsel)s, %(judgment)s, %(waistband)s, %(hearing)s, %(received)s, %(matter)s, %(charge)s, %(plea)s, %(bench)s)"""
 
     data = dict(data.items())
@@ -436,7 +436,7 @@ def insert_db(cur, data):
 
 def insert_es(es, data):
     es.index(index='legislation', doc_type='case', body=data, id=data['id'])
-    
+
 def process_file(filename):
     #print get_info(filename.replace('.html', ''), json_data)
     with open(os.path.join(path, filename)) as f:
@@ -492,8 +492,8 @@ for f in files:
             insert_es(es, data)
             success += 1
         except NoText:
-            pass            
-        except ValueError, e: 
+            pass
+        except ValueError, e:
         #except Exception, e:
             print e
             #failed_output.write(f)

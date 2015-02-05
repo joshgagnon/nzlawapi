@@ -252,4 +252,100 @@
 			}
 		}
 	}
+
+	/* bootstrap fixes */
+	.legislation .label{
+	    display:initial;
+	    color:#000;
+	    text-align:initial;
+	    white-space: initial;
+	    border-radius:initial;
+	}
+	.legislation p.label{
+	  display:block;
+	}
+	.legislation a.def-popover,
+	.legislation a.def-popover{
+		color:#000;
+	}
+	&.underlines .legislation a{
+	    text-decoration: underline;
+	}
+	&.underlines .legislation{
+		h1,h2,h3,h4,h6{
+			a{
+				text-decoration: none;
+			}
+		}
+	}
+	&.underlines .legislation a.def-popover{
+	    color:#000;
+	    text-decoration: none;
+	    border-bottom: 1px solid #00BD00;
+	    cursor:pointer;
+	}
+
+
+	.definition-result .catalex-src{
+	  margin-bottom: 10px;
+	  font-style: italic;
+	  font-size: 12px;
+	  display: inline-block;
+	}
+
+	// bootstrap
+	.modal-backdrop{
+	  position: fixed;
+	  bottom:0;
+	}
+
+	.def-popover{
+	  z-index:1020;
+	}
+	.popover{
+	   max-width: 500px;
+	   min-width:200px;
+
+	   .show-more{
+	    cursor: pointer;
+	    text-decoration: none;
+
+	   }
+	  .popover-content>*{
+	      max-height:200px;
+	      overflow-y: auto;
+	    }
+	    .popover-content.loading{
+	        min-height: 70px;
+	        min-width: 200px;
+	    }
+	     /*&.overflowed .popover-content >*:before {
+	      content:'';
+	      width:100%;
+	      position:absolute;
+	      left:0;
+	      top:0;
+	      bottom:40px;
+	      background:linear-gradient(transparent 200px, white);
+	    }*/
+
+	  .popover-footer{
+	      margin-top: 8px;
+	      padding: 8px 14px;
+	      background-color: #f7f7f7;
+	      border-top: 1px solid #ebebeb;
+	      border-radius: 0 0 5px 5px;
+	      text-align: center;
+	    }
+
+	    .popover-close{
+	      position: absolute;
+	      top: -1px;
+	      right: 10px;
+	      font-size: 22px;
+	      color: #898989;
+	      font-weight: bold;
+	      cursor: pointer;
+	  }
+	}
 }
