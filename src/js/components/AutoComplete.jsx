@@ -12,7 +12,7 @@ var AutoComplete = React.createClass({
             //search_query: this.props.searchValue.search_query,
             //id: this.props.searchValue.id,
             results: [],
-            oldResults: [],
+           // oldResults: [],
             activeIndex: -1,
         };
     },
@@ -35,15 +35,6 @@ var AutoComplete = React.createClass({
                 });
         }, 250)
     },
-    /*componentWillReceiveProps: function(props){
-        if(props.searchValue){
-            this.setState({
-                search_query: props.searchValue.search_query,
-                id: props.searchValue.id,
-                type: props.searchValue.type
-            })
-        }
-    },*/
     onChange: function(event) {
         if(this.refs.search.refs.input.getDOMNode() === event.target){
             var value = event.target.value;
@@ -67,10 +58,7 @@ var AutoComplete = React.createClass({
         if (this.getDOMNode().contains(e.target)) {
             return;
         }
-        this.setState({
-            results: [],
-            oldResults: this.state.results
-        });
+        this.setState({show: false});
     },
     bindRootCloseHandlers: function() {
         this._onDocumentClickListener =
@@ -83,9 +71,10 @@ var AutoComplete = React.createClass({
         }
     },
     onFocus: function() {
-        this.setState({
-            results: this.state.oldResults
-        });
+        this.setState({show: true});
+    },
+    onBlur: function(){
+        this.setState({show: false});
     },
     onKeyDown: function(event) {
         // Handle arrow keys
@@ -188,8 +177,9 @@ var AutoComplete = React.createClass({
     render: function() {
         return (
             <div className="autocomplete">
-                <Input type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query} onChange={this.onChange} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
-                { this.state.results.length ?
+                <Input type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
+                    onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
+                { this.state.show && this.state.results.length ?
                 <ul className="results" ref="dropdown" onMouseDown={this.clickResult}>
                     {
                         this.groupCategories(this.state.results).map(function(group, index) {
