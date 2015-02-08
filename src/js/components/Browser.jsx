@@ -1,5 +1,8 @@
+var _ = require('lodash');
+var $ = require('jquery');
 var React = require('react/addons');
 var Reflux = require('reflux');
+var ReactRouter = require('react-router');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var ResultStore = require('../stores/ResultStore');
@@ -13,9 +16,8 @@ var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
-var ReactRouter = require('react-router')
-var _ = require('lodash');
-var $ = require('jquery');
+var SaveDialog = require('./SaveDialog.jsx')
+
 
 
 $.fn.focusNextInputField = function() {
@@ -30,9 +32,21 @@ $.fn.focusNextInputField = function() {
     });
 };
 
+var DialogStore = Reflux.createStore({
+    listenables: Actions,
+    onCloseSaveDialog: function(){
+        this.trigger({save_dialog: false});
+    },
+    onCloseLoadDialog: function(){
+        this.trigger({load_dialog: false});
+    },
+})
+
+
 module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(ResultStore, 'onResults'),
+        Reflux.listenTo(DialogStore, 'onDialog'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],
@@ -40,11 +54,12 @@ module.exports = React.createClass({
         return {
             results: [],
             advanced_search: false,
-            underlines: false
+            underlines: false,
+            save_dialog: false,
+            load_dialog: false
         };
     },
     componentDidMount: function(){
-        console.log(this.getParams())
         if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
             Actions.newResult({query: this.getQuery(), title: this.getQuery.title});
         }
@@ -59,6 +74,9 @@ module.exports = React.createClass({
             active = active_result.id;
         }
         this.setState({results: data.results, active: active, active_result: active_result});
+    },
+    onDialog: function(state){
+        this.setState(state);
     },
     submit: function(e){
         e.preventDefault();
@@ -109,9 +127,6 @@ module.exports = React.createClass({
         e.stopPropagation();
         this.setState({location: e.target.value});
     },
-    toggleUnderlines: function(e){
-        this.setState({underlines: !this.state.underlines})
-    },
     reset: function(){
         this.setState({
             article_type: null,
@@ -152,8 +167,10 @@ module.exports = React.createClass({
             }
             </TabbedArea>)
     },
-    toggleAdvanced: function(){
-        this.setState({advanced_search: !this.state.advanced_search});
+    toggleState: function(state){
+        var s = {};
+        s[state] = !this.state[state]
+        this.setState(s);
     },
     renderBody: function(){
         var self = this;
@@ -168,6 +185,7 @@ module.exports = React.createClass({
         }
     },
     render: function(){
+        console.log(this.state)
         var formClasses = "navbar-form navbar-left ";
         var show_side_bar =  this.state.active_result && this.state.active_result.content && !this.state.active_result.query.search;
         if(this.state.document_id){
@@ -183,6 +201,9 @@ module.exports = React.createClass({
         return (<div className className={parentClass}>
                 <div className="container-fluid">
                 { this.state.advanced_search ? <AdvancedSearch /> : null }
+
+                { this.state.save_dialog ? <SaveDialog.Save /> : null }
+                { this.state.load_dialog ? <SaveDialog.Load /> : null }
                  <nav className="navbar navbar-default navbar-fixed-top">
 
                     <div className="navbar-header">
@@ -218,10 +239,10 @@ module.exports = React.createClass({
                    </nav>
                 </div>
             <div className="sidebar-wrapper">
-                <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
-                <a><Glyphicon glyph="text-color" onClick={this.toggleUnderlines} title="Underlines"/></a>
-                <a><Glyphicon glyph="floppy-open" onClick={Actions.loadState} title="Open"/></a>
-                <a><Glyphicon glyph="floppy-save" onClick={Actions.saveState} title="Save"/></a>
+                <a><Glyphicon glyph="search" onClick={this.toggleState.bind(this, 'advanced_search')} title="Advanced Search"/></a>
+                <a><Glyphicon glyph="text-color" onClick={this.toggleState.bind(this, 'underlines')} title="Underlines"/></a>
+                <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
+                <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
                 <a><Glyphicon glyph="print" title="Print"/></a>
                 <a><Glyphicon glyph="star" /></a>
                 {/*<ModalTrigger modal={<GraphModal />}>

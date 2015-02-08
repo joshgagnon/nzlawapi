@@ -1,0 +1,13 @@
+
+@import "bootstrap/variables";
+
+
+
+.saved_list{
+	max-height:300px;
+	overflow-y: auto;
+	tr{
+		cursor:pointer;
+	}
+
+}

@@ -15,20 +15,28 @@ var Serialization = Reflux.createStore({
     update: function(data){
         this.data = data;
     },
-    save: function() {
+    save: function(name) {
         var new_data = {current: this.data.current, results: this.data.results};
         new_data.results = new_data.results.map(function(r){
             return _.omit(r, 'content', 'search_results', 'offset', 'new_parts', 'requested_parts');
         });
-        localStorage['data'] = JSON.stringify(new_data);
+        var all = _.reject(JSON.parse(localStorage['data'] || '[]'), {name: name});
+        all.push({name: name, value: new_data, date: (new Date()).toLocaleString()});
+        localStorage['data'] = JSON.stringify(all);
         console.log('saved')
     },
-    load: function() {
-        Actions.clearResults();
+    load: function(name) {
+
         if(localStorage['data']){
-            _.forEach(JSON.parse(localStorage['data']).results, function(r){
-                Actions.newResult(r);
-            });
+            var data = JSON.parse(localStorage['data']);
+
+            var selected = _.find(data, {name: name});
+            if(selected){
+                Actions.clearResults();
+                _.forEach(selected.value.results, function(r){
+                    Actions.newResult(r);
+                });
+            }
         }
     }
 });

@@ -23,6 +23,12 @@ var Actions = Reflux.createActions([
 	'definitionOpened',
 	'popoverClosed',
 
+	'closeSaveDialog',
+	'closeLoadDialog',
+	'fetchSavedStates',
+	'removeSavedState',
+	'updateSavedStates',
+
 	'saveState',
 	'loadState'
 ]);
