@@ -255,7 +255,7 @@ module.exports = React.createClass({
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length;i++){
-                node = node.find('[data-location="'+jump.location[i]+'"]');
+                node = node.find('[data-location^="'+jump.location[i]+'"]');
             }
             target = node;
         }

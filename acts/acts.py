@@ -5,17 +5,20 @@ from traversal import cull_tree, find_definitions, find_part_node, find_section_
     find_schedule_node, find_node_by_query, find_document_id_by_govt_id, find_node_by_location
 from lxml import etree
 from copy import deepcopy
+from psycopg2 import extras
 import json
 import os
 
 
 class Act(object):
-    def __init__(self, id, tree):
+    def __init__(self, id, tree, attributes):
         self.id = id
         self.tree = tree
         self.title = get_title(self.tree)
         self.hook_match = '/*/*/*/*/*'
         self.parts = {}
+        ignore = ['document', 'processed_document', 'attributes']
+        self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
     def calculate_hooks(self):
         html = tohtml(self.tree)
@@ -35,7 +38,7 @@ class Act(object):
 
 
 def get_title(tree):
-    return etree.tostring(tree.xpath('/act/cover/title|/regulation/cover/title')[0], method="text")
+    return tree.xpath('.//billref|.//title')[0].text
 
 
 def get_act(act, db=None):
@@ -65,7 +68,7 @@ def get_act_exact(act, id=None, db=None):
 
 import re
 from xml.dom import minidom
-#TODO finish
+#TODO finish, move to utils
 def process_act_links(tree, db=None):
     return tree
     with (db or get_db()).cursor() as cur:
@@ -114,22 +117,24 @@ def update_definitions(act_name, id=None, db=None):
     return tree, definitions.render()
 
 
+
 def get_act_object(act_name=None, id=None, db=None, replace=False):
-    with (db or get_db()).cursor() as cur:
-        query = """SELECT id, processed_document FROM latest_instruments
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """SELECT * FROM latest_instruments
                 where (%(act)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
             """
         if not replace:
             cur.execute(query, {'act': act_name, 'id': id})
             result = cur.fetchone()
-            if not result:
+            print result
+            if not result.get('id'):
                 raise CustomException('Act not found')
-        if replace or not result[1]:
+        if replace or not result.get('processed_document'):
             tree, _ = update_definitions(act_name, id, db=db)
         else:
-            tree = etree.fromstring(result[1])
+            tree = etree.fromstring(result.get('processed_document'))
 
-        return Act(id=result[0], tree=tree)
+        return Act(id=result.get('id'), tree=tree, attributes=dict(result))
 
 
 def act_skeleton_response(act):
@@ -137,6 +142,7 @@ def act_skeleton_response(act):
         'skeleton': act.skeleton,
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'title': act.title,
+        'attributes': act.attributes,
         'parts': {},
         'id': act.id,
         'type': 'instrument',
@@ -150,7 +156,8 @@ def act_full_response(act):
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'title': act.title,
         'id': act.id,
-        'type': 'instrument'
+        'type': 'instrument',
+        'attributes': act.attributes
     }
 
 

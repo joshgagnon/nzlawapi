@@ -34,6 +34,7 @@
                     </xsl:if>
                     <xsl:call-template name="current"/>
                     <xsl:apply-templates select="cover"/>
+                    <xsl:apply-templates select="billdetail"/>
                     <xsl:apply-templates select="front"/>
                     <xsl:apply-templates select="body"/>
                     <xsl:apply-templates select="schedule.group"/>
@@ -62,7 +63,7 @@
         </div>
     </xsl:template>
 
-    <xsl:template match="cover">
+    <xsl:template match="cover|billdetail">
         <div class="cover reprint">
                 <xsl:if test="@data-hook!=''">
                     <xsl:attribute name="data-hook">
@@ -134,7 +135,7 @@
                         <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:when>
                         <xsl:otherwise>
-                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/> </xsl:attribute>
+                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
             <h2 class="part">
@@ -165,7 +166,7 @@
                         <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:when>
                         <xsl:otherwise>
-                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/> </xsl:attribute>
+                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
             <h3 class="subpart">
@@ -196,7 +197,7 @@
                     <xsl:attribute name="data-location">, cl <xsl:value-of select="label"/></xsl:attribute>
                 </xsl:when>
                     <xsl:otherwise>
-                    <xsl:attribute name="data-location">s <xsl:value-of select="label"/> </xsl:attribute>
+                    <xsl:attribute name="data-location">s <xsl:value-of select="label"/></xsl:attribute>
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:call-template name="current"/>

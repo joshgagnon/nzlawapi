@@ -30,7 +30,8 @@ var AutoComplete = React.createClass({
                 .then(function(response) {
                     self.bindRootCloseHandlers();
                     self.setState({
-                        results: response.results
+                        results: response.results,
+                        groups: self.groupCategories(response.results)
                     });
                 });
         }, 250)
@@ -70,8 +71,10 @@ var AutoComplete = React.createClass({
             this._onDocumentClickListener = null;
         }
     },
-    onFocus: function() {
-        this.setState({show: true});
+    onFocus: function(e) {
+        if(e.target === this.getInputDOMNode()){
+            this.setState({show: true});
+        }
     },
     onBlur: function(){
         this.setState({show: false});
@@ -133,7 +136,11 @@ var AutoComplete = React.createClass({
                 entries: [result]
             });
         });
-
+        var order = ['case', 'regulation','act'];
+        groups.sort(function(a ,b){
+            return order.indexOf(b.type)- order.indexOf(a.type)
+        })
+        console.log(groups)
         return groups;
     },
     getResultListItem: function(groupIndex, result, index) {
@@ -145,7 +152,7 @@ var AutoComplete = React.createClass({
         var endIndex = startIndex + value.length;
 
         // Calculate total index of this result amongst all groups
-        var groups = this.groupCategories(this.state.results);
+        var groups = this.state.groups;
         for (var i = 0; i < groupIndex; i++) {
             index += groups[i].entries.length;
         }
@@ -166,7 +173,8 @@ var AutoComplete = React.createClass({
         this.props.onUpdate({
             id: a.attr('data-doc-id'),
             type: a.attr('data-doc-type'),
-            search_query: selectedText
+            search_query: selectedText,
+            show: false
         });
 
     },
@@ -182,7 +190,7 @@ var AutoComplete = React.createClass({
                 { this.state.show && this.state.results.length ?
                 <ul className="results" ref="dropdown" onMouseDown={this.clickResult}>
                     {
-                        this.groupCategories(this.state.results).map(function(group, index) {
+                        this.state.groups.map(function(group, index) {
                             return (
                                 <li key={group.type}>
                                     <h4 className="title">{group.type}</h4>

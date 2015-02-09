@@ -50,6 +50,12 @@ def run_migration(db, filename, config):
             'filename': filename
         })
 
+def insert_functions(db):
+    files = set([f for f in os.listdir('db_functions') if f.endswith('.sql')])
+
+    for filename in files:
+        with open(os.path.join('db_functions', filename)) as f, db.cursor() as cur:
+            cur.execute(f.read())
 
 def run():
     if not len(sys.argv) > 1:
@@ -61,6 +67,9 @@ def run():
     map(lambda m: run_migration(db, m, config), migrations)
     db.commit()
     print('Migrations Complete')
+    functions = insert_functions(db)
+    print('Functions and Views inserted')
+    db.commit()
 
 
 if __name__ == '__main__':

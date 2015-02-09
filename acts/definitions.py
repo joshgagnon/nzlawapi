@@ -271,7 +271,7 @@ def find_all_definitions(tree, definitions, expire=True):
 
 
 def process_definitions(tree, definitions):
-    title = tree.xpath('./cover/title')[0].text
+    title = tree.xpath('.//billref|.//title')[0].text
     find_all_definitions(tree, definitions, expire=True)
     print 'Completed definition extraction'
     print '%d nodes to scan' % len(tree.xpath('.//*'))

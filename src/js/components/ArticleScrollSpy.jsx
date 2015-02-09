@@ -48,7 +48,7 @@ module.exports = React.createClass({
     },
     render: function(){
         return <div onClick={this.interceptLink} onWheel={this.stopPropagation} >
-                <JumpTo />
+                <JumpTo result={this.props.result}/>
                 <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
             </div>
     }

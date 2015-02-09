@@ -5,6 +5,7 @@ var Button = require('react-bootstrap/Button');
 var ArticleStore = require('../stores/ArticleStore');
 
 var Reflux = require('reflux');
+var _ = require('lodash');
 
 module.exports = React.createClass({
     mixins: [
@@ -31,7 +32,7 @@ module.exports = React.createClass({
                 }
                 return s;
             });
-            Actions.articleJumpTo({location: m});
+            Actions.articleJumpTo(this.props.result, {location: m});
         }
     },
     render: function(){

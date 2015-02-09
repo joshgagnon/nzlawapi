@@ -118,8 +118,10 @@ module.exports = React.createClass({
             if(value.id){
                 // hack!
                 setTimeout(function(){
-                    $(self.refs.autocomplete.getInputDOMNode()).focusNextInputField();
+                    //$(self.refs.autocomplete.getInputDOMNode()).focusNextInputField();
+                    self.refs.location.getInputDOMNode().focus();
                 }, 0);
+
             }
         });
     },
@@ -232,7 +234,7 @@ module.exports = React.createClass({
                                       </ul>
                                     </div>
                             } >
-                            { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." value={this.state.location} onChange={this.handleLocation}
+                            { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." ref="location" value={this.state.location} onChange={this.handleLocation}
                                 ref="location"  /> : <Input/> }
                             </AutoComplete>
                         </form>

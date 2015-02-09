@@ -1,11 +1,12 @@
 import os
-from os.path import join
 from lxml import etree
 import psycopg2
+from psycopg2 import extras
 import datetime
 import xml.etree.ElementTree as ET
-
-
+import sys
+import importlib
+import json
 
 date_format = '%Y-%m-%d'
 
@@ -15,153 +16,88 @@ def safe_date(string):
     except:
         return None
 
-def process_acts(cur):
-    location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/act'
-    count=0;
-    ids = set()
-    for dirpath, dirs, files in os.walk(location):
-        files = [f for f in files if f.endswith('.xml')]
-        if len(files):
-            path = os.path.join(dirpath.replace('/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/', ''), files[0])
-            try:
-                tree = etree.parse(os.path.join(dirpath, files[0]))
-                attrib = tree.getroot().attrib
-                if attrib.get('id'):
-                    title = tree.xpath('/act/cover/title')[0].text
-                    query = """INSERT INTO acts (id, document_id, version, title, path, number, date_first_valid, date_assent, date_as_at, year, repealed)
-                        VALUES (%(id)s, %(document_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_first_valid)s, %(date_assent)s, 
-                            %(date_as_at)s, %(year)s, %(repealed)s); """
-                    print title
 
-                    doc_query = """INSERT INTO documents (searchable, type, document)
-                        VALUES (to_tsvector('english', %(searchable)s), %(type)s, %(document)s) returning id"""
+def process(type, db, config):
+    location = '%s/%s' % (config.ACT_DIR, type)
+    count = 0
+    with db.cursor() as cur:
+
+        parser = etree.XMLParser(resolve_entities=False)
+        print location
+        for dirpath, dirs, files in os.walk(location):
+            files = [f for f in files if f.endswith('.xml')]
 
 
-                    doc_values = {
-                        'searchable': " ".join(tree.getroot().itertext()),
-                        'type': 'xml',
-                        'document': etree.tostring(tree, encoding='UTF-8', method='xml')
-                    }
+            if len(files):
 
-                    cur.execute(doc_query, doc_values)
-                    document_id = cur.fetchone()[0]
-                    print document_id
-                    values =  {
-                        'document_id': document_id,
-                        'id': attrib.get('id'), 
-                        'title': title,
-                        'version': int(float(dirpath.split('/')[-1])),
-                        'path': path,
-                        'number': int(attrib.get('act.no')),
-                        'date_first_valid': safe_date(attrib.get('date.first.valid')),
-                        'date_as_at': safe_date(attrib.get('date.as.at')),
-                        'date_assent': safe_date(attrib.get('date.assent')),
-                        'year': int(attrib.get('year')),
-                        'repealed': attrib.get('terminated') == "repealed"
-                    }
-                    cur.execute(query, values)
-                    if 0: # do ids
-                        parent_id = attrib.get('id')
-                        for el in tree.xpath('//*[@id]'):
+                path = os.path.join(dirpath.replace(config.ACT_DIR+'/', ''), files[0])
+                try:
+                    print path
+                    tree = etree.parse(os.path.join(dirpath, files[0]), parser)
 
-                            new_id = el.attrib.get('id')
-                            if new_id not in ids:
-                                query = """ INSERT INTO id_lookup(id, parent_id, mapper) VALUES 
-                                (%(id)s, %(parent_id)s, 'acts')"""
-                                values = {
-                                    'id':new_id,
-                                    'parent_id': parent_id
-                                }
-                                try:
-                                    cur.execute(query, values)
-                                except Exception, e:
-                                    print e
-                            ids |= {new_id}
-                    
-            except Exception, e:
-                print 'ERROR', e, path
+                    attrib = tree.getroot().attrib
+                    if attrib.get('id'):
+                        title = tree.xpath('.//title|.//billref')[0].text
+                        query = """INSERT INTO instruments (id, govt_id, version, title, path, number, date_as_at, type,
+                                date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed, in_amend,
+                                pco_suffix, raised_by, official, subtype, terminated, stage, date_signed, imperial, instructing_office, attributes)
+                            VALUES (%(id)s, %(govt_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_as_at)s, %(type)s,
+                                %(date_first_valid)s, %(date_gazetted)s, %(date_terminated)s, %(date_imprint)s,
+                                %(year)s, %(repealed)s, %(in_amend)s, %(pco_suffix)s, %(raised_by)s, %(official)s, %(subtype)s,
+                                %(terminated)s, %(stage)s, %(date_signed)s, %(imperial)s, %(instructing_office)s, %(attr)s); """
 
+                        with open(os.path.join(dirpath, files[0])) as r:
+                            cur.execute(""" INSERT INTO documents (document, type) VALUES (%(document)s, 'xml') returning id""",
+                                {'document': r.read()})
 
-def process_regulations(cur):
-    location = '/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/regulation'
-    count=0;
-    cur.execute("""select id from id_lookup where mapper='regulations'""")
-    parser = etree.XMLParser(resolve_entities=False)
-    
-    ids = set([x[0] for x in cur.fetchall()])
-    for dirpath, dirs, files in os.walk(location):
-        files = [f for f in files if f.endswith('.xml')]
-        
-        if len(files):
-            path = os.path.join(dirpath.replace('/Users/josh/legislation_archive/www.legislation.govt.nz/subscribe/', ''), files[0])
-            try:
-                print path
-                tree = etree.parse(os.path.join(dirpath, files[0]), parser)
+                        document_id = cur.fetchone()[0]
 
-                attrib = tree.getroot().attrib
-                if attrib.get('id'):
-                    title = tree.xpath('/regulation/cover/title')[0].text
-                    query = """INSERT INTO regulations (id, document_id, version, title, path, number, date_as_at, date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed)
-                        VALUES (%(id)s, %(document_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_as_at)s, %(date_first_valid)s, %(date_gazetted)s, %(date_terminated)s, %(date_imprint)s, 
-                            %(year)s, %(repealed)s); """
-                    #print title
-                    
-                    doc_query = """INSERT INTO documents (searchable, type, document)
-                        VALUES (to_tsvector('english', %(searchable)s), %(type)s, %(document)s) returning id"""
+                        values = {
+                            'id': document_id,
+                            'govt_id': attrib.get('id'),
+                            'title': title,
+                            'version': int(float(dirpath.split('/')[-1])),
+                            'path': path,
+                            'number': attrib.get('sr.no', attrib.get('sop.no', attrib.get('act.no', attrib.get('bill.no')))),
+                            'date_first_valid': safe_date(attrib.get('date.first.valid')),
+                            'date_gazetted': safe_date(attrib.get('date.date_gazetted')),
+                            'date_terminated': safe_date(attrib.get('date.terminated')),
+                            'date_imprint': safe_date(attrib.get('date.imprint')),
+                            'date_as_at': safe_date(attrib.get('date.as.at')),
+                            'year': int(attrib.get('year')),
+                            'repealed': attrib.get('terminated') == "repealed",
+                            'in_amend': attrib.get('in.amend') != 'false',
+                            'pco_suffix': attrib.get('pco.suffix'),
+                            'raised_by': attrib.get('raised.by'),
+                            'official': attrib.get('official'),
+                            'type': type,
+                            'subtype': attrib.get('act.type', attrib.get('sr.type', attrib.get('bill.type'))),
+                            'terminated': attrib.get('terminated'),
+                            'stage': attrib.get('stage'),
+                            'date_signed': safe_date(attrib.get('date.signed')),
+                            'imperial':  attrib.get('imperial') == 'yes',
+                            'instructing_office': attrib.get('instructing_office'),
+                            'attr': json.dumps(dict(attrib))
+                        }
+                        cur.execute(query, values)
+
+                except etree.XMLSyntaxError, e:
+                    print 'ERROR', e, path
 
 
-                    doc_values = {
-                        'searchable': " ".join(tree.getroot().itertext()),
-                        'type': 'xml',
-                        'document': etree.tostring(tree, encoding='UTF-8', method='xml')
-                    }
+if __name__ == "__main__":
+    if not len(sys.argv) > 1:
+        raise Exception('Missing configuration file')
+    sys.path.append(os.getcwd())
 
-                    cur.execute(doc_query, doc_values)
-                    document_id = cur.fetchone()[0]
-                    
-                    values =  {
-                        'document_id': document_id,
-                        'id': attrib.get('id'), 
-                        'title': title,
-                        'version': int(float(dirpath.split('/')[-1])),
-                        'path': path,
-                        'number': int(attrib.get('sr.no')),
-                        'date_first_valid': safe_date(attrib.get('date.first.valid')),
-                        'date_gazetted': safe_date(attrib.get('date.date_gazetted')),
-                        'date_terminated': safe_date(attrib.get('date.terminated')),
-                        'date_imprint': safe_date(attrib.get('date.imprint')),
-                        'date_as_at': safe_date(attrib.get('date.as.at')),
-                        'year': int(attrib.get('year')),
-                        'repealed': attrib.get('terminated') == "repealed"
-                    }
-                    cur.execute(query, values)
-                    parent_id = attrib.get('id')
-                    for el in tree.xpath('//*[@id]'):
-                        new_id = el.attrib.get('id')
-                        if new_id not in ids:
-                            query = """ INSERT INTO id_lookup(id, parent_id, mapper) VALUES 
-                            (%(id)s, %(parent_id)s, 'regulations')"""
-                            values = {
-                                'id':new_id,
-                                'parent_id': parent_id
-                            }
-                            try:
-                                cur.execute(query, values)
-                            except Exception, e:
-                                print e
-                        ids |= {new_id}
-                    
-            except etree.XMLSyntaxError, e:
-                print 'ERROR', e, path
-
-
-
-if __name__ == '__main__':
-    conn = psycopg2.connect("dbname=legislation user=josh")
-    conn.set_client_encoding('utf8')
-    cur = conn.cursor()
-    #process_acts(cur)
-    process_regulations(cur)
-    conn.commit()
-    cur.close()
-    conn.close()
+    config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
+    db = psycopg2.connect(
+            database=config.DB,
+            user=config.DB_USER,
+            password=config.DB_PW)
+    db.set_client_encoding('utf8')
+    process('act', db, config)
+    process('regulation', db, config)
+    process('sop', db, config)
+    process('bill', db, config)
+    db.commit()

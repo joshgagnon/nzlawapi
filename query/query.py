@@ -17,7 +17,7 @@ def article_auto_complete():
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
                 select id, name, type from titles
-                   where name ilike '%%'||%(query)s||'%%' order by name limit 25;
+                   where name ilike '%%'||%(query)s||'%%' order by name limit 50;
                 """, {'query': request.args.get('query')})
             return jsonify({'results': cur.fetchall()})
     except Exception, e:
@@ -254,9 +254,9 @@ def query():
     try:
         if query_type == 'all':
             result = query_all(args)
-        elif query_type in ['act', 'regulation', 'instrument']:
+        elif query_type in ['act', 'regulation', 'sop', 'bill', 'instrument']:
             result = query_act(args)
-        elif query_type in ['acts', 'regulations', 'instruments']:
+        elif query_type in ['acts', 'regulations',  'sops', 'bills', 'instruments']:
             if args.get('search') == 'advanced':
                 result = query_act_fields(args)
             else:

@@ -11,13 +11,14 @@ var Serialization = Reflux.createStore({
         this.listenTo(ResultStore, this.update);
         this.listenTo(Actions.saveState, this.save);
         this.listenTo(Actions.loadState, this.load);
+        this.data = {};
     },
     update: function(data){
         this.data = data;
     },
     save: function(name) {
         var new_data = {current: this.data.current, results: this.data.results};
-        new_data.results = new_data.results.map(function(r){
+        new_data.results = (new_data.results||[]).map(function(r){
             return _.omit(r, 'content', 'search_results', 'offset', 'new_parts', 'requested_parts');
         });
         var all = _.reject(JSON.parse(localStorage['data'] || '[]'), {name: name});
