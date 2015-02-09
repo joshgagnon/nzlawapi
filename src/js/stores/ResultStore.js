@@ -42,7 +42,9 @@ var ResultStore = Reflux.createStore({
 		Actions.activateResult(result);
 	},
 	onActivateResult: function(result){
-		this.fetchResult(result);
+		if(!result.fetching && !result.fetched){
+			this.fetchResult(result);
+		}
 	},
 	fetchResult: function(result){
 		result.fetching = true;

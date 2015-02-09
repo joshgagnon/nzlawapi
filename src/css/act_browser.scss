@@ -1,7 +1,7 @@
 
 @import "bootstrap/variables";
 
-$sidebar-width : 350px;
+$sidebar-width : 300px;
 
 .act_browser{
 	   position:relative;
@@ -100,12 +100,27 @@ $sidebar-width : 350px;
 		position: fixed;
 		top: 0;
 		right: 0;
+		padding:6px;
 		padding-top: 50px;
 		border-left-width: 1px;
 		border-left-style:solid;
-		&>div{
-			height:100%;
+
+		& > .btn-group{
+			width:100%;
+			padding:6px;
+			text-align:center;
+			button{
+				width: 75%;
+				float:none;
+			}
 		}
+		.dropdown-menu{
+			width: 75%;
+			float: none;
+			top: initial;
+			left: 37px;
+		}
+
 		.form-group{
 			margin-right:16px;
 		}

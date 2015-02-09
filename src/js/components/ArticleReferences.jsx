@@ -23,8 +23,8 @@ module.exports = React.createClass({
     render: function(){
         return <div className="article-references">
 
-               { (this.props.article._references_data||[]).map(function(r){
-                    return <li><a href={"/open_article/"+r.type+'s/'+r.id}>{r.title} <span>{r.count}</span></a></li>;
+               { (this.props.article._references_data||[]).map(function(r, i){
+                    return <li key={i}><a href={"/open_article/"+r.type+'s/'+r.id}>{r.title} <span>{r.count}</span></a></li>;
                 }) }
             </div>
      },

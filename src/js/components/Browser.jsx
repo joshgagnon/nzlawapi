@@ -69,16 +69,17 @@ module.exports = React.createClass({
         else if(this.getParams().type){
             Actions.newResult({query: {type: this.getParams().type,  query: this.getParams().id, find: 'id'}});
         }
+        window.addEventListener('onResize', function(){
+            //TODO, debouce, measure width, hide,
+        });
     },
     onResults: function(data){
         this.setState({results: data.results});
     },
     onDialog: function(state){
         this.setState(state);
-        console.log(state)
     },
     onBrowser: function(state){
-        console.log('here', state)
         this.setState(state);
     },
     submit: function(e){
@@ -86,7 +87,6 @@ module.exports = React.createClass({
         this.fetch();
     },
     fetch: function(){
-        console.log(this.state)
         if(!this.state.search_query){
             return;
         }
@@ -117,6 +117,7 @@ module.exports = React.createClass({
     handleArticleChange: function(value){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
+        console.log(value)
         this.setState({search_query: value.search_query, document_id: value.id, article_type: value.type}, function(){
             if(value.id){
                 // hack!
@@ -218,7 +219,7 @@ module.exports = React.createClass({
                          </a>
                     </div>
                         <form className={formClasses}>
-                             <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onSubmit={this.submit}
+                             <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange}
                                 search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                                 appendToSelf={true} ref="autocomplete"
                                 buttonAfter={

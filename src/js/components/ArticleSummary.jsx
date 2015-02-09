@@ -26,12 +26,11 @@ var fields = [
 module.exports = React.createClass({
 
 	render: function(){
-        console.log(this)
         return <div >
         <dl className="">
             { _.map(fields, function(v){
                 if(this.props.article.content.attributes[v[0]])
-                return <div><dt>{v[1]}</dt><dd>{this.props.article.content.attributes[v[0]]}</dd></div>
+                return <div key={v[0]}><dt>{v[1]}</dt><dd>{this.props.article.content.attributes[v[0]]}</dd></div>
             }.bind(this))}
             </dl>
         </div>

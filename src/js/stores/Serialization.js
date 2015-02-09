@@ -19,7 +19,7 @@ var Serialization = Reflux.createStore({
     save: function(name) {
         var new_data = {current: this.data.current, results: this.data.results};
         new_data.results = (new_data.results||[]).map(function(r){
-            return _.omit(r, 'content', 'search_results', 'offset', 'new_parts', 'requested_parts');
+            return _.omit(r, 'content', 'search_results', 'offset', 'new_parts', 'requested_parts', 'fetched', 'fetching');
         });
         var all = _.reject(JSON.parse(localStorage['data'] || '[]'), {name: name});
         all.push({name: name, value: new_data, date: (new Date()).toLocaleString()});
