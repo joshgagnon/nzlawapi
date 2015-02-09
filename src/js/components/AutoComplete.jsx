@@ -140,7 +140,6 @@ var AutoComplete = React.createClass({
         groups.sort(function(a ,b){
             return order.indexOf(b.type)- order.indexOf(a.type)
         })
-        console.log(groups)
         return groups;
     },
     getResultListItem: function(groupIndex, result, index) {

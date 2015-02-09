@@ -32,6 +32,10 @@ def tohtml(tree, transform=os.path.join('xslt', 'transform.xslt')):
     transform = etree.XSLT(xslt)
     return transform(tree)
 
+def get_title(tree):
+    title = etree.tostring(tree.xpath('.//billref|.//title')[0], method="text", encoding="UTF-8")
+    return unicode(title.decode('utf-8'))
+
 
 #https://bitbucket.org/ianb/formencode/src/tip/formencode/doctest_xml_compare.py#cl-70
 def xml_compare(x1, x2, reporter=None):
@@ -85,8 +89,8 @@ def text_compare(t1, t2):
     return (t1 or '').strip() == (t2 or '').strip()
 
 
-def generate_path_string(node):
-    result = ''
+def generate_path_string(node, no_query=False):
+    result = unicode('')
     it = iter(node.iterancestors('label-para'))
     for n in it:
         if len(n.xpath('./label')):
@@ -98,7 +102,7 @@ def generate_path_string(node):
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
             if text:
-                result = '(%s)' % text + result
+                result = u'(%s)' % text + result
 
     prov_str = 's'
     if len(node.xpath('ancestor::schedule')):
@@ -109,15 +113,18 @@ def generate_path_string(node):
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
             if text:
-                result = '%s %s' % (prov_str, text + result)
+                result = u'%s %s' % (prov_str, text + result)
 
     it = iter(node.iterancestors('schedule'))
     for n in it:
         if len(n.xpath('./label')):
-            result = 'sch %s' % n.xpath('./label')[0].text + result
-    title = node.getroottree().xpath('./cover/title')[0].text
-    return ('%s %s' % (title, result),
-        'query?%s' % urllib.urlencode({'query': result, 'type': 'instrument', 'find': 'location', 'title': title}))
+            result = u'sch %s' % n.xpath('./label')[0].text + result
+    title = get_title(node.getroottree())
+    #print title
+    print title, result
+    print type(title), type(result)
+    return (u'%s %s' % (title, result),
+        'query?%s' % urllib.urlencode({'query': result.encode('utf-8'), 'type': 'instrument', 'find': 'location', 'title': title.encode('utf-8')}))
 
 
 

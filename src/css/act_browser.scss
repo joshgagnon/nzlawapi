@@ -71,7 +71,7 @@
 		}
 	}
 
-	.sidebar-wrapper {
+	.buttonbar-wrapper {
 		height: 100%;
 		width: 65px;
 		position: fixed;
@@ -93,14 +93,13 @@
 		}
 	}
 
-	.contents-bar-wrapper{
+	.sidebar-wrapper{
 		height: 100%;
 		width: 300px;
 		position: fixed;
 		top: 0;
 		right: 0;
-		padding-left: 16px;
-		padding-top: 65px;
+		padding-top: 50px;
 		border-left-width: 1px;
 		border-left-style:solid;
 		&>div{
@@ -108,6 +107,22 @@
 		}
 		.form-group{
 			margin-right:16px;
+		}
+		.nav-tabs{
+			background-color:white;
+		}
+		.nav-tabs > li > a{
+			padding:6px;
+			border-radius:0px;
+		}
+		.nav-tabs > li:first-of-type a{
+			border-left-width:0px;
+		}
+		.nav-tabs > li.active a{
+			background-color: #f8f8f8;
+		}
+		.tab-content{
+			padding: 6px;
 		}
 	}
 

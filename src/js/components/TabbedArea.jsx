@@ -112,7 +112,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
             <span className="tab-title">
               {child.props.tab}
             </span>
-            <span className="tab-close" onClick={this.handleClose.bind(this, key)}>&times;</span>
+            { this.props.onClose ? <span className="tab-close" onClick={this.handleClose.bind(this, key)}>&times;</span> : null }
           </NavItem>
   },
 

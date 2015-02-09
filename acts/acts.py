@@ -1,5 +1,5 @@
 from db import get_db
-from util import CustomException, tohtml, etree_to_dict
+from util import CustomException, tohtml, etree_to_dict, get_title
 from definitions import populate_definitions, process_definitions, Definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, \
     find_schedule_node, find_node_by_query, find_document_id_by_govt_id, find_node_by_location
@@ -37,8 +37,6 @@ class Act(object):
         return [self.parts[i] for i in requested]
 
 
-def get_title(tree):
-    return tree.xpath('.//billref|.//title')[0].text
 
 
 def get_act(act, db=None):

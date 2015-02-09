@@ -63,7 +63,10 @@ def run():
     config = importlib.import_module(sys.argv[1].replace('.py', ''))
     db = connect_db(config)
     prep_table(db)
-    migrations = get_migrations(db)
+    if len(sys.argv) > 2:
+        migrations = map(lambda x: os.path.basename(x), sys.argv[2:])
+    else:
+        migrations = get_migrations(db)
     map(lambda m: run_migration(db, m, config), migrations)
     db.commit()
     print('Migrations Complete')

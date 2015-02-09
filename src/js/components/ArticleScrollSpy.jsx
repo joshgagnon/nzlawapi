@@ -32,7 +32,7 @@ module.exports = React.createClass({
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
-            Actions.articleJumpTo(this.props.result, {id: link.attr('href'), noscroll: true});
+            Actions.articleJumpTo(this.props.article, {id: link.attr('href'), noscroll: true});
         }
     },
     stopPropagation: function(e){
@@ -48,8 +48,8 @@ module.exports = React.createClass({
     },
     render: function(){
         return <div onClick={this.interceptLink} onWheel={this.stopPropagation} >
-                <JumpTo result={this.props.result}/>
-                <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.html}}/>
+                <JumpTo article={this.props.article}/>
+                <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.article.content.html_contents_page}}/>
             </div>
     }
 });

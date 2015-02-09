@@ -6,18 +6,19 @@ var ReactRouter = require('react-router');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var ResultStore = require('../stores/ResultStore');
+var BrowserStore = require('../stores/BrowserStore');
 var Serialization = require('../stores/Serialization.js');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var SearchResults = require('./SearchResults.jsx');
+var ArticleSideBar = require('./ArticleSideBar.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
-var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
-var AdvancedSearch = require('./AdvancedSearch.jsx');
-var SaveDialog = require('./SaveDialog.jsx')
 
+var AdvancedSearch = require('./AdvancedSearch.jsx');
+var SaveDialog = require('./SaveDialog.jsx');
 
 
 $.fn.focusNextInputField = function() {
@@ -46,6 +47,7 @@ var DialogStore = Reflux.createStore({
 module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(ResultStore, 'onResults'),
+        Reflux.listenTo(BrowserStore, 'onBrowser'),
         Reflux.listenTo(DialogStore, 'onDialog'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
@@ -54,6 +56,7 @@ module.exports = React.createClass({
         return {
             results: [],
             advanced_search: false,
+            active_result: null,
             underlines: false,
             save_dialog: false,
             load_dialog: false
@@ -68,14 +71,13 @@ module.exports = React.createClass({
         }
     },
     onResults: function(data){
-        var active_result, active;
-        active_result = _.find(data.results, function(d){ return d.active}) || data.results[0];
-        if(active_result){
-            active = active_result.id;
-        }
-        this.setState({results: data.results, active: active, active_result: active_result});
+        this.setState({results: data.results});
     },
     onDialog: function(state){
+        this.setState(state);
+    },
+    onBrowser: function(state){
+        console.log('here', state)
         this.setState(state);
     },
     submit: function(e){
@@ -139,14 +141,15 @@ module.exports = React.createClass({
     },
     handleTab: function(active){
         if(active !== this.state.active){
-            Actions.activateResult(_.find(this.state.results, function(d){ return d.id === active}));
+            var active_result = _.find(this.state.results, function(d){ return d.id === active});
+            Actions.activateResult(active_result);
         }
     },
     closeTab: function(id){
         var result = _.find(this.state.results, function(d){ return d.id === id});
         Actions.removeResult(result);
     },
-    renderResult: function(result){
+    renderResult: function(result, active_result){
         if(result.content){
             return result.query.search ?
                     <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
@@ -156,10 +159,10 @@ module.exports = React.createClass({
             return <div className="search-results csspinner traditional"/>;
         }
     },
-    renderTabs: function(results){
+    renderTabs: function(results, active_result){
         var self = this;
-        return (<TabbedArea activeKey={this.state.active} onSelect={this.handleTab} onClose={this.closeTab}>
-                { this.state.results.map(function(result){
+        return (<TabbedArea activeKey={active_result.id} onSelect={this.handleTab} onClose={this.closeTab}>
+                { results.map(function(result){
                         return (
                              <TabPane key={result.id} eventKey={result.id} tab={result.title} >
                                 { self.renderResult(result) }
@@ -174,22 +177,22 @@ module.exports = React.createClass({
         s[state] = !this.state[state]
         this.setState(s);
     },
-    renderBody: function(){
+    renderBody: function(active_result){
         var self = this;
         if(this.state.results.length > 1){
             if(this.state.split_mode){
                 return (<div><Col md={6} >{this.renderTabs()}</Col> <Col md={6} >{this.renderTabs()}</Col></div>)
             }
-            return  this.renderTabs();
+            return  this.renderTabs(this.state.results, active_result);
         }
         else if(this.state.results.length == 1){
             return  this.renderResult(this.state.results[0]);
         }
     },
     render: function(){
-        console.log(this.state)
+        var active_result = _.find(this.state.results, {id: this.state.active}) || this.state.results[0] || {};
         var formClasses = "navbar-form navbar-left ";
-        var show_side_bar =  this.state.active_result && this.state.active_result.content && !this.state.active_result.query.search;
+        var show_side_bar =  active_result && active_result.content && !active_result.query.search;
         if(this.state.document_id){
             formClasses += 'showing-location';
         }
@@ -240,7 +243,7 @@ module.exports = React.createClass({
                         </form>
                    </nav>
                 </div>
-            <div className="sidebar-wrapper">
+            <div className="buttonbar-wrapper">
                 <a><Glyphicon glyph="search" onClick={this.toggleState.bind(this, 'advanced_search')} title="Advanced Search"/></a>
                 <a><Glyphicon glyph="text-color" onClick={this.toggleState.bind(this, 'underlines')} title="Underlines"/></a>
                 <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
@@ -254,13 +257,10 @@ module.exports = React.createClass({
             </div>
             <div className="container-wrapper">
                 <div className="results">
-                    {this.renderBody() }
+                    {this.renderBody(active_result) }
                 </div>
             </div>
-            { show_side_bar ?
-            <div className="contents-bar-wrapper navbar-default visible-md-block visible-lg-block">
-                <ArticleScrollSpy html={this.state.active_result.content.html_contents_page} result={this.state.active_result} />  : null
-            </div> : null }
+            { show_side_bar ? <ArticleSideBar article={active_result}/> : ''}
         </div>);
     }
 });

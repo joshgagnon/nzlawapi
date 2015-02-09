@@ -19,31 +19,26 @@ var ResultStore = Reflux.createStore({
 		this.trigger({results: this.results}, result);
 	},
 	onNewResult: function(result){
-		var id, do_fetch = false;
+		var id;
 		if(!_.find(this.results, {query: result.query})){
 			result.id = 'result-'+this.counter++;
 			this.results.push(result);
-			do_fetch = true;
 		}
 		else{
 			result = _.find(this.results, {query: result.query});
 		}
 		this.trigger({results: this.results});
-		if(do_fetch){
-			this.fetchResult(result);
-		}
 		Actions.activateResult(result);
 	},
 	onActivateResult: function(result){
-		this.results.map(function(r){
-			r.active = false;
-		})
-		result.active = true;
-		this.trigger({results: this.results});
+		this.fetchResult(result);
 	},
 	fetchResult: function(result){
+		result.fetching = true;
 		$.get('/query', result.query)
 			.then(function(data){
+				result.fetching = false;
+				result.fetched = true;
 				if(_.contains(this.results, result)){
 					result.content = data;
 					if(data.title){
@@ -57,11 +52,12 @@ var ResultStore = Reflux.createStore({
 				result.content = response.responseJSON || {error: 'A problem occurred'};
 				Actions.updateResult(result);
 			});
+		Actions.updateResult(result);
 
 	},
 	onGetMoreResult: function(result, to_add){
 		result.fetching = true;
-		if(!result.finished && result.query.search){
+		if(!result.finished && result.query.search && result.content.search_results.hits.length){
 			$.get('/query', _.extend({offset: result.content.search_results.hits.length}, result.query))
 				.then(function(data){
 					result.offset = data.offset;
@@ -99,9 +95,9 @@ var ResultStore = Reflux.createStore({
 	onRemoveResult: function(result){
 		var index = _.findIndex(this.results, result);
 		this.results = _.without(this.results, result);
-		if(_.isFinite(index) && result.active && this.results.length){
+		/*if(_.isFinite(index) && result.active && this.results.length){
             this.results[Math.max(0, index-1)].active = true;
-        }
+        }*/
 		this.trigger({results: this.results}, result);
 	},
 	addPopover: function(result, link){

@@ -9,7 +9,6 @@ var Actions = Reflux.createActions([
 	'queryChange',
 
 	'newResult',
-	'showResult',
 	'updateResult',
 	'removeResult',
 	'activateResult',

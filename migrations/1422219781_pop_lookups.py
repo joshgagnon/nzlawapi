@@ -21,7 +21,7 @@ def run(db, config):
                     values = {
                         'govt_id': new_id,
                         'parent_id': result[0],
-                        'repr': generate_path_string(el)
+                        'repr': generate_path_string(el)[0]
                     }
                     out.execute(query, values)
                 ids |= {new_id}
