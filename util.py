@@ -120,9 +120,7 @@ def generate_path_string(node, no_query=False):
         if len(n.xpath('./label')):
             result = u'sch %s' % n.xpath('./label')[0].text + result
     title = get_title(node.getroottree())
-    #print title
-    print title, result
-    print type(title), type(result)
+
     return (u'%s %s' % (title, result),
         'query?%s' % urllib.urlencode({'query': result.encode('utf-8'), 'type': 'instrument', 'find': 'location', 'title': title.encode('utf-8')}))
 

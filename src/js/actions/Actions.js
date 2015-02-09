@@ -11,14 +11,15 @@ var Actions = Reflux.createActions([
 	'newResult',
 	'updateResult',
 	'removeResult',
-	'activateResult',
 	'getMoreResult',
 	'clearResults',
+	'activateResult',
 
 	'articleName',
 	'articlePosition',
 	'articleJumpTo',
 
+	'requestReferences',
 	'linkOpened',
 	'definitionOpened',
 	'popoverClosed',

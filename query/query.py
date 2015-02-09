@@ -45,6 +45,18 @@ def get_definition_route(document_id, key):
         status = 500
     return jsonify(result), status
 
+@Query.route('/references/<int:document_id>')
+def get_references_route(document_id):
+    status = 200
+    try:
+        result = get_references(document_id)
+        print jsonify({})
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
+
 
 def get_definition(document_id, key):
     with get_db().cursor() as cur:
@@ -53,6 +65,19 @@ def get_definition(document_id, key):
             'key': key
         })
         return cur.fetchone()[0]
+
+def get_references(document_id):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("""
+            SELECT d.source_id as id, title, count, type FROM document_references d
+            LEFT OUTER JOIN instruments i on i.id = d.source_id
+            LEFT OUTER JOIN cases c on c.id = d.source_id
+            WHERE target_id = %(id)s
+            ORDER BY count DESC
+            """, {'id': document_id})
+        return {'references': map(lambda x: dict(x), cur.fetchall())}
+
 
 
 def query_case(args):

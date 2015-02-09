@@ -124,7 +124,6 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
         if not replace:
             cur.execute(query, {'act': act_name, 'id': id})
             result = cur.fetchone()
-            print result
             if not result.get('id'):
                 raise CustomException('Act not found')
         if replace or not result.get('processed_document'):

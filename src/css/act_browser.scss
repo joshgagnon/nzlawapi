@@ -1,6 +1,7 @@
 
 @import "bootstrap/variables";
 
+$sidebar-width : 350px;
 
 .act_browser{
 	   position:relative;
@@ -10,9 +11,9 @@
 
 	@media (min-width: $screen-md-min) {
 		&.sidebar-visible{
-			padding-right: 300px;
+			padding-right: $sidebar-width;
 			.results .nav-tabs{
-				right: 300px;
+				right: $sidebar-width;
 			}
 		}
 	}
@@ -95,7 +96,7 @@
 
 	.sidebar-wrapper{
 		height: 100%;
-		width: 300px;
+		width: $sidebar-width;
 		position: fixed;
 		top: 0;
 		right: 0;
@@ -293,9 +294,10 @@
 
 	}
 	&.underlines .legislation{
-		h1,h2,h3,h4,h6{
+		h1,h2,h3,h4,h5,h6 {
 			a{
 				text-decoration: none;
+				color:#000;
 			}
 		}
 	}

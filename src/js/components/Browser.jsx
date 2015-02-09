@@ -75,6 +75,7 @@ module.exports = React.createClass({
     },
     onDialog: function(state){
         this.setState(state);
+        console.log(state)
     },
     onBrowser: function(state){
         console.log('here', state)

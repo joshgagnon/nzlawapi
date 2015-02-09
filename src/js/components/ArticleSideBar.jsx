@@ -3,6 +3,7 @@ var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
 var ArticleSummary = require('./ArticleSummary.jsx');
+var ArticleReferences = require('./ArticleReferences.jsx');
 
 
 module.exports = React.createClass({
@@ -22,9 +23,9 @@ module.exports = React.createClass({
                         <ArticleSummary article={this.props.article} />
                      </TabPane>
                     <TabPane  eventKey={2} tab="References" >
-                        <ArticleScrollSpy article={this.props.article} />
+                        <ArticleReferences article={this.props.article} />
                      </TabPane>
-                    <TabPane  eventKey={3} tab="Older" >
+                    <TabPane  eventKey={3} tab="Versions" >
                         <ArticleScrollSpy article={this.props.article} />
                      </TabPane>
                      </TabbedArea>

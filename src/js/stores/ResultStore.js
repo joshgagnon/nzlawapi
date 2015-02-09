@@ -9,6 +9,17 @@ var findText = require('../util/findText.js');
 
 var partial_docs = ['act', 'regulation'];
 
+
+/*function Article(data){
+	_.extend(this, data);
+	this._submodels = {};
+};
+
+Article.prototype.get = function(submodel){
+	this._submodels[submodel] = this._submodels[submodel] || {};
+	return  this._submodels[submodel];
+};*/
+
 var ResultStore = Reflux.createStore({
 	listenables: Actions,
 	init: function(){
