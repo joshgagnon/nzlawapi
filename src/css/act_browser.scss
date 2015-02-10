@@ -245,8 +245,13 @@ $sidebar-width : 300px;
 	}
 
 	.legislation-contents{
-		height: calc(100% - 70px);
-		overflow-y: auto;
+			overflow-y: auto;
+			position: absolute;
+			top: 136px;
+			bottom: 0;
+			left: 5px;
+			right: 5px;
+
 		.contents{
 			a{
 			color:$gray;

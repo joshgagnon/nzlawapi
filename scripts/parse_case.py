@@ -423,7 +423,7 @@ def delete_db(cur, data):
     return
 
 def insert_db(cur, data):
-    query = """INSERT INTO cases (id, neutral_citation, court, full_citation, parties,
+    query = """INSERT INTO cases (source_id, neutral_citation, court, full_citation, parties,
         counsel, judgment, waistband, hearing, received, matter, charge, plea, bench)
         VALUES (%(id)s, %(neutral_citation)s, %(court)s, %(full_citation)s, %(parties)s,
         %(counsel)s, %(judgment)s, %(waistband)s, %(hearing)s, %(received)s, %(matter)s, %(charge)s, %(plea)s, %(bench)s)"""
@@ -444,7 +444,7 @@ def process_file(filename):
         flat_soup = mangle_format(soup)
         print filename
         results = {
-            'id': filename,
+            'source_id': filename,
             'neutral_citation': neutral_cite(flat_soup),
             'court': court(flat_soup),
             'full_citation': full_citation(flat_soup),
