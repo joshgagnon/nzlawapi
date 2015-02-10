@@ -27,11 +27,8 @@ def key_regex(string):
 
 class Definition(object):
 
-    def __init__(self, full_word, key, xmls, regex, id=None, expiry_tag=None):
-        if not id:
-            id = 'def-%s' % xmls[0].xpath('.//def-term')[0].attrib.get('id', uuid.uuid4())
-        else:
-            id = 'def-%s' % id
+    def __init__(self, full_word, key, xmls, regex, id, expiry_tag=None):
+        id = 'def-%s' % id
         self.full_word = full_word
         self.key = key
         self.xmls = xmls
@@ -201,7 +198,7 @@ def infer_life_time(node):
         except StopIteration:
             pass
         text = parent.xpath('.//text()')[0].strip().lower()
-        if text.startswith('in this act'):
+        if text.startswith('in this act') or text.startswith('in these regulations'):
             return get_id(parent.iterancestors('act', 'regulation').next())
         if text.startswith('in this part'):
             return get_id(parent.iterancestors('part').next())
@@ -264,10 +261,8 @@ def find_all_definitions(tree, definitions, expire=True):
             expiry_tag = infer_life_time(parent) if expire else None
 
             definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
-                            id=node.attrib.get('id'), regex=key_regex(base), expiry_tag=expiry_tag))
-            #if text.lower() != base:
-            #    definitions.add(Definition(full_word=text, key=text.lower(), xmls=[temp_id, src],
-            #                    id=node.attrib.get('id'), regex=key_regex(text.lower()), expiry_tag=expiry_tag))
+                            id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
+
 
 
 def process_definitions(tree, definitions):
