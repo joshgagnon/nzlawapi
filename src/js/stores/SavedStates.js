@@ -14,7 +14,7 @@ var SavedStates = Reflux.createStore({
     },
     onRemoveSavedState: function(value){
         if(localStorage['data']){
-            localStorage['data'] = JSON.stringify(_.reject(JSON.parse(localStorage['data'] || []), {name: value}));
+            localStorage['data'] = JSON.stringify(_.reject(JSON.parse(localStorage['data'] || '[]'), {name: value}));
             this.update();
         }
     },
@@ -23,7 +23,7 @@ var SavedStates = Reflux.createStore({
         //Actions.updateSavedStates(localStorage['savedViews']);
     },
     update: function(){
-        this.trigger({saved_views: JSON.parse(localStorage['data'] || [])})
+        this.trigger({saved_views: JSON.parse(localStorage['data'] || '[]')})
 
     }
 });
