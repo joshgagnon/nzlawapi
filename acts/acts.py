@@ -110,10 +110,8 @@ def update_definitions(act_name, id=None, db=None):
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, x[0], json.dumps(x[1]))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': id})
         cur.execute("INSERT INTO definitions (document_id, key, data) VALUES " + args_str)
-
         (db or get_db()).commit()
     return tree, definitions.render()
-
 
 
 def get_act_object(act_name=None, id=None, db=None, replace=False):
@@ -167,7 +165,7 @@ def act_fragment_response(act):
     }
 
 def act_response(act):
-    if len(act.tree.xpath('.//*')) > 50000: # move magic number somewhere
+    if len(act.tree.xpath('.//*')) > 5000000: # move magic number somewhere
         return act_skeleton_response(act)
     else:
         return act_full_response(act)

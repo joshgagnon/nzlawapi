@@ -400,7 +400,11 @@
 
 
     <xsl:template match="emphasis[@style='bold']">
-        &#160;<span style="font-weight:bold"><xsl:value-of select="."/></span>
+        <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
+          <xsl:if test="string-length(preceding-sibling::*[1]/.)">
+                <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+        </xsl:if>
+        <span style="font-weight:bold"><xsl:value-of select="."/></span>
     </xsl:template>
 
     <xsl:template match="emphasis[@style='italic']">
@@ -493,14 +497,14 @@
 
     <xsl:template match="schedule.provisions">
       <div class="schedule-provisions">
-                <xsl:if test="@data-hook!=''">
-                    <xsl:attribute name="data-hook">
-                        <xsl:value-of select="@data-hook"/>
-                    </xsl:attribute>
-                    <xsl:attribute name="data-hook-length">
-                        <xsl:value-of select="@data-hook-length"/>
-                    </xsl:attribute>
-                </xsl:if>
+            <xsl:if test="@data-hook!=''">
+                <xsl:attribute name="data-hook">
+                    <xsl:value-of select="@data-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="data-hook-length">
+                    <xsl:value-of select="@data-hook-length"/>
+                </xsl:attribute>
+            </xsl:if>
         <xsl:apply-templates select="prov|part"/>
       </div>
     </xsl:template>
@@ -509,6 +513,63 @@
       <div class="schedule-misc">
         <xsl:apply-templates select="head1|para|prov"/>
       </div>
+    </xsl:template>
+
+    <xsl:template match="schedule.forms">
+      <div class="schedule-forms">
+        <xsl:apply-templates select="form"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="para">
+        <p class="text"><xsl:apply-templates /></p>
+    </xsl:template>
+
+    <xsl:template match="form">
+      <div class="form">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h4 class="form"><span class="label">Form <xsl:value-of select="label"/></span><br/>
+            <xsl:value-of select="heading"/></h4>
+             <xsl:apply-templates select="authorisation|form.body"/>
+      </div>
+    </xsl:template>
+
+
+     <xsl:template match="form.body">
+        <xsl:apply-templates />
+     </xsl:template>
+    <xsl:template match="authorisation">
+      <p class="authorisation">
+        <xsl:apply-templates />
+      </p>
+    </xsl:template>
+
+     <xsl:template match="signature-block">
+        <div class="signature-block">
+            <xsl:apply-templates select="sig.para|sig.officer"/>
+        </div>
+        <hr class="signature-block"/>
+     </xsl:template>
+
+     <xsl:template match="sig.para">
+        <p class="sig-para">
+            <xsl:apply-templates/>
+        </p>
+     </xsl:template>
+
+     <xsl:template match="sig.officer">
+        <p class="sig-officer">
+            <xsl:apply-templates/>
+        </p>
+     </xsl:template>
+
+
+    <xsl:template match="authorisation">
+      <p class="authorisation">
+        <xsl:apply-templates />
+      </p>
     </xsl:template>
 
     <xsl:template match="head1">
@@ -521,6 +582,17 @@
                 <xsl:value-of select="heading"/>
             </h2>
         <xsl:apply-templates select="prov|para"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="head4">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h4 class="head4">
+                <xsl:value-of select="heading"/>
+            </h4>
       </div>
     </xsl:template>
 
@@ -554,7 +626,7 @@
                     </tr>
                 </tbody>
             </table>
-            <xsl:apply-templates select="schedule.provisions|schedule.misc|notes"/>
+            <xsl:apply-templates select="schedule.provisions|schedule.misc|schedule.forms|notes"/>
         </div>
     </xsl:template>
 
