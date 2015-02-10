@@ -22,7 +22,8 @@ var fields = [
     ['imperial', 'Imperial'],
     ['offical', 'Official'],
     ['instrucing_office', 'Instrucing Office'],
-]
+];
+
 module.exports = React.createClass({
 
 	render: function(){

@@ -154,8 +154,12 @@ $sidebar-width : 300px;
 			right:0;
 			background-color: #fff;
 			z-index: 1029;
-			li{
+			&>li{
 				max-width: 200px;
+
+			}
+			li{
+				position: relative;
 				a{
 					white-space: nowrap;
 					text-overflow: ellipsis;
@@ -165,6 +169,17 @@ $sidebar-width : 300px;
 				&:hover .tab-close{
 					display:block;
 				}
+			}
+			&.nav-dropdown > div{
+				padding-bottom:8px;
+				width: 100%;
+				padding-right: 10px;
+				button{
+					width: 100%;
+				}
+			}
+			.dropdown-menu .tab-close{
+				top: -4px;
 			}
 			.tab-close{
 				display:none;

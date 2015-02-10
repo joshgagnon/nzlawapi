@@ -32,7 +32,9 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   getDefaultProps: function () {
     return {
       bsStyle: "tabs",
-      animation: true
+      animation: true,
+      max_tab_width: 200,
+      min_width: 300
     };
   },
 
@@ -46,7 +48,8 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     return {
       activeKey: defaultActiveKey,
       previousActiveKey: null,
-      dropdown: true,
+      dropdown: false,
+      width: 1000 //get this later
     };
   },
 
@@ -59,41 +62,71 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
       });
     }
   },
+  componentDidUpdate: function(){
 
+  },
+  componentDidMount: function(){
+    this._resize_handler = _.debounce(this.setTabVisibility, 100, this);
+    window.addEventListener('resize', this._resize_handler);
+    this.setTabVisibility();
+  },
+  componentWillUnmount: function(){
+    window.removeEventListener('resize', this._resize_handler);
+  },
+  setTabVisibility: function(){
+    var width = this.getDOMNode().clientWidth;
+    var tabs = width/this.props.max_tab_width;
+    if(tabs<this.props.children.length){
+      tabs--;
+    }
+    this.setState({visible_tabs: tabs});
+  },
+  countTabs: function(){
+    return this.props.children.length;
+  },
   handlePaneAnimateOutEnd: function () {
     this.setState({
       previousActiveKey: null
     });
   },
 
+
+    renderTabs: function(children){
+        function renderTabIfSet(child) {
+            return child.props.tab != null ? this.renderTab(child) : null;
+        }
+        return _.map(children, renderTabIfSet, this);
+    },
+    renderDrops: function(children, label){
+        function renderDropIfSet(child) {
+            return child.props.tab != null ? this.renderDrop(child) : null;
+        }
+        return <div className="btn-group" ref="dropdown" {...this.props}>
+            <Button type="input" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{label +' '}
+              <span className="caret"></span>
+              <span className="sr-only">Toggle Dropdown</span>
+            </Button>
+            <ul className="dropdown-menu" role="menu">
+                {_.map(children, renderDropIfSet, this)}
+              </ul>
+            </div>
+    },
+
   renderNav: function(){
+    var visible_tabs = this.state.visible_tabs || this.props.children.length;
     var activeKey = this.getActiveKey();
-
-    function renderTabIfSet(child) {
-      return child.props.tab != null ? this.renderTab(child) : null;
-    }
-    function renderDropIfSet(child) {
-      return child.props.tab != null ? this.renderDrop(child) : null;
-    }
-
-    if(this.state.dropdown){
-     return  (<div className="btn-group" ref="dropdown" {...this.props}>
-              <Button type="input" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{this.getActiveLabel() +' '}
-                <span className="caret"></span>
-                <span className="sr-only">Toggle Dropdown</span>
-              </Button>
-              <ul className="dropdown-menu" role="menu">
-                  { ValidComponentChildren.map(this.props.children, renderDropIfSet, this) }
-                </ul>
-              </div>)
+    var tabs = this.props.children.slice(0, this.state.visible_tabs), drops = this.props.children.slice(this.state.visible_tabs);
+    console.log(tabs, drops)
+    if(tabs.length){
+      return  (React.createElement(Nav, React.__spread({},  this.props, {activeKey: activeKey, onSelect: this.handleSelect, ref: "tabs"}),
+          this.renderTabs(tabs), drops.length ? this.renderDrops(drops, 'More Tabs...') : null))
     }
     else{
-      return  (
-        React.createElement(Nav, React.__spread({},  this.props, {activeKey: activeKey, onSelect: this.handleSelect, ref: "tabs"}),
-          ValidComponentChildren.map(this.props.children, renderTabIfSet, this)
-        )
-      );
+      return (<ul className="nav nav-tabs nav-dropdown">
+            {this.renderDrops(drops, this.getActiveLabel())}
+          </ul>)
     }
+
   },
 
   render: function () {
@@ -135,12 +168,12 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   },
   renderTab: function (child) {
     var key = child.props.eventKey;
-    return <NavItem ref={'tab' + key} eventKey={key} >
-            <span className="tab-title">
-              {child.props.tab}
-            </span>
-            { this.props.onClose ? <span className="tab-close" onClick={this.handleClose.bind(this, key)}>&times;</span> : null }
-          </NavItem>
+    return <NavItem ref={'tab' + key} key={key} eventKey={key} >
+          <span className="tab-title">
+            {child.props.tab}
+          </span>
+          { this.props.onClose ? <span className="tab-close" onClick={this.handleClose.bind(this, key)}>&times;</span> : null }
+        </NavItem>
   },
 
   renderDrop: function (child) {
@@ -155,7 +188,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
           </li>
   },
 
-  shouldComponentUpdate: function() {
+  shouldComponentUpdate: function(nextProps, nextState) {
     // Defer any updates to this component during the `onSelect` handler.
     return !this._isChanging;
   },
