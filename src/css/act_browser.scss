@@ -28,7 +28,7 @@ $sidebar-width : 300px;
 		box-shadow: none;
 
 		.input-group-btn{
-				width: auto;
+			width: auto;
 		}
 	}
 	.navbar-form .form-group {
@@ -124,27 +124,10 @@ $sidebar-width : 300px;
 		.form-group{
 			margin-right:16px;
 		}
-		.nav-tabs{
-			background-color:white;
-		}
-		.nav-tabs > li > a{
-			padding:6px;
-			border-radius:0px;
-		}
-		.nav-tabs > li:first-of-type a{
-			border-left-width:0px;
-		}
-		.nav-tabs > li.active a{
-			background-color: #f8f8f8;
-		}
-		.tab-content{
-			padding: 6px;
-		}
 	}
 
 	.results{
 		padding: 0 16px;
-
 		.nav-tabs{
 			position:fixed;
 			padding-left: 10px;
@@ -156,7 +139,6 @@ $sidebar-width : 300px;
 			z-index: 1029;
 			&>li{
 				max-width: 200px;
-
 			}
 			li{
 				position: relative;
@@ -194,6 +176,12 @@ $sidebar-width : 300px;
 					color:$gray-dark;
 				}
 			}
+		}
+		&.split .col-md-6:first-of-type .nav-tabs{
+			right:50%;
+		}
+		&.split .col-md-6:last-of-type .nav-tabs{
+			left:50%;
 		}
 		 .legislation-result{
 			max-width:1170px;

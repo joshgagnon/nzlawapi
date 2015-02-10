@@ -116,7 +116,6 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     var visible_tabs = this.state.visible_tabs || this.props.children.length;
     var activeKey = this.getActiveKey();
     var tabs = this.props.children.slice(0, this.state.visible_tabs), drops = this.props.children.slice(this.state.visible_tabs);
-    console.log(tabs, drops)
     if(tabs.length){
       return  (React.createElement(Nav, React.__spread({},  this.props, {activeKey: activeKey, onSelect: this.handleSelect, ref: "tabs"}),
           this.renderTabs(tabs), drops.length ? this.renderDrops(drops, 'More Tabs...') : null))

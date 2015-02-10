@@ -5,6 +5,7 @@ var Reflux = require('reflux');
 var ReactRouter = require('react-router');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
+var Col= require('react-bootstrap/Col');
 var ResultStore = require('../stores/ResultStore');
 var BrowserStore = require('../stores/BrowserStore');
 var Serialization = require('../stores/Serialization.js');
@@ -183,7 +184,7 @@ module.exports = React.createClass({
         var self = this;
         if(this.state.results.length > 1){
             if(this.state.split_mode){
-                return (<div><Col md={6} >{this.renderTabs()}</Col> <Col md={6} >{this.renderTabs()}</Col></div>)
+                return (<div><Col md={6} >{this.renderTabs(this.state.results, active_result)}</Col><Col md={6}>{this.renderTabs(this.state.results, active_result)}</Col></div>)
             }
             return  this.renderTabs(this.state.results, active_result);
         }
@@ -194,7 +195,8 @@ module.exports = React.createClass({
     render: function(){
         var active_result = _.find(this.state.results, {id: this.state.active}) || this.state.results[0] || {};
         var formClasses = "navbar-form navbar-left ";
-        var show_side_bar =  active_result && active_result.content && !active_result.query.search;
+        var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
+        var resultsClass = 'results ';
         if(this.state.document_id){
             formClasses += 'showing-location';
         }
@@ -204,6 +206,9 @@ module.exports = React.createClass({
         }
         if(this.state.underlines){
             parentClass += 'underlines ';
+        }
+         if(this.state.split_mode){
+            resultsClass += 'split ';
         }
         return (<div className className={parentClass}>
                 <div className="container-fluid">
@@ -239,7 +244,7 @@ module.exports = React.createClass({
                                       </ul>
                                     </div>
                             } >
-                            { this.state.document_id ? <Input type="text" className="location" placeholder="Location..." ref="location" value={this.state.location} onChange={this.handleLocation}
+                            { this.state.document_id ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
                                 ref="location"  /> : <Input/> }
                             </AutoComplete>
                         </form>
@@ -248,6 +253,7 @@ module.exports = React.createClass({
             <div className="buttonbar-wrapper">
                 <a><Glyphicon glyph="search" onClick={this.toggleState.bind(this, 'advanced_search')} title="Advanced Search"/></a>
                 <a><Glyphicon glyph="text-color" onClick={this.toggleState.bind(this, 'underlines')} title="Underlines"/></a>
+                <a><Glyphicon glyph="object-align-top" onClick={this.toggleState.bind(this, 'split_mode')} title="Columns"/></a>
                 <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
                 <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
                 <a><Glyphicon glyph="print" title="Print"/></a>
@@ -258,7 +264,7 @@ module.exports = React.createClass({
                 <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
             </div>
             <div className="container-wrapper">
-                <div className="results">
+                <div className={resultsClass}>
                     {this.renderBody(active_result) }
                 </div>
             </div>
