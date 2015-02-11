@@ -16,8 +16,8 @@ def clear(db):
 def process(db, config):
     high_court_rules = {
         'source_title': 'Judicature Act 1908',
-        'new_title': 'High Court Rules',
-        'query': 'DLM145538',
+        'new_title': 'High Court Rules (Shortcut)',
+        'query': 'DLM147653',
         'find': 'govt_id'
     }
     with db.cursor() as cur:

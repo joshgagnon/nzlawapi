@@ -505,7 +505,7 @@
                     <xsl:value-of select="@data-hook-length"/>
                 </xsl:attribute>
             </xsl:if>
-        <xsl:apply-templates select="prov|part"/>
+        <xsl:apply-templates select="prov|part|schedule.group"/>
       </div>
     </xsl:template>
 
@@ -593,6 +593,37 @@
             <h4 class="head4">
                 <xsl:value-of select="heading"/>
             </h4>
+      </div>
+    </xsl:template>
+    <xsl:template match="head5">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h5 class="head5">
+                <xsl:value-of select="heading"/>
+            </h5>
+      </div>
+    </xsl:template>
+    <xsl:template match="head3">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h3 class="head3">
+                <xsl:value-of select="heading"/>
+            </h3>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="head2">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h2 class="head2">
+                <xsl:value-of select="heading"/>
+            </h2>
       </div>
     </xsl:template>
 
