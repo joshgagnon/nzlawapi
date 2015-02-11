@@ -32,7 +32,7 @@ def run(db, config):
                 'date_gazetted': {'type': 'date'},
                 'date_imprint': {'type': 'date'},
                 'year': {'type': 'integer'},
-                'repealed': {'type': 'boolean'}
+                'repealed': {'type': 'boolean'} //many more now
             }
         },
         'case': {

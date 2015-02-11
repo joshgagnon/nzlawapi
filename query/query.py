@@ -16,7 +16,7 @@ def article_auto_complete():
         db = get_db()
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-                select id, name, type from titles
+                select * from titles
                    where name ilike '%%'||%(query)s||'%%' order by name limit 50;
                 """, {'query': request.args.get('query')})
             return jsonify({'results': cur.fetchall()})

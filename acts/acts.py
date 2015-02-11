@@ -2,7 +2,7 @@ from db import get_db
 from util import CustomException, tohtml, etree_to_dict, get_title
 from definitions import populate_definitions, process_definitions, Definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, \
-    find_schedule_node, find_node_by_query, find_document_id_by_govt_id, find_node_by_location
+    find_schedule_node, find_node_by_query, find_node_by_govt_id, find_document_id_by_govt_id, find_node_by_location
 from lxml import etree
 from copy import deepcopy
 from psycopg2 import extras
@@ -35,8 +35,6 @@ class Act(object):
 
     def select(self, requested):
         return [self.parts[i] for i in requested]
-
-
 
 
 def get_act(act, db=None):
@@ -214,26 +212,28 @@ def query_act(args):
         raise CustomException('No instrument specified')
     act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'))
     # act.calculate_hooks()
-    search_type = args.get('find')
-    if search_type == 'full':
+    find = args.get('find')
+    if find == 'full':
         pass
-    elif search_type == "more":
+    elif find == "more":
         return act_part_response(act, args.getlist('requested_parts[]'))
     else:
         query = args.get('query')
         if not query:
             raise CustomException('Query missing')
-        if search_type == 'search':
+        elif find == 'search':
             act.tree = find_node_by_query(act.tree, query)
-        if search_type == 'location':
+        elif find == 'location':
             act.tree = find_node_by_location(act.tree, query)
-        elif search_type == 'section':
+        elif find == 'govt_id':
+            act.tree = find_node_by_govt_id(act.tree, query)
+        elif find == 'section':
             act.tree = find_section_node(act.tree, query)
-        elif search_type == 'part':
+        elif find == 'part':
             act.tree = find_part_node(act.tree, query)
-        elif search_type == 'schedule':
+        elif find == 'schedule':
             act.tree = find_schedule_node(act.tree, query)
-        elif search_type == 'definitions':
+        elif find == 'definitions':
             act.tree = find_definitions(act.tree, query)
         else:
             raise CustomException('Invalid search type')

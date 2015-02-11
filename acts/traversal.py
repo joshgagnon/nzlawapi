@@ -149,6 +149,13 @@ def find_node_by_query(tree, query):
         raise CustomException("Path not found")
 
 
+def find_node_by_govt_id(tree, query):
+    try:
+        return tree.xpath(".//*[@id='%s']" % query)
+    except Exception, e:
+        print e
+        raise CustomException("Path not found")
+
 def get_references_for_ids(ids):
     with get_db().cursor() as cur:
         query = """ select id, title from

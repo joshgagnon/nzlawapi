@@ -9,10 +9,7 @@ var _ = require('lodash');
 var AutoComplete = React.createClass({
     getInitialState: function() {
         return {
-            //search_query: this.props.searchValue.search_query,
-            //id: this.props.searchValue.id,
             results: [],
-           // oldResults: [],
             activeIndex: -1,
         };
     },
@@ -37,6 +34,7 @@ var AutoComplete = React.createClass({
         }, 250)
     },
     onChange: function(event) {
+        /* if typing, it means no autocomplete article was selected */
         if(this.refs.search.refs.input.getDOMNode() === event.target){
             var value = event.target.value;
             this.props.onUpdate({
@@ -157,22 +155,25 @@ var AutoComplete = React.createClass({
         }
 
         if (startIndex > -1)
-            return <li className={index === this.state.activeIndex ? 'active' : ''}
+            return <li className={index === this.state.activeIndex ? 'active' : ''} onMouseDown={ this.clickResult.bind(this, result) }
                 key={result.id}>
-                    <a href="#" data-doc-id={result.id} data-doc-type={result.type}>{title.substring(0, startIndex)}<strong>{title.substring(startIndex, endIndex)}</strong>{title.substring(endIndex)}</a>
+                    <a href="#" data-doc-id={result.id} data-doc-type={result.type}>
+                    {title.substring(0, startIndex)}
+                    <strong>{
+                        title.substring(startIndex, endIndex)}
+                    </strong>
+                    {title.substring(endIndex)}</a>
                 </li>;
 
         return <li key = {result.id || undefined}><a href="#">{title}</a></li>;
     },
-    clickResult: function(event) {
-        var a = $(event.target).closest('a');
-        var selectedText = a.text();
-        // Initiate action by callback
-
+    clickResult: function(result) {
         this.props.onUpdate({
-            id: a.attr('data-doc-id'),
-            type: a.attr('data-doc-type'),
-            search_query: selectedText,
+            id: result.id,
+            type: result.type,
+            search_query: result.name,
+            query: result.query,
+            find: result.find,
             show: false
         });
 
@@ -187,7 +188,7 @@ var AutoComplete = React.createClass({
                 <Input type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
                     onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
                 { this.state.show && this.state.results.length ?
-                <ul className="results" ref="dropdown" onMouseDown={this.clickResult}>
+                <ul className="results" ref="dropdown">
                     {
                         this.state.groups.map(function(group, index) {
                             return (

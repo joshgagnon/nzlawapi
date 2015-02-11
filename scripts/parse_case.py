@@ -6,7 +6,6 @@ import re
 import pprint
 from PIL import Image
 import psycopg2
-from elasticsearch import Elasticsearch
 import json
 
 
@@ -24,8 +23,7 @@ courtfile_variants = [
 
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
-path = '/Users/josh/legislation_archive/justice'
-json_path = '/Users/josh/legislation_archive/justice.json'
+
 
 #with open(json_path) as f:
 #   json_data = json.loads(f.read())
@@ -418,7 +416,7 @@ def mangle_format(soup):
     return flat_soup
 
 def delete_db(cur, data):
-    query = """delete from cases where id = %(id)s"""
+    query = """delete from cases where source_id = %(id)s"""
     cur.execute(query, data)
     return
 
@@ -434,8 +432,6 @@ def insert_db(cur, data):
     data['matter'] = json.dumps(data['matter'])
     cur.execute(query, data)
 
-def insert_es(es, data):
-    es.index(index='legislation', doc_type='case', body=data, id=data['id'])
 
 def process_file(filename):
     #print get_info(filename.replace('.html', ''), json_data)
@@ -468,28 +464,43 @@ def process_file(filename):
         return results
 
 
+def process(db, config):
+    json_path = '/Users/josh/legislation_archive/justice.json'
+    files = config.CASE_DIR
+    data = process_file(f)
+
+if __name__ == "__main__":
+    if not len(sys.argv) > 1:
+        raise Exception('Missing configuration file')
+    sys.path.append(os.getcwd())
+
+    config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
+    db = psycopg2.connect(
+            database=config.DB,
+            user=config.DB_USER,
+            password=config.DB_PW)
+    db.set_client_encoding('utf8')
+    process(db, config)
+    #db.commit()
+
+"""
 success = 0
 fails = 0
-#files = os.listdir(path)
+files = os.listdir(path)
 
-conn = psycopg2.connect("dbname=legislation user=josh")
-cur = conn.cursor()
-es = Elasticsearch()
 
-with open('failed_files.txt', 'r') as failed_output:
-    files = failed_output.readlines()
-files = ['51cf1a7d-ef4e-4c11-83c1-19c035a5921e.html']
-#with open('failed_files.txt', 'w') as failed_output:
-    #files = ['29602cbe-d0cf-4806-9c4b-02fab246ceb0.html']
+
+#with open('failed_files.txt', 'r') as failed_output:
+#    files = failed_output.readlines()
+
 for f in files:
     f = f.strip()
     if f.endswith('.html'):
         try:
             data = process_file(f)
-            delete_db(cur, data)
-            insert_db(cur, data)
+            #delete_db(cur, data)
+            #insert_db(cur, data)
             print pprint.pprint(data)
-            insert_es(es, data)
             success += 1
         except NoText:
             pass
@@ -502,8 +513,9 @@ for f in files:
 
     print 'success: %d  fails: %d' % (success, fails)
 
-conn.commit()
-cur.close()
-conn.close()
-es.indices.refresh(index="legislation")
+#conn.commit()
+#cur.close()
+#conn.close()
+
         #break
+        """

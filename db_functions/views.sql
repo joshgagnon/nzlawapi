@@ -6,6 +6,8 @@ CREATE OR REPLACE VIEW latest_instruments AS
 
 
 CREATE OR REPLACE VIEW titles AS
-	SELECT trim(title) as name, id, type  from latest_instruments
+	SELECT trim(title) as name, id, type, 'full' as find, null as query  from latest_instruments
 	UNION
-	SELECT trim(full_citation) as name, id, 'case' as type from cases;
+	SELECT trim(full_citation) as name, id, 'case' as type, 'full' as find, null as query from cases
+	UNION
+	SELECT trim(title) as name, document_id, type, find, query  from shortcuts;

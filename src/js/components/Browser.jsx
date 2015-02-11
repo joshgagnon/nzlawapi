@@ -96,11 +96,20 @@ module.exports = React.createClass({
         });
         var query;
         var title;
-        if(this.state.document_id){
+        if(this.showLocation()){
             query = {
                 type: this.state.article_type,
                 find: !this.state.location ? 'full' : 'location',
                 query: this.state.location,
+                id: this.state.document_id
+            };
+            title = this.state.search_query
+        }
+        else if(this.state.document_id){
+            query = {
+                type: this.state.article_type,
+                find: this.state.find,
+                query: this.state.query,
                 id: this.state.document_id
             };
             title = this.state.search_query
@@ -119,11 +128,11 @@ module.exports = React.createClass({
         var self = this;
         // ID means they clicked or hit enter, so focus on next
         console.log(value)
-        this.setState({search_query: value.search_query, document_id: value.id, article_type: value.type}, function(){
-            if(value.id){
+        this.setState({search_query: value.search_query, document_id: value.id,
+            article_type: value.type, find: value.find, query: value.query}, function(){
+            if(self.showLocation()){
                 // hack!
                 setTimeout(function(){
-                    //$(self.refs.autocomplete.getInputDOMNode()).focusNextInputField();
                     self.refs.location.getInputDOMNode().focus();
                 }, 0);
 
@@ -192,12 +201,15 @@ module.exports = React.createClass({
             return  this.renderResult(this.state.results[0]);
         }
     },
+    showLocation: function(){
+        return !!this.state.document_id && this.state.find === 'full';
+    },
     render: function(){
         var active_result = _.find(this.state.results, {id: this.state.active}) || this.state.results[0] || {};
         var formClasses = "navbar-form navbar-left ";
         var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
         var resultsClass = 'results ';
-        if(this.state.document_id){
+        if(this.showLocation()){
             formClasses += 'showing-location';
         }
         var parentClass ="act_browser ";
@@ -244,7 +256,7 @@ module.exports = React.createClass({
                                       </ul>
                                     </div>
                             } >
-                            { this.state.document_id ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
+                            { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
                                 ref="location"  /> : <Input/> }
                             </AutoComplete>
                         </form>
