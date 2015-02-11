@@ -131,6 +131,7 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
 
 
 def act_skeleton_response(act):
+    act.calculate_hooks()
     return {
         'skeleton': act.skeleton,
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
@@ -204,7 +205,7 @@ def get_act_node_by_id(node_id):
         act.tree = cull_tree(act.tree.xpath('.//cover'))
     else:
         act.tree = cull_tree(act.tree.xpath('.//*[@id="' + node_id + '"]'))
-    return act_full_response(act)
+    return act_response(act)
 
 
 def query_act(args):

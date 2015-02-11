@@ -212,8 +212,7 @@ module.exports = React.createClass({
         }
         return <div className="legislation-result" onClick={this.interceptLink}>
                 {to_components(this.props.result.content.skeleton)}
-                {this.render_link_popovers()}
-                {this.render_definition_popovers()}
+                {this.renderPopovers()}
             </div>
     },
     refresh: function(){

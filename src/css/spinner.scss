@@ -23,7 +23,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   transition: all .75s ease 0s;
   border-radius: 100%;
   border-top: 4px solid #555555;
+  -webkit-animation: standard .75s infinite linear;
   animation: standard .75s infinite linear;
+  -webkit-transform-origin: center;
+  -ms-transform-origin: center;
+  transform-origin: center;
   transform-origin: center;
 }
 .csspinner.no-overlay:before {
@@ -31,42 +35,24 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   display: none;
 }
 
-@keyframes standard {
+@-webkit-keyframes standard {
   from {
+    -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
   to {
+    -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
 }
-/*(cs)spinner bar - a simple strafing bar animation*/
-.csspinner.bar:after {
-  height: 20px;
-  width: 40px;
-  border-radius: 0;
-  border: none;
-  animation: bar 1s infinite linear;
-}
-
-@keyframes bar {
+@keyframes standard {
   from {
-    box-shadow: inset 0px 0px 0px rgba(0, 0, 0, 0.5);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-    box-shadow: inset 80px 0px 0px rgba(0, 0, 0, 0.5);
-  }
-}
-/*(cs)spinner bar follow - a simple strafing bar animation that follows itself*/
-.csspinner.bar.follow:after {
-  animation: bar-follow 1s infinite linear;
-}
-
-@keyframes bar-follow {
-  0% {
-    box-shadow: inset 40px 0px 0px rgba(0, 0, 0, 0.5);
-  }
-  100% {
-    box-shadow: inset -40px 0px 0px rgba(0, 0, 0, 0.5);
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 .csspinner.traditional:after {
@@ -75,3 +61,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   border-left: 4px solid #999999;
   border-bottom: 4px solid #bbbbbb;
 }
+
