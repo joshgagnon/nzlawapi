@@ -37,7 +37,7 @@
                 <span class="schedule-label">Schedule <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
-                <xsl:apply-templates select="./schedule.provisions/prov|./schedule.provisions/part" />
+                <xsl:apply-templates select="./schedule.provisions/prov|./schedule.provisions/part|./schedule.provisions/schedule.group/schedule|./schedule.forms/form" />
              </ul>
         </li>
     </xsl:template>
@@ -75,6 +75,15 @@
         </li>
     </xsl:template>
 
-
+    <xsl:template match="form[not(@quote)]">
+        <li>
+            <a>
+              <xsl:attribute name="href">#<xsl:value-of select="@id"/>
+            </xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
+            <span class="prov-label"><span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
+            </a>
+        </li>
+    </xsl:template>
 
 </xsl:stylesheet>

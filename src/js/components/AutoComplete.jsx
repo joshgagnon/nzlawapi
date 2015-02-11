@@ -104,11 +104,7 @@ var AutoComplete = React.createClass({
                 this.setState({
                     results: []
                 });
-                this.props.onUpdate({
-                    id: a.attr('data-doc-id'),
-                    type: a.attr('data-doc-type'),
-                    search_query: selectedText
-                });
+                this.clickResult(this.getResultById(a.attr('data-doc-id')|0));
             } else {
                 // Searching on current text
                /* if (this.props.onSubmit) {
@@ -119,6 +115,9 @@ var AutoComplete = React.createClass({
                 }*/
             }
         }
+    },
+    getResultById: function(id){
+        return _.find(this.state.results, {id: id});
     },
     groupCategories: function(results) {
         var groups = [];
@@ -157,7 +156,7 @@ var AutoComplete = React.createClass({
         if (startIndex > -1)
             return <li className={index === this.state.activeIndex ? 'active' : ''} onMouseDown={ this.clickResult.bind(this, result) }
                 key={result.id}>
-                    <a href="#" data-doc-id={result.id} data-doc-type={result.type}>
+                    <a href="#" data-doc-id={result.id} >
                     {title.substring(0, startIndex)}
                     <strong>{
                         title.substring(startIndex, endIndex)}

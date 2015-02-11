@@ -100,7 +100,7 @@ module.exports = React.createClass({
                 }).toArray().reverse().join('');
             }
             result += $el.attr('data-location');
-            var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id]').attr('id');
+            var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
             Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
         }, 0);
 

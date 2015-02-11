@@ -258,7 +258,7 @@
         <ul class="label-para">
             <xsl:call-template name="current"/>
             <li>
-                <xsl:if test="not(ancestor::*[@quote])">
+                <xsl:if test="label != '' and not(ancestor::*[@quote])">
                     <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
                 </xsl:if>
                 <xsl:apply-templates select="label"/>
@@ -641,7 +641,7 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <xsl:attribute name="data-location">sch <xsl:value-of select="label"/></xsl:attribute>
+            <xsl:attribute name="data-location"><xsl:if test="ancestor::schedule">&#160;</xsl:if>sch <xsl:value-of select="label"/></xsl:attribute>
             <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
                 <tbody><tr>
                     <td class="header">
