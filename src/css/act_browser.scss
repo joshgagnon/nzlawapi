@@ -2,12 +2,26 @@
 @import "bootstrap/variables";
 
 $sidebar-width : 300px;
+$deep-red: #A6161F;
+$top-bar-height: 116px;
+$top-bar-height-sm: 50px;
+$button-orange: #f26735;
 
 .act_browser{
-	   position:relative;
+	font-family: Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	position:relative;
 	padding-top: 60px;
 	padding-bottom:80px;
 	padding-left: 65px;
+
+	.btn.btn-primary{
+		background-color:$button-orange;
+		border-color: $button-orange;
+	}
+	button.dropdown-toggle.btn.btn-primary {
+	border-left-color: #FFF;
+	}
+
 
 	@media (min-width: $screen-md-min) {
 		&.sidebar-visible{
@@ -18,15 +32,28 @@ $sidebar-width : 300px;
 		}
 	}
 
+	.navbar{
+		background-color: $deep-red;
+		border-color: #e7e7e7;
+		background-image: url(/build/images/hero-bg.jpg);
+		height: $top-bar-height-sm;
+		background-position: center center;
+		background-repeat: no-repeat;
+
+		@media (min-width: $screen-md-min) {
+			height: $top-bar-height;
+		}
+
+	}
+
 	.navbar-form{
 		width: auto;
 		border: 0;
 		margin-left: 0;
 		margin-right: 0;
-		padding-top: 0;
+		padding-top: 32px;
 		padding-bottom: 0;
 		box-shadow: none;
-
 		.input-group-btn{
 			width: auto;
 		}
@@ -35,17 +62,47 @@ $sidebar-width : 300px;
 		display: inline-block;
 		margin-bottom: 0;
 		vertical-align: middle;
+	}
+
+	.chev-left{
+		width: 107px;
+		height: $top-bar-height;
+		background-image: url(/build/images/left-chevron.png);
+		position: absolute;
+		left: 70px;
+	}
+	.chev-right{
+		width: 107px;
+		height: $top-bar-height;
+		background-image: url(/build/images/right-chevron.png);
+		position: absolute;
+		right: 300px;
+		display:none;
+		@media (min-width: $screen-md-min) {
+			display:block;
+		}
+	}
+	.navbar form{
+		.main-search, .location{
+			border-color: white;
 		}
 
-
-	.navbar form{
 		@media (min-width: $screen-md-min) {
-			input.form-control[type="text"] {
-				width:400px
+			.main-search {
+				width:300px;
+			}
+			.navbar-form .input-group > .form-control {
+				width:auto;
+				background-color:black;
 			}
 		}
-		&.showing-location input.form-control[type="text"]{
-			width:301px;
+		@media (min-width: $screen-lg-min){
+			.main-search {
+				width:400px;
+			}
+		}
+		&.showing-location .main-search{
+
 		}
 		.form-group{
 
@@ -62,10 +119,17 @@ $sidebar-width : 300px;
 	.input-group button{
 		line-height: 20px;
 	}
+	.navbar-header{
+		margin: 0;
+		padding: 43px 43px 43px 200px;
+	}
 	.navbar-brand{
-		margin:0;
+		font-size: 30px;
+		color: #ffffff;
+		line-height: 30px;
+		height:30px;
 		padding:0;
-
+		display: block;
 		.logo{
 			height: 44px;
 			margin: 3px 16px;
@@ -76,18 +140,26 @@ $sidebar-width : 300px;
 		height: 100%;
 		width: 65px;
 		position: fixed;
-		top: 0;
-		padding-top: 65px;
-		background-color: $gray;
+		top: $top-bar-height;
+		padding-top:4px;
+
 		text-align: center;
 		left: 65px;
 		margin-left: -65px;
 
 		a{
-			color: $gray-lighter;
-			font-size: 40px;
-			margin:6px;
-			cursor:pointer
+			color: $deep-red;
+			font-size: 24px;
+			line-height: 24px;
+			cursor: pointer;
+			float: left;
+			clear: left;
+			background-color: #eee;
+			padding: 12px;
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+			margin: 2px 0px;
+
 		}
 		a:hover{
 			color:#ffffff;

@@ -35,12 +35,15 @@ def process_file(filename):
     return etree.tostring(result, method="html",encoding='UTF-8')
 
 if __name__ == "__main__":
-    files = [f for f in os.listdir(sys.argv[1]) if f.endswith('.pdf')]
+    files = [f for f in os.listdir(sys.argv[1]) if f.endswith('.pdf')][7600:]
     #files = ['0023b100-3624-415b-9b66-e1e40616a6fd.pdf']
     for i, f in enumerate(files):
-        if i % 100 == 0:
-            print '%d/%d' % (i,len(files))
-        result = process_file(os.path.join(sys.argv[1], f))
-        with open(os.path.join(sys.argv[2], f.replace('.pdf', '.html')), "w") as out:
-            out.write(result)
+        try:
+            if i % 100 == 0:
+                print '%d/%d' % (i,len(files))
+            result = process_file(os.path.join(sys.argv[1], f))
+            with open(os.path.join(sys.argv[2], f.replace('.pdf', '.html')), "w") as out:
+                out.write(result)
+        except Exception, e:
+            print 'error:', e, f
 
