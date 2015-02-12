@@ -89,7 +89,7 @@ $button-orange: #f26735;
 
 		@media (min-width: $screen-md-min) {
 			.main-search {
-				width:300px;
+
 			}
 			.navbar-form .input-group > .form-control {
 				width:auto;
@@ -98,22 +98,17 @@ $button-orange: #f26735;
 		}
 		@media (min-width: $screen-lg-min){
 			.main-search {
-				width:400px;
+
 			}
 		}
 		&.showing-location .main-search{
-
+			width:75%
 		}
-		.form-group{
-
+		.location{
+			width:25%;
 		}
 		&.jump-to .form-control-feedback{
 			right: 85px;
-		}
-		&.showing-location input.location.form-control[type="text"] {
-			width:100px;
-			margin-left: -1px;
-
 		}
 	}
 	.input-group button{

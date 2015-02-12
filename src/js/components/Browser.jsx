@@ -206,7 +206,7 @@ module.exports = React.createClass({
     },
     render: function(){
         var active_result = _.find(this.state.results, {id: this.state.active}) || this.state.results[0] || {};
-        var formClasses = "navbar-form navbar-left ";
+        var formClasses = '';//"navbar-form navbar-left ";
         var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
         var resultsClass = 'results ';
         if(this.showLocation()){
@@ -228,25 +228,29 @@ module.exports = React.createClass({
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }
                  <nav className="navbar navbar-default navbar-fixed-top">
-
-                    <div className="navbar-header">
+                    <div className="container">
+                    <div className="row">
+                    <div className="navbder">
                       {/*<a className="navbar-brand hidden-xs" href="#">
                            <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
                         </a>*/}
-                        <a className="navbar-brand" href="#">Law Browser</a>
+                        <a className="navband" href="#">Law Browser</a>
                     </div>
                     <div className="chev-left"></div><div className="chev-right"></div>
                     <form className={formClasses}>
+
                          <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
                             search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
-                            appendToSelf={true} ref="autocomplete"
-                            buttonAfter={
-                                <div className="btn-group">
-                                    <Button type="input" bsStyle="primary" onClick={this.submit} >Search</Button>
-                                 <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            ref="autocomplete" >
+                            { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
+                                ref="location"  /> : null }
+
+                            <div className="input-group-btn">
+                                <button type="input" className="btn-primary btn" onClick={this.submit} >Search</button>
+                                 <button  type="button" className="btn-primary btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                   <span className="caret"></span>
                                   <span className="sr-only">Toggle Dropdown</span>
-                                </Button>
+                                </button>
                                 <ul className="dropdown-menu" role="menu">
                                     <li><a href="#">Search All</a></li>
                                     <li><a href="#">Search Acts</a></li>
@@ -255,12 +259,11 @@ module.exports = React.createClass({
                                     <li className="divider"></li>
                                     <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
                                   </ul>
-                                </div>
-                            } >
-                            { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
-                                ref="location"  /> : <Input/> }
-                            </AutoComplete>
+                             </div>
+                             </AutoComplete>
                         </form>
+                        </div>
+                        </div>
                 </nav>
                 </div>
             <div className="buttonbar-wrapper">

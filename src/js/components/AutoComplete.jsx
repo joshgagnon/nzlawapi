@@ -35,7 +35,7 @@ var AutoComplete = React.createClass({
     },
     onChange: function(event) {
         /* if typing, it means no autocomplete article was selected */
-        if(this.refs.search.refs.input.getDOMNode() === event.target){
+        if(this.refs.search.getDOMNode() === event.target){
             var value = event.target.value;
             this.props.onUpdate({
                 search_query: value,
@@ -179,13 +179,15 @@ var AutoComplete = React.createClass({
     },
 
     getInputDOMNode: function(){
-        return this.refs.search.getInputDOMNode();
+        return this.refs.search.getDOMNode();
     },
     render: function() {
+        var but_children = _.omit(this.props, 'children', 'className');
         return (
-            <div className="autocomplete">
-                <Input type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
-                    onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...this.props} />
+            <div className="autocomplete input-group">
+
+                <input className={"form-control "+(this.props.className||'')} type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
+                    onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...but_children}/>
                 { this.state.show && this.state.results.length ?
                 <ul className="results" ref="dropdown">
                     {
@@ -199,6 +201,7 @@ var AutoComplete = React.createClass({
                         }.bind(this))
                     }
                 </ul> : null }
+                { this.props.children }
             </div>
         );
     },
