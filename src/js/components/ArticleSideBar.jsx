@@ -36,7 +36,7 @@ module.exports = React.createClass({
         }
     },
     render: function(){
-        return <div className="sidebar-wrapper navbar-default visible-md-block visible-lg-block">
+        return <div className="sidebar-wrapper visible-md-block visible-lg-block">
 
                 <div className="btn-group">
                   <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

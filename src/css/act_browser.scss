@@ -2,17 +2,22 @@
 @import "bootstrap/variables";
 
 $sidebar-width : 300px;
+$sidebar-outer-width : 320px;
 $deep-red: #A6161F;
 $top-bar-height: 116px;
 $top-bar-height-sm: 50px;
 $button-orange: #f26735;
 
+
+$z-toolbars: 100;
+
 .act_browser{
 	font-family: Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	position:relative;
-	padding-top: 60px;
-	padding-bottom:80px;
-	padding-left: 65px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 
 	.btn.btn-primary{
 		background-color:$button-orange;
@@ -24,17 +29,24 @@ $button-orange: #f26735;
 
 
 	@media (min-width: $screen-md-min) {
+
 		&.sidebar-visible{
-			padding-right: $sidebar-width;
-			.results .nav-tabs{
-				right: $sidebar-width;
+			padding-right: $sidebar-outer-width;
+			.results-container{
+				padding-right: $sidebar-outer-width;
+				.nav{
+					right:$sidebar-outer-width;
+				}
+				.tab-content{
+					padding-right: $sidebar-outer-width;
+				}
 			}
 		}
 	}
 
 	.navbar{
 		background-color: $deep-red;
-		border-color: #e7e7e7;
+		border-width:0;
 		background-image: url(/build/images/hero-bg.jpg);
 		height: $top-bar-height-sm;
 		background-position: center center;
@@ -44,103 +56,106 @@ $button-orange: #f26735;
 			height: $top-bar-height;
 		}
 
-	}
+		.brand-wrap{
+			position: absolute;
 
-	.navbar-form{
-		width: auto;
-		border: 0;
-		margin-left: 0;
-		margin-right: 0;
-		padding-top: 32px;
-		padding-bottom: 0;
-		box-shadow: none;
-		.input-group-btn{
-			width: auto;
-		}
-	}
-	.navbar-form .form-group {
-		display: inline-block;
-		margin-bottom: 0;
-		vertical-align: middle;
-	}
-
-	.chev-left{
-		width: 107px;
-		height: $top-bar-height;
-		background-image: url(/build/images/left-chevron.png);
-		position: absolute;
-		left: 70px;
-	}
-	.chev-right{
-		width: 107px;
-		height: $top-bar-height;
-		background-image: url(/build/images/right-chevron.png);
-		position: absolute;
-		right: 300px;
-		display:none;
-		@media (min-width: $screen-md-min) {
-			display:block;
-		}
-	}
-	.navbar form{
-		.main-search, .location{
-			border-color: white;
-		}
-
-		@media (min-width: $screen-md-min) {
-			.main-search {
-
+			height: 80%;
+			left:8px;
+			top: 6px;
+			@media (min-width: $screen-sm-min) {
+				left:125px;
 			}
-			.navbar-form .input-group > .form-control {
-				width:auto;
-				background-color:black;
+			@media (min-width: $screen-md-min) {
+				left: 200px;
+				top: 20px;
+				height: 60%;
+			}
+			img{
+				height:100%;
 			}
 		}
-		@media (min-width: $screen-lg-min){
-			.main-search {
 
+
+		.chev-left{
+			width:auto;
+			height: 100%;
+			position: absolute;
+			left: 70px;
+		}
+		.chev-right{
+			width:auto;
+			height: 100%;
+			position: absolute;
+			right: 300px;
+			display:none;
+			@media (min-width: $screen-md-min) {
+				display:block;
 			}
 		}
-		&.showing-location .main-search{
-			width:75%
-		}
-		.location{
-			width:25%;
-		}
-		&.jump-to .form-control-feedback{
-			right: 85px;
+		 form{
+
+			position: absolute;
+			top: 8px;
+			right: 20px;
+			left: 60px;
+			@media (min-width: $screen-sm-min) {
+				left: 240px;
+				right: 40px;
+			}
+
+			@media (min-width: $screen-md-min) {
+				right: 450px;
+				left: 400px;
+				top: 40px;
+				min-width:300px;
+				max-width:600px;
+			}
+			.main-search, .location{
+				border-color: white;
+			}
+
+			@media (min-width: $screen-md-min) {
+				.main-search {
+
+				}
+				.navbar-form .input-group > .form-control {
+					width:auto;
+					background-color:black;
+				}
+			}
+			@media (min-width: $screen-lg-min){
+				.main-search {
+
+				}
+			}
+			&.showing-location .main-search{
+				width:75%
+			}
+			.location{
+				width:25%;
+			}
+			&.jump-to .form-control-feedback{
+				right: 85px;
+			}
 		}
 	}
 	.input-group button{
 		line-height: 20px;
 	}
-	.navbar-header{
-		margin: 0;
-		padding: 43px 43px 43px 200px;
-	}
-	.navbar-brand{
-		font-size: 30px;
-		color: #ffffff;
-		line-height: 30px;
-		height:30px;
-		padding:0;
-		display: block;
-		.logo{
-			height: 44px;
-			margin: 3px 16px;
-		}
-	}
+
 
 	.buttonbar-wrapper {
 		height: 100%;
 		width: 65px;
 		position: fixed;
-		top: $top-bar-height;
+		top: $top-bar-height-sm;
+		left:0;
 		padding-top:4px;
-
 		text-align: center;
-		left: 65px;
-		margin-left: -65px;
+		z-index: $z-toolbars;
+		@media (min-width: $screen-md-min) {
+			top: $top-bar-height;
+		}
 
 		a{
 			color: $deep-red;
@@ -166,11 +181,16 @@ $button-orange: #f26735;
 		width: $sidebar-width;
 		position: fixed;
 		top: 0;
-		right: 0;
+		right: 20px;
 		padding:6px;
-		padding-top: 50px;
-		border-left-width: 1px;
-		border-left-style:solid;
+		padding-top: $top-bar-height-sm;
+		z-index: $z-toolbars;
+
+		//border-left-width: 1px;
+		//border-left-style:solid;
+		@media (min-width: $screen-md-min) {
+			padding-top: $top-bar-height;
+		}
 
 		& > .btn-group{
 			width:100%;
@@ -193,17 +213,42 @@ $button-orange: #f26735;
 		}
 	}
 
-	.results{
-		padding: 0 16px;
-		.nav-tabs{
-			position:fixed;
-			padding-left: 10px;
-			padding-top: 5px;
-			top: 51px;
+
+	.split .results-container{
+		width:50%;
+	}
+	.split .results-container:nth-child(2){
+		left:50%;
+	}
+	.results-container{
+		position: absolute;
+		background-color:white;
+		top: $top-bar-height-sm;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding-left: 65px;
+		padding-right: 0;
+
+
+		@media (min-width: $screen-md-min) {
+			top: $top-bar-height;
+		}
+
+		.nav{
+			z-index: $z-toolbars;
+			position: absolute;
 			left: 65px;
-			right:0;
+			right: 65px;
 			background-color: #fff;
-			z-index: 1029;
+		}
+		.result-tabs{
+			background-color:white;
+			position:absolute;
+		}
+		.nav-tabs{
+			padding-top:5px;
+
 			&>li{
 				max-width: 200px;
 			}
@@ -244,11 +289,14 @@ $button-orange: #f26735;
 				}
 			}
 		}
-		&.split .col-md-6:first-of-type .nav-tabs{
-			right:50%;
-		}
-		&.split .col-md-6:last-of-type .nav-tabs{
-			left:50%;
+		.tab-content{
+			top: 0;
+			position: absolute;
+			bottom: 0;
+			overflow: auto;
+			left: 0;
+			right: 0;
+			padding: 0 65px;
 		}
 		 .legislation-result{
 			max-width:1170px;
@@ -314,7 +362,7 @@ $button-orange: #f26735;
 	.legislation-contents{
 			overflow-y: auto;
 			position: absolute;
-			top: 136px;
+			top: 200px;
 			bottom: 0;
 			left: 5px;
 			right: 5px;

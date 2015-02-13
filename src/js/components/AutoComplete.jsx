@@ -74,7 +74,7 @@ var AutoComplete = React.createClass({
             this.setState({show: true});
         }
     },
-    onBlur: function(){
+    onBlur: function(e){
         this.setState({show: false});
     },
     onKeyDown: function(event) {

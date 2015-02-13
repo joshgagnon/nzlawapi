@@ -75,12 +75,15 @@ module.exports = React.createClass({
     isPartial: function(){
         return this.props.result.content.partial;
     },
+    getScrollContainer: function(){
+        return $(this.getDOMNode()).parents('.tab-content, .results-container')
+    },
     setup_scroll: function(){
         this.offset = 100;
         var self = this;
         this.refresh();
         var find_current = function(store){
-            var top = $(window).scrollTop() + self.offset;
+            var top = self.getScrollContainer().scrollTop() + self.offset;
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
@@ -90,6 +93,7 @@ module.exports = React.createClass({
         });
         this.debounce_scroll = _.debounce(function(){
             var result = ''
+
             if(self.scrollHeight !== $(self.getDOMNode()).height()){
                 self.refresh();
             }
@@ -101,13 +105,13 @@ module.exports = React.createClass({
             }
             result += $el.attr('data-location');
             var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-            Actions.articlePosition({pixel: $(window).scrollTop() + self.offset, repr: result, id: id});
+            Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
         }, 0);
-
-        $(window).on('scroll', this.debounce_scroll);
+        var $parent = $(this.getDOMNode()).parents('.tab-content, .results-container');
+        $parent.on('scroll', this.debounce_scroll);
         if(this.isPartial()){
             this.debounce_visibility();
-            $(window).on('scroll', this.debounce_visibility);
+            $parent.on('scroll', this.debounce_visibility);
             $(window).on('resize', this.reset_heights);
         }
     },
@@ -264,7 +268,7 @@ module.exports = React.createClass({
         if(target && target.length){
             var fudge = 4; //why fudge?  probably because scrolling on body
             //not $(window), as it can't animate
-            var container = $('body, html');
+            var container = $('.tab-content, .results-container');
             container.animate({scrollTop: (target.offset().top - this.offset + fudge)}, jump.noscroll ? 0: 300);
         }
         else{
@@ -272,9 +276,10 @@ module.exports = React.createClass({
         }
     },
     componentWillUnmount: function(){
-        $(window).off('scroll', this.debounce_scroll);
+        var $parent =  $(this.getDOMNode()).parents('.tab-content, .results-container');
+        $parent.off('scroll', this.debounce_scroll);
         if(this.isPartial()){
-            $(window).off('scroll', this.debounce_visibility);
+            $parent.off('scroll', this.debounce_visibility);
             $(window).off('resize', this.debounce.reset_heights);
         }
     },

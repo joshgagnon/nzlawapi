@@ -17,6 +17,8 @@ var AutoComplete = require('./AutoComplete.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
+var JumpTo= require('./JumpTo.jsx');
+
 
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SaveDialog = require('./SaveDialog.jsx');
@@ -171,9 +173,10 @@ module.exports = React.createClass({
             return <div className="search-results csspinner traditional"/>;
         }
     },
-    renderTabs: function(results, active_result){
+    renderTabs: function(results, active_result, key){
         var self = this;
-        return (<TabbedArea activeKey={active_result.id} onSelect={this.handleTab} onClose={this.closeTab}>
+        return (<div className="results-container">
+                <TabbedArea key={key||0} activeKey={active_result.id} onSelect={this.handleTab} onClose={this.closeTab}>
                 { results.map(function(result){
                         return (
                              <TabPane key={result.id} eventKey={result.id} tab={result.title} >
@@ -182,7 +185,7 @@ module.exports = React.createClass({
                           )
                       })
             }
-            </TabbedArea>)
+            </TabbedArea></div>)
     },
     toggleState: function(state){
         var s = {};
@@ -193,12 +196,12 @@ module.exports = React.createClass({
         var self = this;
         if(this.state.results.length > 1){
             if(this.state.split_mode){
-                return (<div><Col md={6} >{this.renderTabs(this.state.results, active_result)}</Col><Col md={6}>{this.renderTabs(this.state.results, active_result)}</Col></div>)
+                return (<div className="split">{this.renderTabs(this.state.results, active_result, 0)}{this.renderTabs(this.state.results, active_result, 1)}</div>)
             }
             return  this.renderTabs(this.state.results, active_result);
         }
         else if(this.state.results.length == 1){
-            return  this.renderResult(this.state.results[0]);
+            return  <div className="results-container">{this.renderResult(this.state.results[0])}</div>;
         }
     },
     showLocation: function(){
@@ -208,7 +211,7 @@ module.exports = React.createClass({
         var active_result = _.find(this.state.results, {id: this.state.active}) || this.state.results[0] || {};
         var formClasses = '';//"navbar-form navbar-left ";
         var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
-        var resultsClass = 'results ';
+        //var resultsClass = 'results-container ';
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
@@ -220,7 +223,7 @@ module.exports = React.createClass({
             parentClass += 'underlines ';
         }
          if(this.state.split_mode){
-            resultsClass += 'split ';
+            //resultsClass += 'split ';
         }
         return (<div className className={parentClass}>
                 <div className="container-fluid">
@@ -228,15 +231,16 @@ module.exports = React.createClass({
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }
                  <nav className="navbar navbar-default navbar-fixed-top">
-                    <div className="container">
-                    <div className="row">
-                    <div className="navbder">
+                  <img className="chev-left hidden-xs" src="/build/images/left-chevron.png"/><img className="chev-right hidden-sm" src="/build/images/right-chevron.png"/>
+                    <div className="brand-wrap">
                       {/*<a className="navbar-brand hidden-xs" href="#">
                            <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
                         </a>*/}
-                        <a className="navband" href="#">Law Browser</a>
+                         <img src="/build/images/law-browser.png" alt="CataLex" className="logo img-responsive center-block hidden-xs"/>
+                         <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block visible-xs-block"/>
+
                     </div>
-                    <div className="chev-left"></div><div className="chev-right"></div>
+
                     <form className={formClasses}>
 
                          <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
@@ -262,8 +266,6 @@ module.exports = React.createClass({
                              </div>
                              </AutoComplete>
                         </form>
-                        </div>
-                        </div>
                 </nav>
                 </div>
             <div className="buttonbar-wrapper">
@@ -279,11 +281,10 @@ module.exports = React.createClass({
                 </ModalTrigger>*/}
                 <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
             </div>
-            <div className="container-wrapper">
-                <div className={resultsClass}>
-                    {this.renderBody(active_result) }
-                </div>
-            </div>
+
+
+            {this.renderBody(active_result) }
+
             { show_side_bar ? <ArticleSideBar article={active_result}/> : ''}
         </div>);
     }
