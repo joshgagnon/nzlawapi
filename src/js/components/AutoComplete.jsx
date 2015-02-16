@@ -93,7 +93,6 @@ var AutoComplete = React.createClass({
                 activeIndex: newIndex
             });
         }
-
         // Handle enter key
         if (event.key === 'Enter') {
             if (newIndex > -1) {
@@ -114,6 +113,7 @@ var AutoComplete = React.createClass({
                     });
                 }*/
             }
+            this.setState({show: false})
         }
     },
     getResultById: function(id){

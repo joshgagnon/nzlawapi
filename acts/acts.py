@@ -8,17 +8,27 @@ from copy import deepcopy
 from psycopg2 import extras
 import json
 import os
+import datetime
 
 
 class Act(object):
     def __init__(self, id, tree, attributes):
         self.id = id
         self.tree = tree
+
         self.title = get_title(self.tree)
         self.hook_match = '/*/*/*/*/*'
         self.parts = {}
         ignore = ['document', 'processed_document', 'attributes']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
+        self.format_dates()
+
+    def format_dates(self):
+        assent_date = datetime.datetime.strptime(self.tree.attrib['date.assent'], "%Y-%m-%d").date()
+        reprint_date = datetime.datetime.strptime(self.tree.xpath('.//reprint-date')[0].text, "%Y-%m-%d").date()
+        self.tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')
+        self.tree.attrib['formatted.reprint'] = reprint_date.strftime('%d %B %Y')
+
 
     def calculate_hooks(self):
         html = tohtml(self.tree)

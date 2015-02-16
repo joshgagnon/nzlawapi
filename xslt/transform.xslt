@@ -1,11 +1,16 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:import href="equations.xslt" />
+    <xsl:import href="tables.xslt" />
+    <xsl:import href="end.xslt" />
+    <xsl:import href="schedules.xslt" />
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
 
     <xsl:template match="/">
+
         <xsl:apply-templates />
+
     </xsl:template>
 
     <xsl:template name="current">
@@ -23,6 +28,7 @@
     </xsl:template>
 
     <xsl:template match="act">
+
         <div class="legislation">
             <div>
                 <div class="act top-level">
@@ -38,6 +44,7 @@
                     <xsl:apply-templates select="front"/>
                     <xsl:apply-templates select="body"/>
                     <xsl:apply-templates select="schedule.group"/>
+                    <xsl:apply-templates select="end"/>
                 </div>
             </div>
         </div>
@@ -47,7 +54,7 @@
         <div class="legislation">
             <div>
             <div class="regulation top-level">
-                     <xsl:attribute name="id">
+                    <xsl:attribute name="id">
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
                      <xsl:if test="@terminated = 'repealed'">
@@ -58,30 +65,64 @@
                        <xsl:apply-templates select="front"/>
                      <xsl:apply-templates select="body"/>
                      <xsl:apply-templates select="schedule.group"/>
+                     <xsl:apply-templates select="end"/>
                 </div>
+
             </div>
         </div>
     </xsl:template>
 
     <xsl:template match="cover|billdetail">
         <div class="cover reprint">
-                <xsl:if test="@data-hook!=''">
-                    <xsl:attribute name="data-hook">
-                        <xsl:value-of select="@data-hook"/>
-                    </xsl:attribute>
-                    <xsl:attribute name="data-hook-length">
-                        <xsl:value-of select="@data-hook-length"/>
-                    </xsl:attribute>
-                </xsl:if>
-            <!-- <p class="reprint-date">
-                Reprint as at <xsl:value-of select="reprint-date"/>
-            </p> -->
+            <xsl:if test="@data-hook!=''">
+                <xsl:attribute name="data-hook">
+                    <xsl:value-of select="@data-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="data-hook-length">
+                    <xsl:value-of select="@data-hook-length"/>
+                </xsl:attribute>
+            </xsl:if>
+            <p class="reprint-date">
+                Reprint<br/>as at <xsl:value-of select="../@formatted.reprint" />
+            </p>
             <h1 class="title"><xsl:value-of select="title"/></h1>
+            <xsl:if test="../@sr.no">
+                <p class="reprint-sr-number">(SR <xsl:value-of select="../@year" />/<xsl:value-of select="../@sr.no" />)</p>
+                <p class="gg"><xsl:value-of select="gg" /></p>
+                <xsl:apply-templates select="made" />
+            </xsl:if>
+            <xsl:if test="../@act.no">
+
+            </xsl:if>
+            <xsl:apply-templates select="cover.reprint-note"/>
         </div>
     </xsl:template>
 
     <xsl:template match="contents">
     </xsl:template>
+
+    <xsl:template match="made">
+        <div class="made">
+            <h2 class="made"><xsl:value-of select="heading"/></h2>
+            <p class="made-at"><xsl:value-of select="made.at"/></p>
+            <p class="made-present"><xsl:value-of select="made.present"/></p>
+        </div>
+
+        </xsl:template>
+
+    <xsl:template match="cover.reprint-note">
+        <div class="cover-reprint-note">
+            <hr class="cover-reprint-note"/>
+                <h6 class="cover-reprint-note">Note</h6>
+                 <xsl:apply-templates select="para|admin-office"/>
+                <hr class="cover-reprint-note"/>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="admin-office">
+        <p class="admin-office"><xsl:value-of select="."/></p>
+    </xsl:template>
+
 
     <xsl:template match="front">
         <div class="front">
@@ -267,47 +308,6 @@
         </ul>
     </xsl:template>
 
-    <xsl:template match="table[not(ancestor::eqn)]">
-        <table>
-             <xsl:attribute name="id">
-                <xsl:value-of select="@id"/>
-            </xsl:attribute>
-                <colgroup>
-                    <xsl:apply-templates select="tgroup/colspec"/>
-                </colgroup>
-            <tbody>
-                <xsl:apply-templates select="tgroup/tbody/row"/>
-            </tbody>
-        </table>
-    </xsl:template>
-
-    <xsl:template match="colspec">
-        <col>
-           <xsl:attribute name="style">
-               width:<xsl:value-of select="@colwidth"/>
-            </xsl:attribute>
-        </col>
-    </xsl:template>
-
-    <xsl:template match="row">
-        <tr class="row">
-            <xsl:apply-templates select="entry"/>
-        </tr>
-    </xsl:template>
-
-    <xsl:template match="entry">
-        <td>
-              <xsl:if test="count(following-sibling::entry) = 0">
-              <xsl:attribute name="colspan">
-                    <xsl:value-of select="4-count(preceding-sibling::entry)"/>
-                </xsl:attribute>
-            </xsl:if>
-           <xsl:attribute name="style">
-               text-align:<xsl:value-of select="@align"/>
-            </xsl:attribute>
-            <xsl:apply-templates />
-        </td>
-    </xsl:template>
 
     <xsl:template match="def-para">
         <div class="def-para">
@@ -404,11 +404,11 @@
           <xsl:if test="string-length(preceding-sibling::*[1]/.)">
                 <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
         </xsl:if>
-        <span style="font-weight:bold"><xsl:value-of select="."/></span>
+        <span style="font-weight:bold"><xsl:apply-templates/></span>
     </xsl:template>
 
     <xsl:template match="emphasis[@style='italic']">
-        &#160;<span style="font-style:italic"><xsl:value-of select="."/></span>
+        &#160;<span style="font-style:italic"><xsl:apply-templates/></span>
     </xsl:template>
 
 
@@ -481,45 +481,6 @@
         <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="schedule.group">
-      <div class="schedule-group">
-                <xsl:if test="@data-hook!=''">
-                    <xsl:attribute name="data-hook">
-                        <xsl:value-of select="@data-hook"/>
-                    </xsl:attribute>
-                    <xsl:attribute name="data-hook-length">
-                        <xsl:value-of select="@data-hook-length"/>
-                    </xsl:attribute>
-                </xsl:if>
-        <xsl:apply-templates select="schedule"/>
-      </div>
-    </xsl:template>
-
-    <xsl:template match="schedule.provisions">
-      <div class="schedule-provisions">
-            <xsl:if test="@data-hook!=''">
-                <xsl:attribute name="data-hook">
-                    <xsl:value-of select="@data-hook"/>
-                </xsl:attribute>
-                <xsl:attribute name="data-hook-length">
-                    <xsl:value-of select="@data-hook-length"/>
-                </xsl:attribute>
-            </xsl:if>
-        <xsl:apply-templates select="prov|part|schedule.group"/>
-      </div>
-    </xsl:template>
-
-    <xsl:template match="schedule.misc">
-      <div class="schedule-misc">
-        <xsl:apply-templates select="head1|para|prov"/>
-      </div>
-    </xsl:template>
-
-    <xsl:template match="schedule.forms">
-      <div class="schedule-forms">
-        <xsl:apply-templates select="form"/>
-      </div>
-    </xsl:template>
 
     <xsl:template match="para">
         <p class="text"><xsl:apply-templates /></p>
@@ -545,25 +506,6 @@
         <xsl:apply-templates />
       </p>
     </xsl:template>
-
-     <xsl:template match="signature-block">
-        <div class="signature-block">
-            <xsl:apply-templates select="sig.para|sig.officer"/>
-        </div>
-        <hr class="signature-block"/>
-     </xsl:template>
-
-     <xsl:template match="sig.para">
-        <p class="sig-para">
-            <xsl:apply-templates/>
-        </p>
-     </xsl:template>
-
-     <xsl:template match="sig.officer">
-        <p class="sig-officer">
-            <xsl:apply-templates/>
-        </p>
-     </xsl:template>
 
 
     <xsl:template match="authorisation">
@@ -627,38 +569,11 @@
       </div>
     </xsl:template>
 
-    <xsl:template match="schedule">
-        <div class="schedule">
-                <xsl:if test="@data-hook!=''">
-                    <xsl:attribute name="data-hook">
-                        <xsl:value-of select="@data-hook"/>
-                    </xsl:attribute>
-                    <xsl:attribute name="data-hook-length">
-                        <xsl:value-of select="@data-hook-length"/>
-                    </xsl:attribute>
-                </xsl:if>
-            <xsl:call-template name="current"/>
-            <xsl:attribute name="id">
-                <xsl:value-of select="@id"/>
-            </xsl:attribute>
-            <xsl:attribute name="data-location"><xsl:if test="ancestor::schedule">&#160;</xsl:if>sch <xsl:value-of select="label"/></xsl:attribute>
-            <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
-                <tbody><tr>
-                    <td class="header">
-                        <h2 lang="en-NZ" class="schedule">
-                            <span class="label">
-                                <span class="hit">Schedule</span>&#160;<xsl:value-of select="label"/>
-                            </span><br/>
-                            <xsl:value-of select="heading"/>
-                        </h2>
-                    </td>
-                    <td class="empowering-prov">
-                    </td>
-                    </tr>
-                </tbody>
-            </table>
-            <xsl:apply-templates select="schedule.provisions|schedule.misc|schedule.forms|notes"/>
-        </div>
+
+
+
+    <xsl:template match="brk">
+        <br class="brk"/>
     </xsl:template>
 
 </xsl:stylesheet>
