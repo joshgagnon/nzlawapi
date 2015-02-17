@@ -82,9 +82,11 @@
                     <xsl:value-of select="@data-hook-length"/>
                 </xsl:attribute>
             </xsl:if>
+            <xsl:if test="../@formatted.reprint != ''">
             <p class="reprint-date">
                 Reprint<br/>as at <xsl:value-of select="../@formatted.reprint" />
             </p>
+            </xsl:if>
             <h1 class="title"><xsl:value-of select="title"/></h1>
             <xsl:if test="../@sr.no">
                 <p class="reprint-sr-number">(SR <xsl:value-of select="../@year" />/<xsl:value-of select="../@sr.no" />)</p>

@@ -24,11 +24,16 @@ class Act(object):
         self.format_dates()
 
     def format_dates(self):
-        assent_date = datetime.datetime.strptime(self.tree.attrib['date.assent'], "%Y-%m-%d").date()
-        reprint_date = datetime.datetime.strptime(self.tree.xpath('.//reprint-date')[0].text, "%Y-%m-%d").date()
-        self.tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')
-        self.tree.attrib['formatted.reprint'] = reprint_date.strftime('%d %B %Y')
-
+        try:
+            assent_date = datetime.datetime.strptime(self.tree.attrib['date.assent'], "%Y-%m-%d").date()
+            self.tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')
+        except:
+            pass
+        try:
+            reprint_date = datetime.datetime.strptime(self.tree.xpath('.//reprint-date')[0].text, "%Y-%m-%d").date()
+            self.tree.attrib['formatted.reprint'] = reprint_date.strftime('%d %B %Y')
+        except:
+            pass
 
     def calculate_hooks(self):
         html = tohtml(self.tree)
