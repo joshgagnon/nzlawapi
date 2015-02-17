@@ -3,12 +3,12 @@
 var Reflux = require('reflux');
 var _ = require('lodash');
 var Actions = require('../actions/Actions');
-var ResultStore = require('./ResultStore');
+var PageStore = require('./PageStore');
 
 var Serialization = Reflux.createStore({
 
     init: function() {
-        this.listenTo(ResultStore, this.update);
+        this.listenTo(PageStore, this.update);
         this.listenTo(Actions.saveState, this.save);
         this.listenTo(Actions.loadState, this.load);
         this.data = {};

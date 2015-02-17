@@ -6,8 +6,8 @@ var ReactRouter = require('react-router');
 var Input = require('react-bootstrap/Input');
 var Button = require('react-bootstrap/Button');
 var Col= require('react-bootstrap/Col');
-var ResultStore = require('../stores/ResultStore');
-var BrowserStore = require('../stores/BrowserStore');
+var PageStore = require('../stores/PageStore');
+var ViewerStore = require('../stores/ViewerStore');
 var Serialization = require('../stores/Serialization.js');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/Glyphicon');
@@ -47,19 +47,66 @@ var DialogStore = Reflux.createStore({
 })
 
 
+var PageSet = React.createClass({
+    handleTab: function(active){
+        Actions.showPage(this.props.viewer_id, active);
+    },
+    closeTab: function(id){
+        var result = _.find(this.props.pages, function(d){ return d.id === id});
+        Actions.removePage(result);
+    },
+    renderPage: function(page){
+        if(page.content){
+            return page.query.search ?
+                    <SearchResults key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} /> :
+                    <Article key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} />
+        }
+        else{
+            return <div className="search-results csspinner traditional"/>;
+        }
+    },
+    renderTabs: function(){
+        var self = this;
+        return (<div className="results-container">
+                <TabbedArea activeKey={this.props.active} onSelect={this.handleTab} onClose={this.closeTab} viewer_id={this.props.viewer_id} >
+                { this.props.pages.map(function(page){
+                        return (
+                             <TabPane key={page.id} eventKey={page.id} tab={page.title} >
+                                { self.renderPage(page) }
+                            </TabPane>
+                          )
+                      })
+            }
+            </TabbedArea></div>)
+    },
+    render: function(){
+        if(this.props.pages.length >= 2){
+            return this.renderTabs();
+        }
+        else if(this.props.pages.length === 1){
+            return <div className="results-container"><div className="results-scroll">{ this.renderPage(this.props.pages[0]) }</div></div>
+        }
+        else{
+            <div className="results-empty"/>
+        }
+    }
+
+})
+
+
 module.exports = React.createClass({
     mixins: [
-        Reflux.listenTo(ResultStore, 'onResults'),
-        Reflux.listenTo(BrowserStore, 'onBrowser'),
+        Reflux.listenTo(PageStore, 'onPages'),
+        Reflux.listenTo(ViewerStore, 'onViewer'),
         Reflux.listenTo(DialogStore, 'onDialog'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],
     getInitialState: function(){
         return {
-            results: [],
             advanced_search: false,
-            active_result: null,
+            pages: [],
+            active_page_ids: [],
             underlines: false,
             save_dialog: false,
             load_dialog: false
@@ -67,22 +114,22 @@ module.exports = React.createClass({
     },
     componentDidMount: function(){
         if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
-            Actions.newResult({query: this.getQuery(), title: this.getQuery.title});
+            Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 0);
         }
         else if(this.getParams().type){
-            Actions.newResult({query: {type: this.getParams().type,  query: this.getParams().id, find: 'id'}});
+            Actions.newPage({query: {type: this.getParams().type,  query: this.getParams().id, find: 'id'}}, 0);
         }
         window.addEventListener('onResize', function(){
             //TODO, debouce, measure width, hide,
         });
     },
-    onResults: function(data){
-        this.setState({results: data.results});
+    onPages: function(data){
+        this.setState({pages: data.pages});
     },
     onDialog: function(state){
         this.setState(state);
     },
-    onBrowser: function(state){
+    onViewer: function(state){
         this.setState(state);
     },
     submit: function(e){
@@ -124,7 +171,7 @@ module.exports = React.createClass({
             };
             title = 'Search: '+this.state.search_query
         }
-        Actions.newResult({query: query, title: title});
+        Actions.newPage({query: query, title: title}, 0);
     },
     handleArticleChange: function(value){
         var self = this;
@@ -137,7 +184,6 @@ module.exports = React.createClass({
                 setTimeout(function(){
                     self.refs.location.getInputDOMNode().focus();
                 }, 0);
-
             }
         });
     },
@@ -151,74 +197,39 @@ module.exports = React.createClass({
             search_query: null,
             location: null
         });
-        Actions.clearResults();
+        Actions.clearPages();
     },
-    handleTab: function(active){
-        if(active !== this.state.active){
-            var active_result = _.find(this.state.results, function(d){ return d.id === active});
-            Actions.activateResult(active_result);
-        }
-    },
-    closeTab: function(id){
-        var result = _.find(this.state.results, function(d){ return d.id === id});
-        Actions.removeResult(result);
-    },
-    renderResult: function(result, active_result){
-        if(result.content){
-            return result.query.search ?
-                    <SearchResults key={result.id} result={result}  popupContainer='.act_browser' /> :
-                    <Article key={result.id} result={result}  popupContainer='.act_browser' />
-        }
-        else{
-            return <div className="search-results csspinner traditional"/>;
-        }
-    },
-    renderTabs: function(results, active_result, key){
-        var self = this;
-        return (<div className="results-container">
-                <TabbedArea key={key||0} activeKey={active_result.id} onSelect={this.handleTab} onClose={this.closeTab}>
-                { results.map(function(result){
-                        return (
-                             <TabPane key={result.id} eventKey={result.id} tab={result.title} >
-                                { self.renderResult(result) }
-                            </TabPane>
-                          )
-                      })
-            }
-            </TabbedArea></div>)
-    },
+
+
     toggleState: function(state){
         var s = {};
         s[state] = !this.state[state]
         this.setState(s);
     },
-    renderBody: function(active_result){
-        var self = this;
-        if(this.state.results.length > 1){
-            if(this.state.split_mode){
-                return (<div className="split">{this.renderTabs(this.state.results, active_result, 0)}{this.renderTabs(this.state.results, active_result, 1)}</div>)
-            }
-            return  this.renderTabs(this.state.results, active_result);
-        }
-        else if(this.state.results.length == 1){
-            return  <div className="results-container">{this.renderResult(this.state.results[0])}</div>;
-        }
-    },
     showLocation: function(){
         return !!this.state.document_id && this.state.find === 'full';
     },
+    renderBody: function(){
+        if(this.state.split_mode){
+            return <div className="split">
+                <PageSet pages={this.state.pages} active={this.state.active_page_ids[0]} viewer_id={0} key={0}/>
+                <PageSet pages={this.state.pages} active={this.state.active_page_ids[1]} viewer_id={1} key={1}/>
+                </div>
+        }
+        return  <PageSet pages={this.state.pages} active={this.state.active_page_ids[0]} viewer_id={0}/>
+
+    },
     render: function(){
-        var active_result = _.find(this.state.results, {id: this.state.active}) || this.state.results[0] || {};
         var formClasses = '';//"navbar-form navbar-left ";
-        var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
-        //var resultsClass = 'results-container ';
+        //var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
+        var resultsClass = 'results-container ';
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
         var parentClass ="act_browser ";
-        if(show_side_bar){
+    /*   if(show_side_bar){
             parentClass += 'sidebar-visible ';
-        }
+        }*/
         if(this.state.underlines){
             parentClass += 'underlines ';
         }
@@ -283,9 +294,9 @@ module.exports = React.createClass({
             </div>
 
 
-            {this.renderBody(active_result) }
+            { this.state.pages.length ? this.renderBody() : null}
 
-            { show_side_bar ? <ArticleSideBar article={active_result}/> : ''}
+            { /*show_side_bar ? <ArticleSideBar article={active_result}/> : '' */}
         </div>);
     }
 });

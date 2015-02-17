@@ -4,7 +4,6 @@ var Glyphicon= require('react-bootstrap/Glyphicon');
 
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
-var ResultStore = require('../stores/ResultStore');
 var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
@@ -87,27 +86,27 @@ module.exports = React.createClass({
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
-
         this.debounce_visibility = _.debounce(this.check_sub_visibility, 10, {
           'maxWait': 300
         });
         this.debounce_scroll = _.debounce(function(){
-            var result = ''
-
-            if(self.scrollHeight !== $(self.getDOMNode()).height()){
-                self.refresh();
+            if(self.isMounted()){
+                var result = ''
+                if(self.scrollHeight !== $(self.getDOMNode()).height()){
+                    self.refresh();
+                }
+                var $el = $(find_current(self.locations));
+                if(!$el.attr('data-location-no-path')){
+                    result = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
+                        return $(this).attr('data-location');
+                    }).toArray().reverse().join('');
+                }
+                result += $el.attr('data-location');
+                var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+                Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
             }
-            var $el = $(find_current(self.locations));
-            if(!$el.attr('data-location-no-path')){
-                result = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
-                    return $(this).attr('data-location');
-                }).toArray().reverse().join('');
-            }
-            result += $el.attr('data-location');
-            var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-            Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
         }, 0);
-        var $parent = $(this.getDOMNode()).parents('.tab-content, .results-container');
+        var $parent = this.getScrollContainer();
         $parent.on('scroll', this.debounce_scroll);
         if(this.isPartial()){
             this.debounce_visibility();
@@ -276,7 +275,7 @@ module.exports = React.createClass({
         }
     },
     componentWillUnmount: function(){
-        var $parent =  $(this.getDOMNode()).parents('.tab-content, .results-container');
+        var $parent =  this.getScrollContainer();
         $parent.off('scroll', this.debounce_scroll);
         if(this.isPartial()){
             $parent.off('scroll', this.debounce_visibility);

@@ -74,7 +74,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     window.removeEventListener('resize', this._resize_handler);
   },
   setTabVisibility: function(){
-    var width = this.getDOMNode().clientWidth;
+    var width = this.refs.tabs.getDOMNode().clientWidth;
     var tabs = width/this.props.max_tab_width;
     if(tabs<this.props.children.length){
       tabs--;
@@ -91,28 +91,29 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   },
 
 
-    renderTabs: function(children){
-        function renderTabIfSet(child) {
-            return child.props.tab != null ? this.renderTab(child) : null;
-        }
-        return _.map(children, renderTabIfSet, this);
-    },
-    renderDrops: function(children, label){
-        function renderDropIfSet(child) {
-            return child.props.tab != null ? this.renderDrop(child) : null;
-        }
-        return <div className="btn-group" ref="dropdown" {...this.props}>
-            <Button type="input" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{label +' '}
-              <span className="caret"></span>
-              <span className="sr-only">Toggle Dropdown</span>
-            </Button>
-            <ul className="dropdown-menu" role="menu">
-                {_.map(children, renderDropIfSet, this)}
-              </ul>
-            </div>
+  renderTabs: function(children){
+      function renderTabIfSet(child) {
+          return child.props.tab != null ? this.renderTab(child) : null;
+      }
+      return _.map(children, renderTabIfSet, this);
+  },
+  renderDrops: function(children, label){
+      function renderDropIfSet(child) {
+          return child.props.tab != null ? this.renderDrop(child) : null;
+      }
+      return <div className="btn-group" ref="dropdown" {...this.props} key="drops">
+          <Button type="input" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{label +' '}
+            <span className="caret"></span>
+            <span className="sr-only">Toggle Dropdown</span>
+          </Button>
+          <ul className="dropdown-menu" role="menu">
+              {_.map(children, renderDropIfSet, this)}
+            </ul>
+          </div>
     },
 
   renderNav: function(){
+
     var visible_tabs = this.state.visible_tabs || this.props.children.length;
     var activeKey = this.getActiveKey();
     var tabs = this.props.children.slice(0, this.state.visible_tabs), drops = this.props.children.slice(this.state.visible_tabs);
@@ -121,7 +122,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
           this.renderTabs(tabs), drops.length ? this.renderDrops(drops, 'More Tabs...') : null))
     }
     else{
-      return (<ul className="nav nav-tabs nav-dropdown">
+      return (<ul className="nav nav-tabs nav-dropdown" ref="tabs">
             {this.renderDrops(drops, this.getActiveLabel())}
           </ul>)
     }
@@ -177,7 +178,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
 
   renderDrop: function (child) {
     var key = child.props.eventKey;
-    return <li ref={'tab' + key} eventKey={key} onClick={this.handleSelect.bind(this, key)}>
+    return <li ref={'tab' + key} eventKey={key} key={key} onClick={this.handleSelect.bind(this, key)}>
               <a href="#">
             <span className="tab-title">
               {child.props.tab}

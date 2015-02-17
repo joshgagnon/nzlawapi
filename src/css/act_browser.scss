@@ -229,7 +229,7 @@ $z-toolbars: 100;
 		bottom: 0;
 		padding-left: 65px;
 		padding-right: 0;
-
+		overflow: auto;
 
 		@media (min-width: $screen-md-min) {
 			top: $top-bar-height;
@@ -290,7 +290,7 @@ $z-toolbars: 100;
 			}
 		}
 		.tab-content{
-			top: 0;
+			top: 45px;
 			position: absolute;
 			bottom: 0;
 			overflow: auto;
@@ -306,7 +306,7 @@ $z-toolbars: 100;
 		.search-results{
 			max-width:1170px;
 			margin: 0 auto;
-			margin-top: 60px;
+			margin-top: 20px;
 			.search-result{
 				margin-bottom: 20px;
 

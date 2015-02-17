@@ -12,7 +12,7 @@ var SearchResult = React.createClass({
     handleLinkClick: function(e){
         e.preventDefault();
         var query = {find: 'full', type: this.props.data._type, id: this.props.data.fields.id[0]};
-        Actions.newResult({query: query, title: this.getTitle()});
+        Actions.newPage({query: query, title: this.getTitle()}, this.props.viewer_id);
     },
     render: function(){
         var html = '',
@@ -33,16 +33,20 @@ module.exports = React.createClass({
         var offset = 100; //calculate
         var threshold = 500;
         this.debounce_scroll = _.debounce(function(){
-            if(!self.props.result.finished &&
+            var $scroll = $(self.getScrollContainer());
+            if(self.isMounted() && !self.props.result.finished &&
                 !self.props.result.fetching &&
-                $(window).scrollTop() + offset +$(window).height() > $(self.getDOMNode()).height() - threshold){
-                Actions.getMoreResult(self.props.result);
+                $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
+                Actions.getMorePage(self.props.result);
             }
         }, 100);
-        $(window).on('scroll', this.debounce_scroll);
+        $(this.getScrollContainer()).on('scroll', this.debounce_scroll);
     },
     componentWillUnmount: function(){
-        $(window).off('scroll', this.debounce_scroll);
+        $(this.getScrollContainer()).off('scroll', this.debounce_scroll);
+    },
+    getScrollContainer: function(){
+        return $(this.getDOMNode()).parents('.tab-content, .results-container')
     },
     render: function(){
         if(this.props.result.content.search_results){
@@ -50,8 +54,8 @@ module.exports = React.createClass({
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
                     { this.props.result.content.search_results.hits.map(function(r){
-                            return <SearchResult key={r.fields.id[0]} data={r} />
-                        })
+                            return <SearchResult key={r.fields.id[0]} data={r} viewer_id={this.props.viewer_id}/>
+                        }, this)
                     }
                     {this.props.result.fetching ?  <div className="csspinner traditional" /> : null }
                 </div>

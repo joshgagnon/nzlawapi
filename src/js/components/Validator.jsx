@@ -10,12 +10,12 @@ var joinClasses = require('react-bootstrap/utils/joinClasses');
 var classSet = require('react-bootstrap/utils/classSet');
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
-var ResultStore = require('../stores/ResultStore');
+//var ResultStore = require('../stores/ResultStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 require('bootstrap3-typeahead');
-var TypeAhead = require('./TypeAhead.jsx'); 
+var TypeAhead = require('./TypeAhead.jsx');
 
 
 var Intitular = React.createClass({
@@ -69,7 +69,7 @@ var ReportModal = React.createClass({
 	            <Button onClick={this.props.onRequestHide}>Cancel</Button>
 	            <Button  className="submit" bsStyle="danger" onClick={this.submit}>Submit</Button>
 	          </div>
-      
+
         </Modal>
       );
   }
@@ -78,7 +78,7 @@ var ReportModal = React.createClass({
 var UserModal = React.createClass({
     preventSubmit: function(e){
         e.preventDefault();
-    },    
+    },
       render: function() {
         return (
             <Modal {...this.props} title="User Name" animation={true}>
@@ -90,7 +90,7 @@ var UserModal = React.createClass({
                   <div className="modal-footer">
                     <Button onClick={this.props.onRequestHide}>Close</Button>
                   </div>
-          
+
             </Modal>
           );
       }
@@ -111,7 +111,7 @@ var ShowReports = React.createClass({
 		</div>
 	          <div className="modal-footer">
 	            <Button onClick={this.props.onRequestHide}>Close</Button>
-	          </div>		
+	          </div>
 		</Modal>
 	}
 })
@@ -137,7 +137,7 @@ module.exports = React.createClass({
             }.bind(this));
         if(!this.state.reporter){
             this.refs.name_modal.toggle();
-        }       
+        }
     },
     submit: function(e){
     	e.preventDefault();
@@ -153,7 +153,7 @@ module.exports = React.createClass({
     	var n = this.state.cases_typeahead.length;
     	idx = ((idx%n)+n)%n;
     	this.setState({index: idx, case_name: this.state.cases_typeahead[idx]}, this.fetch);
-    },    
+    },
     fetch: function(){
     	$.get('/query', {
     		type: 'case',
@@ -161,7 +161,7 @@ module.exports = React.createClass({
             validator: true
     	})
     		.then(function(response){
-    			this.setState({case_html: response.html_content, 
+    			this.setState({case_html: response.html_content,
     				path: response.path, id: response.id,
     				full_citation: response.full_citation,
     				details: '', fields: [], validated: response.validated,
@@ -180,7 +180,7 @@ module.exports = React.createClass({
     },
     fieldsChange: function(e){
     	this.setState({fields: _.compact(_.map(e.target.children, function(c){ return c.selected ? c.value :null }))});
-    },	
+    },
     reporterChange: function(e){
     	this.setState({reporter: e.target.value}, function(){;
         	if(localStorage){
@@ -196,13 +196,13 @@ module.exports = React.createClass({
     submitReport: function(){
     	$.post('/error_reports', _.pick(this.state ,'id', 'reporter', 'details', 'fields'))
     		.then(this.getReports)
-    },    	        	
+    },
 	render: function(){
 		return (<div className="validator">
 					<nav className="navbar navbar-default navbar-fixed-top">
 						<div className="container">
 							<form className="form form-inline">
-								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')} 
+								<TypeAhead typeahead={this.state.cases_typeahead}  key="case_name" ref="case_name" name="case_name" label='Case' valueLink={this.linkState('case_name')}
 										buttonAfter={<Button type="submit" className="submit" bsStyle="primary" onClick={this.submit}>Search</Button>}/>
 							 	<ButtonGroup>
 								 	<Button onClick={this.prev}><span className="glyphicon glyphicon-chevron-left"></span></Button>
@@ -212,10 +212,10 @@ module.exports = React.createClass({
                                     <Input type="checkbox" label="Reviewed" checked={this.state.validated} onChange={this.handleValid}/>
                                 </ButtonGroup>
                                 <ButtonGroup>
-                                    <ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation} 
-                                    details={this.state.details} detailsChange={this.detailsChange} 
-                                    fields={_.isArray(this.state.fields) ? this.state.fields : [this.state.fields]} fieldsChange={this.fieldsChange} 
-                                    reporter={this.state.reporter} reporterChange={this.reporterChange} 
+                                    <ModalTrigger modal={<ReportModal case_id={this.state.id} full_citation={this.state.full_citation}
+                                    details={this.state.details} detailsChange={this.detailsChange}
+                                    fields={_.isArray(this.state.fields) ? this.state.fields : [this.state.fields]} fieldsChange={this.fieldsChange}
+                                    reporter={this.state.reporter} reporterChange={this.reporterChange}
                                     submitReport={this.submitReport}/>}>
                                         <Button bsStyle="danger" >Submit Report</Button>
                                     </ModalTrigger>
@@ -225,15 +225,15 @@ module.exports = React.createClass({
                                     </ModalTrigger> : null}
                                 </ButtonGroup>
                                 <ButtonGroup>
-                                    <ModalTrigger ref="name_modal" modal={<UserModal 
+                                    <ModalTrigger ref="name_modal" modal={<UserModal
                                     reporter={this.state.reporter} reporterChange={this.reporterChange} />}>
                                         <Button bsStyle="info" >User Name</Button>
-                                    </ModalTrigger> 
-                                </ButtonGroup>                               
+                                    </ModalTrigger>
+                                </ButtonGroup>
 							</form>
 						</div>
 					</nav>
-					<div className="container-fluid">	
+					<div className="container-fluid">
 						<div className="row results">
 							<div className="col-lg-4 col extracted">
 								<Intitular html={this.state.case_html}/>
