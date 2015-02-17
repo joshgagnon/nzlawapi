@@ -8,7 +8,6 @@ var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-
 var Popover = require('./Popover.jsx');
 
 require('bootstrap');
@@ -77,6 +76,7 @@ module.exports = React.createClass({
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
     },
+
     setup_scroll: function(){
         this.offset = 100;
         var self = this;

@@ -227,7 +227,7 @@ $z-toolbars: 100;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		padding-left: 65px;
+		padding-left: 0;
 		padding-right: 0;
 		overflow: auto;
 
@@ -239,7 +239,7 @@ $z-toolbars: 100;
 			z-index: $z-toolbars;
 			position: absolute;
 			left: 65px;
-			right: 65px;
+			right: 0;
 			background-color: #fff;
 		}
 		.result-tabs{
@@ -288,6 +288,13 @@ $z-toolbars: 100;
 					color:$gray-dark;
 				}
 			}
+			.drops-group{
+				float: right;
+			}
+
+		}
+		&:nth-child(2) .nav{
+			left:0;
 		}
 		.tab-content{
 			top: 45px;
@@ -296,17 +303,19 @@ $z-toolbars: 100;
 			overflow: auto;
 			left: 0;
 			right: 0;
-			padding: 0 65px;
+			padding: 0;
 		}
 		 .legislation-result{
 			max-width:1170px;
 			margin: 0 auto;
 			margin-top: 60px;
+			padding-left:65px;
 		}
 		.search-results{
 			max-width:1170px;
 			margin: 0 auto;
 			margin-top: 20px;
+			padding-left:65px;
 			.search-result{
 				margin-bottom: 20px;
 
@@ -321,12 +330,11 @@ $z-toolbars: 100;
 	}
 
 	.advanced-search{
-		margin-left: -15px;
-		margin-right: -15px;
 		background-color: $navbar-default-bg;
 		border-color: $gray;
-		margin-top: -10px;
 		border-bottom: 1px solid $navbar-default-border;
+		padding: 15px;
+		padding-left:65px;
 		.btn-toolbar{
 			text-align:center;
 			padding-bottom:15px;

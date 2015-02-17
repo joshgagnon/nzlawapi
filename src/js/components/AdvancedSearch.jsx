@@ -223,7 +223,7 @@ var InstrumentSearch = React.createClass({
         React.addons.LinkedStateMixin
     ],
     getInitialState: function(){
-        return {contains_type: 'all_words', acts: true, bills: true, other: true};
+        return {contains_type: 'all_words', acts: true, bills: false, other: false};
     },
     handleContentType: function(event){
         this.setState({contains_type: event.target.getAttribute('data-val')});
@@ -264,7 +264,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('bills')} />
                     </div>
                     </div>
-                { this.state.acts ? <BillSearch /> : null }
+                { this.state.bills ? <BillSearch /> : null }
 
                    <hr/>
                 <div className="form-group">
@@ -273,7 +273,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('other')} />
                     </div>
                     </div>
-                { this.state.acts ? <OtherSearch /> : null }
+                { this.state.other ? <OtherSearch /> : null }
 
             </form>
             </div>
@@ -288,10 +288,7 @@ module.exports = React.createClass({
     ],
     getInitialState: function(){
         return {
-            type: 'cases',
-            acts: 'true',
-            bills: 'true',
-            other: 'true'
+            type: 'instruments',
         }
     },
     handleType: function(type){
@@ -304,7 +301,6 @@ module.exports = React.createClass({
     },
     render: function(){
         return <div className="advanced-search">
-            <div className="container">
             <form className="form-horizontal">
                 <div className="form-group">
                     <label className="control-label col-xs-2"><span>Query Type</span></label>
@@ -319,7 +315,6 @@ module.exports = React.createClass({
                   <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                   <Button bsStyle={'info'}>Filter Current Results</Button>
                 </ButtonToolbar>
-            </div>
         </div>
     }
 })

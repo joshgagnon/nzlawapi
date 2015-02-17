@@ -5,6 +5,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var Actions = require('../actions/Actions');
 
+
 var SearchResult = React.createClass({
     getTitle: function(){
         return (this.props.data.fields.title || this.props.data.fields.full_citation || [''])[0]

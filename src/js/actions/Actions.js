@@ -20,7 +20,7 @@ var Actions = Reflux.createActions([
 	'articlePosition',
 	'articleJumpTo',
 
-
+	'toggleAdvanced',
 
 	'requestReferences',
 	'linkOpened',

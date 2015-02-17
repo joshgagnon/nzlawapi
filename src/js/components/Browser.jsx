@@ -20,8 +20,9 @@ var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
 
 
-var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SaveDialog = require('./SaveDialog.jsx');
+
+var AdvancedSearch = require('./AdvancedSearch.jsx');
 
 
 $.fn.focusNextInputField = function() {
@@ -58,7 +59,7 @@ var PageSet = React.createClass({
     renderPage: function(page){
         if(page.content){
             return page.query.search ?
-                    <SearchResults key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} /> :
+                    <SearchResults key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} view={this.props.view}/> :
                     <Article key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} />
         }
         else{
@@ -68,14 +69,15 @@ var PageSet = React.createClass({
     renderTabs: function(){
         var self = this;
         return (<div className="results-container">
-                <TabbedArea activeKey={this.props.active} onSelect={this.handleTab} onClose={this.closeTab} viewer_id={this.props.viewer_id} >
+                <TabbedArea activeKey={this.props.view.active_page_id} onSelect={this.handleTab} onClose={this.closeTab} viewer_id={this.props.viewer_id} >
                 { this.props.pages.map(function(page){
                         return (
                              <TabPane key={page.id} eventKey={page.id} tab={page.title} >
-                                { self.renderPage(page) }
+                                { (this.props.view.settings[page.id] || {}).advanced_search ? <AdvancedSearch /> : null }
+                                { this.renderPage(page) }
                             </TabPane>
                           )
-                      })
+                      }, this)
             }
             </TabbedArea></div>)
     },
@@ -83,8 +85,13 @@ var PageSet = React.createClass({
         if(this.props.pages.length >= 2){
             return this.renderTabs();
         }
+
         else if(this.props.pages.length === 1){
-            return <div className="results-container"><div className="results-scroll">{ this.renderPage(this.props.pages[0]) }</div></div>
+            console.log(this.props)
+            return <div className="results-container"><div className="results-scroll">
+             { (this.props.view.settings[this.props.pages[0].id] || {}).advanced_search ? <AdvancedSearch /> : null }
+            {  this.renderPage(this.props.pages[0]) }
+                </div></div>
         }
         else{
             <div className="results-empty"/>
@@ -106,7 +113,7 @@ module.exports = React.createClass({
         return {
             advanced_search: false,
             pages: [],
-            active_page_ids: [],
+            views: ViewerStore.getDefaultData(),
             underlines: false,
             save_dialog: false,
             load_dialog: false
@@ -176,7 +183,6 @@ module.exports = React.createClass({
     handleArticleChange: function(value){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
-        console.log(value)
         this.setState({search_query: value.search_query, document_id: value.id,
             article_type: value.type, find: value.find, query: value.query}, function(){
             if(self.showLocation()){
@@ -200,7 +206,9 @@ module.exports = React.createClass({
         Actions.clearPages();
     },
 
-
+    toggleAdvanced: function(){
+        Actions.toggleAdvanced(0, this.state.views[0].active_page_id);
+    },
     toggleState: function(state){
         var s = {};
         s[state] = !this.state[state]
@@ -212,11 +220,11 @@ module.exports = React.createClass({
     renderBody: function(){
         if(this.state.split_mode){
             return <div className="split">
-                <PageSet pages={this.state.pages} active={this.state.active_page_ids[0]} viewer_id={0} key={0}/>
-                <PageSet pages={this.state.pages} active={this.state.active_page_ids[1]} viewer_id={1} key={1}/>
+                <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0} key={0}/>
+                <PageSet pages={this.state.pages} view={this.state.views[1]} viewer_id={1} key={1}/>
                 </div>
         }
-        return  <PageSet pages={this.state.pages} active={this.state.active_page_ids[0]} viewer_id={0}/>
+        return  <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0}/>
 
     },
     render: function(){
@@ -238,7 +246,6 @@ module.exports = React.createClass({
         }
         return (<div className className={parentClass}>
                 <div className="container-fluid">
-                { this.state.advanced_search ? <AdvancedSearch /> : null }
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }
                  <nav className="navbar navbar-default navbar-fixed-top">
@@ -280,7 +287,7 @@ module.exports = React.createClass({
                 </nav>
                 </div>
             <div className="buttonbar-wrapper">
-                <a><Glyphicon glyph="search" onClick={this.toggleState.bind(this, 'advanced_search')} title="Advanced Search"/></a>
+                <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
                 <a><Glyphicon glyph="text-color" onClick={this.toggleState.bind(this, 'underlines')} title="Underlines"/></a>
                 <a><Glyphicon glyph="object-align-top" onClick={this.toggleState.bind(this, 'split_mode')} title="Columns"/></a>
                 <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
@@ -292,8 +299,6 @@ module.exports = React.createClass({
                 </ModalTrigger>*/}
                 <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
             </div>
-
-
             { this.state.pages.length ? this.renderBody() : null}
 
             { /*show_side_bar ? <ArticleSideBar article={active_result}/> : '' */}

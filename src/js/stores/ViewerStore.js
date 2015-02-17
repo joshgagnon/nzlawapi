@@ -9,16 +9,18 @@ module.exports =  Reflux.createStore({
 	listenables: Actions,
 	init: function(){
 		this.listenTo(PageStore, this.pageUpdate);
-		this.active_page_ids = [];
-		this.pages = [];
+		this.views = this.getDefaultData();
+	},
+	getDefaultData: function(){
+		return [this.getDefault(), this.getDefault()];
 	},
 	pageUpdate: function(state){
 		var change = false;
 		var ids = _.map(state.pages, function(p){ return p.id});
 		if(ids.length){
-			for(var i=0;i<this.active_page_ids.length; i++){
-				if(!_.contains(ids, this.active_page_ids[i])){
-					this.active_page_ids[i] = _.last(ids);
+			for(var i=0;i<this.views.length; i++){
+				if(!_.contains(ids, this.views[0].active_page_id)){
+					this.views[0].active_page_id = _.last(ids);
 					change = true;
 				}
 			}
@@ -27,11 +29,22 @@ module.exports =  Reflux.createStore({
 			this.update();
 		}
 	},
+	getDefault: function(){
+		return {active_page_id: undefined, settings: {}}
+	},
 	update: function(){
-		this.trigger({active_page_ids: this.active_page_ids});
+		this.trigger({views: this.views});
+	},
+	onToggleAdvanced: function(viewer_id, page_id){
+		this.views[viewer_id] = this.views[viewer_id] || this.getDefault();
+
+		this.views[viewer_id].settings[page_id] = this.views[viewer_id].settings[page_id] || {};
+		this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
+		this.update();
 	},
 	onShowPage: function(viewer_id, page_id){
-		this.active_page_ids[viewer_id] = page_id;
+		this.views[viewer_id] = this.views[viewer_id] || this.getDefault();
+		this.views[viewer_id].active_page_id = page_id;
 		this.update();
 	}
 });

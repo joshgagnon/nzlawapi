@@ -101,7 +101,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
       function renderDropIfSet(child) {
           return child.props.tab != null ? this.renderDrop(child) : null;
       }
-      return <div className="btn-group" ref="dropdown" {...this.props} key="drops">
+      return <div className="btn-group drops" ref="dropdown" {...this.props} key="drops">
           <Button type="input" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{label +' '}
             <span className="caret"></span>
             <span className="sr-only">Toggle Dropdown</span>
