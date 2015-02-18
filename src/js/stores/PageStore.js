@@ -29,11 +29,16 @@ var PageStore = Reflux.createStore({
 	onUpdatePage: function(page){
 		this.trigger({pages: this.pages}, page);
 	},
+	generatePage: function(page){
+		page = page || {};
+		page.id = 'page-'+this.counter++;
+		this.pages.push(page);
+		return page;
+	},
 	onNewPage: function(page, viewer_id){
 		var id;
 		if(!_.find(this.pages, {query: page.query})){
-			page.id = 'page-'+this.counter++;
-			this.pages.push(page);
+			page = this.generatePage(page);
 		}
 		else{
 			page = _.find(this.pages, {query: page.query});
@@ -43,6 +48,11 @@ var PageStore = Reflux.createStore({
 		if(viewer_id !== undefined){
 			Actions.showPage(viewer_id, page.id);
 		}
+	},
+	onNewAdvancedPage: function(page, viewer_id){
+		var page = this.generatePage(page);
+		this.trigger({pages: this.pages});
+		Actions.showPage(viewer_id, page.id, {advanced_search: true});
 	},
 	onRequestPage: function(page){
 		//todo, guards in Action pre emit

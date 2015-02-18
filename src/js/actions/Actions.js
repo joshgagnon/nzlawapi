@@ -9,6 +9,7 @@ var Actions = Reflux.createActions([
 	'queryChange',
 
 	'newPage',
+	'newAdvancedPage',
 	'requestPage',
 	'updatePage',
 	'removePage',

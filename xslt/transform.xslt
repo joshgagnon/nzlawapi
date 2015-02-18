@@ -276,7 +276,16 @@
                              </xsl:if>
                         </xsl:when>
                         <xsl:otherwise>
-                            <span class="deleted label-deleted">[Repealed]</span>
+                            <span class="deleted label-deleted">
+                                <xsl:choose>
+                                <xsl:when test="ancestor::act">
+                                        [Repealed]
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        [Revoked]
+                                </xsl:otherwise>
+                                </xsl:choose>
+                            </span>
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:apply-templates select="notes/history/history-note"/>

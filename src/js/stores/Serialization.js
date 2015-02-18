@@ -4,17 +4,23 @@ var Reflux = require('reflux');
 var _ = require('lodash');
 var Actions = require('../actions/Actions');
 var PageStore = require('./PageStore');
+var ViewerStore = require('./ViewerStore');
 
 var Serialization = Reflux.createStore({
 
     init: function() {
-        this.listenTo(PageStore, this.update);
+        this.listenTo(PageStore, this.updatePages);
+        this.listenTo(ViewerStore, this.updateViews);
         this.listenTo(Actions.saveState, this.save);
         this.listenTo(Actions.loadState, this.load);
-        this.data = {};
+        this.pages = {};
+        this.views = []
     },
-    update: function(data){
-        this.data = data;
+    updatePages: function(pages){
+        this.pages = pages;
+    },
+    updateViews: function(views){
+        this.views = views;
     },
     save: function(name) {
         var new_data = {current: this.data.current, results: this.data.results};
@@ -24,7 +30,6 @@ var Serialization = Reflux.createStore({
         var all = _.reject(JSON.parse(localStorage['data'] || '[]'), {name: name});
         all.push({name: name, value: new_data, date: (new Date()).toLocaleString()});
         localStorage['data'] = JSON.stringify(all);
-        console.log('saved')
     },
     load: function(name) {
 

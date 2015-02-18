@@ -42,9 +42,10 @@ module.exports =  Reflux.createStore({
 		this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
 		this.update();
 	},
-	onShowPage: function(viewer_id, page_id){
+	onShowPage: function(viewer_id, page_id, options){
 		this.views[viewer_id] = this.views[viewer_id] || this.getDefault();
 		this.views[viewer_id].active_page_id = page_id;
+		this.views[viewer_id].settings[page_id] = _.extend({}, this.views[viewer_id].settings[page_id], options);
 		this.update();
 	}
 });

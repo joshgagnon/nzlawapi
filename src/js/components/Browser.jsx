@@ -87,7 +87,6 @@ var PageSet = React.createClass({
         }
 
         else if(this.props.pages.length === 1){
-            console.log(this.props)
             return <div className="results-container"><div className="results-scroll">
              { (this.props.view.settings[this.props.pages[0].id] || {}).advanced_search ? <AdvancedSearch /> : null }
             {  this.renderPage(this.props.pages[0]) }
@@ -207,7 +206,13 @@ module.exports = React.createClass({
     },
 
     toggleAdvanced: function(){
-        Actions.toggleAdvanced(0, this.state.views[0].active_page_id);
+        var active = this.getActive();
+        if(this.active && this.active.query.search){
+            Actions.toggleAdvanced(0, this.state.views[0].active_page_id);
+        }
+        else{
+             Actions.newAdvancedPage({title: 'Advanced Search', query: {search: true}}, 0)
+        }
     },
     toggleState: function(state){
         var s = {};
@@ -217,23 +222,68 @@ module.exports = React.createClass({
     showLocation: function(){
         return !!this.state.document_id && this.state.find === 'full';
     },
+    getActive: function(){
+        if(this.state.views[0].active_page_id){
+            return _.find(this.state.pages, {id: this.state.views[0].active_page_id});
+        }
+    },
+    showSidebar: function(page){
+        if(page && !page.query.search && page.content){
+            return true;
+        }
+        return false;
+    },
     renderBody: function(){
+        var active = this.getActive();
         if(this.state.split_mode){
             return <div className="split">
                 <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0} key={0}/>
                 <PageSet pages={this.state.pages} view={this.state.views[1]} viewer_id={1} key={1}/>
                 </div>
         }
+        else if (this.showSidebar(active)){
+            return <div className="sidebar-visible">
+                <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0} key={0}/>
+                <ArticleSideBar article={active}/>
+                </div>
+        }
         return  <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0}/>
 
     },
-    render: function(){
+    renderForm: function(){
         var formClasses = '';//"navbar-form navbar-left ";
-        //var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
-        var resultsClass = 'results-container ';
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
+        return   <form className={formClasses}>
+                 <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
+                    search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
+                    ref="autocomplete" >
+                    { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
+                        ref="location"  /> : null }
+
+                    <div className="input-group-btn">
+                        <button type="input" className="btn-primary btn" onClick={this.submit} >Search</button>
+                         <button  type="button" className="btn-primary btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          <span className="caret"></span>
+                          <span className="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul className="dropdown-menu" role="menu">
+                            <li><a href="#">Search All</a></li>
+                            <li><a href="#">Search Acts</a></li>
+                            <li><a href="#">Search Regulations</a></li>
+                            <li><a href="#">Search Cases</a></li>
+                            <li className="divider"></li>
+                            <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
+                          </ul>
+                     </div>
+                     </AutoComplete>
+                </form>
+    },
+    render: function(){
+        //var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
+        var resultsClass = 'results-container ';
+
         var parentClass ="act_browser ";
     /*   if(show_side_bar){
             parentClass += 'sidebar-visible ';
@@ -258,32 +308,8 @@ module.exports = React.createClass({
                          <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block visible-xs-block"/>
 
                     </div>
+                    { this.renderForm() }
 
-                    <form className={formClasses}>
-
-                         <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
-                            search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
-                            ref="autocomplete" >
-                            { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
-                                ref="location"  /> : null }
-
-                            <div className="input-group-btn">
-                                <button type="input" className="btn-primary btn" onClick={this.submit} >Search</button>
-                                 <button  type="button" className="btn-primary btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                  <span className="caret"></span>
-                                  <span className="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul className="dropdown-menu" role="menu">
-                                    <li><a href="#">Search All</a></li>
-                                    <li><a href="#">Search Acts</a></li>
-                                    <li><a href="#">Search Regulations</a></li>
-                                    <li><a href="#">Search Cases</a></li>
-                                    <li className="divider"></li>
-                                    <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
-                                  </ul>
-                             </div>
-                             </AutoComplete>
-                        </form>
                 </nav>
                 </div>
             <div className="buttonbar-wrapper">

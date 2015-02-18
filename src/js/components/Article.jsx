@@ -82,7 +82,7 @@ module.exports = React.createClass({
         var self = this;
         this.refresh();
         var find_current = function(store){
-            var top = self.getScrollContainer().scrollTop() + self.offset;
+            var top = self.getScrollContainer().scrollTop();
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
@@ -92,6 +92,7 @@ module.exports = React.createClass({
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var result = ''
+                var offset = self.getScrollContainer().offset().top;
                 if(self.scrollHeight !== $(self.getDOMNode()).height()){
                     self.refresh();
                 }
@@ -103,6 +104,7 @@ module.exports = React.createClass({
                 }
                 result += $el.attr('data-location');
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+
                 Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
             }
         }, 0);
@@ -132,8 +134,8 @@ module.exports = React.createClass({
     check_sub_visibility: function(){
         var self = this;
         var visible = {};
-        var top = $(window).scrollTop() + self.offset;
-        var height = $(window).height();
+        var top = this.getScrollContainer().scrollTop();
+        var height = this.getScrollContainer().height();
         var change = false;
         _.each(this.refs, function(r, k){
             if($(r.getDOMNode()).isOnScreen(self.scroll_threshold)){
@@ -225,6 +227,7 @@ module.exports = React.createClass({
             offsets: [],
             targets: []
         };
+        var offset = this.getScrollContainer().offset().top;
         this.scrollHeight = $(self.getDOMNode()).height();
         $(self.getDOMNode())
             .find('[data-location]')
@@ -238,7 +241,7 @@ module.exports = React.createClass({
                 return a[0] - b[0]
             })
             .each(function(){
-                    self.locations.offsets.push(this[0]);
+                    self.locations.offsets.push(this[0] - offset);
                     self.locations.targets.push(this[1]);
                 });
         this.hooks = {
@@ -252,7 +255,7 @@ module.exports = React.createClass({
         });
     },
     onJumpTo: function(result, jump){
-        if(result !== this.props.result) return;
+        if(result.id !== this.props.result.id) return;
         var target;
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
@@ -265,10 +268,8 @@ module.exports = React.createClass({
             target = $(this.getDOMNode()).find(jump.id);
         }
         if(target && target.length){
-            var fudge = 4; //why fudge?  probably because scrolling on body
-            //not $(window), as it can't animate
-            var container = $('.tab-content, .results-container');
-            container.animate({scrollTop: (target.offset().top - this.offset + fudge)}, jump.noscroll ? 0: 300);
+            var container = this.getScrollContainer();
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 1}, jump.noscroll ? 0: 300);
         }
         else{
             return 'Not Found';

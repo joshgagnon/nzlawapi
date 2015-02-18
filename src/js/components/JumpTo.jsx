@@ -32,7 +32,7 @@ module.exports = React.createClass({
                 }
                 return s;
             });
-            Actions.articleJumpTo(this.props.result, {location: m});
+            Actions.articleJumpTo(this.props.article, {location: m});
         }
     },
     render: function(){

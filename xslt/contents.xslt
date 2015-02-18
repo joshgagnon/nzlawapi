@@ -47,7 +47,7 @@
             <a>
                 <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
                 <xsl:attribute name="title">Subpart <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
-                <span class="subart-label">Subpart <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
+                <span class="subpart-label">Subpart <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
                 <xsl:apply-templates select="./crosshead|./prov"/>
@@ -65,6 +65,7 @@
     </xsl:template>
 
     <xsl:template match="prov[@toc][not(@quote)]">
+        <xsl:if test="heading != ''">
         <li>
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/>
@@ -73,6 +74,7 @@
             <span class="prov-label"><span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
         </li>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="form[not(@quote)]">

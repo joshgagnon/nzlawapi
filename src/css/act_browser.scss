@@ -30,7 +30,7 @@ $z-toolbars: 100;
 
 	@media (min-width: $screen-md-min) {
 
-		&.sidebar-visible{
+		.sidebar-visible{
 			padding-right: $sidebar-outer-width;
 			.results-container{
 				padding-right: $sidebar-outer-width;
@@ -71,7 +71,9 @@ $z-toolbars: 100;
 				height: 60%;
 			}
 			img{
-				height:100%;
+				height:100% !important;
+    			width: auto !important;
+				display: block;
 			}
 		}
 
@@ -288,7 +290,7 @@ $z-toolbars: 100;
 					color:$gray-dark;
 				}
 			}
-			.drops-group{
+			.drops.btn-group{
 				float: right;
 			}
 

@@ -15,7 +15,7 @@ module.exports = Reflux.createStore({
 					article._references_fetching = false;
 					article._references_fetched = true;
 					article._references_data = response.references;
-					Actions.updateResult(article);
+					Actions.updatePage(article);
 				}.bind(this))
 		}
 	}
