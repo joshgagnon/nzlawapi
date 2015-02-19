@@ -51,14 +51,15 @@ module.exports = React.createClass({
     ],
     scroll_threshold: 20000,
     propTypes: {
-        result: React.PropTypes.object.isRequired,
+       page: React.PropTypes.object.isRequired,
+       view_settings: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
         this.heights = {};
         return {visible: {}};
     },
     get_definition: function(id){
-        return this.props.result.content.definitions[id];
+        return this.props.page.content.definitions[id];
     },
     componentDidMount: function(){
         this.setup_scroll();
@@ -71,7 +72,7 @@ module.exports = React.createClass({
         this.resize_skeleton();
     },
     isPartial: function(){
-        return this.props.result.content.partial;
+        return this.props.page.content.partial;
     },
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
@@ -125,7 +126,7 @@ module.exports = React.createClass({
     resize_skeleton: function(){
         var self = this;
         _.each(this.state.visible, function(v, k){
-            if(self.props.result.content.parts[k]){
+            if(self.props.page.content.parts[k]){
                 self.heights[k] = $(self.refs[k].getDOMNode()).height();
                 //console.log(k, self.heights[k], self.heights)
             }
@@ -146,16 +147,16 @@ module.exports = React.createClass({
             //console.log(visible, this.state.visible)
             this.setState({visible: visible}, function(){
                 var to_fetch = _.reject(_.keys(self.state.visible), function(k){
-                    return _.contains(self.props.result.requested_parts, k) || self.props.result.content.parts[k];
+                    return _.contains(self.props.page.requested_parts, k) || self.props.page.content.parts[k];
                 });
                 if(to_fetch.length){
-                    Actions.getMoreResult(this.props.result, {requested_parts: to_fetch});
+                    Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
                 }
             });
         }
     },
     render: function(){
-        if(this.props.result.content.error){
+        if(this.props.page.content.error){
             return this.renderError()
         }
         else if(this.isPartial()){
@@ -166,20 +167,19 @@ module.exports = React.createClass({
         }
     },
     renderError: function(){
-        return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.result.content.error}</p></div></div>
+        return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.page.content.error}</p></div></div>
     },
     renderPopovers: function(){
         var self = this;
-        return (this.props.result.open_popovers || []).map(function(link){
-                return (<Popover placement="auto" {...link} onClose={self.popoverClose} onJumpTo={self.popoverJumpTo} key={link.id}/>)
-            });
+        return (this.props.view_settings.popovers || []).map(function(key){
+                var data = this.props.page.popovers[key];
+                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data} page={this.props.page} id={key} key={key} />)
+            }, this);
     },
-    popoverClose: function(popover_id){
-        Actions.popoverClosed(this.props.result, _.find(this.props.result.open_popovers, {id: popover_id}));
-    },
+
     renderStandard: function(){
         return <div className="legislation-result" >
-                <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.result.content.html_content}} />
+                <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.page.content.html_content}} />
                 {this.renderPopovers()}
             </div>
     },
@@ -199,9 +199,9 @@ module.exports = React.createClass({
             if(attributes['data-hook']){
                 var hook = attributes['data-hook'];
                 attributes['ref'] = hook;
-                if(self.state.visible[hook] && self.props.result.content.parts[hook]){
+                if(self.state.visible[hook] && self.props.page.content.parts[hook]){
                     //attributes.style = {height: 'auto'};
-                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.result.content.parts[hook]};
+                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.page.content.parts[hook]};
                 }
                 else if(self.state.visible[hook]){
                     attributes.className = (attributes.className || '') + ' csspinner traditional';
@@ -216,7 +216,7 @@ module.exports = React.createClass({
             return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
         }
         return <div className="legislation-result" onClick={this.interceptLink}>
-                {to_components(this.props.result.content.skeleton)}
+                {to_components(this.props.page.content.skeleton)}
                 {this.renderPopovers()}
             </div>
     },
@@ -248,14 +248,15 @@ module.exports = React.createClass({
             offsets: [],
             targets: []
         };
+
     },
     popoverJumpTo: function(){
-        Actions.articleJumpTo(this.props.result, {
+        Actions.articleJumpTo(this.props.page, {
             id: '#' + this.props.target
         });
     },
-    onJumpTo: function(result, jump){
-        if(result.id !== this.props.result.id) return;
+    onJumpTo: function(page, jump){
+        if(page.id !== this.props.page.id) return;
         var target;
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
@@ -289,33 +290,32 @@ module.exports = React.createClass({
             e.preventDefault();
             if(link.attr('href') !== '#'){
                 if(link.attr('data-link-id')){
-                    var container = $('body'),
-                        scrollTo = $('#'+link.attr('data-target-id'));
-                    Actions.linkOpened(this.props.result,
+                    Actions.popoverOpened(this.props.viewer_id, this.props.page,
                         {
                         type: 'link',
                         title: link.text(),
                         id: link.attr('data-link-id'),
                         target: link.attr('data-target-id'),
-                        positionLeft: link.offset().left,
-                        positionTop:link.offset().top,
-                        fetch: true,
+                        source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
+                        positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
+                        positionTop:link.position().top+ this.getScrollContainer().scrollTop(),
+                        fetched: false,
                         url: link.attr('href')
                     });
                 }
             }
             else if(link.attr('data-def-id')){
-               Actions.definitionOpened(this.props.result,
+               Actions.popoverOpened(this.props.viewer_id, this.props.page,
                     {
                     type: 'definition',
                     title: link.text(),
                     id: link.attr('data-def-idx'),
-                    positionLeft: link.offset().left,
-                    positionTop:link.offset().top,
-                    fetch: true,
-                    url: '/definition/'+this.props.result.content.id+'/'+link.attr('data-def-id')
+                    positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
+                    positionTop:link.position().top + this.getScrollContainer().scrollTop(),
+                    source_sel: '[data-def-idx="'+link.attr('data-link-idx')+'"]',
+                    fetched: false,
+                    url: '/definition/'+this.props.page.content.id+'/'+link.attr('data-def-id')
                 });
-               console.log(link.attr('href'));
             }
         }
      }

@@ -3,38 +3,47 @@ var React = require('react/addons');
 var Col = require('react-bootstrap/Col');
 var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
 var Button = require('react-bootstrap/Button');
+var Actions = require('../actions/Actions');
 var $ = require('jquery');
 
 module.exports = React.createClass({
     mixins: [BootstrapMixin],
+    topOffset: 20,
     getInitialState: function() {
         return {
             placement: 'bottom'
         };
     },
-    componentDidMount: function() {
+    componentDidMount: function(){
+        if(!this.props.fetched){
+            Actions.requestPopoverData(this.props.page, this.props.id);
+        }
+        this.reposition();  
+    },
+    componentDidUpdate: function() {
+        this.reposition();
+    },
+    reposition: function(){
         var self = this;
         var $el = $(this.getDOMNode());
-        var $target = $('[data-link-id=' + this.props.id + ']');
+        var $target = $(this.props.source_sel);
         //TODO use bootstrap layout algorithm
-        $el.css({
-                'left': '-=' + $el.outerWidth() / 2
-            })
-            //jQuery.fn.tooltip.Constructor.prototype.show.call(obj);
+        var left = this.props.positionLeft - ($el.outerWidth() / 2);
+        $el.css({left:  Math.max(0, left)})
+
     },
     close: function() {
-        this.props.onClose(this.props.id)
+         Actions.popoverClosed(this.props.viewer_id, this.props.page, this.props.id);
     },
     scrollTo: function() {
-        this.props.jumpTo(this.props.id, '#' + this.props.target)
-        this.props.onClose(this.props.id);
+         Actions.popoverClosed(this.props.viewer_id, this.props.page, this.props.id);
     },
     render: function() {
         var classes = 'popover def-popover ' + this.state.placement;
         var contentClasses = 'popover-content'
         var style = {};
         style['left'] = this.props.positionLeft;
-        style['top'] = this.props.positionTop + 16;
+        style['top'] = this.props.positionTop + this.topOffset;
         style['display'] = 'block';
 
         var arrowStyle = {};

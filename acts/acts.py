@@ -117,7 +117,6 @@ def process_act_links(tree, db=None):
         map(lambda x: links.add(x[0], x[1]), results)
 
     def create_link(doc, word, result, index):
-        print word, result
         match = doc.createElement('catatref')
         match.setAttribute('href', 'instruments/%s' % result['id'])
         match.appendChild(doc.createTextNode(word))
@@ -131,7 +130,7 @@ def process_act_links(tree, db=None):
 def update_definitions(act_name, id=None, db=None):
     tree = get_act_exact(act_name, id, db)
     if act_name != 'Interpretation Act 1999':
-        _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999'))
+        _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
     else:
         definitions = Definitions()
     tree = process_act_links(tree, db)

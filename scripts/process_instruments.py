@@ -1,25 +1,24 @@
 
 import psycopg2
-from .. import acts
+#from .. import acts
 import sys
 from psycopg2 import extras
 import importlib
+import os
 
-if __name__ == "__main__":
-    conn = connect_db()
+def run(db, config):
 
-    with conn.cursor() as cur:
+    with db.cursor() as cur:
 
-        query = """select id, title from latest_instruments"""
+        query = """select id, title from latest_instruments """
         cur.execute(query)
 
-        results = in_cur.fetchall()
-        for r, i in enumerate(results):
-            print '%d/%d' % (r, len(results))
-            acts.acts.get_act_object(id=r[0], replace=True, db=conn)
+        results = cur.fetchall()
+        for  i, r in enumerate(results):
+            print '%d/%d' % (i, len(results))
+            acts.get_act_object(id=r[0], replace=True, db=db)
 
-    conn.commit()
-    conn.close()
+    db.close()
 
 
 if __name__ == "__main__":
@@ -27,6 +26,10 @@ if __name__ == "__main__":
         raise Exception('Missing configuration file')
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
+    import sys
+    from os import path
+    sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+    from acts import acts
     db = psycopg2.connect(
             database=config.DB,
             user=config.DB_USER,

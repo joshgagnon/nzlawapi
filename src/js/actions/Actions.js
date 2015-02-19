@@ -24,8 +24,8 @@ var Actions = Reflux.createActions([
 	'toggleAdvanced',
 
 	'requestReferences',
-	'linkOpened',
-	'definitionOpened',
+	'popoverOpened',
+	'requestPopoverData',
 	'popoverClosed',
 
 	'closeSaveDialog',

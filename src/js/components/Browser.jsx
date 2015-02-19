@@ -59,8 +59,8 @@ var PageSet = React.createClass({
     renderPage: function(page){
         if(page.content){
             return page.query.search ?
-                    <SearchResults key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} view={this.props.view}/> :
-                    <Article key={page.id} result={page}  popupContainer='.act_browser' viewer_id={this.props.viewer_id} />
+                    <SearchResults key={page.id} result={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
+                    <Article key={page.id} page={page} viewer_id={this.props.viewer_id} view_settings={this.props.view.settings[page.id] || {}}/>
         }
         else{
             return <div className="search-results csspinner traditional"/>;

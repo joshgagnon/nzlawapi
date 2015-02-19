@@ -194,29 +194,32 @@ def find_all_definitions(tree, definitions, expire=True):
 
     for node in nodes:
         # super ugly hack to prevent placeholders likept 'A'
-        text = re.sub('[][()]', '', node.itertext().next())
-        if len(text) > 1:
-            # another hack:  if you are in a  label-para which is in a def-para, you aren't the primary definition
-            try:
-                node.iterancestors('label-para').next().iterancestors('def-para').next()
-            except StopIteration:
-                pass
-            else:
-                continue
-            parent = get_parent(node)
-            temp_id = parent.attrib.get('temp-def-id', str(uuid.uuid4()))
-            parent.attrib['temp-def-id'] = temp_id
+        try:
+            text = re.sub('[][()]', '', node.itertext().next())
+            if len(text) > 1:
+                # another hack:  if you are in a  label-para which is in a def-para, you aren't the primary definition
+                try:
+                    node.iterancestors('label-para').next().iterancestors('def-para').next()
+                except StopIteration:
+                    pass
+                else:
+                    continue
+                parent = get_parent(node)
+                temp_id = parent.attrib.get('temp-def-id', str(uuid.uuid4()))
+                parent.attrib['temp-def-id'] = temp_id
 
-            src = etree.Element('catalex-src')
-            # todo tricky rules
-            src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
-            src.text, src.attrib['href'] = generate_path_string(node)
+                src = etree.Element('catalex-src')
+                # todo tricky rules
+                src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
+                src.text, src.attrib['href'] = generate_path_string(node)
 
-            base = lmtzr.lemmatize(text.lower())
-            expiry_tag = infer_life_time(parent) if expire else None
+                base = lmtzr.lemmatize(text.lower())
+                expiry_tag = infer_life_time(parent) if expire else None
 
-            definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
-                            id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
+                definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
+                                id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
+        except StopIteration:
+            pass
 
 
 def process_definitions(tree, definitions):
@@ -232,7 +235,7 @@ def process_definitions(tree, definitions):
         return match
     monitor = Monitor(500000)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    domxml = node_replace(domxml, definitions, create_def, lower=True, monitor=Monitor(500000))
+    domxml = node_replace(domxml, definitions, create_def, lower=True, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     definitions.apply_definitions(tree)
     return tree, definitions

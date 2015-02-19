@@ -32,6 +32,7 @@ var PageStore = Reflux.createStore({
 	generatePage: function(page){
 		page = page || {};
 		page.id = 'page-'+this.counter++;
+		page.popovers = page.popovers || {};
 		this.pages.push(page);
 		return page;
 	},
@@ -118,40 +119,26 @@ var PageStore = Reflux.createStore({
 	onRemovePage: function(page){
 		var index = _.findIndex(this.pages, page);
 		this.pages = _.without(this.pages, page);
-		/*if(_.isFinite(index) && page.active && this.pages.length){
-            this.pages[Math.max(0, index-1)].active = true;
-        }*/
 		this.trigger({pages: this.pages}, page);
 	},
-	addPopover: function(page, link){
+	onPopoverOpened: function(viewer_id, page, popover){
 		var self = this;
-		if(_.contains(this.pages, page)){
-			page.open_popovers = page.open_popovers || [];
-			page.open_popovers.push(link);
-			if(link.fetch){
-				$.get(link.url)
-					.then(function(data){
-						_.extend(link, data);
-						link.fetch = false;
-						self.trigger({pages: self.pages})
-					});
-			}
+		if(!page.popovers[popover.id]){
+			page.popovers[popover.id] = popover;
+			Actions.updatePage(page);
 		}
 	},
-	onLinkOpened: function(page, link){
-		//$
-		this.addPopover(page, link);
-		this.trigger({pages: this.pages}, page);
-	},
-	onDefinitionOpened: function(page, link){
-		//$
-		this.addPopover(page, link);
-		this.trigger({pages: this.pages}, page);
-	},
-	onPopoverClosed: function(page, link){
-		if(_.contains(this.pages, page)){
-			page.open_popovers = _.without(page.open_popovers, link);
-			this.trigger({pages: this.pages}, page);
+	onRequestPopoverData: function(page, popover_id){
+		var popover = page.popovers[popover_id];
+		if(!popover.fetched){
+			popover.fetched = true;
+			$.get(popover.url)
+				.then(function(response){
+					_.extend(popover, response);
+				})
+				.always(function(){
+					Actions.updatePage(page);
+				}.bind(this))
 		}
 	}
 });
