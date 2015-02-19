@@ -29,7 +29,7 @@ module.exports = React.createClass({
         var $target = $(this.props.source_sel);
         //TODO use bootstrap layout algorithm
         var left = this.props.positionLeft - ($el.outerWidth() / 2);
-        $el.css({left:  Math.max(0, left)})
+        $el.css({left:  Math.max(0, left)});
 
     },
     close: function() {
@@ -71,12 +71,12 @@ module.exports = React.createClass({
                 <div className="popover-footer">
                 <div className="row">
 
-                <Col md={6}>
+
                     <Button onClick={this.scrollTo}>Scroll To</Button >
-                    </Col>
-                <Col md={6}>
+
+
                     <Button  onClick={this.open}>Open</Button >
-                </Col>
+
                 </div>
                 </div>
             </div>

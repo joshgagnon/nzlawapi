@@ -49,7 +49,7 @@ module.exports = React.createClass({
         });
     }], */
     ],
-    scroll_threshold: 20000,
+    scroll_threshold: 5000,
     propTypes: {
        page: React.PropTypes.object.isRequired,
        view_settings: React.PropTypes.object.isRequired,
@@ -64,12 +64,12 @@ module.exports = React.createClass({
     componentDidMount: function(){
         this.setup_scroll();
         if(this.isPartial()){
-            this.resize_skeleton();
+            this.resizeSkeleton();
             this.check_sub_visibility();
         }
     },
     componentDidUpdate: function(){
-        this.resize_skeleton();
+        this.resizeSkeleton();
     },
     isPartial: function(){
         return this.props.page.content.partial;
@@ -121,41 +121,47 @@ module.exports = React.createClass({
         this.heights = {};
     },
     calculate_height: function(count, width){
-        return Math.max(count/width * 50 -450, 28);
+        return 500;
     },
-    resize_skeleton: function(){
+    resizeSkeleton: function(){
         var self = this;
         _.each(this.state.visible, function(v, k){
-            if(self.props.page.content.parts[k]){
-                self.heights[k] = $(self.refs[k].getDOMNode()).height();
+            if(self.props.page.content && self.props.page.content.parts && self.props.page.content.parts[k]){
+                self.heights[k] = self.refs[k].getDOMNode().outerHeight;
                 //console.log(k, self.heights[k], self.heights)
             }
         });
     },
     check_sub_visibility: function(){
-        var self = this;
-        var visible = {};
-        var top = this.getScrollContainer().scrollTop();
-        var height = this.getScrollContainer().height();
-        var change = false;
-        _.each(this.refs, function(r, k){
-            if($(r.getDOMNode()).isOnScreen(self.scroll_threshold)){
-                visible[k] = true;
-            }
-        });
-        if(!_.isEqual(visible, this.state.visible)){
-            //console.log(visible, this.state.visible)
-            this.setState({visible: visible}, function(){
-                var to_fetch = _.reject(_.keys(self.state.visible), function(k){
-                    return _.contains(self.props.page.requested_parts, k) || self.props.page.content.parts[k];
-                });
-                if(to_fetch.length){
-                    Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
+        if(this.isMounted()){
+            var self = this;
+            var visible = {};
+            var top = this.getScrollContainer().scrollTop();
+            var height = this.getScrollContainer().height();
+            var change = false;
+            _.each(this.refs, function(r, k){
+                if($(r.getDOMNode()).isOnScreen(self.scroll_threshold)){
+                    visible[k] = true;
                 }
             });
+            if(!_.isEqual(visible, this.state.visible)){
+                this.setState({visible: visible}, function(){
+                    var to_fetch = _.reject(_.keys(self.state.visible), function(k){
+                        return _.contains(self.props.page.requested_parts, k) || self.props.page.content.parts[k];
+                    });
+                    if(to_fetch.length){
+                        Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
+                    }
+                });
+            }
         }
     },
+    shouldComponentUpdate: function(newProps, newState){
+        //console.log(newProps);
+        return true;
+    },
     render: function(){
+        console.log('article render')
         if(this.props.page.content.error){
             return this.renderError()
         }
@@ -205,14 +211,17 @@ module.exports = React.createClass({
                 }
                 else if(self.state.visible[hook]){
                     attributes.className = (attributes.className || '') + ' csspinner traditional';
+                    attributes.style = {height: self.heights[hook] || self.calculate_height(attributes['data-hook-length']|0, 1000)};
                 }
                 else{
                     attributes.style = {height: self.heights[hook] || self.calculate_height(attributes['data-hook-length']|0, 1000)};
                 }
             }
             if(attributes['data-hook']){
+
                 return React.DOM[v.tag](attributes);
             }
+
             return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
         }
         return <div className="legislation-result" onClick={this.interceptLink}>
@@ -281,7 +290,7 @@ module.exports = React.createClass({
         $parent.off('scroll', this.debounce_scroll);
         if(this.isPartial()){
             $parent.off('scroll', this.debounce_visibility);
-            $(window).off('resize', this.debounce.reset_heights);
+            $(window).off('resize', this.reset_heights);
         }
     },
     interceptLink: function(e){

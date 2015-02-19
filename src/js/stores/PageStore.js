@@ -7,7 +7,6 @@ var $ = require('jquery');
 //var findText = require('../util/findText.js');
 
 
-var partial_docs = ['act', 'regulation'];
 
 
 /*function Article(data){
@@ -27,6 +26,9 @@ var PageStore = Reflux.createStore({
 		this.counter = 0;
 	},
 	onUpdatePage: function(page){
+		var index = _.indexOf(this.pages, page);
+		this.pages[index] = _.extend({}, page);
+		this.pages = this.pages.slice();
 		this.trigger({pages: this.pages}, page);
 	},
 	generatePage: function(page){
@@ -55,14 +57,22 @@ var PageStore = Reflux.createStore({
 		this.trigger({pages: this.pages});
 		Actions.showPage(viewer_id, page.id, {advanced_search: true});
 	},
+	getById: function(id){
+		return _.find(this.pages, {id: id});
+	},
 	onRequestPage: function(page){
 		//todo, guards in Action pre emit
 		if(!page.fetching && !page.fetched){
 			page.fetching = true;
 			$.get('/query', page.query)
 				.then(function(data){
+					page = this.getById(page.id);
 					page.fetching = false;
 					page.fetched = true;
+					page.query.type = data.type;
+					if(data.id){
+						page.query.id = data.id;
+					}
 					if(_.contains(this.pages, page)){
 						page.content = data;
 						if(data.title){
@@ -72,10 +82,11 @@ var PageStore = Reflux.createStore({
 					}
 				}.bind(this),
 				function(response){
+					page = this.getById(page.id);
 					page.title = 'Error';
 					page.content = response.responseJSON || {error: 'A problem occurred'};
 					Actions.updatePage(page);
-				});
+				}.bind(this));
 			Actions.updatePage(page);
 		}
 	},
@@ -84,6 +95,7 @@ var PageStore = Reflux.createStore({
 		if(!page.finished && page.query.search && page.content.search_results.hits.length){
 			$.get('/query', _.extend({offset: page.content.search_results.hits.length}, page.query))
 				.then(function(data){
+					page = this.getById(page.id);
 					page.offset = data.offset;
 					page.content.search_results.hits = page.content.search_results.hits.concat(data.search_results.hits);
 					page.fetching = false;
@@ -91,23 +103,26 @@ var PageStore = Reflux.createStore({
 						page.finished = true;
 					}
 					Actions.updatePage(page);
-				},function(){
+				}.bind(this),function(){
+					page = this.getById(page.id);
 					page.finished = true;
 					Actions.updatePage(page);
-				})
+				}.bind(this))
 		}
-		else if(_.contains(partial_docs, page.query.type)){
+		else if(to_add.requested_parts && to_add.requested_parts.length){
 			var to_fetch = _.difference(to_add.requested_parts, page.requested_parts);
 			page.requested_parts = _.union(page.requested_parts, to_add.requested_parts);
 			if(to_fetch.length){
 				$.get('/query', _.defaults({find: 'more', requested_parts: to_fetch}, page.query))
 					.then(function(data){
+						page = this.getById(page.id);
 						page.content.parts = _.extend({}, page.content.parts, data.parts);
 						Actions.updatePage(page);
-					},function(){
+					}.bind(this),function(response){
+						page = this.getById(page.id);
 						page.content = response.responseJSON || {error: 'A problem occurred'};
 						Actions.updatePage(page);
-					});
+					}.bind(this));
 			}
 		}
 		Actions.updatePage(page);
@@ -125,10 +140,12 @@ var PageStore = Reflux.createStore({
 		var self = this;
 		if(!page.popovers[popover.id]){
 			page.popovers[popover.id] = popover;
+			//TODO, don't update the page
 			Actions.updatePage(page);
 		}
 	},
 	onRequestPopoverData: function(page, popover_id){
+		//TODO, don't update the page
 		var popover = page.popovers[popover_id];
 		if(!popover.fetched){
 			popover.fetched = true;

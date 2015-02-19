@@ -72,6 +72,19 @@
         </div>
     </xsl:template>
 
+    <xsl:template match="sop">
+        <div class="legislation">
+            <div>
+            <div class="sop top-level">
+                    <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:attribute>
+                </div>
+        <xsl:apply-templates />
+            </div>
+        </div>
+    </xsl:template>
+
     <xsl:template match="cover|billdetail">
         <div class="cover reprint">
             <xsl:if test="@data-hook!=''">

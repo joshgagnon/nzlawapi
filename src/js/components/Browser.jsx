@@ -56,6 +56,9 @@ var PageSet = React.createClass({
         var result = _.find(this.props.pages, function(d){ return d.id === id});
         Actions.removePage(result);
     },
+    shouldComponentUpdate: function(newProps, newState){
+        return (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
+    },
     renderPage: function(page){
         if(page.content){
             return page.query.search ?
@@ -82,6 +85,7 @@ var PageSet = React.createClass({
             </TabbedArea></div>)
     },
     render: function(){
+        console.log('render', this.props.viewer_id)
         if(this.props.pages.length >= 2){
             return this.renderTabs();
         }

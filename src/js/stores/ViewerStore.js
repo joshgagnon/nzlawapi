@@ -43,12 +43,14 @@ module.exports =  Reflux.createStore({
 	onToggleAdvanced: function(viewer_id, page_id){
 		this.prepPage(viewer_id, page_id);
 		this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
+		this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
 		this.update();
 	},
 	onShowPage: function(viewer_id, page_id, options){
 		this.prepPage(viewer_id, page_id);
 		this.views[viewer_id].active_page_id = page_id;
 		this.views[viewer_id].settings[page_id] = _.extend({}, this.views[viewer_id].settings[page_id], options);
+		this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
 		this.update();
 	},
 	onPopoverOpened: function(viewer_id, page, link){
@@ -56,11 +58,13 @@ module.exports =  Reflux.createStore({
 		this.prepPage(viewer_id, page.id);
 		this.views[viewer_id].settings[page.id].popovers.push(link.id);
 		this.views[viewer_id].settings[page.id].popovers = _.unique(this.views[viewer_id].settings[page.id].popovers);
+		this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
 		this.update();
 	},
 	onPopoverClosed: function(viewer_id, page, link_id){
 		this.prepPage(viewer_id, page.id);
 		this.views[viewer_id].settings[page.id].popovers = _.without(this.views[viewer_id].settings[page.id].popovers, link_id);
+		this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
 		this.update();
 	}
 });

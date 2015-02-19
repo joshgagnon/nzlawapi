@@ -29,7 +29,9 @@
 
 
     <xsl:template match="thead">
+      <thead>
          <xsl:apply-templates select="row"/>
+       </thead>
     </xsl:template>
 
 

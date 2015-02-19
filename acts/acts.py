@@ -176,7 +176,7 @@ def act_skeleton_response(act):
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'title': act.title,
         'attributes': act.attributes,
-        'parts': {},
+        'parts': [],
         'id': act.id,
         'type': 'instrument',
         'partial': True
@@ -203,7 +203,7 @@ def act_fragment_response(act):
     }
 
 def act_response(act):
-    if len(act.tree.xpath('.//*')) > 5000000: # move magic number somewhere
+    if len(act.tree.xpath('.//*')) > 1000000: # move magic number somewhere
         return act_skeleton_response(act)
     else:
         return act_full_response(act)
@@ -218,7 +218,7 @@ def act_part_response(act, parts):
             else:
                 s += etree.tostring(node, encoding='UTF-8', method="html")
         return s
-
+    act.calculate_hooks()
     return {
         'parts': {act.parts[e].attrib['data-hook']: render_inner(act.parts[e]) for e in parts or [] }
     }
