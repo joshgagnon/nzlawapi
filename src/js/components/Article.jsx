@@ -38,9 +38,10 @@ $.fn.isOnScreen = function(tolerance){
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
 };
 
+// TODO, break into popovers, and article,
+// return false on equality
 
-
-module.exports = React.createClass({
+var Article = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
         /*     mixins: [Reflux.connectFilter(postStore,"post", function(posts) {
@@ -52,7 +53,7 @@ module.exports = React.createClass({
     scroll_threshold: 5000,
     propTypes: {
        page: React.PropTypes.object.isRequired,
-       view_settings: React.PropTypes.object.isRequired,
+       //view_settings: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
         this.heights = {};
@@ -175,19 +176,10 @@ module.exports = React.createClass({
     renderError: function(){
         return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.page.content.error}</p></div></div>
     },
-    renderPopovers: function(){
-        var self = this;
-        return (this.props.view_settings.popovers || []).map(function(key){
-                var data = this.props.page.popovers[key];
-                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data} page={this.props.page} id={key} key={key} />)
-            }, this);
-    },
+
 
     renderStandard: function(){
-        return <div className="legislation-result" >
-                <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.page.content.html_content}} />
-                {this.renderPopovers()}
-            </div>
+        return <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.page.content.html_content}} />
     },
     renderSkeleton: function(){
         var self = this;
@@ -224,9 +216,8 @@ module.exports = React.createClass({
 
             return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
         }
-        return <div className="legislation-result" onClick={this.interceptLink}>
+        return <div onClick={this.interceptLink}>
                 {to_components(this.props.page.content.skeleton)}
-                {this.renderPopovers()}
             </div>
     },
     refresh: function(){
@@ -329,3 +320,32 @@ module.exports = React.createClass({
         }
      }
 });
+
+ var Popovers = React.createClass({
+    shouldComponentUpdate: function(newProps){
+        console.log(this.props.popoverView , newProps.popoverView,this.props.popoverData , newProps.popoverData)
+        return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
+    },
+    render: function(){
+        var self = this;
+        return <div>{ (this.props.popoverView || []).map(function(key){
+                var data = this.props.popoverData[key];
+                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data} page={this.props.page} id={key} key={key} />)
+            }, this)}</div>
+    }
+ });
+
+ module.exports = React.createClass({
+    render: function(){
+        //Article,
+        //Popovers
+        return <div className="legislation-result" >
+            <Article {...this.props}/>
+           <Popovers
+                popoverData={this.props.page.popovers}
+                popoverView={this.props.view.popovers[this.props.page.id]}
+                viewer_id={this.props.viewer_id}
+                page={this.props.page}/>
+        </div>
+    }
+ });

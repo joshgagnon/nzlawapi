@@ -140,7 +140,7 @@ var PageStore = Reflux.createStore({
 		var self = this;
 		if(!page.popovers[popover.id]){
 			page.popovers[popover.id] = popover;
-			//TODO, don't update the page
+			page.popovers = _.extend({}, page.popovers);
 			Actions.updatePage(page);
 		}
 	},
@@ -154,6 +154,8 @@ var PageStore = Reflux.createStore({
 					_.extend(popover, response);
 				})
 				.always(function(){
+					page = this.getById(page.id);
+					page.popovers = _.extend({}, page.popovers);
 					Actions.updatePage(page);
 				}.bind(this))
 		}

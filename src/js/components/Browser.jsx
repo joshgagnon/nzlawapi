@@ -63,7 +63,7 @@ var PageSet = React.createClass({
         if(page.content){
             return page.query.search ?
                     <SearchResults key={page.id} result={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
-                    <Article key={page.id} page={page} viewer_id={this.props.viewer_id} view_settings={this.props.view.settings[page.id] || {}}/>
+                    <Article key={page.id} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
         }
         else{
             return <div className="search-results csspinner traditional"/>;
@@ -108,6 +108,7 @@ module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(PageStore, 'onPages'),
         Reflux.listenTo(ViewerStore, 'onViewer'),
+        // MOVE TO CHILD, maybe
         Reflux.listenTo(DialogStore, 'onDialog'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
