@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
 from db import get_db
-from util import CustomException, tohtml, etree_to_dict, get_title
+from util import CustomException, tohtml, etree_to_dict, get_title, node_replace, MatchError
 from definitions import populate_definitions, process_definitions, Definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, \
     find_schedule_node, find_node_by_query, find_node_by_govt_id, find_document_id_by_govt_id, find_node_by_location
 from lxml import etree
 from copy import deepcopy
+from flask import current_app
 from psycopg2 import extras
+from xml.dom import minidom
 import json
 import os
 import datetime
+import re
 
 
 class Act(object):
@@ -77,28 +81,50 @@ def get_act_exact(act, id=None, db=None):
             raise CustomException("Act not found")
 
 
-import re
-from xml.dom import minidom
-#TODO finish, move to utils
 def process_act_links(tree, db=None):
-    return tree
-    with (db or get_db()).cursor() as cur:
-        query = """
-            SELECT title, source_id FROM
-                acts WHERE latest_version = True
-                UNION
-            SELECT title, source_id
-                regulations WHERE latest_version = True
-            """
-        cur.execute(query)
-        results = {v[1]: v[0] for v in cur.fetchall()}
-        regex = re.compile('(%s)' % results.values().join('|'))
-        domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-        nodes = tree.xpath('//*[text()]')
-        for node in nodes:
-            if node.text.matches(regex):
-                pass
+    class InstrumentLink(object):
+        use_life_cycle = False
+        def __init__(self):
+            self.active = {}
+            self.regex = None
 
+        def add(self, title, id):
+            self.active[unicode(title.decode('utf-8'))] = {'id': id, 'title': title}
+
+        def ordered(self):
+            return sorted(self.active.keys(), key=lambda x: len(x), reverse=True)
+
+        def combined_reg(self):
+            match_string = u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), self.ordered()))
+            return re.compile(match_string, flags=re.I)
+
+        def get_regex(self):
+            if not self.regex:
+                self.regex = self.combined_reg()
+            return self.regex
+
+        def get_active(self, key):
+            if key not in self.active:
+                raise MatchError()
+            return self.active[key]
+
+    query = """ select title, id from latest_instruments """
+
+    with (db or get_db()).cursor() as cur:
+        cur.execute(query)
+        results = cur.fetchall()
+        links = InstrumentLink()
+        map(lambda x: links.add(x[0], x[1]), results)
+
+    def create_link(doc, word, result, index):
+        print word, result
+        match = doc.createElement('catatref')
+        match.setAttribute('href', 'instruments/%s' % result['id'])
+        match.appendChild(doc.createTextNode(word))
+        return match
+    domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+    domxml = node_replace(domxml, links, create_link)
+    tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree
 
 
@@ -132,11 +158,10 @@ def get_act_object(act_name=None, id=None, db=None, replace=False):
         query = """SELECT * FROM latest_instruments
                 where (%(act)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
             """
-        if not replace:
-            cur.execute(query, {'act': act_name, 'id': id})
-            result = cur.fetchone()
-            if not result.get('id'):
-                raise CustomException('Act not found')
+        cur.execute(query, {'act': act_name, 'id': id})
+        result = cur.fetchone()
+        if not result.get('id'):
+            raise CustomException('Act not found')
         if replace or not result.get('processed_document'):
             tree, _ = update_definitions(act_name, id, db=db)
         else:
@@ -212,7 +237,8 @@ def get_act_node_by_id(node_id):
         id = find_document_id_by_govt_id(node_id)
     else:
         id = node_id
-    act = get_act_object(id=id)
+    act = get_act_object(id=id,
+                         replace=current_app.config.get('REPROCESS_DOCS'))
     """ if the node is root, just get cover """
     if node_id == id:
         pass
@@ -226,7 +252,8 @@ def get_act_node_by_id(node_id):
 def query_act(args):
     if not any((args.get('act_name', args.get('title')), args.get('id'))):
         raise CustomException('No instrument specified')
-    act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'))
+    act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'),
+                         replace=current_app.config.get('REPROCESS_DOCS'))
     # act.calculate_hooks()
     find = args.get('find')
     if find == 'full':

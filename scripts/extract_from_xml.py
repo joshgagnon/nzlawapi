@@ -38,6 +38,8 @@ def process(type, db, config):
                     attrib = tree.getroot().attrib
                     if attrib.get('id'):
                         title = etree.tostring(tree.xpath('.//billref|.//title')[0], method="text", encoding="UTF-8")
+                        #TODO
+                        title = title.replace('\n', '').strip()
                         query = """INSERT INTO instruments (id, govt_id, version, title, path, number, date_as_at, type,
                                 date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed, in_amend,
                                 pco_suffix, raised_by, official, subtype, terminated, stage, date_signed, imperial, instructing_office, attributes)

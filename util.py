@@ -2,6 +2,9 @@ from lxml import etree
 from collections import defaultdict
 import os
 import urllib
+import re
+from xml.dom import minidom
+
 
 class CustomException(Exception):
     pass
@@ -125,61 +128,56 @@ def generate_path_string(node, no_query=False):
         'query?%s' % urllib.urlencode({'query': result.encode('utf-8'), 'type': 'instrument', 'find': 'location', 'title': title.encode('utf-8')}))
 
 
+class MatchError(Exception):
+    pass
 
-import re
-from xml.dom import minidom
-
-#TODO finish writing this
-def node_replace(tree, create_wrapper, ignore_fields=None):
-    ignore_fields = ignore_fields or ['a', 'skeleton', 'history-note', 'title', 'heading']
-
-    def process_node(parent, defs, monitor=None):
-        doc = parent.ownerDocument
-
-        def create_def(word, definition, index):
-            match = doc.createElement('catalex-def')
-            match.setAttribute('def-id', definition.id)
-            match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
-            match.appendChild(doc.createTextNode(word))
-            return match
-
+def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignore_fields=None):
+    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading']
+    def process_node(parent):
         for node in parent.childNodes[:]:  # better clone, as we will modify
             if monitor and not monitor.cont():
                 return
             if node.nodeType == node.ELEMENT_NODE and node.tagName in ignore_fields:
                 continue
-            elif node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
-                defs.enable_tag(node.getAttribute('id'))
+            elif store.use_life_cycle and  node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+                store.enable_tag(node.getAttribute('id'))
             if node.nodeType == node.TEXT_NODE:
-                reg = defs.get_regex()
+                reg = store.get_regex()
                 lines = [node.nodeValue]
                 i = 0
                 count = 0
                 while i < len(lines):
                     line = lines[i]
                     while isinstance(line, basestring):
-                        match = reg.search(line.lower())
+                        match = reg.search(line.lower() if lower else line)
                         if not match:
                             break
-                        definition = defs.get_active(lmtzr.lemmatize(match.group(2)))
-                        span = (match.span(2)[0], match.span(3)[1])
-                        lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition, count), line[span[1]:]]
-                        i += 2
-                        count += 1
-                        line = line[span[1]:]
+                        if monitor:
+                            monitor.match()
+                        try:
+                            result = store.get_active(match.group(2))
+                            span = (match.span(2)[0], match.span(3)[1])
+                            lines[i:i + 1] = [line[:span[0]], create_wrapper(domxml, line[span[0]:span[1]], result, count), line[span[1]:]]
+                            i += 2
+                            count += 1
+                            line = line[span[1]:]
+                        except MatchError:
+                            break
                     i += 1
                 lines = filter(lambda x: x, lines)
-                new_nodes = map(lambda x: doc.createTextNode(x) if isinstance(x, basestring) else x, lines)
+                new_nodes = map(lambda x: domxml.createTextNode(x) if isinstance(x, basestring) else x, lines)
 
-                if len(new_nodes) > 1:
+                if len(new_nodes) > 0:
                     [parent.insertBefore(n, node) for n in new_nodes]
                     parent.removeChild(node)
             else:
-                process_node(node, defs, monitor)
+                process_node(node)
 
-            if node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
-                defs.expire_tag(node.getAttribute('id'))
+            if store.use_life_cycle and node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+                store.expire_tag(node.getAttribute('id'))
 
+    process_node(domxml)
+    return domxml
 
 def etree_to_dict(t):
     d = {'children' : map(etree_to_dict, iter(t)), 'tag': t.tag}

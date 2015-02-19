@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from util import tohtml, generate_path_string
+from util import tohtml, generate_path_string, node_replace
 #from nltk.stem import *
 from lxml import etree
 #from nltk.stem.snowball import SnowballStemmer
@@ -47,7 +47,6 @@ class Definition(object):
             if isinstance(x, str):
                 self.xmls[i] = dicttree[x]
 
-
     def render(self):
         xml = etree.Element('catalex-def-para')
         [xml.append(deepcopy(x)) for x in self.xmls]
@@ -58,6 +57,7 @@ class Definition(object):
 
 
 class Definitions(object):
+    use_life_cycle = True
 
     def __init__(self):
         self.pool = defaultdict(list)
@@ -65,6 +65,7 @@ class Definitions(object):
         self.regex = None
 
     def get_active(self, key):
+        key = lmtzr.lemmatize(key)
         if key in self.active:
             return self.active[key][-1]
         else:
@@ -100,7 +101,7 @@ class Definitions(object):
         return sorted(current, key=lambda x: len(x.key), reverse=True)
 
     def combined_reg(self):
-        keys = map(lambda x: x.key, self.ordered_defs())
+        keys = map(lambda x:  re.escape(x.key), self.ordered_defs())
         match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" % '|'.join(keys)
         return re.compile(match_string, flags=re.I)
 
@@ -127,7 +128,7 @@ class Definitions(object):
 
 class Monitor(object):
     i = 0
-
+    matches = 0
     def __init__(self, max):
         self.max = max
 
@@ -135,54 +136,8 @@ class Monitor(object):
         self.i += 1
         return self.i < self.max
 
-
-def process_node(parent, defs, title, monitor):
-    ignore_fields = ['a', 'skeleton', 'history-note', 'title', 'heading']
-    doc = parent.ownerDocument
-
-    def create_def(word, definition, index):
-        match = doc.createElement('catalex-def')
-        match.setAttribute('def-id', definition.id)
-        match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
-        match.appendChild(doc.createTextNode(word))
-        return match
-
-    for node in parent.childNodes[:]:  # better clone, as we will modify'
-        if not monitor.cont():
-            return
-        if node.nodeType == node.ELEMENT_NODE and node.tagName in ignore_fields:
-            continue
-        elif node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
-            defs.enable_tag(node.getAttribute('id'))
-        if node.nodeType == node.TEXT_NODE:
-            reg = defs.get_regex()
-            lines = [node.nodeValue]
-            i = 0
-            count = 0
-            while i < len(lines):
-                line = lines[i]
-                while isinstance(line, basestring):
-                    match = reg.search(line.lower())
-                    if not match:
-                        break
-                    definition = defs.get_active(lmtzr.lemmatize(match.group(2)))
-                    span = (match.span(2)[0], match.span(3)[1])
-                    lines[i:i + 1] = [line[:span[0]], create_def(line[span[0]:span[1]], definition, count), line[span[1]:]]
-                    i += 2
-                    count += 1
-                    line = line[span[1]:]
-                i += 1
-            lines = filter(lambda x: x, lines)
-            new_nodes = map(lambda x: doc.createTextNode(x) if isinstance(x, basestring) else x, lines)
-
-            if len(new_nodes) > 1:
-                [parent.insertBefore(n, node) for n in new_nodes]
-                parent.removeChild(node)
-        else:
-            process_node(node, defs, title, monitor)
-
-        if node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
-            defs.expire_tag(node.getAttribute('id'))
+    def match(self):
+        self.matches += 1
 
 
 def infer_life_time(node):
@@ -264,15 +219,20 @@ def find_all_definitions(tree, definitions, expire=True):
                             id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
 
 
-
 def process_definitions(tree, definitions):
-    title = tree.xpath('.//billref|.//title')[0].text
     find_all_definitions(tree, definitions, expire=True)
     print 'Completed definition extraction'
     print '%d nodes to scan' % len(tree.xpath('.//*'))
+
+    def create_def(doc, word, definition, index):
+        match = doc.createElement('catalex-def')
+        match.setAttribute('def-id', definition.id)
+        match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
+        match.appendChild(doc.createTextNode(word))
+        return match
     monitor = Monitor(500000)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    process_node(domxml, definitions, title, monitor)
+    domxml = node_replace(domxml, definitions, create_def, lower=True, monitor=Monitor(500000))
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     definitions.apply_definitions(tree)
     return tree, definitions

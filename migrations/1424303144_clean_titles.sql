@@ -1,0 +1,1 @@
+update instruments set title = regexp_replace(trim(title), E'[\\n\\r]+', ' ', 'g' )
