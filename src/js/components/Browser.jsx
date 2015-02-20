@@ -232,7 +232,7 @@ module.exports = React.createClass({
         }
     },
     showSidebar: function(page){
-        if(page && !page.query.search && page.content){
+        if(page && !(page.query && page.query.search) && page.content){
             return true;
         }
         return false;

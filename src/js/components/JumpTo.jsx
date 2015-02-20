@@ -18,8 +18,15 @@ module.exports = React.createClass({
     onPositionChange: function(value){
         this.setState({article_location: value.repr});
     },
+    onKeyDown: function(event){
+         if (event.key === 'Enter'){
+            this.jumpTo();
+         }
+    },
     jumpTo: function(e){
-        e.preventDefault();
+        if(e){
+            e.preventDefault();
+        }
         var loc = this.state.article_location;
         if(loc){
             var m = _.filter(loc.split(/[,()]/)).map(function(s){
@@ -36,7 +43,7 @@ module.exports = React.createClass({
         }
     },
     render: function(){
-        return <Input ref="jump_to" name="jump_to" type="text"
+        return <Input ref="jump_to" name="jump_to" type="text" onKeyDown={this.onKeyDown}
             bsStyle={this.state.jumpToError ? 'error': null} hasFeedback={!!this.state.jumpToError}
             valueLink={this.linkState('article_location')}
             buttonAfter={<Button type="input" bsStyle="info" onClick={this.jumpTo}>Jump To</Button>} />

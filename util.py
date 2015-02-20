@@ -125,7 +125,7 @@ def generate_path_string(node, no_query=False):
     title = get_title(node.getroottree())
 
     return (u'%s %s' % (title, result),
-        'query?%s' % urllib.urlencode({'query': result.encode('utf-8'), 'type': 'instrument', 'find': 'location', 'title': title.encode('utf-8')}))
+        'query?%s' % urllib.urlencode({'query': result.encode('utf-8'), 'doc_type': 'instrument', 'find': 'location', 'title': title.encode('utf-8')}))
 
 
 class MatchError(Exception):
