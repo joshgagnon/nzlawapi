@@ -53,8 +53,7 @@ var PageSet = React.createClass({
         Actions.showPage(this.props.viewer_id, active);
     },
     closeTab: function(id){
-        var result = _.find(this.props.pages, function(d){ return d.id === id});
-        Actions.removePage(result);
+        Actions.removePage(id);
     },
     shouldComponentUpdate: function(newProps, newState){
         return (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
@@ -118,7 +117,7 @@ module.exports = React.createClass({
             advanced_search: false,
             pages: [],
             views: ViewerStore.getDefaultData(),
-            underlines: false,
+            underlines: true, //false,
             save_dialog: false,
             load_dialog: false
         };
@@ -127,12 +126,12 @@ module.exports = React.createClass({
         if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
             Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 0);
         }
-        else if(this.getParams().type){
-            Actions.newPage({query: {type: this.getParams().type,  query: this.getParams().id, find: 'id'}}, 0);
+        else if(this.getParams().doc_type){
+            Actions.newPage({query: {doc_type: this.getParams().doc_type,  query: this.getParams().id, find: 'id'}}, 0);
         }
-        window.addEventListener('onResize', function(){
+       /* window.addEventListener('onResize', function(){
             //TODO, debouce, measure width, hide,
-        });
+        });*/
     },
     onPages: function(data){
         this.setState({pages: data.pages});
@@ -158,7 +157,7 @@ module.exports = React.createClass({
         var title;
         if(this.showLocation()){
             query = {
-                type: this.state.article_type,
+                doc_type: this.state.article_type,
                 find: !this.state.location ? 'full' : 'location',
                 query: this.state.location,
                 id: this.state.document_id
@@ -167,7 +166,7 @@ module.exports = React.createClass({
         }
         else if(this.state.document_id){
             query = {
-                type: this.state.article_type,
+                doc_type: this.state.article_type,
                 find: this.state.find,
                 query: this.state.query,
                 id: this.state.document_id
@@ -176,7 +175,7 @@ module.exports = React.createClass({
         }
         else{
             query = {
-                type: 'all',
+                doc_type: 'all',
                 search: 'basic',
                 query: this.state.search_query
             };

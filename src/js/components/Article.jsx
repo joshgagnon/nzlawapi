@@ -41,7 +41,7 @@ $.fn.isOnScreen = function(tolerance){
 // TODO, break into popovers, and article,
 // return false on equality
 
-var Article = React.createClass({
+var ArticleContent = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
         /*     mixins: [Reflux.connectFilter(postStore,"post", function(posts) {
@@ -52,15 +52,11 @@ var Article = React.createClass({
     ],
     scroll_threshold: 5000,
     propTypes: {
-       page: React.PropTypes.object.isRequired,
-       //view_settings: React.PropTypes.object.isRequired,
+       content: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
         this.heights = {};
         return {visible: {}};
-    },
-    get_definition: function(id){
-        return this.props.page.content.definitions[id];
     },
     componentDidMount: function(){
         this.setup_scroll();
@@ -73,7 +69,7 @@ var Article = React.createClass({
         this.resizeSkeleton();
     },
     isPartial: function(){
-        return this.props.page.content.partial;
+        return this.props.content.partial;
     },
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
@@ -127,7 +123,7 @@ var Article = React.createClass({
     resizeSkeleton: function(){
         var self = this;
         _.each(this.state.visible, function(v, k){
-            if(self.props.page.content && self.props.page.content.parts && self.props.page.content.parts[k]){
+            if(self.props.content && self.props.content.parts && self.props.content.parts[k]){
                 self.heights[k] = self.refs[k].getDOMNode().outerHeight;
                 //console.log(k, self.heights[k], self.heights)
             }
@@ -148,7 +144,7 @@ var Article = React.createClass({
             if(!_.isEqual(visible, this.state.visible)){
                 this.setState({visible: visible}, function(){
                     var to_fetch = _.reject(_.keys(self.state.visible), function(k){
-                        return _.contains(self.props.page.requested_parts, k) || self.props.page.content.parts[k];
+                        return _.contains(self.props.requested_parts, k) || self.props.content.parts[k];
                     });
                     if(to_fetch.length){
                         Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
@@ -158,12 +154,13 @@ var Article = React.createClass({
         }
     },
     shouldComponentUpdate: function(newProps, newState){
-        //console.log(newProps);
-        return true;
+        console.log('shoud', this.props.content !== newProps.content)
+        //bug getting here
+        return this.props.content !== newProps.content;
     },
     render: function(){
         console.log('article render')
-        if(this.props.page.content.error){
+        if(this.props.content.error){
             return this.renderError()
         }
         else if(this.isPartial()){
@@ -174,12 +171,12 @@ var Article = React.createClass({
         }
     },
     renderError: function(){
-        return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.page.content.error}</p></div></div>
+        return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.content.error}</p></div></div>
     },
 
 
     renderStandard: function(){
-        return <div onClick={this.interceptLink} dangerouslySetInnerHTML={{__html:this.props.page.content.html_content}} />
+        return <div dangerouslySetInnerHTML={{__html:this.props.content.html_content}} />
     },
     renderSkeleton: function(){
         var self = this;
@@ -197,9 +194,9 @@ var Article = React.createClass({
             if(attributes['data-hook']){
                 var hook = attributes['data-hook'];
                 attributes['ref'] = hook;
-                if(self.state.visible[hook] && self.props.page.content.parts[hook]){
+                if(self.state.visible[hook] && self.props.content.parts[hook]){
                     //attributes.style = {height: 'auto'};
-                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.page.content.parts[hook]};
+                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.content.parts[hook]};
                 }
                 else if(self.state.visible[hook]){
                     attributes.className = (attributes.className || '') + ' csspinner traditional';
@@ -216,8 +213,8 @@ var Article = React.createClass({
 
             return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
         }
-        return <div onClick={this.interceptLink}>
-                {to_components(this.props.page.content.skeleton)}
+        return <div >
+                {to_components(this.props.content.skeleton)}
             </div>
     },
     refresh: function(){
@@ -256,7 +253,7 @@ var Article = React.createClass({
         });
     },
     onJumpTo: function(page, jump){
-        if(page.id !== this.props.page.id) return;
+        if(page.id !== this.props.page_id) return;
         var target;
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
@@ -283,69 +280,73 @@ var Article = React.createClass({
             $parent.off('scroll', this.debounce_visibility);
             $(window).off('resize', this.reset_heights);
         }
-    },
-    interceptLink: function(e){
-        var link = $(e.target).closest('a');
-        if(link.length){
-            e.preventDefault();
-            if(link.attr('href') !== '#'){
-                if(link.attr('data-link-id')){
-                    Actions.popoverOpened(this.props.viewer_id, this.props.page,
-                        {
-                        type: 'link',
-                        title: link.text(),
-                        id: link.attr('data-link-id'),
-                        target: link.attr('data-target-id'),
-                        source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                        positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
-                        positionTop:link.position().top+ this.getScrollContainer().scrollTop(),
-                        fetched: false,
-                        url: link.attr('href')
-                    });
-                }
-            }
-            else if(link.attr('data-def-id')){
-               Actions.popoverOpened(this.props.viewer_id, this.props.page,
-                    {
-                    type: 'definition',
-                    title: link.text(),
-                    id: link.attr('data-def-idx'),
-                    positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
-                    positionTop:link.position().top + this.getScrollContainer().scrollTop(),
-                    source_sel: '[data-def-idx="'+link.attr('data-link-idx')+'"]',
-                    fetched: false,
-                    url: '/definition/'+this.props.page.content.id+'/'+link.attr('data-def-id')
-                });
-            }
-        }
-     }
+    }
 });
 
  var Popovers = React.createClass({
     shouldComponentUpdate: function(newProps){
-        console.log(this.props.popoverView , newProps.popoverView,this.props.popoverData , newProps.popoverData)
         return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
     },
     render: function(){
         var self = this;
         return <div>{ (this.props.popoverView || []).map(function(key){
                 var data = this.props.popoverData[key];
-                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data} page={this.props.page} id={key} key={key} />)
+                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data} page_id={this.props.page_id} id={key} key={key} />)
             }, this)}</div>
     }
  });
 
  module.exports = React.createClass({
+    interceptLink: function(e){
+        var link = $(e.target).closest('a');
+        if(link.length){
+            e.preventDefault();
+            if(link.attr('href') !== '#'){
+                if(link.attr('data-link-id')){
+                    var url = link.attr('data-href');
+                    if(url.indexOf('/') === -1){
+                        url = 'instruments/'+url;
+                    }
+                    Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
+                        {
+                        type: 'link',
+                        title: link.text(),
+                        id: link.attr('data-link-id'),
+                        target: link.attr('data-target-id'),
+                        source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
+                        positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                        positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
+                        fetched: false,
+                        url: '/link/'+url
+                    });
+                }
+            }
+            else if(link.attr('data-def-id')){
+               Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
+                    {
+                    type: 'definition',
+                    title: link.text(),
+                    id: link.attr('data-def-idx'),
+                    positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                    positionTop:link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
+                    source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
+                    fetched: false,
+                    url: '/definition/'+this.props.page.content.document_id+'/'+link.attr('data-def-id')
+                });
+            }
+        }
+     },
     render: function(){
-        //Article,
-        //Popovers
-        return <div className="legislation-result" >
-            <Article {...this.props}/>
+        return <div className="legislation-result" onClick={this.interceptLink} >
+          <ArticleContent ref="articleContent"
+                content={this.props.page.content}
+                viewer_id={this.props.viewer_id}
+                page_id={this.props.page.id}/>
            <Popovers
                 popoverData={this.props.page.popovers}
                 popoverView={this.props.view.popovers[this.props.page.id]}
                 viewer_id={this.props.viewer_id}
-                page={this.props.page}/>
+                page_id={this.props.page.id}/>
         </div>
     }
  });

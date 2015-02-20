@@ -26,7 +26,7 @@ module.exports = React.createClass({
             return <ArticleScrollSpy article={this.props.article} />;
         }
         else if(this.state.active === 'summary'){
-             return <ArticleSummary article={this.props.article} />;
+             return <ArticleSummary summary={this.props.article.content.attributes} />;
         }
         else if(this.state.active === 'references'){
              return <ArticleReferences article={this.props.article} />;

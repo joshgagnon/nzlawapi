@@ -6,7 +6,7 @@ from traversal import cull_tree, find_definitions, find_part_node, find_section_
     find_schedule_node, find_node_by_query, find_node_by_govt_id, find_document_id_by_govt_id, find_node_by_location
 from lxml import etree
 from copy import deepcopy
-from flask import current_app
+from flask import current_app, render_template
 from psycopg2 import extras
 from xml.dom import minidom
 import json
@@ -55,16 +55,40 @@ class Act(object):
     def select(self, requested):
         return [self.parts[i] for i in requested]
 
-
+"""
 def get_act(act, db=None):
     with (db or get_db()).cursor() as cur:
-        query = """select document from latest_instruments where
-        where lower(replace(title, ' ', '')) = lower(%(act)s) """
+        query = "select document from latest_instruments
+        where lower(replace(title, ' ', '')) = lower(%(act)s) "
         cur.execute(query, {'act': act})
         try:
             return etree.fromstring(cur.fetchone()[0])
         except:
-            raise CustomException("Act not found")
+            raise CustomException("Instrument not found")
+"""
+
+def get_act_summary(doc_id, db=None):
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """select * from instruments
+        where id = %(doc_id)s """
+        cur.execute(query, {'doc_id': doc_id})
+        try:
+            return cur.fetchone()
+        except:
+            raise CustomException("Instrument not found")
+
+
+def get_act_summary_govt_id(govt_id, db=None):
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """select *
+            from id_lookup d
+            join instruments i on parent_id = id
+            where d.govt_id = %(govt_id)s"""
+        cur.execute(query, {'govt_id': govt_id})
+        try:
+            return cur.fetchone()
+        except:
+            raise CustomException("Instrument not found")
 
 
 def get_act_exact(act, id=None, db=None):
@@ -78,12 +102,13 @@ def get_act_exact(act, id=None, db=None):
             result = cur.fetchone()
             return etree.fromstring(result[0])
         except:
-            raise CustomException("Act not found")
+            raise CustomException("Instrument not found")
 
 
 def process_act_links(tree, db=None):
     class InstrumentLink(object):
         use_life_cycle = False
+
         def __init__(self):
             self.active = {}
             self.regex = None
@@ -177,8 +202,8 @@ def act_skeleton_response(act):
         'title': act.title,
         'attributes': act.attributes,
         'parts': [],
-        'id': act.id,
-        'type': 'instrument',
+        'document_id': act.id,
+        'doc_type': 'instrument',
         'partial': True
     }
 
@@ -188,8 +213,8 @@ def act_full_response(act):
         'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'title': act.title,
-        'id': act.id,
-        'type': 'instrument',
+        'document_id': act.id,
+        'doc_type': 'instrument',
         'attributes': act.attributes
     }
 
@@ -198,9 +223,24 @@ def act_fragment_response(act):
     return {
         'html': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
         'title': act.title,
-        'id': act.id,
-        'type': 'instrument',
+        'document_id': act.id,
+        'doc_type': 'instrument',
     }
+
+def  instrument_summary(instrument):
+    return {
+            'title': instrument.get('title'),
+            'document_id': instrument.get('id'),
+            'repr': instrument.get('repr', None),
+            'doc_type': 'instrument',
+            'summary': True,
+            'attributes': dict(instrument.get('attributes', {}).items() +  [i for i in instrument.items() if i[0] != 'attributes']),
+            'query': {
+                'doc_type': 'instruments',
+                'find': 'id',
+                'query': instrument.get('id')
+            }
+        }
 
 def act_response(act):
     if len(act.tree.xpath('.//*')) > 1000000: # move magic number somewhere
@@ -223,6 +263,11 @@ def act_part_response(act, parts):
         'parts': {act.parts[e].attrib['data-hook']: render_inner(act.parts[e]) for e in parts or [] }
     }
 
+def get_instrument_summary(doc_type=None, key=None):
+    if key.startswith('DLM'):
+        return instrument_summary(get_act_summary_govt_id(key))
+    else:
+        return instrument_summary(get_act_summary(key))
 
 def format_response(args, result):
     if args.get('format', 'html') == 'json':

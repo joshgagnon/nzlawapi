@@ -4,6 +4,7 @@ var Col = require('react-bootstrap/Col');
 var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
 var Button = require('react-bootstrap/Button');
 var Actions = require('../actions/Actions');
+var ArticleSummary = require('./ArticleSummary.jsx');
 var $ = require('jquery');
 
 module.exports = React.createClass({
@@ -15,8 +16,8 @@ module.exports = React.createClass({
         };
     },
     componentDidMount: function(){
-        if(!this.props.fetched){
-            Actions.requestPopoverData(this.props.page, this.props.id);
+        if(!this.getLocalContent() && !this.props.fetched){
+            Actions.requestPopoverData(this.props.page_id, this.props.id);
         }
         this.reposition();  
     },
@@ -33,14 +34,51 @@ module.exports = React.createClass({
 
     },
     close: function() {
-         Actions.popoverClosed(this.props.viewer_id, this.props.page, this.props.id);
+         Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
     },
     scrollTo: function() {
-         Actions.popoverClosed(this.props.viewer_id, this.props.page, this.props.id);
+         Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
+    },
+    getLocalContent: function(){
+        if (this.props.target && $('#' + this.props.target)[0]) {
+            return true;
+        }
+    },
+    renderBody: function(){
+        var html;
+        if(this.props.summary){
+            return <ArticleSummary summary={this.props.attributes} />
+        }
+        if (this.getLocalContent()) {
+            html = $('#' + this.props.target)[0].outerHTML;
+        }
+        else if(this.props.html){
+            html = this.props.html;
+        }
+        if(html){
+            return <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
+        }
+
+    },
+    renderFooter: function(){
+        if(this.props.type !== 'definition'){
+            return <div className="popover-footer">
+                    <div className="row">
+                        { this.getLocalContent()?<Button onClick={this.scrollTo}>Scroll To</Button >:null}
+                        <Button  onClick={this.open}>Open</Button >
+                    </div>
+                </div>
+        }
+    },
+    needFetch: function(){
+        return !this.getLocalContent() && this.props.fetch
+    },
+    open: function(){
+        debugger
+        Actions.newPage(this.props,this.props.viewer_id)
     },
     render: function() {
         var classes = 'popover def-popover ' + this.state.placement;
-        var contentClasses = 'popover-content'
         var style = {};
         style['left'] = this.props.positionLeft;
         style['top'] = this.props.positionTop + this.topOffset;
@@ -50,35 +88,15 @@ module.exports = React.createClass({
         arrowStyle['left'] = this.props.arrowOffsetLeft;
         arrowStyle['top'] = this.props.arrowOffsetTop;
 
-        var html = '';
-        if (this.props.target && $('#' + this.props.target)[0]) {
-            html = $('#' + this.props.target)[0].outerHTML;
-        }
-        else if(this.props.html){
-            html = this.props.html;
-        }
-        else if(this.props.fetch){
-            contentClasses += ' csspinner traditional loading';
-        }
         return (
             <div className={classes} role="tooltip" style={style}>
                 <div className="arrow"  style={arrowStyle}></div>
                 <h3 className="popover-title">{this.props.title}</h3>
                 <div className="popover-close" onClick={this.close}>&times;</div>
-                <div className={contentClasses}>
-                    <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
+                <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
+                    {this.renderBody() }
                 </div>
-                <div className="popover-footer">
-                <div className="row">
-
-
-                    <Button onClick={this.scrollTo}>Scroll To</Button >
-
-
-                    <Button  onClick={this.open}>Open</Button >
-
-                </div>
-                </div>
+                {this.renderFooter() }
             </div>
         );
       }

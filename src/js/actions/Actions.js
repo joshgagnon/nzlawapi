@@ -11,7 +11,7 @@ var Actions = Reflux.createActions([
 	'newPage',
 	'newAdvancedPage',
 	'requestPage',
-	'updatePage',
+	// /'updatePage',
 	'removePage',
 	'getMorePage',
 	'clearPages',

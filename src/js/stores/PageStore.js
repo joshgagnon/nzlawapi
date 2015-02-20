@@ -4,112 +4,110 @@ var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-//var findText = require('../util/findText.js');
+var Immutable = require('immutable');
 
-
-
-
-/*function Article(data){
-	_.extend(this, data);
-	this._submodels = {};
-};
-
-Article.prototype.get = function(submodel){
-	this._submodels[submodel] = this._submodels[submodel] || {};
-	return  this._submodels[submodel];
-};*/
 
 var PageStore = Reflux.createStore({
 	listenables: Actions,
 	init: function(){
-		this.pages = [];
+		this.pages = Immutable.List();
 		this.counter = 0;
 	},
-	onUpdatePage: function(page){
-		var index = _.indexOf(this.pages, page);
-		this.pages[index] = _.extend({}, page);
-		this.pages = this.pages.slice();
-		this.trigger({pages: this.pages}, page);
+	update: function(){
+		this.trigger({pages: this.pages.toJS()});
 	},
 	generatePage: function(page){
-		page = page || {};
+		page = page || {}
 		page.id = 'page-'+this.counter++;
 		page.popovers = page.popovers || {};
-		this.pages.push(page);
-		return page;
+		return Immutable.fromJS(page);
 	},
-	onNewPage: function(page, viewer_id){
-		var id;
-		if(!_.find(this.pages, {query: page.query})){
-			page = this.generatePage(page);
-		}
-		else{
-			page = _.find(this.pages, {query: page.query});
-		}
-		this.trigger({pages: this.pages});
-		Actions.requestPage(page);
+	onNewPage: function(page_data, viewer_id){
+		var page = this.generatePage(page_data);
+
+		this.pages = this.pages.push(page);
+
+		Actions.requestPage(page.get('id'));
 		if(viewer_id !== undefined){
-			Actions.showPage(viewer_id, page.id);
+			Actions.showPage(viewer_id, page.get('id'));
 		}
+		this.update();
 	},
-	onNewAdvancedPage: function(page, viewer_id){
-		var page = this.generatePage(page);
-		this.trigger({pages: this.pages});
+	onNewAdvancedPage: function(page_data, viewer_id){
+		var page = this.generatePage(page_data);
+		this.update();
 		Actions.showPage(viewer_id, page.id, {advanced_search: true});
 	},
 	getById: function(id){
-		return _.find(this.pages, {id: id});
+		return this.pages.find(function(p){
+			return p.get('id') === id;
+		});
 	},
-	onRequestPage: function(page){
+	getIndex: function(id){
+		return this.pages.indexOf(this.getById(id))
+	},
+	onRequestPage: function(page_id){
 		//todo, guards in Action pre emit
-		if(!page.fetching && !page.fetched){
-			page.fetching = true;
-			$.get('/query', page.query)
+		var page = this.getById(page_id);
+		if(!page.get('fetching') && !page.get('fetching')){
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page.id)], {'fetching':  true});
+			this.update();
+			$.get('/query', page.get('query').toJS() )
 				.then(function(data){
-					page = this.getById(page.id);
-					page.fetching = false;
-					page.fetched = true;
-					page.query.type = data.type;
-					if(data.id){
-						page.query.id = data.id;
+					var result = {
+						fetching: false,
+						fetched: true,
+						query: {
+							id: data.id
+						},
+						content: data,
+						title: data.title
+					};
+					if(data.doc_type){
+						result.query.doc_type = data.doc_type;
 					}
-					if(_.contains(this.pages, page)){
-						page.content = data;
-						if(data.title){
-							page.title = data.title;
-						}
-						Actions.updatePage(page);
-					}
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
+					this.update();
 				}.bind(this),
 				function(response){
-					page = this.getById(page.id);
-					page.title = 'Error';
-					page.content = response.responseJSON || {error: 'A problem occurred'};
-					Actions.updatePage(page);
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
+						{
+							title: 'Error',
+							content: response.responseJSON || {error: 'A problem occurred'}
+
+						});
+					this.update();
 				}.bind(this));
-			Actions.updatePage(page);
 		}
 	},
-	onGetMorePage: function(page, to_add){
-		page.fetching = true;
-		if(!page.finished && page.query.search && page.content.search_results.hits.length){
-			$.get('/query', _.extend({offset: page.content.search_results.hits.length}, page.query))
+	onGetMorePage: function(page_id, to_add){
+		var page = this.getById(page_id);
+		if(!page.get('finished') && page.getIn(['query', 'search']) && page.getIn(['content', 'search_results', 'hits']).size){
+			$.get('/query', _.extend({offset: page.getIn(['content', 'search_results', 'hits']).size}, page.get('query').toJS()))
 				.then(function(data){
-					page = this.getById(page.id);
-					page.offset = data.offset;
-					page.content.search_results.hits = page.content.search_results.hits.concat(data.search_results.hits);
-					page.fetching = false;
-					if(page.content.search_results.hits.length >= page.content.search_results.total){
-						page.finished = true;
+					var page = this.getById(page_id);
+					var result = {
+						offset: data.offset,
+						content: {
+							search_results: {
+								hits: page.getIn(['content', 'search_results', 'hits']).concat(data.search_results.hits)
+							}
+						},
+						fetching: false
+					};
+					if(result.content.search_results.hits.size >= result.content.search_results.total){
+						result.finished = true;
 					}
-					Actions.updatePage(page);
-				}.bind(this),function(){
-					page = this.getById(page.id);
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
+					this.update();
+				}.bind(this),
+				function(){
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {finished: true});
 					page.finished = true;
-					Actions.updatePage(page);
+					this.update();
 				}.bind(this))
 		}
-		else if(to_add.requested_parts && to_add.requested_parts.length){
+		/*else if(to_add.requested_parts && to_add.requested_parts.length){
 			var to_fetch = _.difference(to_add.requested_parts, page.requested_parts);
 			page.requested_parts = _.union(page.requested_parts, to_add.requested_parts);
 			if(to_fetch.length){
@@ -124,39 +122,40 @@ var PageStore = Reflux.createStore({
 						Actions.updatePage(page);
 					}.bind(this));
 			}
-		}
-		Actions.updatePage(page);
+		}*/
+
 	},
 	onClearPages: function(){
-		this.pages = [];
+		this.pages = this.page.clear();
 		this.trigger({pages: this.pages})
 	},
-	onRemovePage: function(page){
-		var index = _.findIndex(this.pages, page);
-		this.pages = _.without(this.pages, page);
-		this.trigger({pages: this.pages}, page);
+	onRemovePage: function(page_id){
+		this.pages = this.pages.splice(this.getIndex(page_id), 1);
+		this.update();
 	},
-	onPopoverOpened: function(viewer_id, page, popover){
-		var self = this;
-		if(!page.popovers[popover.id]){
-			page.popovers[popover.id] = popover;
-			page.popovers = _.extend({}, page.popovers);
-			Actions.updatePage(page);
+	onPopoverOpened: function(viewer_id, page_id, popover){
+		var page = this.getById(page_id);
+		if(!page.getIn(['popovers', popover.id])){
+			var result = {};
+			result[popover.id] = popover;
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers'], result);
+			this.update();
 		}
 	},
-	onRequestPopoverData: function(page, popover_id){
-		//TODO, don't update the page
-		var popover = page.popovers[popover_id];
-		if(!popover.fetched){
-			popover.fetched = true;
-			$.get(popover.url)
+	onRequestPopoverData: function(page_id, popover_id){
+		var page = this.getById(page_id);
+		var popover = page.get('popovers').get(popover_id);
+		if(popover && !popover.get('fetched')){
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], {fetched: true});
+			$.get(popover.get('url'))
 				.then(function(response){
-					_.extend(popover, response);
-				})
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], response);
+				}.bind(this),
+					function(){
+
+					})
 				.always(function(){
-					page = this.getById(page.id);
-					page.popovers = _.extend({}, page.popovers);
-					Actions.updatePage(page);
+					this.update();
 				}.bind(this))
 		}
 	}

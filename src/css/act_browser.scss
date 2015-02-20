@@ -213,9 +213,20 @@ $z-toolbars: 100;
 		.form-group{
 			margin-right:16px;
 		}
+
 	}
-
-
+	.summary{
+		dl{
+			dt{
+				width: 40%;
+				text-overflow: initial;
+				white-space: normal;
+			}
+			dd{
+				margin-left: 45%;
+			}
+		}
+	}
 	.split .results-container{
 		width:50%;
 	}
@@ -475,7 +486,7 @@ $z-toolbars: 100;
 	}
 	.popover{
 	   max-width: 500px;
-	   min-width:200px;
+	   min-width:300px;
 
 	   .show-more{
 	    cursor: pointer;

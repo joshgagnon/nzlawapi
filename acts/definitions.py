@@ -65,8 +65,10 @@ class Definitions(object):
         self.regex = None
 
     def get_active(self, key):
-        key = lmtzr.lemmatize(key)
-        if key in self.active:
+        fix_key = lmtzr.lemmatize(key)
+        if fix_key in self.active:
+            return self.active[fix_key][-1]
+        elif key in self.active:
             return self.active[key][-1]
         else:
             raise KeyError

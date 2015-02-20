@@ -1,4 +1,4 @@
-from acts.acts import query_act, query_acts, get_act_node_by_id
+from acts.acts import query_act, query_acts, get_act_node_by_id, get_instrument_summary
 from cases.cases import get_full_case, get_case_info, case_search
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
@@ -45,17 +45,32 @@ def get_definition_route(document_id, key):
         status = 500
     return jsonify(result), status
 
-@Query.route('/references/<int:document_id>')
-def get_references_route(document_id):
+
+@Query.route('/link/<string:key>')
+@Query.route('/link/<string:doc_type>/<string:key>')
+def get_link_route(doc_type=None, key=None):
     status = 200
+    result = get_instrument_summary(key=key)
     try:
-        result = get_references(document_id)
-        print jsonify({})
+        if doc_type is None or doc_type == 'instruments':
+            result = get_instrument_summary(key=key)
+        else:
+            raise CustomException("Can't locate link information")
     except Exception, e:
         result = {'error': str(e)}
         status = 500
     return jsonify(result), status
 
+
+@Query.route('/references/<int:document_id>')
+def get_references_route(document_id):
+    status = 200
+    try:
+        result = get_references(document_id)
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
 
 
 def get_definition(document_id, key):
@@ -274,7 +289,7 @@ def case_file(filename):
 @Query.route('/query')
 def query():
     args = request.args
-    query_type = args.get('type')
+    query_type = args.get('doc_type')
     status = 200
     try:
         if query_type == 'all':

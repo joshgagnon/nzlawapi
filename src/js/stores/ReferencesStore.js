@@ -10,12 +10,12 @@ module.exports = Reflux.createStore({
 	onRequestReferences: function(article){
 		if(!article._references_fetching || article._references_fetched){
 			article._references_fetching = true;
-			$.get('/references/'+article.content.id)
+			$.get('/references/'+article.content.document_id)
 				.then(function(response){
 					article._references_fetching = false;
 					article._references_fetched = true;
 					article._references_data = response.references;
-					Actions.updatePage(article);
+					//Actions.updatePage(article);
 				}.bind(this))
 		}
 	}

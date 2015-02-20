@@ -12,7 +12,7 @@ var SearchResult = React.createClass({
     },
     handleLinkClick: function(e){
         e.preventDefault();
-        var query = {find: 'full', type: this.props.data._type, id: this.props.data.fields.id[0]};
+        var query = {find: 'full', doc_type: this.props.data._type, id: this.props.data.fields.id[0]};
         Actions.newPage({query: query, title: this.getTitle()}, this.props.viewer_id);
     },
     render: function(){
@@ -34,11 +34,13 @@ module.exports = React.createClass({
         var offset = 100; //calculate
         var threshold = 500;
         this.debounce_scroll = _.debounce(function(){
-            var $scroll = $(self.getScrollContainer());
-            if(self.isMounted() && !self.props.result.finished &&
-                !self.props.result.fetching &&
-                $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
-                Actions.getMorePage(self.props.result);
+            if(self.isMounted()){
+                var $scroll = $(self.getScrollContainer());
+                if(self.isMounted() && !self.props.result.finished &&
+                    !self.props.result.fetching &&
+                    $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
+                    Actions.getMorePage(self.props.result.id);
+                }
             }
         }, 100);
         $(this.getScrollContainer()).on('scroll', this.debounce_scroll);
