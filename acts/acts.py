@@ -227,7 +227,7 @@ def act_fragment_response(act):
         'doc_type': 'instrument',
     }
 
-def  instrument_summary(instrument):
+def  instrument_summary(instrument, find, id):
     return {
             'title': instrument.get('title'),
             'document_id': instrument.get('id'),
@@ -237,8 +237,8 @@ def  instrument_summary(instrument):
             'attributes': dict(instrument.get('attributes', {}).items() +  [i for i in instrument.items() if i[0] != 'attributes']),
             'query': {
                 'doc_type': 'instruments',
-                'find': 'id',
-                'query': instrument.get('id')
+                'find': find,
+                'query': id
             }
         }
 
@@ -265,9 +265,9 @@ def act_part_response(act, parts):
 
 def get_instrument_summary(doc_type=None, key=None):
     if key.startswith('DLM'):
-        return instrument_summary(get_act_summary_govt_id(key))
+        return instrument_summary(get_act_summary_govt_id(key), 'govt_id', key)
     else:
-        return instrument_summary(get_act_summary(key))
+        return instrument_summary(get_act_summary(key), 'id', key)
 
 def format_response(args, result):
     if args.get('format', 'html') == 'json':
@@ -331,7 +331,7 @@ def query_act(args):
 def query_acts(args):
     search_type = args.get('find')
     query = args.get('query')
-    if search_type == 'id':
+    if search_type == 'id' or search_type == 'govt_id':
         return get_act_node_by_id(query)
     if search_type == 'contains':
         #result = act_full_search(query)

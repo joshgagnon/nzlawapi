@@ -18,13 +18,16 @@ module.exports = React.createClass({
             $(this).removeClass('active');
         });
         this.active = [];
-        var active = $el.find('[href=#'+value.id+']').parent();
-        if(active.length){
+        var active = $el.find('[href=#'+value.id+']');
+        if(active && active.parent().length){
+            active  = active.parent();
             active.addClass('active');
             active.parentsUntil( '.contents', 'li').each(function(){
                 $(this).addClass('active');
             });
             $el.scrollTop(active.offset().top -$el.offset().top - $el.height()/2 + $el.scrollTop());
+        }else if($el.find('li:first').siblings().length === 0){
+            $el.find('li:first').addClass('active')
         }
 
     },
@@ -34,6 +37,9 @@ module.exports = React.createClass({
             e.preventDefault();
             Actions.articleJumpTo(this.props.article, {id: link.attr('href'), noscroll: true});
         }
+    },
+    componentDidMount: function(){
+        this.onPositionChange({});
     },
     stopPropagation: function(e){
         e.stopPropagation();

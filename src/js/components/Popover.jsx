@@ -74,7 +74,6 @@ module.exports = React.createClass({
         return !this.getLocalContent() && this.props.fetch
     },
     open: function(){
-        debugger
         Actions.newPage(this.props,this.props.viewer_id)
     },
     render: function() {
