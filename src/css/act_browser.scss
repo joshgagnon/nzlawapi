@@ -49,6 +49,12 @@ body{
 		}
 	}
 
+	@media print{
+		.sidebar-visible{
+			padding-right: 0 !important;
+		}
+	}
+
 	.navbar{
 		background-color: $deep-red;
 		border-width:0;
@@ -204,8 +210,8 @@ body{
 		}
 		@media print{
 			position:static;
-			height:1;
-			display:none;
+			height:0;
+			display:none !important;
 		}
 		& > .btn-group{
 			width:100%;
@@ -268,6 +274,8 @@ body{
 		}
 		@media print{
 			position:static;
+			width:100%;
+			padding-right:0 !important;
 		}
 
 		.nav{
@@ -343,6 +351,7 @@ body{
 			padding: 0;
 			@media print{
 				position:static;
+				padding-right:0;
 			}
 		}
 		 .legislation-result{
@@ -358,6 +367,9 @@ body{
 			top: 10px;
 			@media (min-width: $screen-md-min) {
 				right: $sidebar-outer-width;
+			}
+			@media print{
+				display:none;
 			}
 		}
 		.search-results{
