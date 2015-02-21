@@ -293,7 +293,7 @@ module.exports = React.createClass({
             parentClass += 'sidebar-visible ';
         }*/
         if(this.state.underlines){
-            parentClass += 'underlines ';
+            parentClass += 'underlines';
         }
          if(this.state.split_mode){
             //resultsClass += 'split ';

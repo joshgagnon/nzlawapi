@@ -100,12 +100,13 @@ var ArticleContent = React.createClass({
                         return $(this).attr('data-location');
                     }).toArray().reverse().join('');
                 }
-                result += $el.attr('data-location');
+                result += $el.attr('data-location') || '';
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-
-                Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
+                if(result){
+                    Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
+                }
             }
-        }, 0);
+            }, 0);
         var $parent = this.getScrollContainer();
         $parent.on('scroll', this.debounce_scroll);
         if(this.isPartial()){
@@ -296,30 +297,66 @@ var ArticleContent = React.createClass({
     }
  });
 
+var FullArticleButton = React.createClass({
+    propTypes: {
+       content: React.PropTypes.object.isRequired,
+    },
+    handleClick: function(){
+
+
+        Actions.newPage({
+            title: this.props.content.title,
+            query: {doc_type:
+            this.props.content.doc_type,
+            find: 'full',
+            id: this.props.content.document_id}}, this.props.viewer_id)
+    },
+    render: function(){
+        return  <button onClick={this.handleClick} className="btn btn-info">Full Article</button>
+    }
+})
+
+var ArticleOverlay= React.createClass({
+    propTypes: {
+       page: React.PropTypes.object.isRequired,
+    },
+
+    render: function(){
+        return <div className="article-overlay">
+                { this.props.page.content.fragment ? <FullArticleButton
+                    content={this.props.page.content}
+                    viewer_id={this.props.viewer_id}/> : null }
+            </div>
+    }
+})
+
+
+
+
+
+
  module.exports = React.createClass({
     interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
-            if(link.attr('href') !== '#'){
-                if(link.attr('data-link-id')){
-                    var url = link.attr('data-href');
-                    if(url.indexOf('/') === -1){
-                        url = 'instruments/'+url;
-                    }
-                    Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
-                        {
-                        type: 'link',
-                        title: link.text(),
-                        id: link.attr('data-link-id'),
-                        target: link.attr('data-target-id'),
-                        source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                        positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                        positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
-                        fetched: false,
-                        url: '/link/'+url
-                    });
+        if(link.attr('data-link-id')){
+                var url = link.attr('data-href');
+                if(url.indexOf('/') === -1){
+                    url = 'instruments/'+url;
                 }
+                Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
+                    {
+                    type: 'link',
+                    title: link.text(),
+                    id: link.attr('data-link-id'),
+                    target: link.attr('data-target-id'),
+                    source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
+                    positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                    positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
+                    fetched: false,
+                    url: '/link/'+url
+                });
             }
             else if(link.attr('data-def-id')){
                Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
@@ -334,10 +371,17 @@ var ArticleContent = React.createClass({
                     url: '/definition/'+this.props.page.content.document_id+'/'+link.attr('data-def-id')
                 });
             }
+            else if(link.closest('[id]').length){
+                var target = link.closest('[id]')
+                var title = this.props.page.title + ' ' + target.attr('data-location') ;
+                console.log(target,title);
+            }
         }
      },
     render: function(){
+        // perhaps swap popovers for different view on mobile
         return <div className="legislation-result" onClick={this.interceptLink} >
+          <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
           <ArticleContent ref="articleContent"
                 content={this.props.page.content}
                 viewer_id={this.props.viewer_id}

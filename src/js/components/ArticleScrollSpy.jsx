@@ -6,11 +6,14 @@ var JumpTo = require('./JumpTo.jsx');
 var Actions = require('../actions/Actions');
 var $ = require('jquery');
 
+
 module.exports = React.createClass({
     mixins: [
       Reflux.listenTo(ArticleStore,"onPositionChange")
     ],
-
+    propTypes: {
+       article: React.PropTypes.object.isRequired,
+    },
     onPositionChange: function(value){
         var self = this;
         var $el = $('.legislation-contents', this.getDOMNode());

@@ -208,24 +208,18 @@ def act_skeleton_response(act):
     }
 
 
-def act_full_response(act):
+def act_full_response(act, fragment=False):
     return {
         'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'title': act.title,
         'document_id': act.id,
         'doc_type': 'instrument',
+        'fragment': fragment,
         'attributes': act.attributes
     }
 
 
-def act_fragment_response(act):
-    return {
-        'html': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
-        'title': act.title,
-        'document_id': act.id,
-        'doc_type': 'instrument',
-    }
 
 def  instrument_summary(instrument, find, id):
     return {
@@ -242,11 +236,11 @@ def  instrument_summary(instrument, find, id):
             }
         }
 
-def act_response(act):
+def act_response(act, fragment=False):
     if len(act.tree.xpath('.//*')) > 1000000: # move magic number somewhere
         return act_skeleton_response(act)
     else:
-        return act_full_response(act)
+        return act_full_response(act, fragment)
 
 
 def act_part_response(act, parts):
@@ -277,6 +271,7 @@ def format_response(args, result):
 
 
 def get_act_node_by_id(node_id):
+    fragment = False
     if node_id.startswith('D'):
         id = find_document_id_by_govt_id(node_id)
     else:
@@ -289,8 +284,9 @@ def get_act_node_by_id(node_id):
     elif act.tree.attrib['id'] == node_id:
         act.tree = cull_tree(act.tree.xpath('.//cover'))
     else:
+        fragment = True
         act.tree = cull_tree(act.tree.xpath('.//*[@id="' + node_id + '"]'))
-    return act_response(act)
+    return act_response(act, fragment)
 
 
 def query_act(args):
@@ -300,8 +296,9 @@ def query_act(args):
                          replace=current_app.config.get('REPROCESS_DOCS'))
     # act.calculate_hooks()
     find = args.get('find')
+    fragment = True
     if find == 'full':
-        pass
+        fragment = False
     elif find == "more":
         return act_part_response(act, args.getlist('requested_parts[]'))
     else:
@@ -325,7 +322,7 @@ def query_act(args):
         else:
             raise CustomException('Invalid search type')
         act.tree = cull_tree(act.tree)
-    return act_response(act)
+    return act_response(act, fragment)
 
 
 def query_acts(args):
