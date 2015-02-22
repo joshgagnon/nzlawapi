@@ -8,7 +8,7 @@ var Button = require('react-bootstrap/Button');
 var Col= require('react-bootstrap/Col');
 var PageStore = require('../stores/PageStore');
 var ViewerStore = require('../stores/ViewerStore');
-var Serialization = require('../stores/Serialization.js');
+var SavedStates = require('../stores/SavedStates.js');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var SearchResults = require('./SearchResults.jsx');
@@ -59,14 +59,9 @@ var PageSet = React.createClass({
         return (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
     },
     renderPage: function(page){
-        if(page.content){
-            return page.query.search ?
-                    <SearchResults key={page.id} result={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
+        return page.query.search ?
+                    <SearchResults key={page.id} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
                     <Article key={page.id} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
-        }
-        else{
-            return <div className="search-results csspinner traditional"/>;
-        }
     },
     renderTabs: function(){
         var self = this;
@@ -105,10 +100,11 @@ var PageSet = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-        Reflux.listenTo(PageStore, 'onPages'),
-        Reflux.listenTo(ViewerStore, 'onViewer'),
+        Reflux.listenTo(PageStore, 'onState'),
+        Reflux.listenTo(ViewerStore, 'onState'),
         // MOVE TO CHILD, maybe
-        Reflux.listenTo(DialogStore, 'onDialog'),
+        Reflux.listenTo(DialogStore, 'onState'),
+        Reflux.listenTo(SavedStates, 'onState'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],
@@ -129,17 +125,14 @@ module.exports = React.createClass({
         else if(this.getParams().doc_type){
             Actions.newPage({query: {doc_type: this.getParams().doc_type,  query: this.getParams().id, find: 'id'}}, 0);
         }
+        else{
+            Actions.loadPrevious();
+        }
        /* window.addEventListener('onResize', function(){
             //TODO, debouce, measure width, hide,
         });*/
     },
-    onPages: function(data){
-        this.setState({pages: data.pages});
-    },
-    onDialog: function(state){
-        this.setState(state);
-    },
-    onViewer: function(state){
+    onState: function(state){
         this.setState(state);
     },
     submit: function(e){
@@ -206,7 +199,7 @@ module.exports = React.createClass({
             search_query: null,
             location: null
         });
-        Actions.clearPages();
+        Actions.setState({});
     },
 
     toggleAdvanced: function(){

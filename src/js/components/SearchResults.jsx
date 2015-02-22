@@ -36,14 +36,18 @@ module.exports = React.createClass({
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var $scroll = $(self.getScrollContainer());
-                if(self.isMounted() && !self.props.result.finished &&
-                    !self.props.result.fetching &&
+                if(self.isMounted() && !self.props.page.finished &&
+                    !self.props.page.fetching &&
                     $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
-                    Actions.getMorePage(self.props.result.id);
+                    Actions.getMorePage(self.props.page.id);
                 }
             }
         }, 100);
         $(this.getScrollContainer()).on('scroll', this.debounce_scroll);
+       if(!this.props.page.fetching && !this.props.page.fetched){
+            Actions.requestPage(this.props.page.id);
+
+        }
     },
     componentWillUnmount: function(){
         $(this.getScrollContainer()).off('scroll', this.debounce_scroll);
@@ -51,20 +55,26 @@ module.exports = React.createClass({
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
     },
+    shouldComponentUpdate: function(newProps){
+        return this.props.page.content !== newProps.page.content;
+    },
     render: function(){
-        if(this.props.result.content.search_results){
-            var total = this.props.result.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if(!this.props.page.content){
+            return <div className="search-results"><div className="csspinner traditional" /></div>
+        }
+        else if(this.props.page.content.search_results){
+            var total = this.props.page.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
-                    { this.props.result.content.search_results.hits.map(function(r){
+                    { this.props.page.content.search_results.hits.map(function(r){
                             return <SearchResult key={r.fields.id[0]} data={r} viewer_id={this.props.viewer_id}/>
                         }, this)
                     }
-                    {this.props.result.fetching ?  <div className="csspinner traditional" /> : null }
+                    {this.props.page.fetching ?  <div className="csspinner traditional" /> : null }
                 </div>
         }
         else{
-            return <div className="search-results"><div className="article-error"><p className="text-danger">{this.props.result.content.error}</p></div></div>
+            return <div className="search-results"><div className="article-error"><p className="text-danger">{this.props.page.content.error}</p></div></div>
         }
     }
 

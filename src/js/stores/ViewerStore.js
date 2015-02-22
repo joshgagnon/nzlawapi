@@ -15,6 +15,19 @@ module.exports =  Reflux.createStore({
 	getDefaultData: function(){
 		return [this.getDefault(), this.getDefault()];
 	},
+	onSetState: function(data){
+		this.views =_.map(data.views||[], function(v){
+			return _.defaults(this.getDefault(), v);
+		}, this);
+		if(!this.views.length){
+			this.views = this.getDefaultData();
+		}
+		if(this.views.length === 1){
+			this.views.push(this.getDefaultData());
+		}
+		this.views = Immutable.fromJS(this.views);
+		this.trigger({views: this.views.toJS()});
+	},
 	pageUpdate: function(state){
 		return /*
 		// if the active page is removed, we must change active

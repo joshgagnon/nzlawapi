@@ -378,8 +378,16 @@ var ArticleOverlay= React.createClass({
             }
         }
      },
+    componentDidMount: function(){
+       if(!this.props.page.fetching && !this.props.page.fetched){
+        Actions.requestPage(this.props.page.id)
+       }
+    },
     render: function(){
         // perhaps swap popovers for different view on mobile
+        if(!this.props.page.content){
+            return <div className="search-results"><div className="csspinner traditional" /></div>
+        }
         return <div className="legislation-result" onClick={this.interceptLink} >
           <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
           <ArticleContent ref="articleContent"
