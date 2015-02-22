@@ -63,16 +63,15 @@ var PageStore = Reflux.createStore({
 					var result = {
 						fetching: false,
 						fetched: true,
-						query: {
-							id: data.id
-						},
 						fragment: data.fragment,
 						content: data,
-						title: data.title
+						title: data.title,
+						query:{}
 					};
 					if(data.doc_type){
 						result.query.doc_type = data.doc_type;
 					}
+
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
 					this.update();
 				}.bind(this),

@@ -33,6 +33,11 @@ var Actions = Reflux.createActions([
 	'removeSavedState',
 	'updateSavedStates',
 
+
+	'toggleUnderlines',
+	'toggleSplitMode',
+	'togglePrintMode',
+
 	'setState',
 	'saveState',
 	'loadState',

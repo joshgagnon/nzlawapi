@@ -29,16 +29,16 @@ module.exports =  Reflux.createStore({
 		this.trigger({views: this.views.toJS()});
 	},
 	pageUpdate: function(state){
-		return /*
 		// if the active page is removed, we must change active
 		var ids = _.map(state.pages, function(p){ return p.id});
 		if(ids.length){
-			for(var i=0;i<this.views.length; i++){
-				if(!_.contains(ids, this.views[i].active_page_id)){
-					this.views[0].active_page_id = _.last(ids);
+			for(var i=0;i<this.views.count(); i++){
+				if(!_.contains(ids, this.views.getIn([i, 'active_page_id']))){
+					this.views = this.views.setIn([i, 'active_page_id'],  _.last(ids));
 				}
 			}
-		}*/
+		}
+		this.trigger({views: this.views.toJS()});
 	},
 	getDefault: function(){
 		return {active_page_id: undefined, settings: {}, popovers: {}}

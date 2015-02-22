@@ -9,6 +9,7 @@ var Col= require('react-bootstrap/Col');
 var PageStore = require('../stores/PageStore');
 var ViewerStore = require('../stores/ViewerStore');
 var SavedStates = require('../stores/SavedStates.js');
+var BrowserStore = require('../stores/BrowserStore.js');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var SearchResults = require('./SearchResults.jsx');
@@ -45,7 +46,8 @@ var DialogStore = Reflux.createStore({
     onCloseLoadDialog: function(){
         this.trigger({load_dialog: false});
     },
-})
+});
+
 
 
 var PageSet = React.createClass({
@@ -104,18 +106,18 @@ module.exports = React.createClass({
         Reflux.listenTo(ViewerStore, 'onState'),
         // MOVE TO CHILD, maybe
         Reflux.listenTo(DialogStore, 'onState'),
-        Reflux.listenTo(SavedStates, 'onState'),
+        Reflux.listenTo(BrowserStore, 'onState'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],
     getInitialState: function(){
         return {
-            advanced_search: false,
             pages: [],
             views: ViewerStore.getDefaultData(),
             underlines: true, //false,
             save_dialog: false,
-            load_dialog: false
+            load_dialog: false,
+            split_mode: false
         };
     },
     componentDidMount: function(){
@@ -311,11 +313,11 @@ module.exports = React.createClass({
                 </div>
             <div className="buttonbar-wrapper">
                 <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
-                <a><Glyphicon glyph="text-color" onClick={this.toggleState.bind(this, 'underlines')} title="Underlines"/></a>
-                <a><Glyphicon glyph="object-align-top" onClick={this.toggleState.bind(this, 'split_mode')} title="Columns"/></a>
+                <a><Glyphicon glyph="text-color" onClick={Actions.toggleUnderlines} title="Underlines"/></a>
+                <a><Glyphicon glyph="object-align-top" onClick={Actions.toggleSplitMode} title="Columns"/></a>
                 <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
                 <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
-                <a><Glyphicon glyph="print" title="Print"/></a>
+                <a><Glyphicon glyph="print" onClick={Actions.togglePrintMode} title="Print"/></a>
                 <a><Glyphicon glyph="star" /></a>
                 {/*<ModalTrigger modal={<GraphModal />}>
                     <a><Glyphicon glyph="globe" /></a>

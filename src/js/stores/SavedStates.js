@@ -5,12 +5,14 @@ var _ = require('lodash');
 var Actions = require('../actions/Actions');
 var PageStore = require('./PageStore');
 var ViewerStore = require('./ViewerStore');
+var BrowserStore = require('./BrowserStore');
 
 var Serialization = Reflux.createStore({
 
     init: function() {
         this.listenTo(PageStore, this.updatePages);
         this.listenTo(ViewerStore, this.updateViews);
+        this.listenTo(BrowserStore, this.updateBrowser);
         this.listenTo(Actions.saveState, this.save);
         this.listenTo(Actions.loadState, this.load);
         this.listenTo(Actions.fetchSavedStates, this.onFetchSavedStates);
@@ -18,6 +20,7 @@ var Serialization = Reflux.createStore({
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
         this.pages = [];
         this.views = {};
+        this.browser = {};
     },
     updatePages: function(pages){
         this.pages = pages.pages;
@@ -27,10 +30,14 @@ var Serialization = Reflux.createStore({
         this.views = views.views;
         this.saveCurrent();
     },
+    updateBrowser: function(browser){
+        this.browser = browser;
+        this.saveCurrent();
+    },
     prepState: function(){
         return {views: this.views, pages: (this.pages||[]).map(function(r){
             return _.pick(r, 'title', 'query');
-        })};
+        }), browser: this.browser};
     },
     saveCurrent: function() {
         localStorage['current_view'] = JSON.stringify(this.prepState());
@@ -42,7 +49,7 @@ var Serialization = Reflux.createStore({
     },
     save: function(name) {
         var all = _.reject(JSON.parse(localStorage['saved_views'] || '[]'), {name: name});
-        all.push({name: name, value: new_data, date: (new Date()).toLocaleString()});
+        all.push({name: name, value: this.prepState(), date: (new Date()).toLocaleString()});
         localStorage['saved_views'] = JSON.stringify(all);
     },
     readState: function(){
@@ -52,7 +59,7 @@ var Serialization = Reflux.createStore({
         return {};
     },
     load: function(name) {
-        var selected = _.find(this.readState(), {name: name});
+        var selected = _.find(this.readState(), {name: name}).value;
         if(selected){
             Actions.setState(selected);
         }
