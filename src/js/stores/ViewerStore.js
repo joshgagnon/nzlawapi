@@ -30,14 +30,15 @@ module.exports =  Reflux.createStore({
 	},
 	pageUpdate: function(state){
 		// if the active page is removed, we must change active
-		var ids = state.pages.map(function(p){ return p.id});
+		var ids = state.pages.map(function(p){ return p.get('id')});
 		if(ids.size){
 			for(var i=0;i<this.views.size; i++){
-				if(!ids.has(this.views.getIn([i, 'active_page_id']))){
+				if(!ids.contains(this.views.getIn([i, 'active_page_id']))){
 					this.views = this.views.setIn([i, 'active_page_id'],  ids.last());
 				}
 			}
 		}
+
 		this.trigger({views: this.views});
 	},
 	getDefault: function(){

@@ -8,21 +8,21 @@ var Actions = require('../actions/Actions');
 
 var SearchResult = React.createClass({
     getTitle: function(){
-        return (this.props.data.fields.title || this.props.data.fields.full_citation || [''])[0]
+        return (this.props.data.getIn(['fields','title', 0]) || this.props.data.getIn(['fields','full_citation', 0])) || 'Unknown'
     },
     handleLinkClick: function(e){
         e.preventDefault();
-        var query = {find: 'full', doc_type: this.props.data._type, id: this.props.data.fields.id[0]};
+        var query = {find: 'full', doc_type: this.props.data.getIn(['_type']), id: this.props.data.getIn(['fields','id', 0])};
         Actions.newPage({query: query, title: this.getTitle()}, this.props.viewer_id);
     },
     render: function(){
         var html = '',
-            id = this.props.data.fields.id[0];
-        if( this.props.data.highlight){
-            html = (this.props.data.highlight.document).join('');
+            id = this.props.data.getIn(['fields', 'id', 0]);
+        if( this.props.data.getIn(['highlight'])){
+            html = this.props.data.getIn(['highlight','document']).join('');
         }
         return <div className="search-result">
-                <h4><a href={"/open_article/"+this.props.data._type+'s/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
+                <h4><a href={"/open_article/"+this.props.data.get('_type')+'s/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
                 <div dangerouslySetInnerHTML={{__html: html}}/>
             </div>
     }
@@ -36,8 +36,8 @@ module.exports = React.createClass({
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var $scroll = $(self.getScrollContainer());
-                if(self.isMounted() && !self.props.page.finished &&
-                    !self.props.page.fetching &&
+                if(self.isMounted() && !self.props.page.get('finished') &&
+                    !self.props.page.get('fetching') &&
                     $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
                     Actions.getMorePage(self.props.page.get('id'));
                 }
@@ -67,10 +67,10 @@ module.exports = React.createClass({
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
                     { this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i){
-                            return <SearchResult key={r.getIn(['fields', 'id', 0])+i} data={r.toJS()} viewer_id={this.props.viewer_id}/>
-                        }, this)
+                            return <SearchResult key={r.getIn(['fields', 'id', 0])+i} data={r} viewer_id={this.props.viewer_id}/>
+                        }, this).toJS()
                     }
-                    {this.props.page.fetching ?  <div className="csspinner traditional" /> : null }
+                    {this.props.page.get('fetching') ?  <div className="csspinner traditional" /> : null }
                 </div>
         }
         else{

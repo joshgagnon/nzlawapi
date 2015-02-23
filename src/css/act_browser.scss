@@ -7,7 +7,7 @@ $deep-red: #A6171D;
 $top-bar-height: 116px;
 $top-bar-height-sm: 50px;
 $button-orange: #f26735;
-
+$buttonbar-outer-width:65px;
 
 $z-toolbars: 100;
 
@@ -166,6 +166,10 @@ body{
 		padding-top:4px;
 		text-align: center;
 		z-index: $z-toolbars;
+		display:none;
+		@media (min-width: $screen-sm-min) {
+			display:block;
+		}
 		@media (min-width: $screen-md-min) {
 			top: $top-bar-height;
 		}
@@ -281,9 +285,12 @@ body{
 		.nav{
 			z-index: $z-toolbars;
 			position: absolute;
-			left: 65px;
+			left: 0;
 			right: 0;
 			background-color: #fff;
+			@media (min-width: $screen-sm-min) {
+				left: $buttonbar-outer-width;
+			}
 		}
 		.result-tabs{
 			background-color:white;
@@ -298,6 +305,9 @@ body{
 				max-width: 200px;
 			}
 			li{
+				&.tab:nth-child(1){
+					margin-left:10px;
+				}
 				position: relative;
 				a{
 					white-space: nowrap;
@@ -310,12 +320,14 @@ body{
 				}
 			}
 			&.nav-dropdown > div{
-				padding-bottom:8px;
+				padding: 0 10px 8px 10px;
 				width: 100%;
-				padding-right: 10px;
 				button{
 					width: 100%;
 				}
+			}
+			.dropdown-menu{
+				right:0;
 			}
 			.dropdown-menu .tab-close{
 				top: -4px;
@@ -358,7 +370,11 @@ body{
 			max-width:1170px;
 			margin: 0 auto;
 			margin-top: 60px;
-			padding-left:65px;
+			margin-bottom:60px;
+			padding-left:10px;
+			@media (min-width: $screen-sm-min) {
+				padding-left: $buttonbar-outer-width;
+			}
 		}
 
 		.article-overlay {
@@ -376,7 +392,11 @@ body{
 			max-width:1170px;
 			margin: 0 auto;
 			margin-top: 20px;
-			padding-left:65px;
+			padding-left:10px;
+			@media (min-width: $screen-sm-min) {
+				padding-left: $buttonbar-outer-width;
+			}
+
 			.search-result{
 				margin-bottom: 20px;
 

@@ -62,23 +62,23 @@ var PageSet = React.createClass({
     },
     renderPage: function(page){
         return page.getIn(['query', 'search']) ?
-                    <SearchResults key={page.id} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
-                    <Article key={page.id} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
+                    <SearchResults key={page.get('id')} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
+                    <Article key={page.get('id')} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
     },
     renderTabs: function(){
         var self = this;
         return (<div className="results-container">
-                <TabbedArea activeKey={this.props.view.active_page_id}
+                <TabbedArea activeKey={this.props.view.get('active_page_id')}
                 onSelect={this.handleTab}
                 onClose={this.closeTab} viewer_id={this.props.viewer_id} >
                 { this.props.pages.map(function(page){
                         return (
-                             <TabPane key={page.id} eventKey={page.get('id')} tab={page.get('title')} >
+                             <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('title')} >
                                 { this.props.view.getIn(['settings', 'page.id', 'advanced_search']) ? <AdvancedSearch /> : null }
                                 { this.renderPage(page) }
                             </TabPane>
                           )
-                      }, this)
+                      }, this).toJS() //can remove in react 0.13
             }
             </TabbedArea></div>)
     },
