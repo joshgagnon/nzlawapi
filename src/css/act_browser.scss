@@ -262,6 +262,12 @@ body{
 	.split .results-container:nth-child(2){
 		left:50%;
 	}
+	@media print{
+		.split .results-container{
+			width:100% !important;
+			left:0 !important;
+		}
+	}
 	.results-container{
 		position: absolute;
 		background-color:white;
