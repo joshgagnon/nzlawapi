@@ -1,7 +1,7 @@
 import sys
 import hmac
 from hashlib import sha256
-from flask import Blueprint, render_template, request, redirect, current_app
+from flask import Blueprint, render_template, request, redirect, current_app, session
 from security.auth import require_auth
 Base = Blueprint('base', __name__, template_folder='templates')
 
