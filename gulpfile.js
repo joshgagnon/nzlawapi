@@ -1,8 +1,6 @@
 console.time('Loading plugins');
 var gulp = require('gulp');
 var browserify = require('browserify');
-//var concat = require('gulp-concat');
-var jshint = require('gulp-jshint');
 var notify = require("gulp-notify")
 var plumber = require('gulp-plumber');
 var react = require('gulp-react');
@@ -27,13 +25,6 @@ console.timeEnd('Loading plugins');
         }
     );
 };
-
-// JS hint task
-gulp.task('jshint', function() {
-  gulp.src('./src/js/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-});
 
 gulp.task('js-prod', function() {
   return browserify(
@@ -121,5 +112,9 @@ gulp.task('watch', function(){
   gulp.watch('src/images/*', ['images']);
 });
 
-gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images'])
-gulp.task('prod', ['js-prod', 'sass-prod', 'fonts', 'images'])
+if(process.env.NODE_ENV === 'production'){
+  gulp.task('default', ['js-prod', 'sass-prod', 'fonts', 'images'])
+}
+else{
+  gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images'])
+}
