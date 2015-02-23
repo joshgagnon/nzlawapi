@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 var BootstrapMixin = require('react-bootstrap/lib/BootstrapMixin');
 var cloneWithProps = require('react-bootstrap/lib/utils/cloneWithProps');
 

@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 var Modal = require('react-bootstrap/lib/Modal');
 var Graph = require('./Graph.jsx');
 

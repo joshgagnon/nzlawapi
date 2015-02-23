@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 var joinClasses = require('react-bootstrap/lib/utils/joinClasses');
 var classSet = require('react-bootstrap/lib/utils/classSet');
 var TransitionEvents = require('react-bootstrap/lib/utils/TransitionEvents');

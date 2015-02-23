@@ -1,6 +1,6 @@
 "use strict";
 
-var React = require('react');
+var React = require('react/addons');
 var Actions = require('./actions/Actions');
 var ReactRouter = require('react-router');
 var Browser = require('./components/Browser.jsx');
@@ -8,10 +8,6 @@ var Browser = require('./components/Browser.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
-
-function scrollTo($element){
-	$element.scrollintoview();
-}
 
 var App = React.createClass({
 	render: function(){

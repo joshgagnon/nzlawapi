@@ -1,11 +1,8 @@
 "use strict";
 
 var Reflux = require('reflux');
-var _ = require('lodash');
-var $ = require('jquery');
 
-
-var Actions = Reflux.createActions([
+module.exports = Reflux.createActions([
 	'queryChange',
 
 	'newPage',
@@ -47,5 +44,3 @@ var Actions = Reflux.createActions([
 	'loadState',
 	'loadPrevious'
 ]);
-
-module.exports = Actions;

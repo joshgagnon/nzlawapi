@@ -10,8 +10,6 @@ var _ = require('lodash');
 var $ = require('jquery');
 var Popover = require('./Popover.jsx');
 
-require('bootstrap');
-
 
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,

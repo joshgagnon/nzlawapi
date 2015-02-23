@@ -4,7 +4,7 @@ var Button = require('react-bootstrap/lib/Button');
 var Reflux = require('reflux');
 var Input = require('react-bootstrap/lib/Input');
 var Modal = require('react-bootstrap/lib/Modal');
-var Actions = require('../Actions/Actions.js');
+var Actions = require('../actions/Actions.js');
 var SavedStates = require('../stores/SavedStates.js');
 var _= require('lodash');
 

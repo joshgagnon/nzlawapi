@@ -1,6 +1,5 @@
 console.time('Loading plugins');
 var gulp = require('gulp');
-var bower = require('gulp-bower');
 var browserify = require('browserify');
 //var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');

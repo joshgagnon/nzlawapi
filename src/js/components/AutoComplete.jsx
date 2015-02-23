@@ -1,4 +1,4 @@
-var React = require('react');
+var React = require('react/addons');
 var Input = require('react-bootstrap/lib/Input');
 var EventListener = require('react-bootstrap/lib/utils/EventListener');
 var $ = require('jquery');
