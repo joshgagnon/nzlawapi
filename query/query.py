@@ -2,6 +2,7 @@ from acts.acts import query_act, query_acts, get_act_node_by_id, get_instrument_
 from cases.cases import get_full_case, get_case_info, case_search
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
+from security.auth import require_auth
 from db import get_db
 import psycopg2
 import re
@@ -11,6 +12,7 @@ Query = Blueprint('query', __name__, template_folder='templates')
 
 
 @Query.route('/article_auto_complete')
+@require_auth
 def article_auto_complete():
     try:
         db = get_db()
@@ -25,6 +27,7 @@ def article_auto_complete():
 
 
 @Query.route('/act_search_id/<string:query>')
+@require_auth
 def search_by_id(query):
     status = 200
     try:
@@ -36,6 +39,7 @@ def search_by_id(query):
 
 
 @Query.route('/definition/<int:document_id>/<string:key>')
+@require_auth
 def get_definition_route(document_id, key):
     status = 200
     try:
@@ -48,6 +52,7 @@ def get_definition_route(document_id, key):
 
 @Query.route('/link/<string:key>')
 @Query.route('/link/<string:doc_type>/<string:key>')
+@require_auth
 def get_link_route(doc_type=None, key=None):
     status = 200
     result = get_instrument_summary(key=key)
@@ -63,6 +68,7 @@ def get_link_route(doc_type=None, key=None):
 
 
 @Query.route('/references/<int:document_id>')
+@require_auth
 def get_references_route(document_id):
     status = 200
     try:
@@ -281,12 +287,14 @@ def query_act_fields(args):
 
 
 @Query.route('/case/file/<path:filename>')
+@require_auth
 def case_file(filename):
     case_path = current_app.config['CASE_DIR']
     return send_from_directory(case_path, filename)
 
 
 @Query.route('/query')
+@require_auth
 def query():
     args = request.args
     query_type = args.get('doc_type')

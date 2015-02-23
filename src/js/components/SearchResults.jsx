@@ -66,8 +66,8 @@ module.exports = React.createClass({
             var total = this.props.page.content.search_results.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
-                    { this.props.page.content.search_results.hits.map(function(r){
-                            return <SearchResult key={r.fields.id[0]} data={r} viewer_id={this.props.viewer_id}/>
+                    { this.props.page.content.search_results.hits.map(function(r, i){
+                            return <SearchResult key={r.fields.id[0]+i} data={r} viewer_id={this.props.viewer_id}/>
                         }, this)
                     }
                     {this.props.page.fetching ?  <div className="csspinner traditional" /> : null }
