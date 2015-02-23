@@ -30,8 +30,12 @@ var Actions = Reflux.createActions([
 	'closeSaveDialog',
 	'closeLoadDialog',
 	'fetchSavedStates',
+
 	'removeSavedState',
 	'updateSavedStates',
+	'createSaveFolder',
+	'removeSaveFolder',
+	'renameSavedState',
 
 
 	'toggleUnderlines',

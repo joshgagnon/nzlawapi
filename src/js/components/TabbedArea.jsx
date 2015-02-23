@@ -1,11 +1,11 @@
 var React = require('react');
-var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
-var cloneWithProps = require('react-bootstrap/utils/cloneWithProps');
+var BootstrapMixin = require('react-bootstrap/lib/BootstrapMixin');
+var cloneWithProps = require('react-bootstrap/lib/utils/cloneWithProps');
 
-var ValidComponentChildren = require('react-bootstrap/utils/ValidComponentChildren');
-var Nav = require('react-bootstrap/Nav');
-var Button = require('react-bootstrap/Button');
-var NavItem = require('react-bootstrap/NavItem');
+var ValidComponentChildren = require('react-bootstrap/lib/utils/ValidComponentChildren');
+var Nav = require('react-bootstrap/lib/Nav');
+var Button = require('react-bootstrap/lib/Button');
+var NavItem = require('react-bootstrap/lib/NavItem');
 var _ = require('lodash');
 
 function getDefaultActiveKeyFromChildren(children) {

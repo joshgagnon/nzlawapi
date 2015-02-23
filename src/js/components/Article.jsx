@@ -1,6 +1,6 @@
 "use strict";
 var React = require('react/addons');
-var Glyphicon= require('react-bootstrap/Glyphicon');
+var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');

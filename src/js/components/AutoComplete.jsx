@@ -1,6 +1,6 @@
 var React = require('react');
-var Input = require('react-bootstrap/Input');
-var EventListener = require('react-bootstrap/utils/EventListener');
+var Input = require('react-bootstrap/lib/Input');
+var EventListener = require('react-bootstrap/lib/utils/EventListener');
 var $ = require('jquery');
 var _ = require('lodash');
 

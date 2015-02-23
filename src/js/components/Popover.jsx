@@ -1,8 +1,8 @@
 "use strict";
 var React = require('react/addons');
-var Col = require('react-bootstrap/Col');
-var BootstrapMixin = require('react-bootstrap/BootstrapMixin');
-var Button = require('react-bootstrap/Button');
+var Col = require('react-bootstrap/lib/Col');
+var BootstrapMixin = require('react-bootstrap/lib/BootstrapMixin');
+var Button = require('react-bootstrap/lib/Button');
 var Actions = require('../actions/Actions');
 var ArticleSummary = require('./ArticleSummary.jsx');
 var $ = require('jquery');

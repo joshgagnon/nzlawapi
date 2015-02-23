@@ -1,9 +1,9 @@
 "use strict";
 var React = require('react/addons');
-var Input = require('react-bootstrap/Input');
-var Col = require('react-bootstrap/Col');
-var Button = require('react-bootstrap/Button');
-var ButtonToolbar = require('react-bootstrap/ButtonToolbar');
+var Input = require('react-bootstrap/lib/Input');
+var Col = require('react-bootstrap/lib/Col');
+var Button = require('react-bootstrap/lib/Button');
+var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 

@@ -1,7 +1,7 @@
 var React = require('react');
-var joinClasses = require('react-bootstrap/utils/joinClasses');
-var classSet = require('react-bootstrap/utils/classSet');
-var TransitionEvents = require('react-bootstrap/utils/TransitionEvents');
+var joinClasses = require('react-bootstrap/lib/utils/joinClasses');
+var classSet = require('react-bootstrap/lib/utils/classSet');
+var TransitionEvents = require('react-bootstrap/lib/utils/TransitionEvents');
 
 var TabPane = React.createClass({displayName: "TabPane",
   getDefaultProps: function () {

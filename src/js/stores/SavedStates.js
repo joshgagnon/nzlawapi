@@ -17,6 +17,9 @@ var Serialization = Reflux.createStore({
         this.listenTo(Actions.loadState, this.load);
         this.listenTo(Actions.fetchSavedStates, this.onFetchSavedStates);
         this.listenTo(Actions.removeSavedState, this.onRemoveSavedState);
+        this.listenTo(Actions.createSaveFolder, this.onCreateSaveFolder);
+        this.listenTo(Actions.removeSaveFolder, this.onRemoveSaveFolder);
+        this.listenTo(Actions.renameSavedState, this.onRenameSavedState);
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
         this.pages = [];
         this.views = {};
@@ -47,35 +50,97 @@ var Serialization = Reflux.createStore({
             Actions.setState(JSON.parse(localStorage['current_view']));
         }
     },
-    save: function(name) {
-        var all = _.reject(JSON.parse(localStorage['saved_views'] || '[]'), {name: name});
-        all.push({name: name, value: this.prepState(), date: (new Date()).toLocaleString()});
-        localStorage['saved_views'] = JSON.stringify(all);
+    save: function(path) {
+        var states = this.readStates();
+        var current = this.getFolder(states, path.slice(0, path.length-1));
+        current.children = _.reject(current.children, {type: 'state', name: _.last(path)});
+        current.children.push({name: _.last(path), type: 'state', value: this.prepState(), date: (new Date()).toLocaleString()});
+        this.setStates(states);
     },
-    readState: function(){
+    readStates: function(){
+        var data = {};
        if(localStorage['saved_views']){
-            return JSON.parse(localStorage['saved_views']) || {};
+            try{
+                data = JSON.parse(localStorage['saved_views']) || {};
+            }catch(e){
+                data =  {};
+            }
         }
-        return {};
+        return _.defaults(data, this.createFolder('root'));
     },
-    load: function(name) {
-        var selected = _.find(this.readState(), {name: name}).value;
+    setStates: function(states){
+        localStorage['saved_views'] = JSON.stringify(states);
+        this.update();
+    },
+    load: function(path) {
+        var states = this.readStates();
+        var current = states;
+        _.map(path, function(p){
+            current = _.find(current.children, {name: p});
+        });
+        var selected = current.value;
         if(selected){
             Actions.setState(selected);
         }
     },
-    onRemoveSavedState: function(value){
-        if(localStorage['saved_views']){
-            localStorage['saved_views'] = JSON.stringify(_.reject(JSON.parse(localStorage['saved_views'] || '[]'), {name: value}));
-            this.update();
-        }
+    getFolder: function(states, path){
+        var current = states;
+        _.each(path, function(p){
+            var folder = _.find(current.children, {name: p});
+            if(!folder){
+                folder = this.createFolder(p);
+                current.children.push(folder);
+            }
+            current = folder;
+        }, this);
+        return current;
+    },
+    onRemoveSavedState: function(path){
+        var states = this.readStates();
+        var current = this.getFolder(states, path.slice(0, path.length-1));
+        current.children = _.reject(current.children, {type: 'state', name: _.last(path)});
+       this.setStates(states);
     },
     onFetchSavedStates: function(){
         //will be ajax
         this.update();
     },
+    onCreateSaveFolder: function(path){
+        var states = this.readStates();
+        var current = states;
+        _.each(path, function(p){
+            var folder = _.find(current.children, {name: p, type: 'folder'});
+            if(!folder){
+                folder = this.createFolder(p);
+                current.children.push(folder);
+            }
+            current = folder;
+        }, this);
+        this.setStates(states);
+    },
+    onRemoveSaveFolder: function(path){
+        var states = this.readStates();
+        var current = states;
+        _.each(path.slice(0, path.length-1), function(p){
+            var folder = _.find(current.children, {name: p, type: 'folder'});
+            current = folder;
+        }, this);
+        var name = _.last(path);
+        current.children = _.reject(current.children, {name: name, type: 'folder'});
+        this.setStates(states);
+
+    },
+    onRenameSavedState: function(path, new_name){
+        var states = this.readStates()
+        this.getFolder(states, path).name = new_name;
+        this.setStates(states);
+
+    },
+    createFolder: function(name){
+        return {name: name, type: 'folder', children: []}
+    },
     update: function(){
-        this.trigger({saved_views: JSON.parse(localStorage['saved_views'] || '[]')})
+        this.trigger({saved_views: this.readStates()});
 
     }
 });

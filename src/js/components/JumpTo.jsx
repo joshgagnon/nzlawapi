@@ -1,7 +1,7 @@
 var React = require('react/addons');
 var Actions = require('../actions/Actions');
-var Input = require('react-bootstrap/Input');
-var Button = require('react-bootstrap/Button');
+var Input = require('react-bootstrap/lib/Input');
+var Button = require('react-bootstrap/lib/Button');
 var ArticleStore = require('../stores/ArticleStore');
 
 var Reflux = require('reflux');
