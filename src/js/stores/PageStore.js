@@ -16,20 +16,26 @@ var PageStore = Reflux.createStore({
 	update: function(){
 		this.trigger({pages: this.pages.toJS()});
 	},
+	onSetState: function(data){
+		this.pages = data.pages || [];
+		this.pages= Immutable.fromJS(_.map(data.pages, function(page){
+			return this.generatePage(page);
+		}, this));
+		this.update();
+	},
 	generatePage: function(page){
 		page = page || {}
 		page.id = 'page-'+this.counter++;
 		page.popovers = page.popovers || {};
-		return Immutable.fromJS(page);
+		page.references = page.references || {};
+		return page;
 	},
 	onNewPage: function(page_data, viewer_id){
 		var page = this.generatePage(page_data);
-
-		this.pages = this.pages.push(page);
-
-		Actions.requestPage(page.get('id'));
+		this.pages = this.pages.push(Immutable.fromJS(page));
+		Actions.requestPage(page.id);
 		if(viewer_id !== undefined){
-			Actions.showPage(viewer_id, page.get('id'));
+			Actions.showPage(viewer_id, page.id);
 		}
 		this.update();
 	},
@@ -50,22 +56,22 @@ var PageStore = Reflux.createStore({
 		//todo, guards in Action pre emit
 		var page = this.getById(page_id);
 		if(!page.get('fetching') && !page.get('fetching')){
-			this.pages = this.pages.mergeDeepIn([this.getIndex(page.id)], {'fetching':  true});
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
 			this.update();
 			var get = page.get('query') ? $.get('/query', page.get('query').toJS() ) : $.get(page.get('query_string'));
 			get.then(function(data){
 					var result = {
 						fetching: false,
 						fetched: true,
-						query: {
-							id: data.id
-						},
+						fragment: data.fragment,
 						content: data,
-						title: data.title
+						title: data.title,
+						query:{}
 					};
 					if(data.doc_type){
 						result.query.doc_type = data.doc_type;
 					}
+
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
 					this.update();
 				}.bind(this),
@@ -125,10 +131,6 @@ var PageStore = Reflux.createStore({
 		}*/
 
 	},
-	onClearPages: function(){
-		this.pages = this.page.clear();
-		this.trigger({pages: this.pages})
-	},
 	onRemovePage: function(page_id){
 		this.pages = this.pages.splice(this.getIndex(page_id), 1);
 		this.update();
@@ -157,6 +159,19 @@ var PageStore = Reflux.createStore({
 				.always(function(){
 					this.update();
 				}.bind(this))
+		}
+	},
+	onRequestReferences: function(page_id){
+		var page = this.getById(page_id);
+
+		if(!page.get('references').get('fetched')){
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetched: true});
+			$.get('/references/'+page.get('content').get('document_id'))
+				.then(function(response){
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
+					this.update();
+				}.bind(this))
+			this.update();
 		}
 	}
 });

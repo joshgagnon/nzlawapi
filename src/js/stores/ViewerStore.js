@@ -15,17 +15,30 @@ module.exports =  Reflux.createStore({
 	getDefaultData: function(){
 		return [this.getDefault(), this.getDefault()];
 	},
+	onSetState: function(data){
+		this.views =_.map(data.views||[], function(v){
+			return _.defaults(this.getDefault(), v);
+		}, this);
+		if(!this.views.length){
+			this.views = this.getDefaultData();
+		}
+		if(this.views.length === 1){
+			this.views.push(this.getDefaultData());
+		}
+		this.views = Immutable.fromJS(this.views);
+		this.trigger({views: this.views.toJS()});
+	},
 	pageUpdate: function(state){
-		return /*
 		// if the active page is removed, we must change active
 		var ids = _.map(state.pages, function(p){ return p.id});
 		if(ids.length){
-			for(var i=0;i<this.views.length; i++){
-				if(!_.contains(ids, this.views[i].active_page_id)){
-					this.views[0].active_page_id = _.last(ids);
+			for(var i=0;i<this.views.count(); i++){
+				if(!_.contains(ids, this.views.getIn([i, 'active_page_id']))){
+					this.views = this.views.setIn([i, 'active_page_id'],  _.last(ids));
 				}
 			}
-		}*/
+		}
+		this.trigger({views: this.views.toJS()});
 	},
 	getDefault: function(){
 		return {active_page_id: undefined, settings: {}, popovers: {}}

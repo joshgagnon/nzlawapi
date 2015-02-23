@@ -11,10 +11,9 @@ var Actions = Reflux.createActions([
 	'newPage',
 	'newAdvancedPage',
 	'requestPage',
-	// /'updatePage',
+
 	'removePage',
 	'getMorePage',
-	'clearPages',
 	'showPage',
 
 	'articleName',
@@ -34,8 +33,15 @@ var Actions = Reflux.createActions([
 	'removeSavedState',
 	'updateSavedStates',
 
+
+	'toggleUnderlines',
+	'toggleSplitMode',
+	'togglePrintMode',
+
+	'setState',
 	'saveState',
-	'loadState'
+	'loadState',
+	'loadPrevious'
 ]);
 
 module.exports = Actions;

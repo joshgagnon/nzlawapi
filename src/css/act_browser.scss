@@ -11,6 +11,11 @@ $button-orange: #f26735;
 
 $z-toolbars: 100;
 
+body{
+	margin:10px;
+	// HACK FOR PRINT
+}
+
 .act_browser{
 	font-family: Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	position: absolute;
@@ -41,6 +46,12 @@ $z-toolbars: 100;
 					padding-right: $sidebar-outer-width;
 				}
 			}
+		}
+	}
+
+	@media print{
+		.sidebar-visible{
+			padding-right: 0 !important;
 		}
 	}
 
@@ -158,7 +169,11 @@ $z-toolbars: 100;
 		@media (min-width: $screen-md-min) {
 			top: $top-bar-height;
 		}
-
+		@media print{
+			position:static;
+			height:1;
+			display:none;
+		}
 		a{
 			color: $deep-red;
 			font-size: 24px;
@@ -193,7 +208,11 @@ $z-toolbars: 100;
 		@media (min-width: $screen-md-min) {
 			padding-top: $top-bar-height;
 		}
-
+		@media print{
+			position:static;
+			height:0;
+			display:none !important;
+		}
 		& > .btn-group{
 			width:100%;
 			padding:6px;
@@ -213,6 +232,11 @@ $z-toolbars: 100;
 		.form-group{
 			margin-right:16px;
 		}
+		span.no-references {
+			width: 100%;
+			text-align: center;
+			display: inline-block;
+			}
 
 	}
 	.summary{
@@ -248,6 +272,11 @@ $z-toolbars: 100;
 		@media (min-width: $screen-md-min) {
 			top: $top-bar-height;
 		}
+		@media print{
+			position:static;
+			width:100%;
+			padding-right:0 !important;
+		}
 
 		.nav{
 			z-index: $z-toolbars;
@@ -262,7 +291,9 @@ $z-toolbars: 100;
 		}
 		.nav-tabs{
 			padding-top:5px;
-
+			@media print{
+				display:none;
+			}
 			&>li{
 				max-width: 200px;
 			}
@@ -318,12 +349,28 @@ $z-toolbars: 100;
 			left: 0;
 			right: 0;
 			padding: 0;
+			@media print{
+				position:static;
+				padding-right:0;
+			}
 		}
 		 .legislation-result{
 			max-width:1170px;
 			margin: 0 auto;
 			margin-top: 60px;
 			padding-left:65px;
+		}
+
+		.article-overlay {
+			position: absolute;
+			right: 0;
+			top: 10px;
+			@media (min-width: $screen-md-min) {
+				right: $sidebar-outer-width;
+			}
+			@media print{
+				display:none;
+			}
 		}
 		.search-results{
 			max-width:1170px;

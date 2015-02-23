@@ -8,7 +8,8 @@ var Button = require('react-bootstrap/Button');
 var Col= require('react-bootstrap/Col');
 var PageStore = require('../stores/PageStore');
 var ViewerStore = require('../stores/ViewerStore');
-var Serialization = require('../stores/Serialization.js');
+var SavedStates = require('../stores/SavedStates.js');
+var BrowserStore = require('../stores/BrowserStore.js');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/Glyphicon');
 var SearchResults = require('./SearchResults.jsx');
@@ -45,7 +46,8 @@ var DialogStore = Reflux.createStore({
     onCloseLoadDialog: function(){
         this.trigger({load_dialog: false});
     },
-})
+});
+
 
 
 var PageSet = React.createClass({
@@ -59,14 +61,9 @@ var PageSet = React.createClass({
         return (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
     },
     renderPage: function(page){
-        if(page.content){
-            return page.query.search ?
-                    <SearchResults key={page.id} result={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
+        return page.query.search ?
+                    <SearchResults key={page.id} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
                     <Article key={page.id} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
-        }
-        else{
-            return <div className="search-results csspinner traditional"/>;
-        }
     },
     renderTabs: function(){
         var self = this;
@@ -105,21 +102,22 @@ var PageSet = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-        Reflux.listenTo(PageStore, 'onPages'),
-        Reflux.listenTo(ViewerStore, 'onViewer'),
+        Reflux.listenTo(PageStore, 'onState'),
+        Reflux.listenTo(ViewerStore, 'onState'),
         // MOVE TO CHILD, maybe
-        Reflux.listenTo(DialogStore, 'onDialog'),
+        Reflux.listenTo(DialogStore, 'onState'),
+        Reflux.listenTo(BrowserStore, 'onState'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],
     getInitialState: function(){
         return {
-            advanced_search: false,
             pages: [],
             views: ViewerStore.getDefaultData(),
             underlines: true, //false,
             save_dialog: false,
-            load_dialog: false
+            load_dialog: false,
+            split_mode: false
         };
     },
     componentDidMount: function(){
@@ -129,17 +127,14 @@ module.exports = React.createClass({
         else if(this.getParams().doc_type){
             Actions.newPage({query: {doc_type: this.getParams().doc_type,  query: this.getParams().id, find: 'id'}}, 0);
         }
+        else{
+            Actions.loadPrevious();
+        }
        /* window.addEventListener('onResize', function(){
             //TODO, debouce, measure width, hide,
         });*/
     },
-    onPages: function(data){
-        this.setState({pages: data.pages});
-    },
-    onDialog: function(state){
-        this.setState(state);
-    },
-    onViewer: function(state){
+    onState: function(state){
         this.setState(state);
     },
     submit: function(e){
@@ -206,7 +201,7 @@ module.exports = React.createClass({
             search_query: null,
             location: null
         });
-        Actions.clearPages();
+        Actions.setState({});
     },
 
     toggleAdvanced: function(){
@@ -293,7 +288,7 @@ module.exports = React.createClass({
             parentClass += 'sidebar-visible ';
         }*/
         if(this.state.underlines){
-            parentClass += 'underlines ';
+            parentClass += 'underlines';
         }
          if(this.state.split_mode){
             //resultsClass += 'split ';
@@ -318,11 +313,11 @@ module.exports = React.createClass({
                 </div>
             <div className="buttonbar-wrapper">
                 <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
-                <a><Glyphicon glyph="text-color" onClick={this.toggleState.bind(this, 'underlines')} title="Underlines"/></a>
-                <a><Glyphicon glyph="object-align-top" onClick={this.toggleState.bind(this, 'split_mode')} title="Columns"/></a>
+                <a><Glyphicon glyph="text-color" onClick={Actions.toggleUnderlines} title="Underlines"/></a>
+                <a><Glyphicon glyph="object-align-top" onClick={Actions.toggleSplitMode} title="Columns"/></a>
                 <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
                 <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
-                <a><Glyphicon glyph="print" title="Print"/></a>
+                <a><Glyphicon glyph="print" onClick={Actions.togglePrintMode} title="Print"/></a>
                 <a><Glyphicon glyph="star" /></a>
                 {/*<ModalTrigger modal={<GraphModal />}>
                     <a><Glyphicon glyph="globe" /></a>
