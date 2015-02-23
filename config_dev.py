@@ -16,3 +16,8 @@ HOST = 'localhost'
 DB = 'legislation'
 
 ES_SERVER = {"host": "localhost", "port": 9200}
+
+USERS_LOGIN_URL = 'https://users.catalex.nz/auth/login?browser=1'
+
+SESSION_SECRET = 'secret_here'
+SSO_SHARED_SECRET = 'put_secret_here'

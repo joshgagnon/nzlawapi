@@ -10,6 +10,7 @@ import datetime
 import time
 import elasticsearch
 
+
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         try:
@@ -33,6 +34,8 @@ app.register_blueprint(Validator)
 app.register_blueprint(Query)
 app.json_encoder = CustomJSONEncoder
 app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
+app.secret_key = app.config['SESSION_SECRET']
+
 
 @app.route('/map')
 def map():
