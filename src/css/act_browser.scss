@@ -363,7 +363,7 @@ body{
 
 		.article-overlay {
 			position: absolute;
-			right: 0;
+			right: 10px;
 			top: 10px;
 			@media (min-width: $screen-md-min) {
 				right: $sidebar-outer-width;

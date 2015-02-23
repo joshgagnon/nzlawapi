@@ -24,6 +24,7 @@ var Serialization = Reflux.createStore({
         this.pages = [];
         this.views = {};
         this.browser = {};
+        this.saveCurrent = _.debounce(this.saveCurrent, 1000);
     },
     updatePages: function(pages){
         this.pages = pages.pages;
@@ -38,9 +39,16 @@ var Serialization = Reflux.createStore({
         this.saveCurrent();
     },
     prepState: function(){
-        return {views: this.views, pages: (this.pages||[]).map(function(r){
-            return _.pick(r, 'title', 'query');
-        }), browser: this.browser};
+        function pickPage(page){
+            var obj = _.pick(page, 'title', 'query');
+            obj.popovers = {}
+           _.each(page.popovers || [] ,function(v, k){
+                return obj.popovers[k] = _.pick(v, 'type', 'title', 'url', 'source_sel', 'id');
+            });
+            return obj
+
+        }
+        return {views: this.views, pages: (this.pages||[]).map(pickPage), browser: this.browser};
     },
     saveCurrent: function() {
         localStorage['current_view'] = JSON.stringify(this.prepState());

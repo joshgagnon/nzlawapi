@@ -9,6 +9,8 @@ var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 var Popover = require('./Popover.jsx');
+var MQ= require('react-responsive');
+
 
 
 var ArticleJumpStore = Reflux.createStore({
@@ -153,6 +155,7 @@ var ArticleContent = React.createClass({
         }
     },
     shouldComponentUpdate: function(newProps, newState){
+        debugger
         console.log('shoud', this.props.content !== newProps.content)
         //bug getting here
         return this.props.content !== newProps.content;
@@ -378,8 +381,27 @@ var ArticleOverlay= React.createClass({
      },
     componentDidMount: function(){
        if(!this.props.page.fetching && !this.props.page.fetched){
-        Actions.requestPage(this.props.page.id)
+            Actions.requestPage(this.props.page.id)
        }
+    },
+    componentDidUpdate: function(){
+       // if loading position popovers
+       // TODO, minimize running this
+       if(this.props.page.content){
+           _.each(this.props.view.popovers[this.props.page.id], function(p){
+                var pop = this.props.page.popovers[p];
+                if(!pop.positionLeft && !pop.positionTop){
+                    var link = $(pop.source_sel, this.getDOMNode());
+                    if(link.length){
+                        Actions.popoverUpdate(this.props.viewer_id, this.props.page.id, {
+                            id: pop.id,
+                            positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                            positionTop: link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
+                        });
+                    }
+                }
+           }, this);
+        }
     },
     render: function(){
         // perhaps swap popovers for different view on mobile
@@ -391,12 +413,14 @@ var ArticleOverlay= React.createClass({
           <ArticleContent ref="articleContent"
                 content={this.props.page.content}
                 viewer_id={this.props.viewer_id}
-                page_id={this.props.page.id}/>
-           <Popovers
-                popoverData={this.props.page.popovers}
-                popoverView={this.props.view.popovers[this.props.page.id]}
-                viewer_id={this.props.viewer_id}
-                page_id={this.props.page.id}/>
+                page_id={this.props.page.id} />
+            <MQ query='(min-device-width: 480px)'>
+                <Popovers
+                    popoverData={this.props.page.popovers}
+                    popoverView={this.props.view.popovers[this.props.page.id]}
+                    viewer_id={this.props.viewer_id}
+                    page_id={this.props.page.id} />
+            </MQ>
         </div>
     }
  });

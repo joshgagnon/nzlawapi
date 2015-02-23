@@ -23,6 +23,7 @@ module.exports = Reflux.createActions([
 	'popoverOpened',
 	'requestPopoverData',
 	'popoverClosed',
+	'popoverUpdate',
 
 	'closeSaveDialog',
 	'closeLoadDialog',

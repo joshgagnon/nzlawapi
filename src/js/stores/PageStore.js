@@ -14,7 +14,7 @@ var PageStore = Reflux.createStore({
 		this.counter = 0;
 	},
 	update: function(){
-		this.trigger({pages: this.pages.toJS()});
+		this.trigger({pages: this.pages});
 	},
 	onSetState: function(data){
 		this.pages = data.pages || [];
@@ -71,7 +71,6 @@ var PageStore = Reflux.createStore({
 					if(data.doc_type){
 						result.query.doc_type = data.doc_type;
 					}
-
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
 					this.update();
 				}.bind(this),
@@ -144,6 +143,12 @@ var PageStore = Reflux.createStore({
 			this.update();
 		}
 	},
+	//TODO position, should be in view
+	onPopoverUpdate: function(viewer_id, page_id, popover){
+		var page = this.getById(page_id);
+		this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover.id], popover);
+		this.update();
+	},
 	onRequestPopoverData: function(page_id, popover_id){
 		var page = this.getById(page_id);
 		var popover = page.get('popovers').get(popover_id);
@@ -151,10 +156,10 @@ var PageStore = Reflux.createStore({
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], {fetched: true});
 			$.get(popover.get('url'))
 				.then(function(response){
-					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], response);
+					//this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], response);
 				}.bind(this),
 					function(){
-
+						//TODO, error
 					})
 				.always(function(){
 					this.update();
@@ -165,10 +170,13 @@ var PageStore = Reflux.createStore({
 		var page = this.getById(page_id);
 
 		if(!page.get('references').get('fetched')){
+
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetched: true});
+			var page2 = this.getById(page_id);
+			debugger;
 			$.get('/references/'+page.get('content').get('document_id'))
 				.then(function(response){
-					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
+					//this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
 					this.update();
 				}.bind(this))
 			this.update();

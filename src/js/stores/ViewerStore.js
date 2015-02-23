@@ -17,7 +17,7 @@ module.exports =  Reflux.createStore({
 	},
 	onSetState: function(data){
 		this.views =_.map(data.views||[], function(v){
-			return _.defaults(this.getDefault(), v);
+			return _.defaults(v, this.getDefault());
 		}, this);
 		if(!this.views.length){
 			this.views = this.getDefaultData();

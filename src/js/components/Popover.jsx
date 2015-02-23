@@ -19,6 +19,10 @@ module.exports = React.createClass({
         if(!this.getLocalContent() && !this.props.fetched){
             Actions.requestPopoverData(this.props.page_id, this.props.id);
         }
+        if(!this.props.positionTop){
+            // from serialized
+
+        }
         this.reposition();  
     },
     componentDidUpdate: function() {

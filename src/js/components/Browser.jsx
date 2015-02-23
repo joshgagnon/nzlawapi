@@ -81,7 +81,7 @@ var PageSet = React.createClass({
             </TabbedArea></div>)
     },
     render: function(){
-        console.log('render', this.props.viewer_id)
+        //console.log('render', this.props.viewer_id)
         if(this.props.pages.length >= 2){
             return this.renderTabs();
         }

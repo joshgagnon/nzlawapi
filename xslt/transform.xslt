@@ -450,7 +450,7 @@
     </xsl:template>
 
     <xsl:template match="*[@href]">
-        <a data-link-id="{generate-id()}">
+        <a data-link-id="id-{position()}">
 
             <xsl:attribute name="data-href"><xsl:value-of select="@href"/>
             </xsl:attribute>
