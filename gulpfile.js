@@ -87,11 +87,6 @@ gulp.task('images', function() {
     .pipe(gulp.dest('./build/images/'))
 });
 
-gulp.task('bower', function() { 
-    return bower()
-         .pipe(gulp.dest('./bower_components' ) );
-});
-
 gulp.task('sass-prod', function() { 
     return gulp.src('./src/css/style.scss')
         .pipe(dont_break_on_errors())
@@ -100,7 +95,7 @@ gulp.task('sass-prod', function() { 
             "sourcemap=none": true, //hack to allow autoprefixer to work
              loadPath: [
                  './src/css',
-                 './bower_components/bootstrap-sass-official/assets/stylesheets'
+                 './node_modules/bootstrap-sass/assets/stylesheets'
              ]
          }) )
         .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
@@ -114,7 +109,7 @@ gulp.task('sass', function() { 
           //  "sourcemap=none": true, //hack to allow autoprefixer to work
              loadPath: [
                  './src/css',
-                 './bower_components/bootstrap-sass-official/assets/stylesheets'
+                 './node_modules/bootstrap-sass/assets/stylesheets'
              ]
          }) )
        // .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
