@@ -10,41 +10,41 @@ module.exports =  Reflux.createStore({
 	listenables: Actions,
 	init: function(){
 		this.listenTo(PageStore, this.pageUpdate);
-		this.views = Immutable.fromJS(this.getDefaultData());
+		this.views = this.getDefaultData();
 	},
 	getDefaultData: function(){
-		return [this.getDefault(), this.getDefault()];
+		return Immutable.fromJS([this.getDefault(), this.getDefault()]);
 	},
 	onSetState: function(data){
-		this.views =_.map(data.views||[], function(v){
+		var views =_.map(data.views||[], function(v){
 			return _.defaults(v, this.getDefault());
 		}, this);
-		if(!this.views.length){
-			this.views = this.getDefaultData();
+		if(!views.length){
+			views = this.getDefaultData();
 		}
-		if(this.views.length === 1){
-			this.views.push(this.getDefaultData());
+		if(views.length === 1){
+			views.push(this.getDefaultData());
 		}
-		this.views = Immutable.fromJS(this.views);
-		this.trigger({views: this.views.toJS()});
+		this.views = Immutable.fromJS(views);
+		this.trigger({views: this.views});
 	},
 	pageUpdate: function(state){
 		// if the active page is removed, we must change active
-		var ids = _.map(state.pages, function(p){ return p.id});
-		if(ids.length){
-			for(var i=0;i<this.views.count(); i++){
-				if(!_.contains(ids, this.views.getIn([i, 'active_page_id']))){
-					this.views = this.views.setIn([i, 'active_page_id'],  _.last(ids));
+		var ids = state.pages.map(function(p){ return p.id});
+		if(ids.size){
+			for(var i=0;i<this.views.size; i++){
+				if(!ids.has(this.views.getIn([i, 'active_page_id']))){
+					this.views = this.views.setIn([i, 'active_page_id'],  ids.last());
 				}
 			}
 		}
-		this.trigger({views: this.views.toJS()});
+		this.trigger({views: this.views});
 	},
 	getDefault: function(){
 		return {active_page_id: undefined, settings: {}, popovers: {}}
 	},
 	update: function(){
-		this.trigger({views: this.views.toJS()});
+		this.trigger({views: this.views});
 	},
 	prepPage: function(viewer_id, page_id){
 		if(!this.views.getIn([viewer_id, 'settings', page_id])){

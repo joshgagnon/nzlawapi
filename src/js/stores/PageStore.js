@@ -15,6 +15,7 @@ var PageStore = Reflux.createStore({
 	},
 	update: function(){
 		this.trigger({pages: this.pages});
+		console.log(this.pages.toJS())
 	},
 	onSetState: function(data){
 		this.pages = data.pages || [];
@@ -95,7 +96,7 @@ var PageStore = Reflux.createStore({
 						offset: data.offset,
 						content: {
 							search_results: {
-								hits: page.getIn(['content', 'search_results', 'hits']).concat(data.search_results.hits)
+								hits: page.getIn(['content', 'search_results', 'hits']).toJS().concat(data.search_results.hits)
 							}
 						},
 						fetching: false
@@ -103,12 +104,11 @@ var PageStore = Reflux.createStore({
 					if(result.content.search_results.hits.size >= result.content.search_results.total){
 						result.finished = true;
 					}
-					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], Immutable.fromJS(result));
 					this.update();
 				}.bind(this),
 				function(){
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {finished: true});
-					page.finished = true;
 					this.update();
 				}.bind(this))
 		}
@@ -136,7 +136,7 @@ var PageStore = Reflux.createStore({
 	},
 	onPopoverOpened: function(viewer_id, page_id, popover){
 		var page = this.getById(page_id);
-		if(!page.getIn(['popovers', popover.id])){
+		if(!page.getIn(['popovers', popover.id ])){
 			var result = {};
 			result[popover.id] = popover;
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers'], result);
@@ -156,7 +156,7 @@ var PageStore = Reflux.createStore({
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], {fetched: true});
 			$.get(popover.get('url'))
 				.then(function(response){
-					//this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], response);
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id], response);
 				}.bind(this),
 					function(){
 						//TODO, error

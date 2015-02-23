@@ -19,7 +19,7 @@ var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
-
+var Immutable = require('immutable');
 
 var SaveDialog = require('./SaveDialog.jsx');
 
@@ -61,18 +61,20 @@ var PageSet = React.createClass({
         return (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
     },
     renderPage: function(page){
-        return page.query.search ?
+        return page.getIn(['query', 'search']) ?
                     <SearchResults key={page.id} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
                     <Article key={page.id} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
     },
     renderTabs: function(){
         var self = this;
         return (<div className="results-container">
-                <TabbedArea activeKey={this.props.view.active_page_id} onSelect={this.handleTab} onClose={this.closeTab} viewer_id={this.props.viewer_id} >
+                <TabbedArea activeKey={this.props.view.active_page_id}
+                onSelect={this.handleTab}
+                onClose={this.closeTab} viewer_id={this.props.viewer_id} >
                 { this.props.pages.map(function(page){
                         return (
-                             <TabPane key={page.id} eventKey={page.id} tab={page.title} >
-                                { (this.props.view.settings[page.id] || {}).advanced_search ? <AdvancedSearch /> : null }
+                             <TabPane key={page.id} eventKey={page.get('id')} tab={page.get('title')} >
+                                { this.props.view.getIn(['settings', 'page.id', 'advanced_search']) ? <AdvancedSearch /> : null }
                                 { this.renderPage(page) }
                             </TabPane>
                           )
@@ -82,14 +84,14 @@ var PageSet = React.createClass({
     },
     render: function(){
         //console.log('render', this.props.viewer_id)
-        if(this.props.pages.length >= 2){
+        if(this.props.pages.count() >= 2){
             return this.renderTabs();
         }
 
-        else if(this.props.pages.length === 1){
+        else if(this.props.pages.count() === 1){
             return <div className="results-container"><div className="results-scroll">
-             { (this.props.view.settings[this.props.pages[0].id] || {}).advanced_search ? <AdvancedSearch /> : null }
-            {  this.renderPage(this.props.pages[0]) }
+             { this.props.view.getIn(['settings', this.props.pages.getIn([0, 'id', 'advanced_search'])]) ? <AdvancedSearch /> : null }
+            {  this.renderPage(this.props.pages.get(0)) }
                 </div></div>
         }
         else{
@@ -112,7 +114,7 @@ module.exports = React.createClass({
     ],
     getInitialState: function(){
         return {
-            pages: [],
+            pages: Immutable.List(),
             views: ViewerStore.getDefaultData(),
             underlines: true, //false,
             save_dialog: false,
@@ -222,12 +224,15 @@ module.exports = React.createClass({
         return !!this.state.document_id && this.state.find === 'full';
     },
     getActive: function(){
-        if(this.state.views[0].active_page_id){
-            return _.find(this.state.pages, {id: this.state.views[0].active_page_id});
+        var id = this.state.views.getIn([0 ,'active_page_id'])
+        if(id){
+            return this.state.pages.find(function(p){
+                return p.id === id;
+            });
         }
     },
     showSidebar: function(page){
-        if(page && !(page.query && page.query.search) && page.content){
+        if(page && !(page.get('query') && page.getIn(['query','search']) && page.get('content'))){
             return true;
         }
         return false;
@@ -236,17 +241,17 @@ module.exports = React.createClass({
         var active = this.getActive();
         if(this.state.split_mode){
             return <div className="split">
-                <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0} key={0}/>
-                <PageSet pages={this.state.pages} view={this.state.views[1]} viewer_id={1} key={1}/>
+                <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0} key={0}/>
+                <PageSet pages={this.state.pages} view={this.state.views.get(1)} viewer_id={1} key={1}/>
                 </div>
         }
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
-                <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0} key={0}/>
+                <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0} key={0}/>
                 <ArticleSideBar article={active}/>
                 </div>
         }
-        return  <PageSet pages={this.state.pages} view={this.state.views[0]} viewer_id={0}/>
+        return  <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0}/>
 
     },
     renderForm: function(){
@@ -324,7 +329,7 @@ module.exports = React.createClass({
                 </ModalTrigger>*/}
                 <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
             </div>
-            { this.state.pages.length ? this.renderBody() : null}
+            { this.state.pages.count() ? this.renderBody() : null}
 
             { /*show_side_bar ? <ArticleSideBar article={active_result}/> : '' */}
         </div>);

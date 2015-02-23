@@ -7,7 +7,7 @@ var PageStore = require('./PageStore');
 var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
 
-var Serialization = Reflux.createStore({
+module.exports = Reflux.createStore({
 
     init: function() {
         this.listenTo(PageStore, this.updatePages);
@@ -27,11 +27,11 @@ var Serialization = Reflux.createStore({
         this.saveCurrent = _.debounce(this.saveCurrent, 1000);
     },
     updatePages: function(pages){
-        this.pages = pages.pages;
+        this.pages = pages.pages.toJS();
         this.saveCurrent();
     },
     updateViews: function(views){
-        this.views = views.views;
+        this.views = views.views.toJS();
         this.saveCurrent();
     },
     updateBrowser: function(browser){
@@ -88,7 +88,7 @@ var Serialization = Reflux.createStore({
         });
         var selected = current.value;
         if(selected){
-            Actions.setState(selected);
+            Actions.setState(Immutable.fromJS(selected));
         }
     },
     getFolder: function(states, path){
@@ -153,4 +153,3 @@ var Serialization = Reflux.createStore({
     }
 });
 
-module.exports = Serialization;

@@ -9,7 +9,7 @@ var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 var Popover = require('./Popover.jsx');
-var MQ= require('react-responsive');
+var MQ = require('react-responsive');
 
 
 
@@ -69,7 +69,7 @@ var ArticleContent = React.createClass({
         this.resizeSkeleton();
     },
     isPartial: function(){
-        return this.props.content.partial;
+        return this.props.content.get('partial');
     },
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
@@ -124,7 +124,7 @@ var ArticleContent = React.createClass({
     resizeSkeleton: function(){
         var self = this;
         _.each(this.state.visible, function(v, k){
-            if(self.props.content && self.props.content.parts && self.props.content.parts[k]){
+            if(self.props.get('content') && self.props.content.parts && self.props.content.parts[k]){
                 self.heights[k] = self.refs[k].getDOMNode().outerHeight;
                 //console.log(k, self.heights[k], self.heights)
             }
@@ -155,14 +155,13 @@ var ArticleContent = React.createClass({
         }
     },
     shouldComponentUpdate: function(newProps, newState){
-        debugger
-        console.log('shoud', this.props.content !== newProps.content)
+        console.log('shoud',this.props.content !== newProps.content);
         //bug getting here
         return this.props.content !== newProps.content;
     },
     render: function(){
         console.log('article render')
-        if(this.props.content.error){
+        if(this.props.content.get('error')){
             return this.renderError()
         }
         else if(this.isPartial()){
@@ -178,7 +177,7 @@ var ArticleContent = React.createClass({
 
 
     renderStandard: function(){
-        return <div dangerouslySetInnerHTML={{__html:this.props.content.html_content}} />
+        return <div dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
     renderSkeleton: function(){
         var self = this;
@@ -291,9 +290,9 @@ var ArticleContent = React.createClass({
     },
     render: function(){
         var self = this;
-        return <div>{ (this.props.popoverView || []).map(function(key){
-                var data = this.props.popoverData[key];
-                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data} page_id={this.props.page_id} id={key} key={key} />)
+        return <div>{ this.props.popoverView.map(function(key){
+                var data = this.props.popoverData.get(key);
+                return (<Popover placement="auto" viewer_id={this.props.viewer_id} {...data.toJS()} page_id={this.props.page_id} id={key} key={key} />)
             }, this)}</div>
     }
  });
@@ -303,14 +302,12 @@ var FullArticleButton = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     handleClick: function(){
-
-
         Actions.newPage({
-            title: this.props.content.title,
+            title: this.props.getIn(['content','title']),
             query: {doc_type:
-            this.props.content.doc_type,
+            this.props.getIn(['content','doc_type']),
             find: 'full',
-            id: this.props.content.document_id}}, this.props.viewer_id)
+            id: this.props.getIn(['content','document_id']),}}, this.props.viewer_id)
     },
     render: function(){
         return  <button onClick={this.handleClick} className="btn btn-info">Full Article</button>
@@ -324,8 +321,8 @@ var ArticleOverlay= React.createClass({
 
     render: function(){
         return <div className="article-overlay">
-                { this.props.page.content.fragment ? <FullArticleButton
-                    content={this.props.page.content}
+                { this.props.page.getIn(['content','fragment']) ? <FullArticleButton
+                    content={this.props.page.get('content')}
                     viewer_id={this.props.viewer_id}/> : null }
             </div>
     }
@@ -346,7 +343,7 @@ var ArticleOverlay= React.createClass({
                 if(url.indexOf('/') === -1){
                     url = 'instruments/'+url;
                 }
-                Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
+                Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
                     type: 'link',
                     title: link.text(),
@@ -360,7 +357,7 @@ var ArticleOverlay= React.createClass({
                 });
             }
             else if(link.attr('data-def-id')){
-               Actions.popoverOpened(this.props.viewer_id, this.props.page.id,
+               Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
                     type: 'definition',
                     title: link.text(),
@@ -369,7 +366,7 @@ var ArticleOverlay= React.createClass({
                     positionTop:link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
                     source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                     fetched: false,
-                    url: '/definition/'+this.props.page.content.document_id+'/'+link.attr('data-def-id')
+                    url: '/definition/'+this.props.page.getIn(['content', 'document_id'])+'/'+link.attr('data-def-id')
                 });
             }
             else if(link.closest('[id]').length){
@@ -380,46 +377,51 @@ var ArticleOverlay= React.createClass({
         }
      },
     componentDidMount: function(){
-       if(!this.props.page.fetching && !this.props.page.fetched){
-            Actions.requestPage(this.props.page.id)
+       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
+            Actions.requestPage(this.props.page.get('id'))
        }
     },
     componentDidUpdate: function(){
        // if loading position popovers
        // TODO, minimize running this
-       if(this.props.page.content){
-           _.each(this.props.view.popovers[this.props.page.id], function(p){
-                var pop = this.props.page.popovers[p];
-                if(!pop.positionLeft && !pop.positionTop){
-                    var link = $(pop.source_sel, this.getDOMNode());
+       if(this.props.page.get('content')){
+           var popovers = this.props.view.getIn(['popovers', this.props.page.get('id')]);
+           if(popovers){
+           popovers.forEach(function(p){
+                var pop = this.props.page.getIn(['popovers', p]);
+                if(pop && !pop.get('positionLeft') && !pop.get('positionTop')){
+                    var link = $(pop.get('source_sel'), this.getDOMNode());
                     if(link.length){
                         Actions.popoverUpdate(this.props.viewer_id, this.props.page.id, {
-                            id: pop.id,
+                            id: pop.get('id'),
                             positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
                             positionTop: link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
                         });
                     }
                 }
            }, this);
+       }
         }
     },
     render: function(){
         // perhaps swap popovers for different view on mobile
-        if(!this.props.page.content){
+        if(!this.props.page.get('content')){
             return <div className="search-results"><div className="csspinner traditional" /></div>
         }
         return <div className="legislation-result" onClick={this.interceptLink} >
           <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
           <ArticleContent ref="articleContent"
-                content={this.props.page.content}
+                content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
-                page_id={this.props.page.id} />
+                page_id={this.props.page.get('id')} />
             <MQ query='(min-device-width: 480px)'>
+                { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
                 <Popovers
-                    popoverData={this.props.page.popovers}
-                    popoverView={this.props.view.popovers[this.props.page.id]}
+                    popoverData={this.props.page.get('popovers')}
+                    popoverView={this.props.view.getIn(['popovers', this.props.page.get('id')])}
                     viewer_id={this.props.viewer_id}
-                    page_id={this.props.page.id} />
+                    page_id={this.props.page.get('id')} />
+                : null }
             </MQ>
         </div>
     }
