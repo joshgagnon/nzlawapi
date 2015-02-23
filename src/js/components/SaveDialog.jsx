@@ -4,7 +4,7 @@ var Button = require('react-bootstrap/Button');
 var Reflux = require('reflux');
 var Input = require('react-bootstrap/Input');
 var Modal = require('react-bootstrap/Modal');
-var Actions = require('../Actions/Actions.js');
+var Actions = require('../actions/Actions.js');
 var SavedStates = require('../stores/SavedStates.js');
 
 var SaveMixin = {
