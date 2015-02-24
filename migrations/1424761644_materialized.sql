@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS latest_instruments CASCADE;
