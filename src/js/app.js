@@ -1,4 +1,5 @@
 "use strict";
+window.API_VERSION = '0.1';
 
 var React = require('react/addons');
 var Actions = require('./actions/Actions');

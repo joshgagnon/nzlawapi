@@ -127,7 +127,7 @@ module.exports = React.createClass({
             Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 0);
         }
         else if(this.getParams().doc_type){
-            Actions.newPage({query: {doc_type: this.getParams().doc_type,  query: this.getParams().id, find: 'id'}}, 0);
+            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id, find: 'full'}}, 0);
         }
         else{
             Actions.loadPrevious();
@@ -156,7 +156,7 @@ module.exports = React.createClass({
             query = {
                 doc_type: this.state.article_type,
                 find: !this.state.location ? 'full' : 'location',
-                query: this.state.location,
+                location: this.state.location,
                 id: this.state.document_id
             };
             title = this.state.search_query
@@ -165,7 +165,6 @@ module.exports = React.createClass({
             query = {
                 doc_type: this.state.article_type,
                 find: this.state.find,
-                query: this.state.query,
                 id: this.state.document_id
             };
             title = this.state.search_query
@@ -227,12 +226,12 @@ module.exports = React.createClass({
         var id = this.state.views.getIn([0 ,'active_page_id'])
         if(id){
             return this.state.pages.find(function(p){
-                return p.id === id;
+                return p.get('id') === id;
             });
         }
     },
     showSidebar: function(page){
-        if(page && !(page.get('query') && page.getIn(['query','search']) && page.get('content'))){
+        if(page && page.get('content') && !page.getIn(['query','search'])){
             return true;
         }
         return false;
@@ -285,18 +284,10 @@ module.exports = React.createClass({
                 </form>
     },
     render: function(){
-        //var show_side_bar =  active_result && active_result.content && !active_result.query.search && !this.state.split_mode;
-        var resultsClass = 'results-container ';
-
+       var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
-    /*   if(show_side_bar){
-            parentClass += 'sidebar-visible ';
-        }*/
         if(this.state.underlines){
             parentClass += 'underlines';
-        }
-         if(this.state.split_mode){
-            //resultsClass += 'split ';
         }
         return (<div className className={parentClass}>
                 <div className="container-fluid">
@@ -305,9 +296,6 @@ module.exports = React.createClass({
                  <nav className="navbar navbar-default navbar-fixed-top">
                   <img className="chev-left hidden-xs" src="/build/images/left-chevron.png"/><img className="chev-right hidden-sm" src="/build/images/right-chevron.png"/>
                     <div className="brand-wrap">
-                      {/*<a className="navbar-brand hidden-xs" href="#">
-                           <img src="/build/images/logo-colourx2.png" alt="CataLex" className="logo img-responsive center-block"/>
-                        </a>*/}
                          <img src="/build/images/law-browser.png" alt="CataLex" className="logo img-responsive center-block hidden-xs"/>
                          <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block visible-xs-block"/>
 
@@ -324,14 +312,9 @@ module.exports = React.createClass({
                 <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
                 <a><Glyphicon glyph="print" onClick={Actions.togglePrintMode} title="Print"/></a>
                 <a><Glyphicon glyph="star" /></a>
-                {/*<ModalTrigger modal={<GraphModal />}>
-                    <a><Glyphicon glyph="globe" /></a>
-                </ModalTrigger>*/}
-                <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
+                <a><Glyphicon glyph="trash"  onClick={this.reset} title="Reset"/></a>
             </div>
             { this.state.pages.count() ? this.renderBody() : null}
-
-            { /*show_side_bar ? <ArticleSideBar article={active_result}/> : '' */}
         </div>);
     }
 });

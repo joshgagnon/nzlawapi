@@ -61,18 +61,17 @@ var PageStore = Reflux.createStore({
 		if(!page.get('fetching') && !page.get('fetching')){
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
 			this.update();
-			var get = page.get('query') ? $.get('/query', page.get('query').toJS() ) : $.get(page.get('query_string'));
-			get.then(function(data){
+			$.get('/query', page.get('query').toJS())
+				.then(function(data){
 					var result = {
 						fetching: false,
 						fetched: true,
 						fragment: data.fragment,
 						content: data,
-						title: data.title,
-						query:{}
+						title: data.title
 					};
-					if(data.doc_type){
-						result.query.doc_type = data.doc_type;
+					if(data.query){
+						result.query = data.query;
 					}
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
 					this.update();
@@ -130,7 +129,6 @@ var PageStore = Reflux.createStore({
 					}.bind(this));
 			}
 		}*/
-
 	},
 	onRemovePage: function(page_id){
 		this.pages = this.pages.splice(this.getIndex(page_id), 1);
@@ -174,11 +172,9 @@ var PageStore = Reflux.createStore({
 		if(!page.get('references').get('fetched')){
 
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetched: true});
-			var page2 = this.getById(page_id);
-			debugger;
 			$.get('/references/'+page.get('content').get('document_id'))
 				.then(function(response){
-					//this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
 					this.update();
 				}.bind(this))
 			this.update();

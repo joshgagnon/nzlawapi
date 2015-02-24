@@ -16,8 +16,8 @@ var PopoverBehaviour = {
             if(this.props.type !== 'definition'){
                 return <div className="popover-footer">
                         <div className="row">
-                            { this.getLocalContent()?<Button onClick={this.scrollTo}>Scroll To</Button >:null}
-                            <Button  onClick={this.open}>Open</Button >
+                            { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
+                            <Button bsSize="small" onClick={this.open}>Open In New Tab</Button >
                         </div>
                     </div>
             }
@@ -38,6 +38,9 @@ var PopoverBehaviour = {
             else if(this.props.html){
                 html = this.props.html;
             }
+            else if(this.props.html_content){
+                html = this.props.html_content;
+            }
             if(html){
                 return <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
             }
@@ -46,8 +49,14 @@ var PopoverBehaviour = {
              Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
         },
         open: function(){
-            Actions.newPage(this.props,this.props.viewer_id)
-        },
+            Actions.newPage({
+                title: this.props.title,
+                query: {
+                    doc_type: this.props.query.doc_type,
+                    id: this.props.query.document_id
+                },
+            }, this.props.viewer_id)
+        }
 }
 
 

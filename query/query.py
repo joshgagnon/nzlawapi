@@ -1,4 +1,4 @@
-from acts.acts import query_act, query_acts, get_act_node_by_id, get_instrument_summary
+from acts.acts import query_instrument
 from cases.cases import get_full_case, get_case_info, case_search
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
@@ -55,10 +55,9 @@ def get_definition_route(document_id, key):
 @require_auth
 def get_link_route(doc_type=None, key=None):
     status = 200
-    result = get_instrument_summary(key=key)
     try:
-        if doc_type is None or doc_type == 'instruments':
-            result = get_instrument_summary(key=key)
+        if doc_type is None or doc_type == 'instrument':
+            result = query_instrument({'find': 'preview', 'id': key})
         else:
             raise CustomException("Can't locate link information")
     except Exception, e:
@@ -302,13 +301,13 @@ def query():
     try:
         if query_type == 'all':
             result = query_all(args)
-        elif query_type in ['act', 'regulation', 'sop', 'bill', 'instrument']:
-            result = query_act(args)
-        elif query_type in ['acts', 'regulations',  'sops', 'bills', 'instruments']:
-            if args.get('search') == 'advanced':
-                result = query_act_fields(args)
-            else:
-                result = query_acts(args)
+        elif query_type in ['act', 'regulation',  'sop', 'bill', 'instrument']:
+            result = query_instrument(args)
+        #elif query_type in ['acts', 'regulations',  'sops', 'bills', 'instruments']:
+        #    if args.get('search') == 'advanced':
+        #        result = query_act_fields(args)
+        #    else:
+        #        result = query_acts(args)
         elif query_type == 'case':
             result = query_case(args)
         elif query_type == 'cases':

@@ -21,14 +21,14 @@ module.exports = React.createClass({
     setVisible: function(active){
         this.setState({active: active})
     },
-    renderBody: function(){
-        if(this.state.active === 'location'){
+    renderBody: function(childname){
+        if(childname=== 'location'){
             return <ArticleScrollSpy article={this.props.article} />;
         }
-        else if(this.state.active === 'summary'){
-             return <ArticleSummary summary={this.props.article.content.attributes} />;
+        else if(childname === 'summary'){
+             return <ArticleSummary summary={this.props.article.getIn(['content','attributes']) } />;
         }
-        else if(this.state.active === 'references'){
+        else if(childname=== 'references'){
              return <ArticleReferences article={this.props.article} />;
         }
         else{
@@ -36,6 +36,18 @@ module.exports = React.createClass({
         }
     },
     render: function(){
+          return <div className="sidebar-wrapper visible-md-block visible-lg-block">
+              <TabbedArea activeKey={this.state.active} tabsOnly={true}
+                  onSelect={this.setVisible}>
+                      {this.state.options.map(function(k){
+                        return <TabPane key={k} eventKey={k} tab={strings[k]}>
+                                { this.renderBody(k) }
+                            </TabPane>
+                      }.bind(this))}
+              </TabbedArea>
+            </div>
+    },
+    renderold: function(){
         return <div className="sidebar-wrapper visible-md-block visible-lg-block">
 
                 <div className="btn-group">
