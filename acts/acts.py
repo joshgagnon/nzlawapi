@@ -92,13 +92,13 @@ def get_act_summary_govt_id(govt_id, db=None):
             raise CustomException("Instrument not found")
 
 
-def get_act_exact(act, id=None, db=None):
+def get_act_exact(title=None, doc_id=None, db=None):
     with (db or get_db()).cursor() as cur:
         query = """
             select document from latest_instruments
-            where (%(act)s is  null or title = %(act)s) and (%(id)s is null or id =  %(id)s)
+            where (%(title)s is  null or title = %(title)s) and (%(id)s is null or id =  %(id)s)
              """
-        cur.execute(query, {'act': act, 'id': id})
+        cur.execute(query, {'title': title, 'id': doc_id})
         try:
             result = cur.fetchone()
             return etree.fromstring(result[0])
@@ -143,8 +143,8 @@ def process_act_links(tree, db=None):
         map(lambda x: links.add(x[0], x[1]), results)
 
     def create_link(doc, word, result, index):
-        match = doc.createElement('catatref')
-        match.setAttribute('href', 'instruments/%s' % result['id'])
+        match = doc.createElement('cataref')
+        match.setAttribute('href', 'instrument/%s' % result['id'])
         match.appendChild(doc.createTextNode(word))
         return match
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
@@ -153,9 +153,10 @@ def process_act_links(tree, db=None):
     return tree
 
 
-def update_definitions(act_name, id=None, db=None):
-    tree = get_act_exact(act_name, id, db)
-    if act_name != 'Interpretation Act 1999':
+def update_definitions(row, db=None):
+    print row.get('document')
+    tree = etree.fromstring(row.get('document'))
+    if row.get('title') != 'Interpretation Act 1999':
         _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
     else:
         definitions = Definitions()
@@ -163,11 +164,10 @@ def update_definitions(act_name, id=None, db=None):
     tree, definitions = process_definitions(tree, definitions)
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET processed_document =  %(doc)s
-                    FROM latest_instruments s
-                    WHERE d.id = s.id and (%(act)s is null or title = %(act)s) and (%(id)s is null or d.id =  %(id)s) returning d.id"""
+                    FROM instruments s
+                    WHERE d.id = s.id and  (%(id)s is null or d.id =  %(id)s) returning d.id"""
         cur.execute(query, {
-            'act': act_name,
-            'id': id,
+            'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
         id = cur.fetchone()[0]
@@ -178,21 +178,35 @@ def update_definitions(act_name, id=None, db=None):
     return tree, definitions.render()
 
 
-def get_act_object(act_name=None, id=None, db=None, replace=False):
+def prep_instrument(result, replace, db):
+    if not result.get('id'):
+        raise CustomException('Instrument not found')
+    if replace or not result.get('processed_document'):
+        tree, _ = update_definitions(row=result, db=db)
+    else:
+        tree = etree.fromstring(result.get('processed_document'))
+
+    return Act(id=result.get('id'), tree=tree, attributes=dict(result))
+
+
+def get_instrument_object(id=None, db=None, replace=False):
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """SELECT * FROM instruments i
+                JOIN documents d on d.id = i.id
+                where i.id =  %(id)s
+            """
+        cur.execute(query, {'id': id})
+        return prep_instrument(cur.fetchone(), replace, db)
+
+
+def get_latest_instrument_object(instrument_name=None, id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """SELECT * FROM latest_instruments
-                where (%(act)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
+                where (%(instrument)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
             """
-        cur.execute(query, {'act': act_name, 'id': id})
-        result = cur.fetchone()
-        if not result.get('id'):
-            raise CustomException('Act not found')
-        if replace or not result.get('processed_document'):
-            tree, _ = update_definitions(act_name, id, db=db)
-        else:
-            tree = etree.fromstring(result.get('processed_document'))
+        cur.execute(query, {'instrument': instrument_name, 'id': id})
+        return prep_instrument(cur.fetchone(), replace, db)
 
-        return Act(id=result.get('id'), tree=tree, attributes=dict(result))
 
 
 def act_skeleton_response(act):
@@ -222,7 +236,7 @@ def act_full_response(act, fragment=False):
 
 
 
-def  instrument_summary(instrument, find, id):
+def  instrument_summary(instrument, find):
     return {
             'title': instrument.get('title'),
             'document_id': instrument.get('id'),
@@ -290,13 +304,100 @@ def get_act_node_by_id(node_id):
     return act_response(act, fragment)
 
 
-def query_act(args):
-    if not any((args.get('act_name', args.get('title')), args.get('id'))):
-        raise CustomException('No instrument specified')
-    act = get_act_object(act_name=args.get('act_name', args.get('title')), id=args.get('id'),
-                         replace=current_app.config.get('REPROCESS_DOCS'))
-    # act.calculate_hooks()
+def instrument_full(instrument):
+    return {
+        'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),
+        'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'title': instrument.title,
+        'document_id': instrument.id,
+        'doc_type': 'instrument',
+        'attributes': instrument.attributes,
+        'format': 'full',
+        'query': {
+            'doc_type': 'instrument',
+            'document_id': instrument.id,
+            'find': 'full'
+        }
+    }
+
+
+def instrument_preview(instrument):
+    preview = limit_tree_size(instrument.tree)
+    return {
+        'html_content': etree.tostring(tohtml(preview), encoding='UTF-8', method="html"),
+        'title': instrument.title,
+        'document_id': instrument.id,
+        'doc_type': 'instrument',
+        'attributes': instrument.attributes,
+        'format': 'preview',
+        'query': {
+            'doc_type': 'instrument',
+            'document_id': instrument.id,
+            'find': 'preview'
+        }
+    }
+
+
+def instrument_location(instrument, location):
+    tree = find_node_by_location(instrument.tree, location)
+    return {
+        'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
+        'html_contents_page': etree.tostring(tohtml(tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'title': instrument.title,
+        'document_id': instrument.id,
+        'doc_type': 'instrument',
+        'attributes': act.attributes,
+        'format': 'fragment',
+        'query': {
+            'doc_type': 'instrument',
+            'document_id': instrument.id,
+            'find': 'location',
+            'location': location
+        }
+    }
+
+
+def instrument_more(instrument, parts):
+    act_part_response(instrument, parts)
+    return {}
+
+
+def query_instrument(args):
     find = args.get('find')
+    if args.get('id'):
+        id = args.get('id')
+        if id.startswith('DLM'):
+            govt_id = id
+            id = find_document_id_by_govt_id(id)
+            instrument = get_instrument_object(
+                id,
+                replace=current_app.config.get('REPROCESS_DOCS'))
+            if instrument.attributes['govt'] != govt_id:
+                find = 'govt_location'
+        else:
+            instrument = get_instrument_object(
+                id,
+                replace=current_app.config.get('REPROCESS_DOCS'))
+    elif args.get('title'):
+        instrument = get_latest_instrument_object(
+            args.get('title'),
+            replace=current_app.config.get('REPROCESS_DOCS'))
+    else:
+        raise CustomException('No instrument specified')
+
+    if find == 'preview':
+        return instrument_preview(instrument)
+    elif find == 'more':
+        return instrument_more(instrument, args.getlist('requested_parts[]'))
+    elif find == 'location':
+        if not args.get('location'):
+            raise CustomException('No location specified')
+        return instrument_location(instrument, args.get('location'))
+    # default is full
+    return instrument_full(instrument)
+
+
+"""
     fragment = True
     if find == 'full':
         fragment = False
@@ -306,27 +407,18 @@ def query_act(args):
         query = args.get('query')
         if not query:
             raise CustomException('Query missing')
-        elif find == 'search':
-            act.tree = find_node_by_query(act.tree, query)
         elif find == 'location':
             act.tree = find_node_by_location(act.tree, query)
         elif find == 'govt_id':
             act.tree = find_node_by_govt_id(act.tree, query)
-        elif find == 'section':
-            act.tree = find_section_node(act.tree, query)
-        elif find == 'part':
-            act.tree = find_part_node(act.tree, query)
-        elif find == 'schedule':
-            act.tree = find_schedule_node(act.tree, query)
-        elif find == 'definitions':
-            act.tree = find_definitions(act.tree, query)
         else:
             raise CustomException('Invalid search type')
         act.tree = cull_tree(act.tree)
     return act_response(act, fragment)
 
-
+"""
 def query_acts(args):
+    return []
     search_type = args.get('find')
     query = args.get('query')
     if search_type == 'id' or search_type == 'govt_id':

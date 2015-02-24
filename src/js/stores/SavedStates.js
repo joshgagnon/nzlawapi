@@ -25,6 +25,11 @@ module.exports = Reflux.createStore({
         this.views = {};
         this.browser = {};
         this.saveCurrent = _.debounce(this.saveCurrent, 1000);
+        if(localStorage['API_VERSION'] !== window.API_VERSION){
+            delete localStorage['current_view'];
+            delete localStorage['saved_views'];
+            localStorage['API_VERSION'] = window.API_VERSION
+        }
     },
     updatePages: function(pages){
         this.pages = pages.pages.toJS();

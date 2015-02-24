@@ -362,7 +362,7 @@ var ArticleOverlay= React.createClass({
         if(link.attr('data-link-id')){
                 var url = link.attr('data-href');
                 if(url.indexOf('/') === -1){
-                    url = 'instruments/'+url;
+                    url = 'instrument/'+url;
                 }
                 Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {

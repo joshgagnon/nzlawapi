@@ -111,7 +111,17 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   renderNav: function(){
     var visible_tabs = this.state.visible_tabs || this.props.children.length;
     var activeKey = this.getActiveKey();
-    var tabs = this.props.children.slice(0, this.state.visible_tabs), drops = this.props.children.slice(this.state.visible_tabs);
+    var tabs = [], drops = [];
+    if(this.props.dropdownOnly){
+      drops = this.props.children;
+    }
+    else if(this.props.tabsOnly){
+      tabs = this.props.children;
+    }
+    else{
+      tabs = this.props.children.slice(0, this.state.visible_tabs);
+      drops = this.props.children.slice(this.state.visible_tabs);
+    }
     if(tabs.length){
       return  (React.createElement(Nav, React.__spread({},  this.props, {activeKey: activeKey, onSelect: this.handleSelect, ref: "tabs"}),
           this.renderTabs(tabs), drops.length ? this.renderDrops(drops, 'More Tabs...', 'pull-right') : null))
@@ -173,7 +183,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
 
   renderDrop: function (child) {
     var key = child.props.eventKey;
-    return <MenuItem ref={'tab' + key} eventKey={key} key={key} onClick={this.handleSelect.bind(this, key)}>
+    return <MenuItem ref={'tab' + key} eventKey={key} key={key} onSelect={this.handleSelect.bind(this, key)}>
             <span className="tab-title">
               {child.props.tab}
             </span>

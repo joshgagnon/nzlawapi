@@ -75,7 +75,8 @@
                     <td class="header">
                         <h2 lang="en-NZ" class="schedule">
                             <span class="label">
-                                <span class="hit">Schedule</span>&#160;<xsl:value-of select="label"/>
+                                <span class="hit">Schedule</span>
+                                <xsl:if test="text!='Schedule'">&#160;<xsl:value-of select="label"/></xsl:if>
                             </span><br/>
                             <xsl:value-of select="heading"/>
                         </h2>

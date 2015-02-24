@@ -92,7 +92,7 @@ def text_compare(t1, t2):
     return (t1 or '').strip() == (t2 or '').strip()
 
 
-def generate_path_string(node, no_query=False):
+def generate_path_string(node, id=None):
     result = unicode('')
     it = iter(node.iterancestors('label-para'))
     for n in it:
@@ -125,7 +125,12 @@ def generate_path_string(node, no_query=False):
     title = get_title(node.getroottree())
 
     return (u'%s %s' % (title, result),
-        'query?%s' % urllib.urlencode({'query': result.encode('utf-8'), 'doc_type': 'instrument', 'find': 'location', 'title': title.encode('utf-8')}))
+        'query?%s' % urllib.urlencode({
+            'query': result.encode('utf-8'),
+            'doc_type': 'instrument',
+            'find': 'location',
+            'title': title.encode('utf-8')
+            }))
 
 
 class MatchError(Exception):

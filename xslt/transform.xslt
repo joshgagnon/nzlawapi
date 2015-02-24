@@ -456,13 +456,13 @@
             </xsl:attribute>
             <xsl:choose>
             <xsl:when test="local-name() = 'intref'">
-                  <xsl:attribute name="href">/open_article/instruments/<xsl:value-of select="@href"/>
+                  <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@href"/>
                 </xsl:attribute>
                  <xsl:attribute name="class">internal_ref</xsl:attribute>
                  <xsl:attribute name="data-target-id"><xsl:value-of select="@href"/></xsl:attribute>
             </xsl:when>
             <xsl:when test="local-name() = 'extref'">
-                  <xsl:attribute name="href">/open_article/instruments/<xsl:value-of select="@href"/>
+                  <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@href"/>
                 </xsl:attribute>
                  <xsl:attribute name="class">external_ref</xsl:attribute>
             </xsl:when>

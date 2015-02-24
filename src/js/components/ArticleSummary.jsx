@@ -30,8 +30,9 @@ module.exports = React.createClass({
         return <div className="summary">
         <dl className="dl-horizontal">
             { _.map(fields, function(v){
-                if(this.props.summary[v[0]])
-                    return <div key={v[0]}><dt>{v[1]}</dt><dd>{this.props.summary[v[0]]}</dd></div>
+                if(this.props.summary.get(v[0])){
+                    return <div key={v[0]}><dt>{v[1]}</dt><dd>{this.props.summary.get(v[0])}</dd></div>
+                }
             }.bind(this))}
             </dl>
         </div>
