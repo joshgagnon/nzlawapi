@@ -23,6 +23,7 @@ var PopoverBehaviour = {
             }
         },
         getLocalContent: function(){
+            return false;
             if (this.props.target && $('#' + this.props.target)[0]) {
                 return true;
             }
@@ -52,8 +53,8 @@ var PopoverBehaviour = {
             Actions.newPage({
                 title: this.props.title,
                 query: {
-                    doc_type: this.props.query.doc_type,
-                    id: this.props.query.document_id
+                    doc_type: 'instrument',
+                    id: this.props.target
                 },
             }, this.props.viewer_id)
         }

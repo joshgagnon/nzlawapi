@@ -450,7 +450,7 @@
     </xsl:template>
 
     <xsl:template match="*[@href]">
-        <a data-link-id="id-{position()}">
+        <a data-link-id="id-{count(preceding::*[@href])}">
 
             <xsl:attribute name="data-href"><xsl:value-of select="@href"/>
             </xsl:attribute>
@@ -467,8 +467,8 @@
                  <xsl:attribute name="class">external_ref</xsl:attribute>
             </xsl:when>
             <xsl:otherwise>
-                  <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/>
-                </xsl:attribute>
+                  <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/></xsl:attribute>
+                 <xsl:attribute name="data-target-id"><xsl:value-of select="@target-id"/></xsl:attribute>
             </xsl:otherwise>
         </xsl:choose>
             <xsl:value-of select="."/>

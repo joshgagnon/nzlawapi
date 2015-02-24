@@ -202,7 +202,7 @@ module.exports = React.createClass({
             search_query: null,
             location: null
         });
-        Actions.setState({});
+        Actions.setState(Immutable.Map());
     },
 
     toggleAdvanced: function(){

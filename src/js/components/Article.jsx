@@ -343,7 +343,7 @@ var ArticleOverlay= React.createClass({
 
     render: function(){
         return <div className="article-overlay">
-                { this.props.page.getIn(['content','fragment']) ? <FullArticleButton
+                { this.props.page.getIn(['content','format']) === 'fragment' ? <FullArticleButton
                     content={this.props.page.get('content')}
                     viewer_id={this.props.viewer_id}/> : null }
             </div>

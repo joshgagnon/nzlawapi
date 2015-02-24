@@ -6,6 +6,7 @@ var Actions = require('../actions/Actions');
 var PageStore = require('./PageStore');
 var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
+var Immutable = require('Immutable');
 
 module.exports = Reflux.createStore({
 
@@ -50,8 +51,7 @@ module.exports = Reflux.createStore({
            _.each(page.popovers || [] ,function(v, k){
                 return obj.popovers[k] = _.pick(v, 'type', 'title', 'url', 'source_sel', 'id');
             });
-            return obj
-
+            return obj;
         }
         return {views: this.views, pages: (this.pages||[]).map(pickPage), browser: this.browser};
     },
@@ -60,7 +60,7 @@ module.exports = Reflux.createStore({
     },
     onLoadPrevious: function() {
         if(localStorage['current_view']){
-            Actions.setState(JSON.parse(localStorage['current_view']));
+            Actions.setState(Immutable.fromJS(JSON.parse(localStorage['current_view'])));
         }
     },
     save: function(path) {
@@ -112,7 +112,7 @@ module.exports = Reflux.createStore({
         var states = this.readStates();
         var current = this.getFolder(states, path.slice(0, path.length-1));
         current.children = _.reject(current.children, {type: 'state', name: _.last(path)});
-       this.setStates(states);
+        this.setStates(states);
     },
     onFetchSavedStates: function(){
         //will be ajax

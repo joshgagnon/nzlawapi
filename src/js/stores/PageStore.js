@@ -20,10 +20,14 @@ var PageStore = Reflux.createStore({
 		this.trigger({pages: this.pages});
 	},
 	onSetState: function(data){
-		this.pages = data.pages || [];
-		this.pages= Immutable.fromJS(_.map(data.pages, function(page){
-			return this.generatePage(page);
-		}, this));
+		if(data.get('pages')){
+			this.pages = data.get('pages').map(function(page){
+				return Immutable.fromJS(this.generatePage(page.toJS()));
+			}, this);
+		}
+		else{
+			this.pages =  Immutable.fromJS([]);
+		}
 		this.update();
 	},
 	generatePage: function(page){

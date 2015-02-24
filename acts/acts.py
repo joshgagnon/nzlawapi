@@ -159,6 +159,7 @@ def process_act_links(tree, db=None):
     def create_link(doc, word, result, index):
         match = doc.createElement('cataref')
         match.setAttribute('href', 'instrument/%s' % result['id'])
+        match.setAttribute('target-id', '%s' % result['id'])
         match.appendChild(doc.createTextNode(word))
         return match
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
