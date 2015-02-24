@@ -104,11 +104,11 @@ var PageSet = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-        Reflux.listenTo(PageStore, 'onState'),
-        Reflux.listenTo(ViewerStore, 'onState'),
+        Reflux.listenTo(PageStore, 'onState', this.onState),
+        Reflux.listenTo(ViewerStore, 'onState', this.onState),
         // MOVE TO CHILD, maybe
-        Reflux.listenTo(DialogStore, 'onState'),
-        Reflux.listenTo(BrowserStore, 'onState'),
+        Reflux.listenTo(DialogStore, 'onState', this.onState),
+        Reflux.listenTo(BrowserStore, 'onState', this.onState),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],

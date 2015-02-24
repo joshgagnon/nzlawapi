@@ -15,6 +15,9 @@ module.exports =  Reflux.createStore({
 	getDefaultData: function(){
 		return Immutable.fromJS([this.getDefault(), this.getDefault()]);
 	},
+	getInitialState: function(){
+		return {views: this.views};
+	},
 	onSetState: function(data){
 		var views =_.map(data.views||[], function(v){
 			return _.defaults(v, this.getDefault());

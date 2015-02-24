@@ -13,9 +13,11 @@ var PageStore = Reflux.createStore({
 		this.pages = Immutable.List();
 		this.counter = 0;
 	},
+	getInitialState: function(){
+		return {pages: this.pages};
+	},
 	update: function(){
 		this.trigger({pages: this.pages});
-		console.log(this.pages.toJS())
 	},
 	onSetState: function(data){
 		this.pages = data.pages || [];

@@ -330,6 +330,9 @@ body{
 				width: 100%;
 				button{
 					width: 100%;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
 				}
 			}
 			.dropdown-menu{
@@ -555,18 +558,41 @@ body{
 	  bottom:0;
 	}
 
-	.def-popover{
+	.cata-popover{
 	  z-index:1020;
+	   .popover-content{
+	   	padding: 0;
+	   }
+	   .popover-title{
+	   	padding-right: 30px;
+	   }
+	   .show-more{
+	    cursor: pointer;
+	    text-decoration: none;
+	   }
+	  .popover-footer{
+	      margin-top: 8px;
+	      padding: 8px 14px;
+	      background-color: #f7f7f7;
+	      border-top: 1px solid #ebebeb;
+	      border-radius: 0 0 5px 5px;
+	      text-align: center;
+	    }
+
+	    .popover-close{
+	      position: absolute;
+	      top: -1px;
+	      right: 10px;
+	      font-size: 22px;
+	      color: #898989;
+	      font-weight: bold;
+	      cursor: pointer;
+	  	}
 	}
 	.popover{
 	   max-width: 500px;
 	   min-width:300px;
 
-	   .show-more{
-	    cursor: pointer;
-	    text-decoration: none;
-
-	   }
 	  .popover-content>*{
 	      max-height:200px;
 	      overflow-y: auto;
@@ -585,23 +611,32 @@ body{
 	      background:linear-gradient(transparent 200px, white);
 	    }*/
 
-	  .popover-footer{
-	      margin-top: 8px;
-	      padding: 8px 14px;
-	      background-color: #f7f7f7;
-	      border-top: 1px solid #ebebeb;
-	      border-radius: 0 0 5px 5px;
-	      text-align: center;
-	    }
-
-	    .popover-close{
-	      position: absolute;
-	      top: -1px;
-	      right: 10px;
-	      font-size: 22px;
-	      color: #898989;
-	      font-weight: bold;
-	      cursor: pointer;
-	  }
 	}
+
+	.mobile-popovers {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 25%;
+		background-color: white;
+		border-top: 1px solid  #ebebeb;
+		.popover-title {
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			}
+		.popover-content{
+			position: absolute;
+			top: 30px;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			overflow-y: auto;
+		}
+		.popover-footer{
+			padding:4px 15px;
+		}
+	}
+
 }

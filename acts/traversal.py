@@ -32,6 +32,15 @@ def cull_tree(nodes_to_keep):
     return nodes_to_keep[0].getroottree()
 
 
+def limit_tree_size(tree, nodes=300):
+    count = 0
+    for t in list(tree.iter()):
+        if count > nodes:
+            t.getparent().remove(t)
+        count += 1
+    return tree
+
+
 def generate_range(string):
     tokens = string.split('-')
     # do stuff
