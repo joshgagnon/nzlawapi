@@ -172,7 +172,7 @@ var ArticleContent = React.createClass({
         }
     },
     renderError: function(){
-        return <div className="legislation-result"><div className="article-error"><p className="text-danger">{this.props.content.error}</p></div></div>
+        return <div className="article-error"><p className="text-danger">{this.props.content.error}</p></div>
     },
 
 
@@ -351,6 +351,11 @@ var ArticleOverlay= React.createClass({
 })
 
 
+var NotLatestVersion = React.createClass({
+    render: function(){
+        return <div className="alert alert-danger" role="alert"><strong>Warning</strong> This is not the latest version</div>
+    }
+});
 
 
 
@@ -430,6 +435,7 @@ var ArticleOverlay= React.createClass({
             return <div className="search-results"><div className="csspinner traditional" /></div>
         }
         return <div className="legislation-result" onClick={this.interceptLink} >
+            { !this.props.page.getIn(['content', 'attributes', 'latest']) ? <NotLatestVersion/> : null }
           <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
           <ArticleContent ref="articleContent"
                 content={this.props.page.get('content') }

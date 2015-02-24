@@ -56,17 +56,6 @@ class Act(object):
     def select(self, requested):
         return [self.parts[i] for i in requested]
 
-"""
-def get_act(act, db=None):
-    with (db or get_db()).cursor() as cur:
-        query = "select document from latest_instruments
-        where lower(replace(title, ' ', '')) = lower(%(act)s) "
-        cur.execute(query, {'act': act})
-        try:
-            return etree.fromstring(cur.fetchone()[0])
-        except:
-            raise CustomException("Instrument not found")
-"""
 
 def get_act_summary(doc_id, db=None):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
@@ -215,7 +204,7 @@ def prep_instrument(result, replace, db):
 
 def get_instrument_object(id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """SELECT * FROM instruments i
+        query = """SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest FROM instruments i
                 JOIN documents d on d.id = i.id
                 where i.id =  %(id)s
             """
@@ -225,7 +214,7 @@ def get_instrument_object(id=None, db=None, replace=False):
 
 def get_latest_instrument_object(instrument_name=None, id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """SELECT * FROM latest_instruments
+        query = """SELECT *, true as latest FROM latest_instruments
                 where (%(instrument)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
             """
         cur.execute(query, {'instrument': instrument_name, 'id': id})
