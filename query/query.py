@@ -1,4 +1,4 @@
-from acts.acts import query_instrument
+from acts.acts import query_instrument, get_references, get_versions
 from cases.cases import get_full_case, get_case_info, case_search
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
@@ -18,8 +18,8 @@ def article_auto_complete():
         db = get_db()
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-                select * from titles
-                   where name ilike '%%'||%(query)s||'%%' order by name limit 50;
+                select name, id, type, find, query  from titles
+                   where name ilike '%%'||%(query)s||'%%' order by year desc limit 50;
                 """, {'query': request.args.get('query')})
             return jsonify({'results': cur.fetchall()})
     except Exception, e:
@@ -78,6 +78,18 @@ def get_references_route(document_id):
     return jsonify(result), status
 
 
+@Query.route('/versions/<int:document_id>')
+@require_auth
+def get_versions_route(document_id):
+    status = 200
+    try:
+        result = get_versions(document_id)
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
+
 def get_definition(document_id, key):
     with get_db().cursor() as cur:
         cur.execute('SELECT data FROM definitions WHERE document_id=%(id)s and key=%(key)s', {
@@ -86,17 +98,7 @@ def get_definition(document_id, key):
         })
         return cur.fetchone()[0]
 
-def get_references(document_id):
-    db = get_db()
-    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute("""
-            SELECT d.source_id as id, title, count, type FROM document_references d
-            LEFT OUTER JOIN instruments i on i.id = d.source_id
-            LEFT OUTER JOIN cases c on c.id = d.source_id
-            WHERE target_id = %(id)s
-            ORDER BY count DESC
-            """, {'id': document_id})
-        return {'references': map(lambda x: dict(x), cur.fetchall())}
+
 
 
 

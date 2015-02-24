@@ -31,6 +31,7 @@ var PageStore = Reflux.createStore({
 		page.id = 'page-'+this.counter++;
 		page.popovers = page.popovers || {};
 		page.references = page.references || {};
+		page.versions = page.versions || {};
 		return page;
 	},
 	onNewPage: function(page_data, viewer_id){
@@ -173,6 +174,20 @@ var PageStore = Reflux.createStore({
 
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetched: true});
 			$.get('/references/'+page.get('content').get('document_id'))
+				.then(function(response){
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
+					this.update();
+				}.bind(this))
+			this.update();
+		}
+	},
+	onRequestVersion: function(page_id){
+		var page = this.getById(page_id);
+
+		if(!page.get('versions').get('fetched')){
+
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetched: true});
+			$.get('versions/'+page.get('content').get('document_id'))
 				.then(function(response){
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {references_data: response.references});
 					this.update();

@@ -14,7 +14,7 @@ import json
 import os
 import datetime
 import re
-
+import psycopg2
 
 class Act(object):
     def __init__(self, id, tree, attributes):
@@ -106,6 +106,31 @@ def get_act_exact(title=None, doc_id=None, db=None):
             raise CustomException("Instrument not found")
 
 
+def get_references(document_id):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("""
+            SELECT d.source_id as id, title, count, type FROM document_references d
+            LEFT OUTER JOIN instruments i on i.id = d.source_id
+            LEFT OUTER JOIN cases c on c.id = d.source_id
+            WHERE target_id = %(id)s
+            ORDER BY count DESC
+            """, {'id': document_id})
+        return {'references': map(lambda x: dict(x), cur.fetchall())}
+
+
+def get_versions(document_id):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("""
+                select * from
+                    (select id, govt_id from instruments) as s
+                    join instruments i on i.govt_id = s.govt_id
+                    where s.id = %(id)s
+            """, {'id': document_id})
+        return {'versions': map(lambda x: dict(x), cur.fetchall())}
+
+
 def process_act_links(tree, db=None):
     class InstrumentLink(object):
         use_life_cycle = False
@@ -154,7 +179,6 @@ def process_act_links(tree, db=None):
 
 
 def update_definitions(row, db=None):
-    print row.get('document')
     tree = etree.fromstring(row.get('document'))
     if row.get('title') != 'Interpretation Act 1999':
         _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))

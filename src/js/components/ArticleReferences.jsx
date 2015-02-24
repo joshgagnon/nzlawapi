@@ -10,8 +10,9 @@ module.exports = React.createClass({
     },
     render: function(){
         var className = "article-references";
-        if(this.props.article.getIn(['references','fetching'])){
-            className += " csspinner traditional";
+        var fetching = this.props.article.getIn(['references','fetching']);
+        if(fetching){
+            return <div className={'article-references csspinner traditional'}/>
         }
         var refs = this.props.article.getIn(['references', 'references_data']);
         if(refs && refs.size){
