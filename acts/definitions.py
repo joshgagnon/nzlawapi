@@ -235,11 +235,13 @@ def process_definitions(tree, definitions):
         match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
+
     monitor = Monitor(500000)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     domxml = node_replace(domxml, definitions, create_def, lower=True, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     definitions.apply_definitions(tree)
+
     return tree, definitions
 
 

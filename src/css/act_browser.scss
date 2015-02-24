@@ -265,6 +265,16 @@ body{
 				background-color:$deep-red;
 			}
 		}
+		.article-references,
+		.article-versions{
+				overflow-y: auto;
+				position: absolute;
+				top: 150px;
+				bottom: 0;
+				left: 5px;
+				right: 5px;
+
+		}
 
 	}
 	.summary{
@@ -481,6 +491,8 @@ body{
 		}
 	}
 
+
+
 	.legislation-contents{
 			overflow-y: auto;
 			position: absolute;
@@ -514,15 +526,6 @@ body{
 			 .nav .nav {
 				display: none;
 			}
-			/*
-			.nav .nav li{
-				display:none;
-			}
-			.nav .nav li.active{
-				display:block;
-			}*/
-
-
 			.nav>.active>ul {
 				display: block;
 			}

@@ -22,10 +22,10 @@ module.exports =  Reflux.createStore({
 		var views =_.map(data.views||[], function(v){
 			return _.defaults(v, this.getDefault());
 		}, this);
-		if(!views.length){
+		if(!views.size){
 			views = this.getDefaultData();
 		}
-		if(views.length === 1){
+		if(views.size === 1){
 			views.push(this.getDefaultData());
 		}
 		this.views = Immutable.fromJS(views);

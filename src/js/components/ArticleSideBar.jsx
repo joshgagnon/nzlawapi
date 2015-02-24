@@ -4,6 +4,7 @@ var TabPane = require('./TabPane.jsx');
 var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
 var ArticleSummary = require('./ArticleSummary.jsx');
 var ArticleReferences = require('./ArticleReferences.jsx');
+var ArticleVersions = require('./ArticleVersions.jsx');
 
 
 var strings = {
@@ -16,23 +17,23 @@ var strings = {
 
 module.exports = React.createClass({
     getInitialState: function(){
-        return {active: 'references', options: ['location', 'summary', 'references', 'versions']};
+        return {active: 'versions', options: ['location', 'summary', 'references', 'versions']};
     },
     setVisible: function(active){
         this.setState({active: active})
     },
     renderBody: function(childname){
         if(childname=== 'location'){
-            return <ArticleScrollSpy article={this.props.article} />;
+            return <ArticleScrollSpy article={this.props.article} viewer_id={this.props.viewer_id}/>;
         }
         else if(childname === 'summary'){
-             return <ArticleSummary summary={this.props.article.getIn(['content','attributes']) } />;
+             return <ArticleSummary summary={this.props.article.getIn(['content','attributes']) } viewer_id={this.props.viewer_id}/>;
         }
         else if(childname=== 'references'){
-             return <ArticleReferences article={this.props.article} />;
+             return <ArticleReferences article={this.props.article} viewer_id={this.props.viewer_id}/>;
         }
         else{
-             return <ArticleReferences article={this.props.article} />;
+             return <ArticleVersions article={this.props.article} viewer_id={this.props.viewer_id}/>;
         }
     },
     render: function(){

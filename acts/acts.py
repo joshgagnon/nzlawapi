@@ -123,10 +123,10 @@ def get_versions(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute("""
-                select * from
+                select i.title, i.id, i.date_as_at, i.type from
                     (select id, govt_id from instruments) as s
                     join instruments i on i.govt_id = s.govt_id
-                    where s.id = %(id)s
+                    where s.id = %(id)s order by i.date_as_at desc
             """, {'id': document_id})
         return {'versions': map(lambda x: dict(x), cur.fetchall())}
 
@@ -363,14 +363,14 @@ def instrument_preview(instrument):
 
 
 def instrument_location(instrument, location):
-    tree = find_node_by_location(instrument.tree, location)
+    tree = cull_tree(find_node_by_location(instrument.tree, location))
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
         'title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
-        'attributes': act.attributes,
+        'attributes': instrument.attributes,
         'format': 'fragment',
         'query': {
             'doc_type': 'instrument',
@@ -379,7 +379,23 @@ def instrument_location(instrument, location):
             'location': location
         }
     }
-
+def instrument_govt_location(instrument, id):
+    tree = cull_tree(find_node_by_govt_id(instrument.tree, id))
+    return {
+        'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
+        'html_contents_page': etree.tostring(tohtml(tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'title': instrument.title,
+        'document_id': instrument.id,
+        'doc_type': 'instrument',
+        'attributes': instrument.attributes,
+        'format': 'fragment',
+        'query': {
+            'doc_type': 'instrument',
+            'document_id': instrument.id,
+            'find': 'govt_location',
+            'govt_location': id
+        }
+    }
 
 def instrument_more(instrument, parts):
     act_part_response(instrument, parts)
@@ -396,8 +412,9 @@ def query_instrument(args):
             instrument = get_instrument_object(
                 id,
                 replace=current_app.config.get('REPROCESS_DOCS'))
-            if instrument.attributes['govt'] != govt_id:
+            if instrument.attributes['govt_id'] != govt_id:
                 find = 'govt_location'
+                govt_location = govt_id
         else:
             instrument = get_instrument_object(
                 id,
@@ -417,6 +434,10 @@ def query_instrument(args):
         if not args.get('location'):
             raise CustomException('No location specified')
         return instrument_location(instrument, args.get('location'))
+    elif find == 'govt_location':
+        if not govt_location:
+            raise CustomException('No location specified')
+        return instrument_govt_location(instrument, govt_location)
     # default is full
     return instrument_full(instrument)
 

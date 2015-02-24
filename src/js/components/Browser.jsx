@@ -127,7 +127,7 @@ module.exports = React.createClass({
             Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 0);
         }
         else if(this.getParams().doc_type){
-            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id, find: 'full'}}, 0);
+            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 0);
         }
         else{
             Actions.loadPrevious();
@@ -247,7 +247,7 @@ module.exports = React.createClass({
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
                 <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0} key={0}/>
-                <ArticleSideBar article={active}/>
+                <ArticleSideBar article={active} viewer_id={0} />
                 </div>
         }
         return  <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0}/>

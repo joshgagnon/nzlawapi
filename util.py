@@ -155,7 +155,7 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                     line = lines[i]
                     while isinstance(line, basestring):
                         match = reg.search(line.lower() if lower else line)
-                        if not match:
+                        if not match or not match.group(2).strip():
                             break
                         if monitor:
                             monitor.match()

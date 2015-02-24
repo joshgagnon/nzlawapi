@@ -292,7 +292,7 @@ var ArticleContent = React.createClass({
         return <div>{ this.props.popoverView.map(function(key){
                 var data = this.props.popoverData.get(key);
                 return (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id} {...data.toJS()} page_id={this.props.page_id} id={key} key={key} />)
-            }, this)}</div>
+            }, this).toJS()}</div>
     }
  });
 
@@ -305,7 +305,7 @@ var MobilePopovers = React.createClass({
     closeAll: function(){
         this.props.popoverView.map(function(key){
             Actions.popoverClosed(this.props.viewer_id, this.props.page_id, key);
-        }, this);
+        }, this),toJS();
     },
     render: function(){
         var last = this.props.popoverView.last();
