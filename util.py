@@ -9,6 +9,18 @@ from xml.dom import minidom
 class CustomException(Exception):
     pass
 
+class Monitor(object):
+    i = 0
+    matches = 0
+    def __init__(self, max=None):
+        self.max = max
+
+    def cont(self):
+        self.i += 1
+        return not self.max or self.i < self.max
+
+    def match(self):
+        self.matches += 1
 
 def levenshtein(s1, s2):
     if len(s1) < len(s2):

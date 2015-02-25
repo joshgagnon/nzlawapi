@@ -450,8 +450,8 @@
     </xsl:template>
 
     <xsl:template match="*[@href]">
-        <a data-link-id="id-{count(preceding::*[@href])}">
-
+        <a>
+            <xsl:attribute name="data-link-id"><xsl:value-of select="@link-id"/></xsl:attribute>
             <xsl:attribute name="data-href"><xsl:value-of select="@href"/>
             </xsl:attribute>
             <xsl:choose>

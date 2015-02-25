@@ -254,7 +254,7 @@ var ArticleContent = React.createClass({
         });
     },
     onJumpTo: function(page, jump){
-        if(page.id !== this.props.page_id) return;
+        if(page.get('id') !== this.props.page_id) return;
         var target;
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
@@ -268,7 +268,7 @@ var ArticleContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 1}, jump.noscroll ? 0: 300);
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 7}, jump.noscroll ? 0: 300);
         }
         else{
             return 'Not Found';

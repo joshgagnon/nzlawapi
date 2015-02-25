@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from db import get_db
-from util import CustomException, tohtml, etree_to_dict, get_title, node_replace, MatchError
+from util import CustomException, tohtml, etree_to_dict, get_title, node_replace, MatchError, Monitor
 from definitions import populate_definitions, process_definitions, Definitions
 from traversal import cull_tree, find_definitions, find_part_node, find_section_node, \
     find_schedule_node, find_node_by_query, find_node_by_govt_id, find_document_id_by_govt_id, \
@@ -160,11 +160,15 @@ def process_act_links(tree, db=None):
         match = doc.createElement('cataref')
         match.setAttribute('href', 'instrument/%s' % result['id'])
         match.setAttribute('target-id', '%s' % result['id'])
+        match.setAttribute('link-id', '%s' % mon.i)
         match.appendChild(doc.createTextNode(word))
         return match
-
+    mon = Monitor()
+    for a in tree.xpath('.//*[@href]'):
+        a.attrib['link-id'] = '%d' % mon.i
+        mon.cont()
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    domxml = node_replace(domxml, links, create_link)
+    domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree
 

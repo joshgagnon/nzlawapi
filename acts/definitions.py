@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from util import tohtml, generate_path_string, node_replace
+from util import tohtml, generate_path_string, node_replace, Monitor
 #from nltk.stem import *
 from lxml import etree
 #from nltk.stem.snowball import SnowballStemmer
@@ -126,20 +126,6 @@ class Definitions(object):
         newone.pool = self.pool.copy()
         newone.active = self.active.copy()
         return newone
-
-
-class Monitor(object):
-    i = 0
-    matches = 0
-    def __init__(self, max):
-        self.max = max
-
-    def cont(self):
-        self.i += 1
-        return self.i < self.max
-
-    def match(self):
-        self.matches += 1
 
 
 def infer_life_time(node):
