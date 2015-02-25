@@ -17,6 +17,7 @@ def connect_db(config):
     return psycopg2.connect(
         database=config.DB,
         user=config.DB_USER,
+        host=config.DB_HOST,
         password=config.DB_PW)
 
 

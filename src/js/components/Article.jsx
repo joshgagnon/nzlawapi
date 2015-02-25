@@ -422,7 +422,8 @@ var ArticleError = React.createClass({
                     return this.attributes.id;
                 }).toArray();
                 ids.push(target.attr('id'));
-                Actions.requestSectionReferences(this.props.page.get('id'), ids)
+                Actions.sectionSummaryOpened(this.props.viewer_id, this.props.page.get('id'), ids);
+
             }
         }
      },

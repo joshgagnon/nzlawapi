@@ -10,9 +10,15 @@ def get_db():
         g.db = connect_db()
     return g.db
 
+
 def connect_db():
-    conn = psycopg2.connect(database=current_app.config['DB'], user=current_app.config['DB_USER'], password=current_app.config['DB_PW'])
+    conn = psycopg2.connect(
+        database=current_app.config['DB'],
+        user=current_app.config['DB_USER'],
+        password=current_app.config['DB_PW'],
+        host=current_app.config['DB_HOST'])
     return conn
+
 
 def init_db():
     pass

@@ -63,7 +63,6 @@ def nodes_from_path_string(tree, path):
         pattern = re.compile('[\W_]+')
         keys = pattern.sub(' ', path).split()
 
-    print keys
     return find_sub_node(tree, keys)
 
 

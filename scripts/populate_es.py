@@ -117,6 +117,7 @@ if __name__ == "__main__":
         db = psycopg2.connect(
                 database=config.DB,
                 user=config.DB_USER,
+                host=config.DB_HOST,
                 password=config.DB_PW)
         run(db, config)
     except exceptions.ConnectionError:

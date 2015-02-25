@@ -12,7 +12,7 @@ REPROCESS_DOCS = False
 
 DB_USER = 'josh'
 DB_PW = ''
-HOST = 'localhost'
+DB_HOST = '127.0.0.1'
 DB = 'legislation'
 
 ES_SERVER = {"host": "localhost", "port": 9200}
