@@ -415,9 +415,14 @@ var ArticleError = React.createClass({
                 });
             }
             else if(link.closest('[id]').length){
-                var target = link.closest('[id]')
+                var target = link.closest('[id]');
+
                 var title = this.props.page.title + ' ' + target.attr('data-location') ;
-                console.log(target,title);
+                var ids = target.find('id').map(function(){
+                    return this.attributes.id;
+                }).toArray();
+                ids.push(target.attr('id'));
+                Actions.requestSectionReferences(this.props.page.get('id'), ids)
             }
         }
      },

@@ -108,6 +108,17 @@ def get_references(document_id):
         return {'references': map(lambda x: dict(x), cur.fetchall())}
 
 
+def get_section_references(govt_ids):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("""
+            SELECT source_document_id, repr, url
+            FROM section_references  d
+            WHERE target_govt_id = ANY(%(govt_ids)s)
+            """, {'govt_ids': govt_ids})
+        return {'section_references': map(lambda x: dict(x), cur.fetchall())}
+
+
 def get_versions(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -220,10 +231,11 @@ def get_instrument_object(id=None, db=None, replace=False):
 
 def get_latest_instrument_object(instrument_name=None, id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """SELECT *, true as latest FROM latest_instruments
-                where (%(instrument)s is null or title= %(act)s) and (%(id)s is null or id =  %(id)s)
+        query = """SELECT *, true as latest FROM latest_instruments i
+                JOIN documents d on d.id = i.id
+                where (%(instrument_name)s is null or title= %(instrument_name)s) and (%(id)s is null or i.id =  %(id)s)
             """
-        cur.execute(query, {'instrument': instrument_name, 'id': id})
+        cur.execute(query, {'instrument_name': instrument_name, 'id': id})
         return prep_instrument(cur.fetchone(), replace, db)
 
 

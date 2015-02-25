@@ -1,4 +1,4 @@
-from acts.acts import query_instrument, get_references, get_versions
+from acts.acts import query_instrument, get_references, get_versions, get_section_references
 from cases.cases import get_full_case, get_case_info, case_search
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
@@ -72,6 +72,18 @@ def get_references_route(document_id):
     status = 200
     try:
         result = get_references(document_id)
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
+
+@Query.route('/section_references')
+@require_auth
+def get_section_references_route():
+    status = 200
+    try:
+        result = get_section_references(request.args.getlist('govt_ids[]'))
     except Exception, e:
         result = {'error': str(e)}
         status = 500

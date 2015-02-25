@@ -20,6 +20,7 @@ module.exports = Reflux.createActions([
 	'toggleAdvanced',
 
 	'requestReferences',
+	'requestSectionReferences',
 	'requestVersions',
 	'popoverOpened',
 	'requestPopoverData',

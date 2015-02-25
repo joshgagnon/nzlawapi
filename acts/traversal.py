@@ -47,16 +47,23 @@ def generate_range(string):
     return tokens
 
 def nodes_from_path_string(tree, path):
-    parts = re.compile('(s|sch) (\d+)\W*(cl )?(.*)?').match(path).groups()
+    parts = re.compile('(s|sch|section|schedule) ([\.\d]+)\W*(cl )?(.*)?').match(path.lower())
     # actually, maybe easier just to get it in canonical form
     keys = []
-    if parts[0] == 'sch':
-        tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
+    if parts:
+        parts = parts.groups()
+        if parts[0].startswith('sch'):
+            tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
+        else:
+            tree = tree.xpath(".//body")[0]
+            keys.append(parts[1])
+        if parts[3]:
+            keys += filter(lambda x: len(x), re.split('[^.a-zA-Z\d]+', parts[3]))
     else:
-        tree = tree.xpath(".//body")[0]
-        keys.append(parts[1])
-    if parts[3]:
-        keys += filter(lambda x: len(x), re.split('\W+', parts[3]))
+        pattern = re.compile('[\W_]+')
+        keys = pattern.sub(' ', path).split()
+
+    print keys
     return find_sub_node(tree, keys)
 
 

@@ -1,0 +1,1 @@
+ALTER TABLE section_references ADD COLUMN url text;

@@ -133,12 +133,12 @@ def generate_path_string(node, id=None):
     it = iter(node.iterancestors('schedule'))
     for n in it:
         if len(n.xpath('./label')):
-            result = u'sch %s' % n.xpath('./label')[0].text + result
+            result = u'sch %s' % (n.xpath('./label')[0].text or '') + result
     title = get_title(node.getroottree())
 
     return (u'%s %s' % (title, result),
         'query?%s' % urllib.urlencode({
-            'query': result.encode('utf-8'),
+            'location': result.encode('utf-8'),
             'doc_type': 'instrument',
             'find': 'location',
             'title': title.encode('utf-8')

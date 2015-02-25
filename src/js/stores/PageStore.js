@@ -35,6 +35,7 @@ var PageStore = Reflux.createStore({
 		page.id = 'page-'+this.counter++;
 		page.popovers = page.popovers || {};
 		page.references = page.references || {};
+		page.section_references = page.section_references || {};
 		page.versions = page.versions || {};
 		return page;
 	},
@@ -183,6 +184,18 @@ var PageStore = Reflux.createStore({
 			this.update();
 		}
 	},
+	onRequestSectionReferences: function(page_id, govt_ids){
+		var page = this.getById(page_id);
+		if(!page.getIn(['section_references', 'fetched'])){
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetched: true,govt_ids: govt_ids});
+			$.get('section_references', {govt_ids: govt_ids})
+				.then(function(response){
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {versions_data: response.versions});
+					this.update();
+				}.bind(this))
+			this.update();
+		}
+	},
 	onRequestVersions: function(page_id){
 		var page = this.getById(page_id);
 		if(!page.getIn(['versions', 'fetched'])){
@@ -194,7 +207,7 @@ var PageStore = Reflux.createStore({
 				}.bind(this))
 			this.update();
 		}
-	}
+	},
 });
 
 
