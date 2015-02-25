@@ -17,16 +17,40 @@ module.exports = React.createClass({
         return this.props.sectionData.get(this.props.sectionView.last());
     },
     renderBody: function(data){
-        if(data.get('section_references')){
-            return data.get('section_references').map(function(ref, i){
-                return <li key={i}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
-            }).toJS()
-        }else{
+        if(data.get('section_references') && data.get('section_references').size){
+            return <div>This section has been referenced by {data.get('section_references').map(function(ref, i){
+                return <li key={i} onClick={this.openLink.bind(this, '/'+ref.get('url'), ref.get('repr'))}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
+            }, this).toJS()}</div>
+        }else if(data.get('fetching')){
             return <div className="csspinner traditional"/>
+        }
+        else{
+            return <div>There are no known references</div>
         }
     },
     close: function() {
          Actions.sectionSummaryClosed(this.props.viewer_id, this.props.page_id, this.props.sectionView.last());
+    },
+    openLink: function(query, title){
+        Actions.newPage({
+            title: title,
+            query_string: query
+        }, this.props.viewer_id);
+        this.close();
+    },
+    focusSection: function(){
+        Actions.newPage({
+            title: this.getLast().get('title'),
+            query:{
+                id: this.props.sectionView.last(),
+                doc_type: 'instrument',
+                find: 'location'
+            }
+        }, this.props.viewer_id);
+         this.close();
+    },
+    addToPrint: function(){
+        alert('not yet')
     },
     render: function(){
         var last = this.props.sectionView.last();
@@ -38,8 +62,8 @@ module.exports = React.createClass({
                                 {this.renderBody(data)}
                             </div>
                             <div className="modal-footer">
-                                <Button bsStyle={'info'} onClick={this.open}>Focus In New Tab</Button>
-                                <Button bsStyle={'info'} onClick={this.open}>Add To Print</Button>
+                                <Button bsStyle={'info'} onClick={this.focusSection}>Focus In New Tab</Button>
+                                <Button bsStyle={'info'} onClick={this.addToPrint}>Add To Print</Button>
                             </div>
                         </Modal>
                       </div>

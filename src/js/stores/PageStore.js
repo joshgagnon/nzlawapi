@@ -67,8 +67,9 @@ var PageStore = Reflux.createStore({
 		if(!page.get('fetching') && !page.get('fetching')){
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
 			this.update();
-			$.get('/query', page.get('query').toJS())
-				.then(function(data){
+			var get;
+			get = page.get('query_string') ? $.get(page.get('query_string')) : $.get('/query', page.get('query').toJS());
+			get.then(function(data){
 					var result = {
 						fetching: false,
 						fetched: true,
@@ -78,6 +79,7 @@ var PageStore = Reflux.createStore({
 					};
 					if(data.query){
 						result.query = data.query;
+						result.query_string = null;
 					}
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
 					this.update();
