@@ -17,7 +17,7 @@ var strings = {
 
 module.exports = React.createClass({
     getInitialState: function(){
-        return {active: 'versions', options: ['location', 'summary', 'references', 'versions']};
+        return {active: 'location', options: ['location', 'summary', 'references', 'versions']};
     },
     setVisible: function(active){
         this.setState({active: active})

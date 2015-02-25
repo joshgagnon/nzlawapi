@@ -237,66 +237,11 @@ def act_skeleton_response(act):
     }
 
 
-def act_full_response(act, fragment=False):
-    return {
-        'html_content': etree.tostring(tohtml(act.tree), encoding='UTF-8', method="html"),
-        'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
-        'title': act.title,
-        'document_id': act.id,
-        'doc_type': 'instrument',
-        'fragment': fragment,
-        'attributes': act.attributes
-    }
-
-
-
-def  instrument_summary(instrument, find):
-    return {
-            'title': instrument.get('title'),
-            'document_id': instrument.get('id'),
-            'repr': instrument.get('repr', None),
-            'doc_type': 'instrument',
-            'summary': True,
-            'attributes': dict(instrument.get('attributes', {}).items() +  [i for i in instrument.items() if i[0] != 'attributes']),
-            'query': {
-                'doc_type': 'instruments',
-                'find': find,
-                'query': id
-            }
-        }
-
-def act_response(act, fragment=False):
-    if len(act.tree.xpath('.//*')) > 1000000: # move magic number somewhere
-        return act_skeleton_response(act)
-    else:
-        return act_full_response(act, fragment)
-
-
-def act_part_response(act, parts):
-    def render_inner(el):
-        s = ''
-        for node in el.xpath('node()'):
-            if isinstance(node, basestring):
-                s += node
-            else:
-                s += etree.tostring(node, encoding='UTF-8', method="html")
-        return s
-    act.calculate_hooks()
-    return {
-        'parts': {act.parts[e].attrib['data-hook']: render_inner(act.parts[e]) for e in parts or [] }
-    }
-
 def get_instrument_summary(doc_type=None, key=None):
     if key.startswith('DLM'):
         return instrument_summary(get_act_summary_govt_id(key), 'govt_id', key)
     else:
         return instrument_summary(get_act_summary(key), 'id', key)
-
-def format_response(args, result):
-    if args.get('format', 'html') == 'json':
-        return {'content': result, 'act_name': args['act_name']}
-    else:
-        return {'html_content': etree.tostring(result, encoding='UTF-8', method="html"), 'act_name': args['act_name']}
 
 
 def get_act_node_by_id(node_id):

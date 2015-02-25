@@ -18,7 +18,7 @@ def process(db, config):
         'source_title': 'Judicature Act 1908',
         'new_title': 'High Court Rules (Shortcut)',
         'query': 'DLM147653',
-        'find': 'govt_id'
+        'find': 'govt_location'
     }
     with db.cursor() as cur:
         cur.execute('select id, type from latest_instruments where title = %(source_title)s', high_court_rules)

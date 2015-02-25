@@ -325,11 +325,11 @@ var FullArticleButton = React.createClass({
     },
     handleClick: function(){
         Actions.newPage({
-            title: this.props.getIn(['content','title']),
+            title: this.props.content.get('title'),
             query: {doc_type:
-            this.props.getIn(['content','doc_type']),
+            this.props.content.get('doc_type'),
             find: 'full',
-            id: this.props.getIn(['content','document_id']),}}, this.props.viewer_id)
+            id: this.props.content.get('document_id')}}, this.props.viewer_id)
     },
     render: function(){
         return  <button onClick={this.handleClick} className="btn btn-info">Full Article</button>
@@ -353,11 +353,15 @@ var ArticleOverlay= React.createClass({
 
 var NotLatestVersion = React.createClass({
     render: function(){
-        return <div className="alert alert-danger" role="alert"><strong>Warning</strong> This is not the latest version</div>
+        return <div className="alert alert-danger" role="alert"><strong>Warning</strong> This is not the latest reprint.</div>
     }
 });
 
-
+var ArticleError = React.createClass({
+    render: function(){
+        return <div className="alert alert-danger" role="alert"><strong>Error</strong> {this.props.error}</div>
+    }
+});
 
  module.exports = React.createClass({
     interceptLink: function(e){
@@ -429,13 +433,22 @@ var NotLatestVersion = React.createClass({
        }
         }
     },
+    warningsAndErrors: function(){
+        if(this.props.page.getIn(['content', 'error'])){
+            return <ArticleError error={this.props.page.getIn(['content', 'error'])}/>
+        }
+        else if(!this.props.page.getIn(['content', 'attributes', 'latest'])){
+            return <NotLatestVersion />
+        }
+        return null;
+    },
     render: function(){
         // perhaps swap popovers for different view on mobile
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="csspinner traditional" /></div>
         }
         return <div className="legislation-result" onClick={this.interceptLink} >
-            { !this.props.page.getIn(['content', 'attributes', 'latest']) ? <NotLatestVersion/> : null }
+           { this.warningsAndErrors() }
           <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
           <ArticleContent ref="articleContent"
                 content={this.props.page.get('content') }

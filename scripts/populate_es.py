@@ -91,7 +91,6 @@ def run(db, config):
         results = cur.fetchmany(10)
         count = 0
         while len(results):
-
             for result in results:
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)

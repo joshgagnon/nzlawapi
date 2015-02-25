@@ -173,9 +173,7 @@ var PageStore = Reflux.createStore({
 	},
 	onRequestReferences: function(page_id){
 		var page = this.getById(page_id);
-
-		if(!page.get('references').get('fetched')){
-
+		if(!page.getIn(['references', 'fetched'])){
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetched: true});
 			$.get('/references/'+page.get('content').get('document_id'))
 				.then(function(response){
@@ -187,8 +185,7 @@ var PageStore = Reflux.createStore({
 	},
 	onRequestVersions: function(page_id){
 		var page = this.getById(page_id);
-		if(!page.get('versions').get('fetched')){
-
+		if(!page.getIn(['versions', 'fetched'])){
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetched: true});
 			$.get('versions/'+page.get('content').get('document_id'))
 				.then(function(response){

@@ -10,13 +10,13 @@ def run(db, config):
 
     with db.cursor() as cur:
 
-        query = """select id, title from latest_instruments """#where processed_document is null """
+        query = """select id, title from latest_instruments """ #where processed_document is null """
         cur.execute(query)
 
         results = cur.fetchall()
         for  i, r in enumerate(results):
             print '%d/%d' % (i, len(results))
-            acts.get_act_object(id=r[0], replace=True, db=db)
+            acts.get_instrument_object(id=r[0], replace=True, db=db)
 
     db.close()
 
