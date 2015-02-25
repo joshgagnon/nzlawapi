@@ -162,6 +162,7 @@ def process_act_links(tree, db=None):
         match.setAttribute('target-id', '%s' % result['id'])
         match.appendChild(doc.createTextNode(word))
         return match
+
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
     domxml = node_replace(domxml, links, create_link)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))

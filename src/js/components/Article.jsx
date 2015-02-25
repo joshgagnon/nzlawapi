@@ -336,16 +336,31 @@ var FullArticleButton = React.createClass({
     }
 })
 
+var ArticlePDFButton = React.createClass({
+    base_url: 'http://www.legislation.govt.nz/subscribe/',
+    propTypes: {
+       content: React.PropTypes.object.isRequired,
+    },
+    render: function(){
+        var url = this.props.content.getIn(['attributes', 'path']).replace('.xml', '.pdf');
+        return  <a target="_blank" href={this.base_url + url} className="btn btn-info">PDF</a>
+    }
+})
+
 var ArticleOverlay= React.createClass({
     propTypes: {
        page: React.PropTypes.object.isRequired,
     },
-
     render: function(){
         return <div className="article-overlay">
                 { this.props.page.getIn(['content','format']) === 'fragment' ? <FullArticleButton
                     content={this.props.page.get('content')}
                     viewer_id={this.props.viewer_id}/> : null }
+
+                { this.props.page.getIn(['content','attributes', 'path']) ? <ArticlePDFButton
+                    content={this.props.page.get('content')}
+                    viewer_id={this.props.viewer_id}/> : null }
+
             </div>
     }
 })
@@ -365,27 +380,27 @@ var ArticleError = React.createClass({
 
  module.exports = React.createClass({
     interceptLink: function(e){
-        var link = $(e.target).closest('a');
+        var link = $(e.target).closest('a:not([target])');
         if(link.length){
             e.preventDefault();
-        if(link.attr('data-link-id')){
+            if(link.attr('data-link-id')){
                 var url = link.attr('data-href');
                 if(url.indexOf('/') === -1){
                     url = 'instrument/'+url;
                 }
                 Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
-                    type: 'link',
-                    title: link.text(),
-                    id: link.attr('data-link-id'),
-                    target: link.attr('data-target-id'),
-                    source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                    positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                    positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
-                    fetched: false,
-                    url: '/link/'+url
-                });
-            }
+                        type: 'link',
+                        title: link.text(),
+                        id: link.attr('data-link-id'),
+                        target: link.attr('data-target-id'),
+                        source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
+                        positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                        positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
+                        fetched: false,
+                        url: '/link/'+url
+                    });
+                }
             else if(link.attr('data-def-id')){
                Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
