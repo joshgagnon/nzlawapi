@@ -268,7 +268,7 @@ var ArticleContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 7}, jump.noscroll ? 0: 300);
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 10}, jump.noscroll ? 0: 300);
         }
         else{
             return 'Not Found';
