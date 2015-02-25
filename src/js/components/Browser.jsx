@@ -72,12 +72,11 @@ var PageSet = React.createClass({
                 onSelect={this.handleTab}
                 onClose={this.closeTab} viewer_id={this.props.viewer_id} >
                 { this.props.pages.map(function(page){
-                        return (
+                        return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('title')} >
                                 { this.props.view.getIn(['settings', 'page.id', 'advanced_search']) ? <AdvancedSearch /> : null }
                                 { this.renderPage(page) }
-                            </TabPane>
-                          )
+                            </TabPane> : null
                       }, this).toJS() //can remove in react 0.13
             }
             </TabbedArea></div>)

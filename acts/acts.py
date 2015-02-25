@@ -204,7 +204,8 @@ def update_definitions(row, db=None):
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, x[0], json.dumps(x[1]))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': id})
         cur.execute("INSERT INTO definitions (document_id, key, data) VALUES " + args_str)
-        (db or get_db()).commit()
+        cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
+    (db or get_db()).commit()
     return tree, definitions.render()
 
 

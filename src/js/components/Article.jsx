@@ -10,6 +10,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var Popover = require('./Popover.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
+var ArticleOverlay= require('./ArticleOverlay.jsx');
 var MQ = require('react-responsive');
 
 
@@ -38,6 +39,17 @@ $.fn.isOnScreen = function(tolerance){
     bounds.bottom = bounds.top + this.outerHeight();
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
 };
+
+function getLocationString($el){
+    var result = ''
+    if(!$el.attr('data-location-no-path')){
+        result = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
+            return $(this).attr('data-location');
+        }).toArray().reverse().join('');
+    }
+    result += $el.attr('data-location') || '';
+    return result;
+}
 
 // TODO, break into popovers, and article,
 // return false on equality
@@ -90,18 +102,13 @@ var ArticleContent = React.createClass({
         });
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
-                var result = ''
+
                 var offset = self.getScrollContainer().offset().top;
                 if(self.scrollHeight !== $(self.getDOMNode()).height()){
                     self.refresh();
                 }
                 var $el = $(find_current(self.locations));
-                if(!$el.attr('data-location-no-path')){
-                    result = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
-                        return $(this).attr('data-location');
-                    }).toArray().reverse().join('');
-                }
-                result += $el.attr('data-location') || '';
+                var result = getLocationString($el)
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
                     Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
@@ -320,51 +327,7 @@ var MobilePopovers = React.createClass({
     }
 });
 
-var FullArticleButton = React.createClass({
-    propTypes: {
-       content: React.PropTypes.object.isRequired,
-    },
-    handleClick: function(){
-        Actions.newPage({
-            title: this.props.content.get('title'),
-            query: {doc_type:
-            this.props.content.get('doc_type'),
-            find: 'full',
-            id: this.props.content.get('document_id')}}, this.props.viewer_id)
-    },
-    render: function(){
-        return  <button onClick={this.handleClick} className="btn btn-info">Full Article</button>
-    }
-})
 
-var ArticlePDFButton = React.createClass({
-    base_url: 'http://www.legislation.govt.nz/subscribe/',
-    propTypes: {
-       content: React.PropTypes.object.isRequired,
-    },
-    render: function(){
-        var url = this.props.content.getIn(['attributes', 'path']).replace('.xml', '.pdf');
-        return  <a target="_blank" href={this.base_url + url} className="btn btn-info">PDF</a>
-    }
-})
-
-var ArticleOverlay= React.createClass({
-    propTypes: {
-       page: React.PropTypes.object.isRequired,
-    },
-    render: function(){
-        return <div className="article-overlay">
-                { this.props.page.getIn(['content','format']) === 'fragment' ? <FullArticleButton
-                    content={this.props.page.get('content')}
-                    viewer_id={this.props.viewer_id}/> : null }
-
-                { this.props.page.getIn(['content','attributes', 'path']) ? <ArticlePDFButton
-                    content={this.props.page.get('content')}
-                    viewer_id={this.props.viewer_id}/> : null }
-
-            </div>
-    }
-})
 
 
 var NotLatestVersion = React.createClass({
@@ -420,7 +383,6 @@ var ArticleError = React.createClass({
             }
             else if(link.closest('[id]').length){
                 var target = link.closest('[id]');
-
                 var title = this.props.page.title + ' ' + target.attr('data-location') ;
                 var ids = target.find('id').map(function(){
                     return this.attributes.id;
@@ -430,7 +392,7 @@ var ArticleError = React.createClass({
                     this.props.viewer_id,
                     this.props.page.get('id'),
                     {id: target.attr('id'),
-                    title: this.props.page.get('title') +' '+ target.closest('[data-location]').attr('data-location') || '',
+                    title: this.props.page.get('title') +' '+ getLocationString(target),
                     govt_ids: ids
                 });
 
