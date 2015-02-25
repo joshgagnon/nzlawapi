@@ -10,7 +10,7 @@ def run(db, config):
 
     with db.cursor() as cur:
 
-        query = """select id, title from latest_instruments """ #where processed_document is null """
+        query = """select id, title from latest_instruments where processed_document is null """
         cur.execute(query)
 
         results = cur.fetchall()

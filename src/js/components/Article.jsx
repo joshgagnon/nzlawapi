@@ -9,6 +9,7 @@ var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 var Popover = require('./Popover.jsx');
+var SectionSummary = require('./SectionSummary.jsx');
 var MQ = require('react-responsive');
 
 
@@ -268,7 +269,7 @@ var ArticleContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 10}, jump.noscroll ? 0: 300);
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
         }
         else{
             return 'Not Found';
@@ -378,6 +379,9 @@ var ArticleError = React.createClass({
     }
 });
 
+
+
+
  module.exports = React.createClass({
     interceptLink: function(e){
         var link = $(e.target).closest('a:not([target])');
@@ -422,7 +426,13 @@ var ArticleError = React.createClass({
                     return this.attributes.id;
                 }).toArray();
                 ids.push(target.attr('id'));
-                Actions.sectionSummaryOpened(this.props.viewer_id, this.props.page.get('id'), ids);
+                Actions.sectionSummaryOpened(
+                    this.props.viewer_id,
+                    this.props.page.get('id'),
+                    {id: target.attr('id'),
+                    title: this.props.page.get('title') +' '+ target.closest('[data-location]').attr('data-location') || '',
+                    govt_ids: ids
+                });
 
             }
         }
@@ -475,6 +485,14 @@ var ArticleError = React.createClass({
                 content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
                 page_id={this.props.page.get('id')} />
+             { this.props.view.getIn(['section_summaries', this.props.page.get('id')]) &&
+                this.props.view.getIn(['section_summaries', this.props.page.get('id')]).size ?
+                <SectionSummary
+                sectionData={this.props.page.get('section_data')}
+                sectionView={this.props.view.getIn(['section_summaries', this.props.page.get('id')])}
+                viewer_id={this.props.viewer_id}
+                page_id={this.props.page.get('id')} />
+                : null }
             <MQ minWidth={480}>
                 { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
                 <Popovers

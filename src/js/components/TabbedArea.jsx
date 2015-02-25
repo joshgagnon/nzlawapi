@@ -76,12 +76,14 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     window.removeEventListener('resize', this._resize_handler);
   },
   setTabVisibility: function(){
-    var width = this.refs.tabs.getDOMNode().clientWidth;
-    var tabs = width/this.props.max_tab_width;
-    if(tabs<this.props.children.length){
-      tabs--;
+    if(this.isMounted()){
+      var width = this.refs.tabs.getDOMNode().clientWidth;
+      var tabs = width/this.props.max_tab_width;
+      if(tabs<this.props.children.length){
+        tabs--;
+      }
+      this.setState({visible_tabs: tabs});
     }
-    this.setState({visible_tabs: tabs});
   },
   countTabs: function(){
     return this.props.children.length;

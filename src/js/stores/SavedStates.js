@@ -46,6 +46,9 @@ module.exports = Reflux.createStore({
     },
     prepState: function(){
         function pickPage(page){
+            return !page.content || (page.content && !page.content.error);
+        }
+        function prepPage(page){
             var obj = _.pick(page, 'title', 'query');
             obj.popovers = {}
            _.each(page.popovers || [] ,function(v, k){
@@ -53,7 +56,11 @@ module.exports = Reflux.createStore({
             });
             return obj;
         }
-        return {views: this.views, pages: (this.pages||[]).map(pickPage), browser: this.browser};
+        function prepView(view){
+            return _.omit(view, 'section_summaries');
+        }
+
+        return {views: this.views.map(prepView), pages: (_.filter(this.pages||[], pickPage)).map(prepPage), browser: this.browser};
     },
     saveCurrent: function() {
         localStorage['current_view'] = JSON.stringify(this.prepState());

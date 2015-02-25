@@ -41,7 +41,7 @@ module.exports =  Reflux.createStore({
         this.trigger({views: this.views});
     },
     getDefault: function(){
-        return {active_page_id: undefined, settings: {}, popovers: {}}
+        return {active_page_id: undefined, settings: {}, popovers: {},section_summaries:{}}
     },
     update: function(){
         this.trigger({views: this.views});
@@ -52,6 +52,9 @@ module.exports =  Reflux.createStore({
         }
         if(!this.views.getIn([viewer_id, 'popovers', page_id])){
             this.views = this.views.mergeDeepIn([viewer_id, 'popovers', page_id], {});
+        }
+        if(!this.views.getIn([viewer_id, 'section_summaries', page_id])){
+            this.views = this.views.mergeDeepIn([viewer_id, 'section_summaries', page_id], {});
         }
     },
 
@@ -79,6 +82,20 @@ module.exports =  Reflux.createStore({
     onPopoverClosed: function(viewer_id, page_id, link_id){
         var open = this.views.getIn([viewer_id, 'popovers', page_id]);
         this.views = this.views.setIn([viewer_id, 'popovers', page_id], open.remove(open.indexOf(link_id)));
+        this.update();
+    },
+    onSectionSummaryOpened: function(viewer_id, page_id, section_data){
+        var self = this;
+        this.prepPage(viewer_id, page_id);
+        var open = this.views.getIn([viewer_id, 'section_summaries', page_id], Immutable.List())
+        if(!open.contains(section_data.id)){
+            this.views = this.views.setIn([viewer_id, 'section_summaries', page_id], open.push(section_data.id))
+        }
+        this.update();
+    },
+    onSectionSummaryClosed: function(viewer_id, page_id, section_id){
+        var open = this.views.getIn([viewer_id, 'section_summaries', page_id]);
+        this.views = this.views.setIn([viewer_id, 'section_summaries', page_id], open.remove(open.indexOf(section_id)));
         this.update();
     }
 });

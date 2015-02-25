@@ -35,7 +35,7 @@ var PageStore = Reflux.createStore({
 		page.id = 'page-'+this.counter++;
 		page.popovers = page.popovers || {};
 		page.references = page.references || {};
-		page.section_references = page.section_references || {};
+		page.section_data = page.section_data || {};
 		page.versions = page.versions || {};
 		return page;
 	},
@@ -149,6 +149,16 @@ var PageStore = Reflux.createStore({
 			this.update();
 		}
 	},
+	onSectionSummaryOpened: function(viewer_id, page_id, section_data){
+		var page = this.getById(page_id);
+		if(!page.getIn(['section_data', section_data.id ])){
+			var result = {};
+			result[section_data.id] = section_data;
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data'], result);
+			this.update();
+		}
+	},
+
 	//TODO position, should be in view
 	onPopoverUpdate: function(viewer_id, page_id, popover){
 		var page = this.getById(page_id);
@@ -184,13 +194,14 @@ var PageStore = Reflux.createStore({
 			this.update();
 		}
 	},
-	onRequestSectionReferences: function(page_id, govt_ids){
+
+	onRequestSectionReferences: function(page_id, section_id){
 		var page = this.getById(page_id);
-		if(!page.getIn(['section_references', 'fetched'])){
-			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetched: true,govt_ids: govt_ids});
-			$.get('section_references', {govt_ids: govt_ids})
+		if(!page.getIn(['section_data', section_id, 'fetched'])){
+			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id], {fetched: true});
+			$.get('/section_references', {govt_ids: page.getIn(['section_data', section_id, 'govt_ids']).toJS()})
 				.then(function(response){
-					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {versions_data: response.versions});
+					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],  response);
 					this.update();
 				}.bind(this))
 			this.update();
@@ -200,7 +211,7 @@ var PageStore = Reflux.createStore({
 		var page = this.getById(page_id);
 		if(!page.getIn(['versions', 'fetched'])){
 			this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetched: true});
-			$.get('versions/'+page.get('content').get('document_id'))
+			$.get('/versions/'+page.get('content').get('document_id'))
 				.then(function(response){
 					this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {versions_data: response.versions});
 					this.update();
