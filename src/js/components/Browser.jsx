@@ -106,7 +106,6 @@ module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(PageStore, 'onState', this.onState),
         Reflux.listenTo(ViewerStore, 'onState', this.onState),
-        // MOVE TO CHILD, maybe
         Reflux.listenTo(DialogStore, 'onState', this.onState),
         Reflux.listenTo(BrowserStore, 'onState', this.onState),
         React.addons.LinkedStateMixin,
@@ -116,10 +115,9 @@ module.exports = React.createClass({
         return {
             pages: Immutable.List(),
             views: ViewerStore.getDefaultData(),
-            underlines: true, //false,
+            browser: Immutable.Map(),
             save_dialog: false,
             load_dialog: false,
-            split_mode: false
         };
     },
     componentDidMount: function(){
@@ -157,7 +155,7 @@ module.exports = React.createClass({
                 doc_type: this.state.article_type,
                 find: !this.state.location ? 'full' : 'location',
                 location: this.state.location,
-                id: this.state.document_id
+                id: this.state.query || this.state.document_id
             };
             title = this.state.search_query
         }
@@ -165,7 +163,7 @@ module.exports = React.createClass({
             query = {
                 doc_type: this.state.article_type,
                 find: this.state.find,
-                id: this.state.document_id
+                id: this.state.query || this.state.document_id
             };
             title = this.state.search_query
         }
@@ -238,7 +236,7 @@ module.exports = React.createClass({
     },
     renderBody: function(){
         var active = this.getActive();
-        if(this.state.split_mode){
+        if(this.state.browser.get('split_mode') ){
             return <div className="split">
                 <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0} key={0}/>
                 <PageSet pages={this.state.pages} view={this.state.views.get(1)} viewer_id={1} key={1}/>
@@ -286,7 +284,7 @@ module.exports = React.createClass({
     render: function(){
        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
-        if(this.state.underlines){
+        if(this.state.browser.get('underlines') ){
             parentClass += 'underlines';
         }
         return (<div className className={parentClass}>

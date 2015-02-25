@@ -41,7 +41,7 @@ module.exports = Reflux.createStore({
         this.saveCurrent();
     },
     updateBrowser: function(browser){
-        this.browser = browser;
+        this.browser = browser.browser.toJS()
         this.saveCurrent();
     },
     prepState: function(){

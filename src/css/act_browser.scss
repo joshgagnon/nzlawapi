@@ -46,6 +46,9 @@ body{
 				.tab-content{
 					padding-right: $sidebar-outer-width;
 				}
+				.article-overlay{
+					right: $sidebar-outer-width;
+				}
 			}
 		}
 	}
@@ -424,9 +427,6 @@ body{
 			position: absolute;
 			padding-right: 10px;
 			top: 10px;
-			@media (min-width: $screen-md-min) {
-				right: $sidebar-outer-width;
-			}
 			@media print{
 				display:none;
 			}
