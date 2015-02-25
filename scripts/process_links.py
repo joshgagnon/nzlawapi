@@ -38,7 +38,7 @@ def ids(db, config):
 
 
 def run(db, config):
-    #ids(db, config)
+    ids(db, config)
     with db.cursor() as cur, db.cursor() as out:
         result_to_dict = lambda r: (r[0], r[1])
         cur.execute(""" delete from document_references""")
