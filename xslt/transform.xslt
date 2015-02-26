@@ -261,7 +261,7 @@
                 <xsl:when test="heading != ''">
                     <h5 class="prov labelled">
                         <a>
-                        <xsl:attribute name="href">/open_article/instruments/<xsl:value-of select="@id"/></xsl:attribute>
+                        <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@id"/></xsl:attribute>
                         <span class="label">
                             <xsl:call-template name="parentquote"/>
                             <xsl:value-of select="label"/>
