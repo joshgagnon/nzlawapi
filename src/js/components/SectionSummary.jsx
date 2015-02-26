@@ -50,7 +50,15 @@ module.exports = React.createClass({
          this.close();
     },
     addToPrint: function(){
-        alert('not yet')
+        Actions.addToPrint({
+            type: this.getLast().get('title'),
+            query:{
+                id: this.props.sectionView.last(),
+                doc_type: 'instrument',
+                find: 'location'
+            }
+        });
+        Actions.activatePrintMode();
     },
     render: function(){
         var last = this.props.sectionView.last();

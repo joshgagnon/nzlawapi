@@ -11,6 +11,8 @@ var PageStore = require('../stores/PageStore');
 var ViewerStore = require('../stores/ViewerStore');
 var SavedStates = require('../stores/SavedStates.js');
 var BrowserStore = require('../stores/BrowserStore.js');
+var PageStore = require('../stores/PageStore.js');
+var PrintStore = require('../stores/PrintStore.js');
 var Actions = require('../actions/Actions');
 var SearchResults = require('./SearchResults.jsx');
 var ArticleSideBar = require('./ArticleSideBar.jsx');
@@ -20,10 +22,10 @@ var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
 var Immutable = require('immutable');
-
 var SaveDialog = require('./SaveDialog.jsx');
-
 var AdvancedSearch = require('./AdvancedSearch.jsx');
+var TabView = require('./TabView.jsx');
+var PrintView = require('./PrintView.jsx');
 
 
 $.fn.focusNextInputField = function() {
@@ -38,6 +40,7 @@ $.fn.focusNextInputField = function() {
     });
 };
 
+
 var DialogStore = Reflux.createStore({
     listenables: Actions,
     onCloseSaveDialog: function(){
@@ -49,64 +52,13 @@ var DialogStore = Reflux.createStore({
 });
 
 
-
-var PageSet = React.createClass({
-    handleTab: function(active){
-        Actions.showPage(this.props.viewer_id, active);
-    },
-    closeTab: function(id){
-        Actions.removePage(id);
-    },
-    shouldComponentUpdate: function(newProps, newState){
-        return (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
-    },
-    renderPage: function(page){
-        return page.getIn(['query', 'search']) ?
-                    <SearchResults key={page.get('id')} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
-                    <Article key={page.get('id')} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
-    },
-    renderTabs: function(){
-        var self = this;
-        return (<div className="results-container">
-                <TabbedArea activeKey={this.props.view.get('active_page_id')}
-                onSelect={this.handleTab}
-                onClose={this.closeTab} viewer_id={this.props.viewer_id} >
-                { this.props.pages.map(function(page){
-                        return !page.get('print_only') ?
-                             <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('title')} >
-                                { this.props.view.getIn(['settings', 'page.id', 'advanced_search']) ? <AdvancedSearch /> : null }
-                                { this.renderPage(page) }
-                            </TabPane> : null
-                      }, this).toJS() //can remove in react 0.13
-            }
-            </TabbedArea></div>)
-    },
-    render: function(){
-        //console.log('render', this.props.viewer_id)
-        if(this.props.pages.count() >= 2){
-            return this.renderTabs();
-        }
-
-        else if(this.props.pages.count() === 1){
-            return <div className="results-container"><div className="results-scroll">
-             { this.props.view.getIn(['settings', this.props.pages.getIn([0, 'id', 'advanced_search'])]) ? <AdvancedSearch /> : null }
-            {  this.renderPage(this.props.pages.get(0)) }
-                </div></div>
-        }
-        else{
-            <div className="results-empty"/>
-        }
-    }
-
-})
-
-
 module.exports = React.createClass({
     mixins: [
-        Reflux.listenTo(PageStore, 'onState', this.onState),
-        Reflux.listenTo(ViewerStore, 'onState', this.onState),
-        Reflux.listenTo(DialogStore, 'onState', this.onState),
-        Reflux.listenTo(BrowserStore, 'onState', this.onState),
+        Reflux.listenTo(PageStore, 'onState'),
+        Reflux.listenTo(ViewerStore, 'onState'),
+        Reflux.listenTo(DialogStore, 'onState'),
+        Reflux.listenTo(BrowserStore, 'onState'),
+        Reflux.listenTo(PrintStore, 'onState'),
         React.addons.LinkedStateMixin,
         ReactRouter.State
     ],
@@ -115,23 +67,21 @@ module.exports = React.createClass({
             pages: Immutable.List(),
             views: ViewerStore.getDefaultData(),
             browser: Immutable.Map(),
+            print: Immutable.List(),
             save_dialog: false,
             load_dialog: false,
         };
     },
     componentDidMount: function(){
         if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
-            Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 0);
+            Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 'tab-0');
         }
         else if(this.getParams().doc_type){
-            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 0);
+            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 'tab-0');
         }
         else{
             Actions.loadPrevious();
         }
-       /* window.addEventListener('onResize', function(){
-            //TODO, debouce, measure width, hide,
-        });*/
     },
     onState: function(state){
         this.setState(state);
@@ -174,7 +124,7 @@ module.exports = React.createClass({
             };
             title = 'Search: '+this.state.search_query
         }
-        Actions.newPage({query: query, title: title}, 0);
+        Actions.newPage({query: query, title: title}, 'tab-0');
     },
     handleArticleChange: function(value){
         var self = this;
@@ -205,10 +155,10 @@ module.exports = React.createClass({
     toggleAdvanced: function(){
         var active = this.getActive();
         if(this.active && this.active.query.search){
-            Actions.toggleAdvanced(0, this.state.views[0].active_page_id);
+            Actions.toggleAdvanced('tab-0', this.state.views['tab-0'].active_page_id);
         }
         else{
-             Actions.newAdvancedPage({title: 'Advanced Search', query: {search: true}}, 0)
+             Actions.newAdvancedPage({title: 'Advanced Search', query: {search: true}}, 'tab-0')
         }
     },
     toggleState: function(state){
@@ -220,7 +170,7 @@ module.exports = React.createClass({
         return !!this.state.document_id && this.state.find === 'full';
     },
     getActive: function(){
-        var id = this.state.views.getIn([0 ,'active_page_id'])
+        var id = this.state.views.getIn(['tab-0', ,'active_page_id'])
         if(id){
             return this.state.pages.find(function(p){
                 return p.get('id') === id;
@@ -235,19 +185,25 @@ module.exports = React.createClass({
     },
     renderBody: function(){
         var active = this.getActive();
-        if(this.state.browser.get('split_mode') ){
+        if(this.state.browser.get('print_mode') ){
+            return <div className="split print">
+                <TabView pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'}/>
+                </div>
+        }
+        else if(this.state.browser.get('split_mode') ){
             return <div className="split">
-                <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0} key={0}/>
-                <PageSet pages={this.state.pages} view={this.state.views.get(1)} viewer_id={1} key={1}/>
+                <TabView pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView  pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'}/>
                 </div>
         }
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
-                <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0} key={0}/>
-                <ArticleSideBar article={active} viewer_id={0} />
+                <TabView  pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <ArticleSideBar article={active} viewer_id={'tab-0'} />
                 </div>
         }
-        return  <PageSet pages={this.state.pages} view={this.state.views.get(0)} viewer_id={0}/>
+        return  <TabView pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
 
     },
     renderForm: function(){
@@ -281,6 +237,7 @@ module.exports = React.createClass({
                 </form>
     },
     render: function(){
+        console.log('render')
        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
         if(this.state.browser.get('underlines') ){
@@ -305,9 +262,9 @@ module.exports = React.createClass({
                 <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
                 <a><Glyphicon glyph="text-color" onClick={Actions.toggleUnderlines} title="Underlines"/></a>
                 <a><Glyphicon glyph="object-align-top" onClick={Actions.toggleSplitMode} title="Columns"/></a>
+                <a><Glyphicon glyph="print" onClick={Actions.togglePrintMode} title="Print"/></a>
                 <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
                 <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
-                <a><Glyphicon glyph="print" onClick={Actions.togglePrintMode} title="Print"/></a>
                 <a><Glyphicon glyph="star" /></a>
                 <a><Glyphicon glyph="trash"  onClick={this.reset} title="Reset"/></a>
             </div>

@@ -8,56 +8,76 @@ var ArticleSummary = require('./ArticleSummary.jsx');
 var $ = require('jquery');
 
 var PopoverBehaviour = {
-
-        needFetch: function(){
-            return !this.getLocalContent() && this.props.fetch
-        },
-         renderFooter: function(){
-            if(this.props.type !== 'definition'){
-                return <div className="popover-footer">
-                        <div className="row">
-                            { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
-                            <Button bsSize="small" onClick={this.open}>Open In New Tab</Button >
-                        </div>
+    needFetch: function(){
+        return !this.getLocalContent() && this.props.fetch
+    },
+    renderFooter: function(){
+        if(this.props.type !== 'definition'){
+            return <div className="popover-footer">
+                    <div className="row">
+                        { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
+                        { this.props.format === 'preview' ?
+                            <Button bsSize="small" onClick={this.open}>Open Full Article New Tab</Button > :
+                            <Button bsSize="small" onClick={this.open}>Open In New Tab</Button > }
+                        { this.props.format === 'fragment' ?
+                            <Button bsSize="small" onClick={this.addToPrint}>Add To Print</Button > :
+                            null }
                     </div>
-            }
-        },
-        getLocalContent: function(){
-            return false;
-            if (this.props.target && $('#' + this.props.target)[0]) {
-                return true;
-            }
-        },
-        renderBody: function(){
-            var html;
-            if(this.props.summary){
-                return <ArticleSummary summary={this.props.attributes} />
-            }
-            if (this.getLocalContent()) {
-                html = $('#' + this.props.target)[0].outerHTML;
-            }
-            else if(this.props.html){
-                html = this.props.html;
-            }
-            else if(this.props.html_content){
-                html = this.props.html_content;
-            }
-            if(html){
-                return <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
-            }
-        },
-        scrollTo: function() {
-             Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
-        },
-        open: function(){
-            Actions.newPage({
-                title: this.props.title,
-                query: {
-                    doc_type: 'instrument',
-                    id: this.props.target
-                },
-            }, this.props.viewer_id)
+                </div>
+        }else{
+            return <div className="popover-footer">
+                    <div className="row">
+                        <Button bsSize="small" onClick={this.addToPrint}>Add To Print</Button >
+                    </div>
+                </div>
         }
+    },
+    getLocalContent: function(){
+        return false;
+        /*if (this.props.target && $('#' + this.props.target)[0]) {
+            return true;
+        }*/
+    },
+    renderBody: function(){
+        var html;
+        if(this.props.summary){
+            return <ArticleSummary summary={this.props.attributes} />
+        }
+        if (this.getLocalContent()) {
+            html = $('#' + this.props.target)[0].outerHTML;
+        }
+        else if(this.props.html){
+            html = this.props.html;
+        }
+        else if(this.props.html_content){
+            html = this.props.html_content;
+        }
+        if(html){
+            return <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
+        }
+        else{
+            return <div className='csspinner traditional'  />
+        }
+    },
+    addToPrint: function(){
+        Actions.addToPrint({
+            type: this.props.type,
+            query_string: this.props.url,
+            query: this.props.query,
+            html: this.props.html
+        });
+        Actions.activatePrintMode();
+    },
+    scrollTo: function() {
+         Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
+    },
+    open: function(){
+        //debugger
+        Actions.newPage({
+            title: this.props.title,
+            query: this.props.query
+        }, this.props.viewer_id)
+    }
 }
 
 

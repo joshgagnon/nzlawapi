@@ -13,7 +13,10 @@ module.exports = Reflux.createActions([
 	'getMorePage',
 	'showPage',
 
-	'articleName',
+	'addToPrint',
+	'fetchPrint',
+	'removeFromPrint',
+
 	'articlePosition',
 	'articleJumpTo',
 
@@ -43,6 +46,7 @@ module.exports = Reflux.createActions([
 	'toggleUnderlines',
 	'toggleSplitMode',
 	'togglePrintMode',
+	'activatePrintMode',
 
 	'setState',
 	'saveState',

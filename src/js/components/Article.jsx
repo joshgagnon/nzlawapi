@@ -12,7 +12,8 @@ var Popover = require('./Popover.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
 var ArticleOverlay= require('./ArticleOverlay.jsx');
 var MQ = require('react-responsive');
-
+var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
+var ArticleError = require('./Warnings.jsx').ArticleError;
 
 
 var ArticleJumpStore = Reflux.createStore({
@@ -326,23 +327,6 @@ var MobilePopovers = React.createClass({
         return <div/>
     }
 });
-
-
-
-
-var NotLatestVersion = React.createClass({
-    render: function(){
-        return <div className="alert alert-danger" role="alert"><strong>Warning</strong> This is not the latest reprint.</div>
-    }
-});
-
-var ArticleError = React.createClass({
-    render: function(){
-        return <div className="alert alert-danger" role="alert"><strong>Error</strong> {this.props.error}</div>
-    }
-});
-
-
 
 
  module.exports = React.createClass({

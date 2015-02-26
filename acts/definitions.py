@@ -142,7 +142,7 @@ def infer_life_time(node):
             pass
         text = parent.xpath('.//text()')[0].strip().lower()
         if text.startswith('in this act') or text.startswith('in these regulations'):
-            return get_id(parent.iterancestors('act', 'regulation').next())
+            return get_id(parent.iterancestors('act', 'regulation', 'bill', 'sop').next())
         if text.startswith('in this part'):
             return get_id(parent.iterancestors('part').next())
         if text.startswith('in this subpart'):
@@ -166,8 +166,8 @@ def infer_life_time(node):
         print 'infer life error', e
     except StopIteration:
         # couldn't find safe parent
-        return str(uuid.uuid4())
-    return get_id(parent.iterancestors('act', 'regulation').next())
+        pass
+    return get_id(parent.iterancestors('act', 'regulation', 'sop', 'bill').next())
 
 
 
@@ -203,7 +203,6 @@ def find_all_definitions(tree, definitions, expire=True):
 
                 base = lmtzr.lemmatize(text.lower())
                 expiry_tag = infer_life_time(parent) if expire else None
-
                 definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
                                 id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
         except StopIteration:

@@ -357,8 +357,9 @@ def instrument_more(instrument, parts):
 
 def query_instrument(args):
     find = args.get('find')
-    if args.get('id'):
-        id = args.get('id')
+    govt_location = args.get('govt_location')
+    if args.get('id', args.get('document_id')):
+        id = args.get('id', args.get('document_id'))
         if id.startswith('DLM'):
             govt_id = id
             id = find_document_id_by_govt_id(id)

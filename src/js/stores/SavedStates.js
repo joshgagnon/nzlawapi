@@ -6,6 +6,7 @@ var Actions = require('../actions/Actions');
 var PageStore = require('./PageStore');
 var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
+var PrintStore = require('./PrintStore');
 var Immutable = require('Immutable');
 
 module.exports = Reflux.createStore({
@@ -14,6 +15,7 @@ module.exports = Reflux.createStore({
         this.listenTo(PageStore, this.updatePages);
         this.listenTo(ViewerStore, this.updateViews);
         this.listenTo(BrowserStore, this.updateBrowser);
+        this.listenTo(PrintStore, this.updatePrint);
         this.listenTo(Actions.saveState, this.save);
         this.listenTo(Actions.loadState, this.load);
         this.listenTo(Actions.fetchSavedStates, this.onFetchSavedStates);
@@ -25,7 +27,7 @@ module.exports = Reflux.createStore({
         this.pages = [];
         this.views = {};
         this.browser = {};
-        this.saveCurrent = _.debounce(this.saveCurrent, 1000);
+        this.saveCurrent = _.debounce(this.saveCurrent, 3000);
         if(localStorage['API_VERSION'] !== window.API_VERSION){
             delete localStorage['current_view'];
             delete localStorage['saved_views'];
@@ -44,23 +46,32 @@ module.exports = Reflux.createStore({
         this.browser = browser.browser.toJS()
         this.saveCurrent();
     },
+    updatePrint: function(print){
+        this.print = print.print.toJS();
+        this.saveCurrent();
+    },
     prepState: function(){
         function pickPage(page){
             return !page.content || (page.content && !page.content.error);
         }
         function prepPage(page){
-            var obj = _.pick(page, 'title', 'query');
+            var obj = _.pick(page, 'title', 'query', 'id');
             obj.popovers = {}
            _.each(page.popovers || [] ,function(v, k){
                 return obj.popovers[k] = _.pick(v, 'type', 'title', 'url', 'source_sel', 'id');
             });
             return obj;
         }
-        function prepView(view){
-            return _.omit(view, 'section_summaries');
+        function prepPrint(print){
+            return _.pick(print, 'query_string', 'query', 'id', 'type');
         }
-
-        return {views: this.views.map(prepView), pages: (_.filter(this.pages||[], pickPage)).map(prepPage), browser: this.browser};
+        _.forOwn(this.views, function(v, k){
+            delete this.views[k]['section_summaries'];
+        }, this)
+        return {views: this.views,
+            pages: _.map(_.filter(this.pages||[], pickPage), prepPage),
+            browser: this.browser,
+            print: _.map(this.print, prepPrint)};
     },
     saveCurrent: function() {
         localStorage['current_view'] = JSON.stringify(this.prepState());

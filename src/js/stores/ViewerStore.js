@@ -2,7 +2,8 @@
 
 var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
-var PageStore = require('../stores/PageStore');
+var PageStore = require('./PageStore');
+var PrintStore = require('./PrintStore');
 var _ = require('lodash');
 var Immutable = require('immutable');
 
@@ -10,35 +11,46 @@ module.exports =  Reflux.createStore({
     listenables: Actions,
     init: function(){
         this.listenTo(PageStore, this.pageUpdate);
+        this.listenTo(PrintStore, this.printUpdate);
         this.views = this.getDefaultData();
     },
     getDefaultData: function(){
-        return Immutable.fromJS([this.getDefault(), this.getDefault()]);
+        return Immutable.fromJS({'tab-0': this.getDefault(), 'tab-1': this.getDefault(), 'print': []});
     },
     getInitialState: function(){
         return {views: this.views};
     },
     onSetState: function(data){
-        var views = this.getDefaultData();
+        var views = this.getDefaultData().toJS();
         if(data.get('views')){
-            views = data.get('views').map(function(v){
-                return Immutable.fromJS(_.defaults(v.toJS(), this.getDefault()));
-            }, this);
+            data.get('views');
+            _.forOwn(data.get('views').toJS(), function(v, k){
+                views[k] = _.defaults(v, this.getDefault())
+            }, this)
         }
-        this.views = views;
+        this.views = Immutable.fromJS(views);
         this.trigger({views: this.views});
     },
     pageUpdate: function(state){
         // if the active page is removed, we must change active
         var ids = state.pages.map(function(p){ return p.get('id')});
         if(ids.size){
-            for(var i=0;i<this.views.size; i++){
-                if(!ids.contains(this.views.getIn([i, 'active_page_id']))){
-                    this.views = this.views.setIn([i, 'active_page_id'],  ids.last());
+            for(var i=0;i<this.views.keys(); i++){
+                var k = this.views.keys()[i];
+                if(!ids.contains(this.views.getIn([k, 'active_page_id']))){
+                    this.views = this.views.setIn([k, 'active_page_id'],  ids.last());
                 }
             }
         }
         this.trigger({views: this.views});
+    },
+    printUpdate: function(state){
+        var ids = state.print.map(function(p){ return p.get('id');});
+        var new_ids = Immutable.List(_.difference(ids.toJS(), this.views.get('print').toJS()));
+        if(new_ids.size){
+            this.views = this.views.set('print',  this.views.get('print').concat(new_ids));
+            this.trigger({views: this.views});
+        }
     },
     getDefault: function(){
         return {active_page_id: undefined, settings: {}, popovers: {},section_summaries:{}}
