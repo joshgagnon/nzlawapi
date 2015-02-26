@@ -2,6 +2,48 @@ var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react/addons');
 var Actions = require('../actions/Actions');
+var Glyphicon= require('react-bootstrap/lib/Glyphicon');
+
+var PrintSegment = React.createClass({
+    printOverLay: function(){
+        return <div className="btn-group">
+            <a onClick={this.moveUp}><Glyphicon glyph="chevron-up" title="Move Up"/></a>
+            <a onClick={this.moveDown}><Glyphicon glyph="chevron-down" title="Move Down"/></a>
+            <a onClick={this.close}><Glyphicon glyph="remove" title="Remove"/></a>
+        </div>
+    },
+    render: function(k){
+        if(this.props.seg && this.props.seg.get('html')){
+            return <div className="print-section">
+                        { this.printOverLay() }
+                        <div dangerouslySetInnerHTML={{__html: this.props.seg.get('html')}}/>
+                    </div>
+        }
+        else{
+            return <div className="csspinner traditional"></div>
+        }
+    },
+    componentDidMount: function(){
+        this.fetch();
+    },
+    componentDidUpdate:function(){
+        this.fetch();
+    },
+    fetch: function(){
+        if(this.props.seg && !this.props.seg.get('fetched')){
+            Actions.fetchPrint(this.props.seg.get('id'));
+        }
+    },
+    moveUp: function(){
+        Actions.printMovePosition(this.props.seg.get('id'), this.props.index-1);
+    },
+    moveDown: function(){
+        Actions.printMovePosition(this.props.seg.get('id'), this.props.index+1);
+    },
+    close: function(){
+        Actions.removeFromPrint(this.props.seg.get('id'))
+    }
+});
 
 
 module.exports = React.createClass({
@@ -13,35 +55,11 @@ module.exports = React.createClass({
             return p.get('id') === k;
         });
     },
-    renderPrint: function(k, i){
-        var print = this.getPrint(k);
-        if(print && print.get('html')){
-            return <div key={i} className="print-section">
-                        <div dangerouslySetInnerHTML={{__html: print.get('html')}}/>
-                        </div>
-        }
-        else{
-            return <div key={i} className="csspinner traditional"></div>
-        }
-    },
-    componentDidMount: function(){
-        this.fetch();
-    },
-    componentDidUpdate: function(){
-        this.fetch();
-    },
-    fetch: function(){
-        this.props.print.map(function(p){
-            if(!p.get('fetched')){
-                Actions.fetchPrint(p.get('id'));
-            }
-        });
-    },
     render: function(){
         return  <div className="print-container legislation-result">
             <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
                 { this.props.view.map(function(k, i){
-                    return this.renderPrint(k, i);
+                    return <PrintSegment seg={this.getPrint(k)} key={i} index={i}/>
                 }, this).toJS()}
             </div>
     }

@@ -35,7 +35,7 @@ module.exports = Reflux.createStore({
 		return this.print.find(function(p){ return p.get('id') === id;});
 	},
     getIndex: function(id){
-        return this.print.indexOf(this.getById(id))
+        return this.print.findIndex(function(p){ return p.get('id') === id;});
     },
 	onAddToPrint: function(data){
 		data.id = 'print-'+this.counter++;
@@ -63,6 +63,13 @@ module.exports = Reflux.createStore({
 		}
 	},
 	onRemoveFromPrint: function(print_id){
+		this.print = this.print.remove([this.getIndex(print_id)]);
+		this.update();
+	},
+	onPrintMovePosition: function(print_id, pos){
+		var i = this.getIndex(print_id);
+		var array = this.print.toJS();
 
 	}
+
 });

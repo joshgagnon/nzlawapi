@@ -259,12 +259,12 @@ module.exports = React.createClass({
                 </nav>
                 </div>
             <div className="buttonbar-wrapper">
-                <a><Glyphicon glyph="search" onClick={this.toggleAdvanced} title="Advanced Search"/></a>
-                <a><Glyphicon glyph="text-color" onClick={Actions.toggleUnderlines} title="Underlines"/></a>
-                <a><Glyphicon glyph="object-align-top" onClick={Actions.toggleSplitMode} title="Columns"/></a>
-                <a><Glyphicon glyph="print" onClick={Actions.togglePrintMode} title="Print"/></a>
-                <a><Glyphicon glyph="floppy-open" onClick={this.toggleState.bind(this, 'load_dialog')} title="Open"/></a>
-                <a><Glyphicon glyph="floppy-save" onClick={this.toggleState.bind(this, 'save_dialog')} title="Save"/></a>
+                <a onClick={this.toggleAdvanced}><Glyphicon glyph="search" title="Advanced Search"/></a>
+                <a onClick={Actions.toggleUnderlines}><Glyphicon glyph="text-color" title="Underlines"/></a>
+                <a onClick={Actions.toggleSplitMode}><Glyphicon glyph="object-align-top" title="Columns"/></a>
+                <a onClick={Actions.togglePrintMode}><Glyphicon glyph="print" title="Print"/></a>
+                <a onClick={this.toggleState.bind(this, 'load_dialog')}><Glyphicon glyph="floppy-open" title="Open"/></a>
+                <a onClick={this.toggleState.bind(this, 'save_dialog')}><Glyphicon glyph="floppy-save" title="Save"/></a>
                 <a><Glyphicon glyph="star" /></a>
                 <a><Glyphicon glyph="trash"  onClick={this.reset} title="Reset"/></a>
             </div>

@@ -7,7 +7,7 @@ var PageStore = require('./PageStore');
 var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
-var Immutable = require('Immutable');
+var Immutable = require('immutable');
 
 module.exports = Reflux.createStore({
 

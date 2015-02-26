@@ -4,7 +4,7 @@ var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
-var Immutable = require('Immutable');
+var Immutable = require('immutable');
 
 
 module.exports = Reflux.createStore({

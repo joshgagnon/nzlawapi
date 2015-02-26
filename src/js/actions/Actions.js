@@ -16,6 +16,7 @@ module.exports = Reflux.createActions([
 	'addToPrint',
 	'fetchPrint',
 	'removeFromPrint',
+	'printMovePosition',
 
 	'articlePosition',
 	'articleJumpTo',

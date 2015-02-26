@@ -58,6 +58,7 @@ module.exports = React.createClass({
                 find: 'location'
             }
         });
+        this.close();
         Actions.activatePrintMode();
     },
     render: function(){
