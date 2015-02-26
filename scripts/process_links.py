@@ -54,7 +54,7 @@ def run(db, config):
             count += 1
             tree = etree.fromstring(document[0][0])
             source_id = document[0][1]
-            links = map(lambda x: {'id': x.attrib['href'], 'path': generate_path_string(x)}, tree.xpath('.//extref[@href]'))
+            links = map(lambda x: {'id': x.attrib['href'], 'path': generate_path_string(x)}, tree.xpath('.//extref[@href]|.//intref[@href]'))
             counters = defaultdict(int)
             for link in links:
                 if link['id'] in id_lookup:

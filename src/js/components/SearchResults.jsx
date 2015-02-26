@@ -44,7 +44,10 @@ module.exports = React.createClass({
             }
         }, 100);
         $(this.getScrollContainer()).on('scroll', this.debounce_scroll);
-       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
+        if(this.props.page.get('advanced') ){
+
+        }
+        else if(this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
 
         }
@@ -59,7 +62,7 @@ module.exports = React.createClass({
         return this.props.page.get('content') !== newProps.page.get('content');
     },
     render: function(){
-        if(!this.props.page.get('content')){
+        if(this.props.page.get('fetching')){
             return <div className="search-results"><div className="csspinner traditional" /></div>
         }
         else if(this.props.page.getIn(['content', 'search_results'])){

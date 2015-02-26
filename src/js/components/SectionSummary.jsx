@@ -18,9 +18,28 @@ module.exports = React.createClass({
     },
     renderBody: function(data){
         if(data.get('section_references') && data.get('section_references').size){
-            return <div>This section has been referenced by {data.get('section_references').map(function(ref, i){
-                return <li key={i} onClick={this.openLink.bind(this, '/'+ref.get('url'), ref.get('repr'))}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
-            }, this).toJS()}</div>
+            var data = this.getLast();
+            var doc_id = data.getIn(['query', 'document_id'])
+            var external = data.get('section_references').filter(function(ref){
+                return ref !== doc_id;
+            });
+            var internal= data.get('section_references').filter(function(ref){
+                return ref === doc_id;
+            });
+            return <div>
+                <span>This section has been externally referenced by </span>
+                <ul>
+                    {external.map(function(ref, i){
+                        return <li key={i} onClick={this.openLink.bind(this, '/'+ref.get('url'), ref.get('repr'))}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
+                    }, this).toJS()}
+                </ul>
+                <span>This section has been referenced internally by </span>
+                <ul>
+                    {internal.map(function(ref, i){
+                        return <li key={i} onClick={this.openLink.bind(this, '/'+ref.get('url'), ref.get('repr'))}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
+                    }, this).toJS()}
+                </ul>
+                </div>
         }else if(data.get('fetching')){
             return <div className="csspinner traditional"/>
         }

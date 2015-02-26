@@ -6,6 +6,7 @@ var SearchResults = require('./SearchResults.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
+var AdvancedSearch = require('./AdvancedSearch.jsx');
 
 
 module.exports = React.createClass({
@@ -29,10 +30,11 @@ module.exports = React.createClass({
                 <TabbedArea activeKey={this.props.view.get('active_page_id')}
                 onSelect={this.handleTab}
                 onClose={this.closeTab} viewer_id={this.props.viewer_id} >
+
                 { this.props.pages.map(function(page){
                         return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('title')} >
-                                { this.props.view.getIn(['settings', 'page.id', 'advanced_search']) ? <AdvancedSearch /> : null }
+                                { this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ? <AdvancedSearch /> : null }
                                 { this.renderPage(page) }
                             </TabPane> : null
                       }, this).toJS() //can remove in react 0.13
@@ -47,7 +49,7 @@ module.exports = React.createClass({
 
         else if(this.props.pages.count() === 1){
             return <div className="results-container"><div className="results-scroll">
-             { this.props.view.getIn(['settings', this.props.pages.getIn([0, 'id', 'advanced_search'])]) ? <AdvancedSearch /> : null }
+             { this.props.view.getIn(['settings', this.props.pages.get(0).get('id'), 'advanced_search']) ? <AdvancedSearch /> : null }
             {  this.renderPage(this.props.pages.get(0)) }
                 </div></div>
         }

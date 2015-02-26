@@ -297,7 +297,10 @@ module.exports = React.createClass({
     search: function(){
         var title = 'Advanced Search';
         var query = _.extend({search: 'advanced'}, _.pick(this.getValue(), _.identity));
-        Actions.newPage({query: query, title: title});
+        //SHOULD UPDATEA PAGE
+        Actions.newPage({
+            query: query, title: title
+        }, this.props.viewer_id);
     },
     render: function(){
         return <div className="advanced-search">

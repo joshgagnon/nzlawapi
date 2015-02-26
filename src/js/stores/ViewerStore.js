@@ -35,12 +35,11 @@ module.exports =  Reflux.createStore({
         // if the active page is removed, we must change active
         var ids = state.pages.map(function(p){ return p.get('id')});
         if(ids.size){
-            for(var i=0;i<this.views.keys(); i++){
-                var k = this.views.keys()[i];
+            this.views.map(function(v, k){
                 if(!ids.contains(this.views.getIn([k, 'active_page_id']))){
                     this.views = this.views.setIn([k, 'active_page_id'],  ids.last());
                 }
-            }
+            }, this);
         }
         this.trigger({views: this.views});
     },
@@ -80,14 +79,17 @@ module.exports =  Reflux.createStore({
     },
     onToggleAdvanced: function(viewer_id, page_id){
         this.prepPage(viewer_id, page_id);
-        this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
-        this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
+        //this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
+        //this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
+
+        this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id ],
+            {advanced_search: !this.views.getIn([viewer_id, 'settings', page_id,'advanced_search'])});
         this.update();
     },
     onShowPage: function(viewer_id, page_id, options){
         this.prepPage(viewer_id, page_id);
-        var settings = _.extend({}, this.views.getIn([viewer_id, 'settings', 'page_id']), options);
-        this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id, settings: settings});
+        this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id});
+        this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id ], options);
         this.update();
     },
     onPopoverOpened: function(viewer_id, page_id, link_data){

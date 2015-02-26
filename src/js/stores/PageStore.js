@@ -53,6 +53,7 @@ var PageStore = Reflux.createStore({
     },
     onNewAdvancedPage: function(page_data, viewer_id){
         var page = this.generatePage(page_data);
+        this.pages = this.pages.push(Immutable.fromJS(page));
         this.update();
         Actions.showPage(viewer_id, page.id, {advanced_search: true});
     },
@@ -100,7 +101,7 @@ var PageStore = Reflux.createStore({
     },
     onGetMorePage: function(page_id, to_add){
         var page = this.getById(page_id);
-        if(!page.get('finished') && page.getIn(['query', 'search']) && page.getIn(['content', 'search_results', 'hits']).size){
+        if(!page.get('finished') && page.getIn(['query', 'search']) && page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
             $.get('/query', _.extend({offset: page.getIn(['content', 'search_results', 'hits']).size}, page.get('query').toJS()))
                 .then(function(data){
                     var page = this.getById(page_id);

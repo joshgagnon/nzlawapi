@@ -53,7 +53,7 @@ var DialogStore = Reflux.createStore({
 
 var UndoMixin = {
     componentDidMount: function(){
-
+        //$(document).
     }
 }
 
@@ -163,11 +163,15 @@ module.exports = React.createClass({
 
     toggleAdvanced: function(){
         var active = this.getActive();
-        if(this.active && this.active.query.search){
-            Actions.toggleAdvanced('tab-0', this.state.views['tab-0'].active_page_id);
+        if(active && active.getIn(['query','search'])){
+            Actions.toggleAdvanced('tab-0', active.get('id'));
         }
         else{
-             Actions.newAdvancedPage({title: 'Advanced Search', query: {search: true}}, 'tab-0')
+             Actions.newAdvancedPage(
+                {title: 'Advanced Search',
+                query: {search: true},
+                advanced_search: true
+            }, 'tab-0')
         }
     },
     toggleState: function(state){
@@ -179,7 +183,7 @@ module.exports = React.createClass({
         return !!this.state.document_id && this.state.find === 'full';
     },
     getActive: function(){
-        var id = this.state.views.getIn(['tab-0', ,'active_page_id'])
+        var id = this.state.views.getIn(['tab-0' ,'active_page_id'])
         if(id){
             return this.state.pages.find(function(p){
                 return p.get('id') === id;
