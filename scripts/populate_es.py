@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch, exceptions
 import psycopg2
-from psycopg2 import extras
+from psycopg2 import extras, errorcodes
 from lxml import etree
 from lxml.html import HTMLParser
 import importlib
@@ -66,7 +66,9 @@ def run(db, config):
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute("""SELECT id, title, document, type, subtype, number, date_terminated, date_imprint, date_signed, raised_by, stage, imperial, official, instructing_office, date_first_valid, date_as_at, date_assent,
+        cur.execute("""SELECT id, title, document, type, subtype, number, date_terminated,
+            date_imprint, date_signed, raised_by, stage, imperial,
+            official, instructing_office, date_first_valid, date_as_at, date_assent,
             date_gazetted, date_imprint, year, repealed FROM latest_instruments""")
         results = cur.fetchmany(10)
         count = 0
@@ -102,8 +104,6 @@ def run(db, config):
                 result['matter'] = json.loads(result['matter'] or '{}')
                 result['appeal_result'] = json.loads(result['appeal_result'] or '{}')
                 es.index(index='legislation', doc_type='case', body=result, id=result['id'])
-
-
             results = cur.fetchmany(10)
 
     es.indices.refresh(index="legislation")
@@ -122,3 +122,7 @@ if __name__ == "__main__":
         run(db, config)
     except exceptions.ConnectionError:
         print 'Please start Elasticsearch'
+    except Exception, e:
+        print psycopg2.errorcodes.lookup(e.pgcode[:2])
+        print psycopg2.errorcodes.lookup(e.pgcode)
+        print e

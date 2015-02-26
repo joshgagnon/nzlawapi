@@ -82,7 +82,6 @@ module.exports = React.createClass({
         else{
             Actions.loadPrevious();
         }
-
         this.__state = {};
         this.aggSetState = _.debounce(function(){
             this.setState(this.__state);
