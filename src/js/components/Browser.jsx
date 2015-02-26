@@ -82,9 +82,16 @@ module.exports = React.createClass({
         else{
             Actions.loadPrevious();
         }
+
+        this.__state = {};
+        this.aggSetState = _.debounce(function(){
+            this.setState(this.__state);
+            this.__state = {};
+        }.bind(this), 0)
     },
     onState: function(state){
-        this.setState(state);
+        this.__state = _.extend(this.__state, state);
+        this.aggSetState();
     },
     submit: function(e){
         e.preventDefault();
@@ -94,9 +101,6 @@ module.exports = React.createClass({
         if(!this.state.search_query){
             return;
         }
-        this.setState({
-            loading: true
-        });
         var query;
         var title;
         if(this.showLocation()){
@@ -265,8 +269,8 @@ module.exports = React.createClass({
                 <a onClick={Actions.togglePrintMode}><Glyphicon glyph="print" title="Print"/></a>
                 <a onClick={this.toggleState.bind(this, 'load_dialog')}><Glyphicon glyph="floppy-open" title="Open"/></a>
                 <a onClick={this.toggleState.bind(this, 'save_dialog')}><Glyphicon glyph="floppy-save" title="Save"/></a>
-                <a><Glyphicon glyph="star" /></a>
-                <a><Glyphicon glyph="trash"  onClick={this.reset} title="Reset"/></a>
+                <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
+                {/* <a><Glyphicon glyph="star" /></a> */}
             </div>
             { this.state.pages.count() ? this.renderBody() : null}
         </div>);
