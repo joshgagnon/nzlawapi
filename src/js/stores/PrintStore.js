@@ -65,11 +65,6 @@ module.exports = Reflux.createStore({
 	onRemoveFromPrint: function(print_id){
 		this.print = this.print.remove([this.getIndex(print_id)]);
 		this.update();
-	},
-	onPrintMovePosition: function(print_id, pos){
-		var i = this.getIndex(print_id);
-		var array = this.print.toJS();
-
 	}
 
 });

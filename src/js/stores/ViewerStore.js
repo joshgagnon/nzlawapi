@@ -45,12 +45,21 @@ module.exports =  Reflux.createStore({
         this.trigger({views: this.views});
     },
     printUpdate: function(state){
-        var ids = state.print.map(function(p){ return p.get('id');});
-        var new_ids = Immutable.List(_.difference(ids.toJS(), this.views.get('print').toJS()));
+        var ids = state.print.map(function(p){ return p.get('id');}).toJS();
+        var new_ids = Immutable.List(_.difference(ids, this.views.get('print').toJS()));
         if(new_ids.size){
             this.views = this.views.set('print',  this.views.get('print').concat(new_ids));
-            this.trigger({views: this.views});
         }
+        this.views = this.views.set('print', Immutable.List(_.intersection(this.views.get('print').toJS(), ids)));
+        this.trigger({views: this.views});
+    },
+    onPrintMovePosition: function(print_id, pos){
+        var i = this.views.get('print').indexOf(print_id);
+        var array = this.views.get('print').toJS();
+        pos = (pos + array.length)  % array.length;
+        array.splice(pos, 0, array.splice(i, 1)[0])
+        this.views = this.views.set('print', Immutable.List(array));
+        this.trigger({views: this.views});
     },
     getDefault: function(){
         return {active_page_id: undefined, settings: {}, popovers: {},section_summaries:{}}
@@ -69,7 +78,6 @@ module.exports =  Reflux.createStore({
             this.views = this.views.mergeDeepIn([viewer_id, 'section_summaries', page_id], {});
         }
     },
-
     onToggleAdvanced: function(viewer_id, page_id){
         this.prepPage(viewer_id, page_id);
         this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
