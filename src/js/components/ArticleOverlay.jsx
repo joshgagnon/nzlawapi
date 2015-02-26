@@ -47,12 +47,22 @@ var ArticleAddPrintButton = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     handleClick: function(){
-
+        Actions.addToPrint({
+            title: this.props.content.get('title'),
+            query: {doc_type:
+            this.props.content.get('doc_type'),
+            find: 'full',
+            id: this.props.content.get('document_id')},
+            html: this.props.content.get('html_content')
+        });
+        Actions.activatePrintMode();
     },
     render: function(){
         return   <button onClick={this.handleClick} className="btn btn-info">Add To Print</button>
     }
 });
+
+
 
 var ArticleOverlay= React.createClass({
     propTypes: {

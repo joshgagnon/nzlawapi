@@ -51,6 +51,11 @@ var DialogStore = Reflux.createStore({
     },
 });
 
+var UndoMixin = {
+    componentDidMount: function(){
+
+    }
+}
 
 module.exports = React.createClass({
     mixins: [
@@ -60,7 +65,8 @@ module.exports = React.createClass({
         Reflux.listenTo(BrowserStore, 'onState'),
         Reflux.listenTo(PrintStore, 'onState'),
         React.addons.LinkedStateMixin,
-        ReactRouter.State
+        ReactRouter.State,
+        UndoMixin
     ],
     getInitialState: function(){
         return {

@@ -24,10 +24,12 @@ module.exports = Reflux.createStore({
         this.listenTo(Actions.removeSaveFolder, this.onRemoveSaveFolder);
         this.listenTo(Actions.renameSavedState, this.onRenameSavedState);
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
-        this.pages = [];
-        this.views = {};
-        this.browser = {};
-        this.saveCurrent = _.debounce(this.saveCurrent, 3000);
+        this.pages = Immutable.List();
+        this.print = Immutable.List();
+        this.views = Immutable.Map();
+        this.browser = Immutable.Map();
+        this.history = [];
+        this.saveCurrentDebounce = _.debounce(this.saveCurrent, 3000);
         if(localStorage['API_VERSION'] !== window.API_VERSION){
             delete localStorage['current_view'];
             delete localStorage['saved_views'];
@@ -35,20 +37,26 @@ module.exports = Reflux.createStore({
         }
     },
     updatePages: function(pages){
-        this.pages = pages.pages.toJS();
-        this.saveCurrent();
+        if(this.pages !== pages.pages){
+            this.pages = pages.pages;
+            this.saveCurrentDebounce();
+        }
     },
     updateViews: function(views){
-        this.views = views.views.toJS();
-        this.saveCurrent();
+        if(this.views !== views.views){
+            this.views = views.views;
+            this.saveCurrentDebounce();
+        }
     },
     updateBrowser: function(browser){
-        this.browser = browser.browser.toJS()
-        this.saveCurrent();
+        if(this.browser !== browser.browser){
+            this.browser = browser.browser;
+            this.saveCurrentDebounce();
+        }
     },
     updatePrint: function(print){
-        this.print = print.print.toJS();
-        this.saveCurrent();
+        this.print = print.print;
+        this.saveCurrentDebounce();
     },
     prepState: function(){
         function pickPage(page){
@@ -65,13 +73,14 @@ module.exports = Reflux.createStore({
         function prepPrint(print){
             return _.pick(print, 'query_string', 'query', 'id', 'type');
         }
-        _.forOwn(this.views, function(v, k){
-            delete this.views[k]['section_summaries'];
+        var views = this.views.toJS();
+        _.forOwn(views, function(v, k){
+            delete views[k]['section_summaries'];
         }, this)
-        return {views: this.views,
-            pages: _.map(_.filter(this.pages||[], pickPage), prepPage),
-            browser: this.browser,
-            print: _.map(this.print, prepPrint)};
+        return {views: views,
+            pages: _.map(_.filter(this.pages.toJS(), pickPage), prepPage),
+            browser: this.browser.toJS(),
+            print: _.map(this.print.toJS(), prepPrint)};
     },
     saveCurrent: function() {
         localStorage['current_view'] = JSON.stringify(this.prepState());
