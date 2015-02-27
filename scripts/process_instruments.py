@@ -8,21 +8,9 @@ import os
 
 def run(db, config):
 
-    with db.cursor() as cur:
+    _, defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
 
-        query = """select id, title from latest_instruments """ #where processed_document is null """
-        cur.execute(query)
-
-        results = cur.fetchall()
-        for  i, r in enumerate(results):
-            print '%d/%d' % (i, len(results))
-            acts.get_instrument_object(id=r[0], replace=True, db=db)
-
-    db.close()
-
-    _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
-
-    with db.cursor() as cur:
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """select id, title from latest_instruments where processed_document is null """
         cur.execute(query)
         results = cur.fetchall()
@@ -30,8 +18,8 @@ def run(db, config):
             print '%d/%d' % (i, len(results))
             cur.execute("""SELECT * FROM instruments i
                 JOIN documents d on d.id = i.id
-                where i.id =  %(id)s""", {'id': r[0]})
-            process_instrument(cur.fetchone(), db, definitions.__deepcopy__(), refresh=False)
+                where i.id =  %(id)s""", {'id': r['id']})
+            queries.process_instrument(cur.fetchone(), db, defs.__deepcopy__(), refresh=False)
     db.close()
 
 if __name__ == "__main__":
@@ -43,6 +31,8 @@ if __name__ == "__main__":
     from os import path
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
     from acts import acts
+    from acts import definitions
+    from acts import queries
     db = psycopg2.connect(
             database=config.DB,
             user=config.DB_USER,
