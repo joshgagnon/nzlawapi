@@ -12,6 +12,7 @@ module.exports = Reflux.createActions([
 	'removePage',
 	'getMorePage',
 	'showPage',
+	'showNewPage',
 
 	'addToPrint',
 	'fetchPrint',
@@ -52,5 +53,10 @@ module.exports = Reflux.createActions([
 	'setState',
 	'saveState',
 	'loadState',
-	'loadPrevious'
+	'loadPrevious',
+	'loadedFromStorage',
+
+	'userAction',
+	'goForward',
+	'goBack'
 ]);

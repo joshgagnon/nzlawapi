@@ -53,7 +53,17 @@ var DialogStore = Reflux.createStore({
 
 var UndoMixin = {
     componentDidMount: function(){
-        //$(document).
+        $(document).on('keypress', function(e){
+            if(e.ctrlKey){
+                if(e.keyCode === 26){
+                    Actions.goBack();
+                }
+                if(e.keyCode === 25){
+                    Actions.goForward();
+                }
+
+            }
+        });
     }
 }
 

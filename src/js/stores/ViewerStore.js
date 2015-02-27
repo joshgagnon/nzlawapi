@@ -61,7 +61,7 @@ module.exports =  Reflux.createStore({
         this.trigger({views: this.views});
     },
     getDefault: function(){
-        return {active_page_id: undefined, settings: {}, popovers: {},section_summaries:{}}
+        return {active_page_id: undefined, settings: {}, popovers: {},section_summaries:{}, tabs: []}
     },
     update: function(){
         this.trigger({views: this.views});
@@ -91,6 +91,9 @@ module.exports =  Reflux.createStore({
         this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id});
         this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id ], options);
         this.update();
+    },
+    onShowNewPage: function(){
+        this.onShowPage.apply(this, arguments);
     },
     onPopoverOpened: function(viewer_id, page_id, link_data){
         var self = this;

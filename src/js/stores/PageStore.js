@@ -29,17 +29,23 @@ var PageStore = Reflux.createStore({
             this.pages =  Immutable.fromJS([]);
         }
         this.pages.map(function(p){
-            this.counter = (p.get('id').match(/\d+/)[0]|0) + 1
+            this.counter = (p.get('id').match(/\d+/)[0]|0) + 1;
         }, this);
         this.update();
     },
     generatePage: function(page){
         page = page || {}
-        page.id = 'page-'+this.counter++;
+        page.id = page.id || ('page-'+this.counter++);
         page.popovers = page.popovers || {};
-        page.references = page.references || {};
+        _.map(page.popovers, function(v, k){
+            page.popovers[k] =  _.omit(b, 'fetching');
+        });
         page.section_data = page.section_data || {};
-        page.versions = page.versions || {};
+        _.map(page.section_data, function(v, k){
+            page.section_data[k] =  _.omit(b, 'fetching');
+        });
+        page.references = _.omit(page.references || {}, 'fetching');
+        page.versions = _.omit(page.versions || {}, 'fetching');
         return page;
     },
     onNewPage: function(page_data, viewer_id){
@@ -47,7 +53,7 @@ var PageStore = Reflux.createStore({
         this.pages = this.pages.push(Immutable.fromJS(page));
         Actions.requestPage(page.id);
         if(viewer_id !== undefined){
-            Actions.showPage(viewer_id, page.id);
+            Actions.showNewPage(viewer_id, page.id);
         }
         this.update();
     },
@@ -55,7 +61,7 @@ var PageStore = Reflux.createStore({
         var page = this.generatePage(page_data);
         this.pages = this.pages.push(Immutable.fromJS(page));
         this.update();
-        Actions.showPage(viewer_id, page.id, {advanced_search: true});
+        Actions.showNewPage(viewer_id, page.id, {advanced_search: true});
     },
     getById: function(id){
         return this.pages.find(function(p){

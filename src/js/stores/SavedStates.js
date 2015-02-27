@@ -9,6 +9,70 @@ var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
 var Immutable = require('immutable');
 
+var UserActions = Reflux.createStore({
+    actions: [
+        Actions.newPage,
+        Actions.newAdvancedPage,
+        Actions.showPage,
+        Actions.removePage,
+        Actions.addToPrint,
+        Actions.removeFromPrint,
+        Actions.printMovePosition,
+        Actions.toggleUnderlines,
+        Actions.toggleSplitMode,
+        Actions.togglePrintMode,
+        Actions.loadedFromStorage
+    ],
+    init: function() {
+        this.actions.map(function(a){
+            this.listenTo(a, this.userAction)
+        }, this)
+    },
+    userAction: function(){
+        Actions.userAction();
+    }
+});
+
+
+var HistoryStore = Reflux.createStore({
+
+    init: function() {
+        this.listenTo(PageStore, this.set);
+        this.listenTo(ViewerStore, this.set);
+        this.listenTo(BrowserStore, this.set);
+        this.listenTo(PrintStore, this.set);
+        this.listenTo(Actions.goBack, this.onGoBack);
+        this.listenTo(Actions.goForward, this.onGoForward);
+        this.listenTo(Actions.userAction, this.onUserAction);
+        this.state = Immutable.Map();
+        this.history = [];
+        this.index = -1;
+    },
+    onUserAction: function(){
+        if(this.index < this.history.length-1){
+            this.history = this.history.slice(this.index);
+        }
+        this.history.push(this.state);
+        this.index++;
+    },
+    onGoBack: function(){
+        if(this.index > 0){
+            this.index--;
+            Actions.setState(this.history[this.index]);
+        }
+    },
+    onGoForward: function(){
+        if(this.index < this.history.length-1){
+            this.index++;
+            Actions.setState(this.history[this.index]);
+        }
+    },
+    set: function(state){
+        this.state = this.state.merge(state);
+    }
+});
+
+
 module.exports = Reflux.createStore({
 
     init: function() {
@@ -28,7 +92,6 @@ module.exports = Reflux.createStore({
         this.print = Immutable.List();
         this.views = Immutable.Map();
         this.browser = Immutable.Map();
-        this.history = [];
         this.saveCurrentDebounce = _.debounce(this.saveCurrent, 3000);
         if(localStorage['API_VERSION'] !== window.API_VERSION){
             delete localStorage['current_view'];
@@ -88,6 +151,7 @@ module.exports = Reflux.createStore({
     onLoadPrevious: function() {
         if(localStorage['current_view']){
             Actions.setState(Immutable.fromJS(JSON.parse(localStorage['current_view'])));
+            Actions.loadedFromStorage();
         }
     },
     save: function(path) {
@@ -121,6 +185,7 @@ module.exports = Reflux.createStore({
         var selected = current.value;
         if(selected){
             Actions.setState(Immutable.fromJS(selected));
+            Actions.loadedFromStorage();
         }
     },
     getFolder: function(states, path){
