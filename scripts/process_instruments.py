@@ -11,6 +11,7 @@ def run(db, config):
     _, defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
         query = """select id, title from latest_instruments where processed_document is null """
         cur.execute(query)
         results = cur.fetchall()
@@ -20,6 +21,7 @@ def run(db, config):
                 JOIN documents d on d.id = i.id
                 where i.id =  %(id)s""", {'id': r['id']})
             queries.process_instrument(cur.fetchone(), db, defs.__deepcopy__(), refresh=False)
+        cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     db.close()
 
 if __name__ == "__main__":
