@@ -1,6 +1,4 @@
-
 import psycopg2
-
 import sys
 from psycopg2 import extras
 import importlib

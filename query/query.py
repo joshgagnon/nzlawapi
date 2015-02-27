@@ -1,4 +1,5 @@
-from acts.acts import query_instrument, get_references, get_versions, get_section_references
+from acts.acts import query_instrument
+from acts.queries import get_references, get_versions, get_section_references
 from cases.cases import get_full_case, get_case_info, case_search
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
