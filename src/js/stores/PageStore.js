@@ -37,6 +37,7 @@ var PageStore = Reflux.createStore({
         page = page || {}
         page.id = page.id || ('page-'+this.counter++);
         page.popovers = page.popovers || {};
+        delete page['fetching'];
         _.map(page.popovers, function(v, k){
             page.popovers[k] =  _.omit(v, 'fetching');
         });
@@ -74,7 +75,7 @@ var PageStore = Reflux.createStore({
     onRequestPage: function(page_id){
         //todo, guards in Action pre emit
         var page = this.getById(page_id);
-        if(!page.get('fetching') && !page.get('fetching')){
+        if(!page.get('fetching') && !page.get('fetched')){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
             this.update();
             var get;

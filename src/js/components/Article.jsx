@@ -390,6 +390,9 @@ var MobilePopovers = React.createClass({
        }
     },
     componentDidUpdate: function(){
+       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
+            Actions.requestPage(this.props.page.get('id'))
+       }
        // if loading position popovers
        // TODO, minimize running this
        if(this.props.page.get('content')){
