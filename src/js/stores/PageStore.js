@@ -72,6 +72,10 @@ var PageStore = Reflux.createStore({
     getIndex: function(id){
         return this.pages.indexOf(this.getById(id))
     },
+    replacePage: function(page_id, page){
+         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], _.extend({content: {}, fetching: false, fetched: false}, page));
+         this.update();
+    },
     onRequestPage: function(page_id){
         //todo, guards in Action pre emit
         var page = this.getById(page_id);
@@ -108,7 +112,7 @@ var PageStore = Reflux.createStore({
     },
     onGetMorePage: function(page_id, to_add){
         var page = this.getById(page_id);
-        if(!page.get('finished') && page.getIn(['query', 'search']) && page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
+        if(!page.get('finished') && page.get('page_type') === 'search' && page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
             $.get('/query', _.extend({offset: page.getIn(['content', 'search_results', 'hits']).size}, page.get('query').toJS()))
                 .then(function(data){
                     var page = this.getById(page_id);

@@ -288,19 +288,20 @@ module.exports = React.createClass({
     ],
     getInitialState: function(){
         return {
-            type: 'instruments',
+            doc_type: 'instruments',
         }
     },
     handleType: function(type){
-        this.setState({type: type});
+        this.setState({doc_type: doc_type});
     },
     search: function(){
         var title = 'Advanced Search';
         var query = _.extend({search: 'advanced'}, _.pick(this.getValue(), _.identity));
         //SHOULD UPDATEA PAGE
-        Actions.newPage({
-            query: query, title: title
-        }, this.props.viewer_id);
+        Actions.replacePage(this.props.page_id, {
+            query: query,
+            title: title
+        });
     },
     render: function(){
         return <div className="advanced-search">
@@ -308,12 +309,12 @@ module.exports = React.createClass({
                 <div className="form-group">
                     <label className="control-label col-xs-2"><span>Query Type</span></label>
                     <div className="col-xs-10">
-                        <Input type="radio" label="Legislation" name="type" value="instruments" checked={ this.state.type === 'instruments'} onChange={this.handleType.bind(this, 'instruments')}/>
-                        <Input type="radio" label="Cases" name="type" value="cases" checked={ this.state.type === 'cases'} onChange={this.handleType.bind(this, 'cases')}/>
+                        <Input type="radio" label="Legislation" name="type" value="instruments" checked={ this.state.doc_type === 'instruments'} onChange={this.handleType.bind(this, 'instruments')}/>
+                        <Input type="radio" label="Cases" name="type" value="cases" checked={ this.state.doc_type === 'cases'} onChange={this.handleType.bind(this, 'cases')}/>
                     </div>
                 </div>
                 </form>
-            { this.state.type === 'instruments' ? <InstrumentSearch ref="sub" /> : <CaseSearch ref="sub"/> }
+            { this.state.doc_type === 'instruments' ? <InstrumentSearch ref="sub" /> : <CaseSearch ref="sub"/> }
                 <ButtonToolbar>
                   <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                   <Button bsStyle={'info'}>Filter Current Results</Button>

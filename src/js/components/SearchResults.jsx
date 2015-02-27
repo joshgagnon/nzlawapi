@@ -44,13 +44,15 @@ module.exports = React.createClass({
             }
         }, 100);
         $(this.getScrollContainer()).on('scroll', this.debounce_scroll);
-        if(this.props.page.get('advanced') ){
-
-        }
-        else if(this.props.page.get('fetching') && !this.props.page.get('fetched')){
+        this.fetch();
+    },
+    fetch: function(){
+       if(this.props.page.get('query') && !this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
-
         }
+    },
+    componentDidUpdate: function(){
+        this.fetch();
     },
     componentWillUnmount: function(){
         $(this.getScrollContainer()).off('scroll', this.debounce_scroll);

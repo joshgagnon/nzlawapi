@@ -8,6 +8,7 @@ module.exports = Reflux.createActions([
 	'newPage',
 	'newAdvancedPage',
 	'requestPage',
+	'replacePage',
 
 	'removePage',
 	'getMorePage',

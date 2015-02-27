@@ -53,7 +53,10 @@ def nodes_from_path_string(tree, path):
     if parts:
         parts = parts.groups()
         if parts[0].startswith('sch'):
-            tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
+            if parts[1] == '1':
+                tree = tree.xpath(".//schedule")[0]
+            else:
+                tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
         else:
             tree = tree.xpath(".//body")[0]
             keys.append(parts[1])
@@ -62,7 +65,6 @@ def nodes_from_path_string(tree, path):
     else:
         pattern = re.compile('[\W_]+')
         keys = pattern.sub(' ', path).split()
-
     return find_sub_node(tree, keys)
 
 

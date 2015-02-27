@@ -20,7 +20,7 @@ module.exports = React.createClass({
         return newProps.view.get('active_page_id') && (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
     },
     renderPage: function(page){
-        return page.getIn(['query', 'search']) ?
+        return page.get('page_type') === 'search' ?
                     <SearchResults key={page.get('id')} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
                     <Article key={page.get('id')} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
     },
@@ -33,7 +33,7 @@ module.exports = React.createClass({
                 { this.props.pages.map(function(page){
                         return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('title')} >
-                                { this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ? <AdvancedSearch /> : null }
+                                { this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ? <AdvancedSearch  page_id={page.get('id')} /> : null }
                                 { this.renderPage(page) }
                             </TabPane> : null
                       }, this).toJS() //can remove in react 0.13
@@ -48,7 +48,7 @@ module.exports = React.createClass({
 
         else if(this.props.pages.count() === 1){
             return <div className="results-container"><div className="results-scroll">
-             { this.props.view.getIn(['settings', this.props.pages.get(0).get('id'), 'advanced_search']) ? <AdvancedSearch /> : null }
+             { this.props.view.getIn(['settings', this.props.pages.get(0).get('id'), 'advanced_search']) ? <AdvancedSearch page_id={this.props.pages.get(0).get('id')} /> : null }
             {  this.renderPage(this.props.pages.get(0)) }
                 </div></div>
         }

@@ -118,6 +118,7 @@ module.exports = React.createClass({
         }
         var query;
         var title;
+        var page_type = 'article';
         if(this.showLocation()){
             query = {
                 doc_type: this.state.article_type,
@@ -136,14 +137,14 @@ module.exports = React.createClass({
             title = this.state.search_query
         }
         else{
+            page_type = 'search';
             query = {
                 doc_type: 'all',
-                search: 'basic',
                 query: this.state.search_query
             };
             title = 'Search: '+this.state.search_query
         }
-        Actions.newPage({query: query, title: title}, 'tab-0');
+        Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0');
     },
     handleArticleChange: function(value){
         var self = this;
@@ -173,14 +174,13 @@ module.exports = React.createClass({
 
     toggleAdvanced: function(){
         var active = this.getActive();
-        if(active && active.getIn(['query','search'])){
+        if(active && active.get('page_type') === 'search'){
             Actions.toggleAdvanced('tab-0', active.get('id'));
         }
         else{
              Actions.newAdvancedPage(
                 {title: 'Advanced Search',
-                query: {search: true},
-                advanced_search: true
+                page_type: 'search'
             }, 'tab-0')
         }
     },
@@ -201,7 +201,7 @@ module.exports = React.createClass({
         }
     },
     showSidebar: function(page){
-        if(page && page.get('content') && !page.getIn(['query','search'])){
+        if(page && page.get('content') && page.get('page_type') !== 'search'){
             return true;
         }
         return false;

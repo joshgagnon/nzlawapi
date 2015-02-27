@@ -256,7 +256,7 @@ def query_case_fields(args):
         raise CustomException('There was a problem with your query')
 
 
-def query_act_fields(args):
+def query_instrument_fields(args):
     must = []
     fields = {}
     try:
@@ -318,11 +318,8 @@ def query():
             result = query_all(args)
         elif query_type in ['act', 'regulation',  'sop', 'bill', 'instrument']:
             result = query_instrument(args)
-        #elif query_type in ['acts', 'regulations',  'sops', 'bills', 'instruments']:
-        #    if args.get('search') == 'advanced':
-        #        result = query_act_fields(args)
-        #    else:
-        #        result = query_acts(args)
+        elif query_type in ['instruments']:
+            result = query_instrument_fields(args)
         elif query_type == 'case':
             result = query_case(args)
         elif query_type == 'cases':
