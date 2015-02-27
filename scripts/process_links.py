@@ -24,7 +24,7 @@ def run(db, config):
                 for el in etree.fromstring(result['document']).xpath('//*[@id]'):
                     new_id = el.attrib.get('id')
                     id_results.append( (new_id, result['id'], generate_path_string(el)[0]) )
-            if len(id_results > 100):
+            if len(id_results) > 100:
                 args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
                 out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str)
                 id_results[:] = []
