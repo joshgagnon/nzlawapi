@@ -13,22 +13,21 @@ def run(db, config):
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         ids = set()
         cur.execute(""" delete from id_lookup""")
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor")as cur:
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur,:
         cur.execute("""SELECT id, document FROM latest_instruments""")
-        results = cur.fetchmany(10)
+        results = cur.fetchmany(1)
         count = 0
         id_results = []
         while len(results):
             for result in results:
-                if count % 10 == 0:
-                    print count
+                print count
                 count += 1
                 for el in etree.fromstring(result['document']).xpath('//*[@id]'):
                     new_id = el.attrib.get('id')
                     if new_id not in ids:
                         id_results.append( (new_id, result['id'], generate_path_string(el)[0]) )
                     ids |= {new_id}
-            results = cur.fetchmany(10)
+            results = cur.fetchmany(1)
 
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
 
@@ -48,7 +47,7 @@ def run(db, config):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
         count = 0
         cur.execute("""SELECT document, id from latest_instruments """)
-        documents = cur.fetchmany(10)
+        documents = cur.fetchmany(1)
         while len(documents):
             for document in documents:
                 if count % 100 == 0:
@@ -69,7 +68,7 @@ def run(db, config):
                     flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1]), links)
                     args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", x) for x in flattened)
                     out.execute("INSERT INTO section_references (source_document_id, target_govt_id, repr, url) VALUES " + args_str)
-            documents = cur.fetchmany(10)
+            documents = cur.fetchmany(1)
     db.commit()
 
 
