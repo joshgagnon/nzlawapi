@@ -114,7 +114,7 @@ def get_section_references(govt_ids):
         cur.execute("""
             SELECT source_document_id, repr, url
             FROM section_references  d
-            WHERE target_govt_id = ANY(%(govt_ids)s)
+            WHERE target_govt_id = ANY(%(govt_ids)s) ORDER by repr
             """, {'govt_ids': govt_ids})
         return {'section_references': map(lambda x: dict(x), cur.fetchall())}
 

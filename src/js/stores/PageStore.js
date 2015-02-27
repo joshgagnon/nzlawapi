@@ -38,11 +38,11 @@ var PageStore = Reflux.createStore({
         page.id = page.id || ('page-'+this.counter++);
         page.popovers = page.popovers || {};
         _.map(page.popovers, function(v, k){
-            page.popovers[k] =  _.omit(b, 'fetching');
+            page.popovers[k] =  _.omit(v, 'fetching');
         });
         page.section_data = page.section_data || {};
         _.map(page.section_data, function(v, k){
-            page.section_data[k] =  _.omit(b, 'fetching');
+            page.section_data[k] =  _.omit(v, 'fetching');
         });
         page.references = _.omit(page.references || {}, 'fetching');
         page.versions = _.omit(page.versions || {}, 'fetching');

@@ -19,12 +19,13 @@ module.exports = React.createClass({
     renderBody: function(data){
         if(data.get('section_references') && data.get('section_references').size){
             var data = this.getLast();
-            var doc_id = data.getIn(['query', 'document_id'])
+            var doc_id = data.get('document_id')
             var external = data.get('section_references').filter(function(ref){
-                return ref !== doc_id;
+                return ref.get('source_document_id') !== doc_id;
             });
             var internal= data.get('section_references').filter(function(ref){
-                return ref === doc_id;
+
+                return ref.get('source_document_id') === doc_id;
             });
             return <div>
                 <span>This section has been externally referenced by </span>
