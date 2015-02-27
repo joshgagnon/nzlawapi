@@ -51,12 +51,14 @@ class Instrument(object):
         return [self.parts[i] for i in requested]
 
 
-def process_instrument(row, db=None):
-    tree = etree.fromstring(row.get('document'))
-    if row.get('title') != 'Interpretation Act 1999':
-        _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
-    else:
-        definitions = Definitions()
+def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=None):
+    if not tree:
+        tree = etree.fromstring(row.get('document'))
+    if not definitions:
+        if row.get('title') != 'Interpretation Act 1999':
+            _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
+        else:
+            definitions = Definitions()
     tree = process_instrument_links(tree, db)
     tree, definitions = process_definitions(tree, definitions)
     with (db or get_db()).cursor() as cur:
@@ -71,7 +73,8 @@ def process_instrument(row, db=None):
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, x[0], json.dumps(x[1]))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': id})
         cur.execute("INSERT INTO definitions (document_id, key, data) VALUES " + args_str)
-        cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
+        if refresh:
+            cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
     return tree, definitions.render()
 
