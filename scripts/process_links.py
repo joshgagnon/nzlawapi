@@ -11,7 +11,6 @@ from collections import defaultdict
 
 def run(db, config):
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        ids = set()
         cur.execute(""" delete from id_lookup""")
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute("""SELECT id, document FROM latest_instruments""")
@@ -24,9 +23,7 @@ def run(db, config):
                 count += 1
                 for el in etree.fromstring(result['document']).xpath('//*[@id]'):
                     new_id = el.attrib.get('id')
-                    if new_id not in ids:
-                        id_results.append( (new_id, result['id'], generate_path_string(el)[0]) )
-                    ids |= {new_id}
+                    id_results.append( (new_id, result['id'], generate_path_string(el)[0]) )
             results = cur.fetchmany(1)
 
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
