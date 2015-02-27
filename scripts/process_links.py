@@ -12,7 +12,7 @@ from collections import defaultdict
 def run(db, config):
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" delete from id_lookup""")
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out::
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
         cur.execute("""SELECT id, document FROM latest_instruments""")
         results = cur.fetchmany(1)
         count = 0
