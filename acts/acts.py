@@ -132,9 +132,9 @@ def query_instrument(args):
     elif find == 'more':
         return instrument_more(instrument, args.getlist('requested_parts[]'))
     elif find == 'location':
-        if not args.get('location'):
-            raise CustomException('No location specified')
-        return instrument_location(instrument, args.get('location'))
+        if args.get('location'):
+            return instrument_location(instrument, args.get('location'))
+            #raise CustomException('No location specified')
     elif find == 'govt_location':
         if not govt_location:
             raise CustomException('No location specified')
