@@ -10,21 +10,26 @@ from queries import get_instrument_object, get_latest_instrument_object
 import os
 
 
-def act_skeleton_response(act):
-    act.calculate_hooks()
+def instrument_skeleton_response(instrument):
+    instrument.calculate_hooks()
     return {
-        'skeleton': act.skeleton,
-        'html_contents_page': etree.tostring(tohtml(act.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
-        'title': act.title,
-        'attributes': act.attributes,
-        'parts': [],
-        'document_id': act.id,
+        'skeleton': instrument.skeleton,
+        'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'title': instrument.title,
+        'document_id': instrument.id,
         'doc_type': 'instrument',
-        'partial': True
+        'attributes': instrument.attributes,
+        'format': 'skeleton',
+        'query': {
+            'doc_type': 'instrument',
+            'document_id': instrument.id,
+            'find': 'full'
+        }
     }
 
-
 def instrument_full(instrument):
+    if current_app.config.get('USE_SKELETON'):
+        return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),
         'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
@@ -97,7 +102,8 @@ def instrument_govt_location(instrument, id):
 
 
 def instrument_more(instrument, parts):
-    act_part_response(instrument, parts)
+    instrument.calculate_hooks()
+
     #todo
     return {}
 

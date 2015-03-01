@@ -22,5 +22,5 @@ USERS_LOGIN_URL = 'https://users.catalex.nz/browser-login'
 SESSION_SECRET = 'secret_here'
 SSO_SHARED_SECRET = 'put_secret_here'
 
-
+USE_SKELETON = True
 NO_AUTH = True
