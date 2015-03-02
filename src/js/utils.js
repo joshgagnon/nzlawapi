@@ -1,7 +1,7 @@
 var $ = require('jquery');
 
 module.exports = {
-
+    //http://www.seabreezecomputers.com/tips/find.htm
     formatGovtDate: function(govt_date_string){
         var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         matches = (govt_date_string||'').match(/(\d+)-(\d+)-(\d+)/);

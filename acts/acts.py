@@ -12,6 +12,7 @@ import os
 
 def instrument_skeleton_response(instrument):
     instrument.calculate_hooks()
+
     return {
         'skeleton': instrument.skeleton,
         'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
@@ -20,6 +21,7 @@ def instrument_skeleton_response(instrument):
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
         'format': 'skeleton',
+        'parts': dict(('%d'  % i, v) for i, v in enumerate(instrument.parts)),
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,

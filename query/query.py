@@ -249,7 +249,6 @@ def query_case_fields(args):
                     "fields": fields
                 }
             })
-        print must
         return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
     except Exception, e:
         print e

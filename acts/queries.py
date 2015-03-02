@@ -17,7 +17,7 @@ class Instrument(object):
 
         self.title = get_title(self.tree)
         self.hook_match = '/*/*/*/*/*'
-        self.parts = {}
+        self.parts = []
         ignore = ['document', 'processed_document', 'attributes']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
         self.format_dates()
@@ -42,7 +42,8 @@ class Instrument(object):
             if length > 1000:
                 e.attrib['data-hook'] = '%d' % i
                 e.attrib['data-hook-length'] = '%d' % length
-                self.parts[e.attrib['data-hook']] = deepcopy(e)
+
+                self.parts.append(''.join([etree.tostring(x, encoding='UTF-8', method="html") for x in e]))
                 e[:] = []
                 i += 1
         self.skeleton = etree_to_dict(html.getroot())

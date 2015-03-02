@@ -19,6 +19,7 @@ var ArticleError = require('./Warnings.jsx').ArticleError;
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
+
     },
     onArticleJumpTo: function(result, jump){
         this.trigger(result, jump);
@@ -69,26 +70,27 @@ var ArticleContent = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
-        this.heights = {};
+        this.heights = {0: 133, 1: 4951, 2: 1024, 3: 1018, 4: 1376, 5: 1409, 6: 18738, 7: 9187, 8: 10459, 9: 4232, 10: 3920, 11: 9611, 12: 4600, 13: 3320, 14: 2131, 15: 1831, 16: 29598, 17: 32825, 18: 5628, 19: 3501, 20: 2152, 21: 5643, 22: 9537, 23: 3591, 24: 3345, 25: 542, 26: 958, 27: 1547, 28: 2430, 29: 639, 30: 2506, 31: 667, 32: 533, 33: 240, 34: 371};
         return {visible: {}};
     },
     componentDidMount: function(){
         this.setup_scroll();
         if(this.isPartial()){
             this.resizeSkeleton();
-            this.check_sub_visibility();
+            this.checkSubVisibility();
         }
     },
     componentDidUpdate: function(){
-        this.resizeSkeleton();
+        if(this.isPartial()){
+            this.resizeSkeleton();
+        }
     },
     isPartial: function(){
-        return this.props.content.get('partial');
+        return this.props.content.get('format') === 'skeleton';
     },
     getScrollContainer: function(){
-        return $(this.getDOMNode()).parents('.tab-content, .results-container')
+        return $(this.getDOMNode()).parents('.tab-content, .results-container');
     },
-
     setup_scroll: function(){
         this.offset = 100;
         var self = this;
@@ -98,12 +100,11 @@ var ArticleContent = React.createClass({
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
-        this.debounce_visibility = _.debounce(this.check_sub_visibility, 10, {
+        this.debounce_visibility = _.debounce(this.checkSubVisibility, 10, {
           'maxWait': 300
         });
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
-
                 var offset = self.getScrollContainer().offset().top;
                 if(self.scrollHeight !== $(self.getDOMNode()).height()){
                     self.refresh();
@@ -117,11 +118,11 @@ var ArticleContent = React.createClass({
             }
             }, 0);
         var $parent = this.getScrollContainer();
-        $parent.on('scroll', this.debounce_scroll);
+        //$parent.on('scroll', this.debounce_scroll);
         if(this.isPartial()){
             this.debounce_visibility();
-            $parent.on('scroll', this.debounce_visibility);
-            $(window).on('resize', this.reset_heights);
+            $parent.on('scroll', this.checkSubVisibility);
+           // $(window).on('resize', this.reset_heights);
         }
     },
     reset_heights: function(){
@@ -132,14 +133,13 @@ var ArticleContent = React.createClass({
     },
     resizeSkeleton: function(){
         var self = this;
-        _.each(this.state.visible, function(v, k){
-            if(self.props.get('content') && self.props.content.parts && self.props.content.parts[k]){
-                self.heights[k] = self.refs[k].getDOMNode().outerHeight;
-                //console.log(k, self.heights[k], self.heights)
+        _.each(self.refs, function(v, k){
+            if(self.props.content.getIn(['parts', k])){
+                //self.heights[k] = v.getDOMNode().clientHeight;
             }
         });
     },
-    check_sub_visibility: function(){
+    checkSubVisibility: function(){
         if(this.isMounted()){
             var self = this;
             var visible = {};
@@ -149,24 +149,30 @@ var ArticleContent = React.createClass({
             _.each(this.refs, function(r, k){
                 if($(r.getDOMNode()).isOnScreen(self.scroll_threshold)){
                     visible[k] = true;
+                }else{
+                    visible[k] = false;
+                }
+                if(self.state.visible[k] !== visible[k]){
+                    change = true;
                 }
             });
-            if(!_.isEqual(visible, this.state.visible)){
+            console.log(visible)
+            if(change)
+            this.setState({visible: visible})
+           /*if(!_.isEqual(visible, this.state.visible)){
                 this.setState({visible: visible}, function(){
                     var to_fetch = _.reject(_.keys(self.state.visible), function(k){
-                        return _.contains(self.props.requested_parts, k) || self.props.content.parts[k];
+                        //return _.contains(self.props.requested_parts, k) || self.props.content.get(['parts', 'k']);
                     });
                     if(to_fetch.length){
-                        Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
+                        //Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
                     }
                 });
-            }
+            }*/
         }
     },
     shouldComponentUpdate: function(newProps, newState){
-        console.log('shoud',this.props.content !== newProps.content);
-        //bug getting here
-        return this.props.content !== newProps.content;
+        return this.props.content !== newProps.content || this.state.visible !== newState.visible;
     },
     render: function(){
         console.log('article render')
@@ -183,16 +189,14 @@ var ArticleContent = React.createClass({
     renderError: function(){
         return <div className="article-error"><p className="text-danger">{this.props.content.error}</p></div>
     },
-
-
     renderStandard: function(){
         return <div dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
     renderSkeleton: function(){
         var self = this;
         var attrib_transform = {'@class': 'className', '@style': 'fauxstyle', '@tabindex': 'tabIndex', '@colspan': 'colSpan'};
-        //console.log('render')
         var id = 0;
+
         function to_components(v){
             var attributes = {}
             _.each(v, function(v, k){
@@ -204,27 +208,33 @@ var ArticleContent = React.createClass({
             if(attributes['data-hook']){
                 var hook = attributes['data-hook'];
                 attributes['ref'] = hook;
-                if(self.state.visible[hook] && self.props.content.parts[hook]){
-                    //attributes.style = {height: 'auto'};
-                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.content.parts[hook]};
+                if(self.state.visible[hook]){
+                    attributes['data-visible'] = true;
+                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.content.getIn(['parts', hook])};
                 }
-                else if(self.state.visible[hook]){
+                else{
+                    attributes.style = {height: self.heights[hook]};
+                }
+                //if(self.state.visible[hook]){
+                //    attributes.style = {'backgroundColor': '#00ff00'}
+                //}
+                /*else if(self.state.visible[hook]){
                     attributes.className = (attributes.className || '') + ' csspinner traditional';
                     attributes.style = {height: self.heights[hook] || self.calculate_height(attributes['data-hook-length']|0, 1000)};
                 }
                 else{
-                    attributes.style = {height: self.heights[hook] || self.calculate_height(attributes['data-hook-length']|0, 1000)};
-                }
+
+                }*/
+
             }
             if(attributes['data-hook']){
-
                 return React.DOM[v.tag](attributes);
             }
-
             return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
         }
-        return <div >
-                {to_components(this.props.content.skeleton)}
+
+        return <div>
+                {to_components(this.props.content.get('skeleton').toJS())}
             </div>
     },
     refresh: function(){
@@ -383,15 +393,15 @@ var MobilePopovers = React.createClass({
 
             }
         }
-     },
+    },
     componentDidMount: function(){
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
-            Actions.requestPage(this.props.page.get('id'))
+            Actions.requestPage(this.props.page.get('id'));
        }
     },
     componentDidUpdate: function(){
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
-            Actions.requestPage(this.props.page.get('id'))
+            Actions.requestPage(this.props.page.get('id'));
        }
        // if loading position popovers
        // TODO, minimize running this
@@ -411,7 +421,7 @@ var MobilePopovers = React.createClass({
                         }
                     }
                }, this);
-       }
+            }
         }
     },
     warningsAndErrors: function(){
