@@ -47,7 +47,7 @@ def generate_range(string):
     return tokens
 
 def nodes_from_path_string(tree, path):
-    parts = re.compile('(s|sch|section|schedule) ([\.\d]+)\W*(cl )?(.*)?').match(path.lower())
+    parts = re.compile('(s|sch|section|schedule) ([\.\da-z]+)\W*(cl )?(.*)?').match(path.lower())
     # actually, maybe easier just to get it in canonical form
     keys = []
     if parts:
@@ -81,7 +81,7 @@ def find_sub_node(tree, keys):
                     #a = "label = ('%s')" % "','".join(a.split('+'))
                     a = " or ".join(["label = '%s'" % x for x in a.split('+')])
                 else:
-                    a = "label = '%s'" % a
+                    a = "label = '%s' or label = '%s'" % (a, a.upper())
                 node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
             if i < len(keys) - 1:
                 #get shallowist nodes
