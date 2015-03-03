@@ -3,7 +3,8 @@
 *[data-hook][data-visible]{
    // background-color:rgba(170, 0, 0, 0.41);
     border: 1px solid #00aa00 !important;
-            -webkit-animation: fadein 2s;
+    -webkit-animation: fadein 1s;
+    -webkit-backface-visibility: hidden;
 }
 
 
@@ -346,7 +347,11 @@ body{
         bottom: 0;
         padding-left: 0;
         padding-right: 0;
-        overflow: auto;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+         -webkit-backface-visibility: hidden;
+
         @media (min-width: $screen-md-min) {
             top: $top-bar-height;
         }
@@ -472,7 +477,7 @@ body{
             }
         }
          .legislation-result{
-            max-width:1170px;
+            max-width:$screen-lg-min;
             margin: 0 auto;
             margin-top: 60px;
             margin-bottom:60px;
@@ -492,7 +497,7 @@ body{
             }
         }
         .search-results{
-            max-width:1170px;
+            max-width:$screen-lg-min;
             margin: 0 auto;
             margin-top: 20px;
             padding-left:10px;
@@ -611,6 +616,7 @@ body{
     .legislation a.def-popover{
         color:#000;
     }
+
     &.underlines .legislation a{
         text-decoration: underline;
         color:#337ab7;

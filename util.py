@@ -196,8 +196,10 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
     process_node(domxml)
     return domxml
 
-def etree_to_dict(t):
-    d = {'children' : map(etree_to_dict, iter(t)), 'tag': t.tag}
+def etree_to_dict(t, end=None):
+    d = {'children' : map(lambda x: etree_to_dict(x, end),
+        [c for c in t if not end or not t.attrib.get(end)]), 'tag': t.tag}
+    #d = {'children' : map(etree_to_dict, iter(t)), 'tag': t.tag}
     d.update(('@' + k, v) for k, v in t.attrib.iteritems())
     if (t.text or ''):
         d['#text'] = t.text or ''

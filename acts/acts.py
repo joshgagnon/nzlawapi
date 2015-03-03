@@ -11,8 +11,6 @@ import os
 
 
 def instrument_skeleton_response(instrument):
-    instrument.calculate_hooks()
-
     return {
         'skeleton': instrument.skeleton,
         'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),

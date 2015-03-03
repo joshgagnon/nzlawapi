@@ -47,7 +47,8 @@ module.exports = React.createClass({
         }
 
         else if(this.props.pages.count() === 1){
-            return <div className="results-container"><div className="results-scroll">
+            return <div className="results-container">
+            <div className="results-scroll">
              { this.props.view.getIn(['settings', this.props.pages.get(0).get('id'), 'advanced_search']) ? <AdvancedSearch page_id={this.props.pages.get(0).get('id')} /> : null }
             {  this.renderPage(this.props.pages.get(0)) }
                 </div></div>

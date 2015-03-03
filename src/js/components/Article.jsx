@@ -14,7 +14,7 @@ var ArticleOverlay= require('./ArticleOverlay.jsx');
 var MQ = require('react-responsive');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var ArticleError = require('./Warnings.jsx').ArticleError;
-
+var Perf = React.addons.Perf;
 
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
@@ -65,12 +65,13 @@ var ArticleContent = React.createClass({
         });
     }], */
     ],
-    scroll_threshold: 5000,
+    scroll_threshold: 4000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
-        this.heights = {0: 133, 1: 4951, 2: 1024, 3: 1018, 4: 1376, 5: 1409, 6: 18738, 7: 9187, 8: 10459, 9: 4232, 10: 3920, 11: 9611, 12: 4600, 13: 3320, 14: 2131, 15: 1831, 16: 29598, 17: 32825, 18: 5628, 19: 3501, 20: 2152, 21: 5643, 22: 9537, 23: 3591, 24: 3345, 25: 542, 26: 958, 27: 1547, 28: 2430, 29: 639, 30: 2506, 31: 667, 32: 533, 33: 240, 34: 371};
+        this.heights= {};
+        this.heights = {"0":375,"1":80,"2":851,"3":1121,"4":741,"5":1625,"6":572,"7":2044,"8":1299,"9":1266,"10":118,"11":1241,"12":603,"13":898,"14":963,"15":1367,"16":1379,"17":2513,"18":1657,"19":1857,"20":1832,"21":2526,"22":1435,"23":1114,"24":1554,"25":1836,"26":1497,"27":1148,"28":2295,"29":819,"30":1861,"31":620,"32":2284,"33":1526,"34":1608,"35":2267,"36":1589,"37":888,"38":1917,"39":1251,"40":1356,"41":1864,"42":1736,"43":659,"44":2022,"45":2092,"46":1180,"47":1402,"48":1131,"49":1330,"50":1516,"51":1564,"52":1354,"53":1230,"54":1507,"55":1896,"56":654,"57":924,"58":1198,"59":1289,"60":1852,"61":1291,"62":1644,"63":1619,"64":1545,"65":777,"66":1369,"67":516,"68":2293,"69":2426,"70":1365,"71":823,"72":1921,"73":2113,"74":720,"75":1685,"76":546,"77":373,"78":2142,"79":921,"80":648,"81":1342,"82":1052,"83":1289,"84":1588,"85":743,"86":1534,"87":1171,"88":930,"89":1008,"90":1454,"91":1028,"92":1634,"93":212,"94":535,"95":1882,"96":990,"97":1598,"98":1803,"99":1582,"100":1634,"101":451,"102":506,"103":1431,"104":402,"105":1695,"106":322,"107":1350,"108":1313,"109":1536,"110":303,"111":336,"112":1623,"113":902,"114":1647,"115":326,"116":586,"117":1990,"118":1944,"119":2265,"120":2306,"121":1755,"122":1933,"123":1481,"124":1363,"125":2322,"126":1463,"127":1368,"128":66,"129":810,"130":2056,"131":1512,"132":1506,"133":398,"134":1557,"135":166,"136":1147,"137":1513,"138":2531,"139":1478,"140":2043,"141":3179,"142":1631,"143":1622,"144":1394,"145":1097,"146":155,"147":1192,"148":118,"149":1347,"150":1558,"151":1309,"152":1742,"153":512,"154":1267,"155":1802,"156":1316,"157":695,"158":1240,"159":1440,"160":213,"161":1254,"162":1589,"163":2124,"164":2125,"165":886,"166":893,"167":1829,"168":65,"169":456,"170":1639,"171":1292,"172":1728,"173":1421,"174":66,"175":142,"176":1424,"177":154,"178":1059,"179":1582,"180":1335,"181":2154,"182":1697,"183":88,"184":1280,"185":1959,"186":1398,"187":676,"188":1148,"189":88,"190":1133,"191":268,"192":781,"193":88,"194":1547,"195":1938,"196":844,"197":106,"198":1605,"199":33,"200":670,"201":1360,"202":1904,"203":447};
         return {visible: {}};
     },
     componentDidMount: function(){
@@ -100,9 +101,7 @@ var ArticleContent = React.createClass({
             var i = _.sortedIndex(store.offsets, top) -1;
             return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
         };
-        this.debounce_visibility = _.debounce(this.checkSubVisibility, 10, {
-          'maxWait': 300
-        });
+        this.throttle_visibility = _.throttle(this.checkSubVisibility, 300)
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top;
@@ -120,8 +119,9 @@ var ArticleContent = React.createClass({
         var $parent = this.getScrollContainer();
         //$parent.on('scroll', this.debounce_scroll);
         if(this.isPartial()){
-            this.debounce_visibility();
-            $parent.on('scroll', this.checkSubVisibility);
+            this.checkSubVisibility();
+            $parent.on('scroll',  this.throttle_visibility);
+            //$parent.on('touchmove', this.debounce_visibility);
            // $(window).on('resize', this.reset_heights);
         }
     },
@@ -135,9 +135,10 @@ var ArticleContent = React.createClass({
         var self = this;
         _.each(self.refs, function(v, k){
             if(self.props.content.getIn(['parts', k])){
-                //self.heights[k] = v.getDOMNode().clientHeight;
+                self.heights[k] = v.getDOMNode().clientHeight;
             }
         });
+        //console.log(JSON.stringify(this.heights))
     },
     checkSubVisibility: function(){
         if(this.isMounted()){
@@ -156,9 +157,17 @@ var ArticleContent = React.createClass({
                     change = true;
                 }
             });
-            console.log(visible)
-            if(change)
-            this.setState({visible: visible})
+            if(change){
+                //Perf.start()
+                this.setState({visible: visible})
+                //Perf.stop()
+                //var measurements = Perf.getLastMeasurements();
+                //Perf.printInclusive(measurements)
+                //Perf.printExclusive(measurements)
+                //Perf.printDOM(measurements)
+                //Perf.printWasted(measurements)
+               // console.log(visible)
+            }
            /*if(!_.isEqual(visible, this.state.visible)){
                 this.setState({visible: visible}, function(){
                     var to_fetch = _.reject(_.keys(self.state.visible), function(k){
@@ -342,6 +351,7 @@ var MobilePopovers = React.createClass({
  module.exports = React.createClass({
     interceptLink: function(e){
         var link = $(e.target).closest('a:not([target])');
+
         if(link.length){
             e.preventDefault();
             if(link.attr('data-link-id')){
@@ -438,9 +448,9 @@ var MobilePopovers = React.createClass({
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="csspinner traditional" /></div>
         }
-        return <div className="legislation-result" onClick={this.interceptLink} >
+        return <div><div className="legislation-result" onClick={this.interceptLink} >
            { this.warningsAndErrors() }
-          <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
+            <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
           <ArticleContent ref="articleContent"
                 content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
@@ -471,6 +481,8 @@ var MobilePopovers = React.createClass({
                     page_id={this.props.page.get('id')} />
                 : null }
             </MQ>
+        </div>
+
         </div>
     }
  });
