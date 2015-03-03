@@ -52,11 +52,14 @@ def run_migration(db, filename, config):
         })
 
 def insert_functions(db):
-    files = set([f for f in os.listdir('db_functions') if f.endswith('.sql')])
-
+    files = set([f for f in os.listdir('db_functions') if f.endswith('.sql') and not f.startswith('premigrate')])
     for filename in files:
         with open(os.path.join('db_functions', filename)) as f, db.cursor() as cur:
             cur.execute(f.read())
+
+def pre_migrate(db):
+    with open(os.path.join('db_functions', 'premigrate.sql')) as f, db.cursor() as cur:
+        cur.execute(f.read())
 
 def run():
     if not len(sys.argv) > 1:
@@ -64,6 +67,7 @@ def run():
     config = importlib.import_module(sys.argv[1].replace('.py', ''))
     db = connect_db(config)
     prep_table(db)
+    pre_migrate(db);
     if len(sys.argv) > 2:
         migrations = map(lambda x: os.path.basename(x), sys.argv[2:])
     else:

@@ -55,6 +55,7 @@ def measure_heights(html):
         out_file.write(render_template('instrument_parts.html', content=html, css=css.read()))
 
     p = Popen(['phantomjs', js, html_file, result_file], stdout=PIPE, stderr=PIPE)
+    print html_file
     out, err = p.communicate()
     with open(result_file) as in_file:
         results = json.loads(in_file.read())
@@ -107,13 +108,18 @@ def process_skeleton(id, tree, db=None):
 
     depth(html.getroot())
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
-    skeleton = etree_to_dict(html.getroot(), end='data-hook')
+    #skeleton = etree_to_dict(html.getroot(), end='data-hook')
+
+    # remove data-hooks
+    for el in html.xpath('.//*[@data-hook]'):
+        el[:] = []
+    skeleton = etree.tostring(html, encoding='UTF-8', method="html")
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
                     WHERE d.id =  %(id)s """
         cur.execute(query, {
             'id': id,
-            'skeleton': json.dumps(skeleton),
+            'skeleton': skeleton,
             'heights': json.dumps(heights)})
         cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, i, p)) for i, p in enumerate(parts))

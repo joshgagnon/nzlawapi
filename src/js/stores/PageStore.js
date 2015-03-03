@@ -156,22 +156,35 @@ var PageStore = Reflux.createStore({
                     this.update();
                 }.bind(this))
         }
-        /*else if(to_add.requested_parts && to_add.requested_parts.length){
-            var to_fetch = _.difference(to_add.requested_parts, page.requested_parts);
-            page.requested_parts = _.union(page.requested_parts, to_add.requested_parts);
+        else if(to_add.requested_parts && to_add.requested_parts.length){
+            var parts = page.get('parts').toJS();
+            var to_fetch = _.filter(to_add.requested_parts, function(p){ return !parts[p] });
             if(to_fetch.length){
-                $.get('/query', _.defaults({find: 'more', requested_parts: to_fetch}, page.query))
+                _.map(to_fetch, function(p){
+                    parts[p] = {fetching: true};
+                });
+                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'parts'], parts);
+                this.update();
+                $.get('/query', _.defaults({find: 'more', parts: to_fetch}, page.get('query').toJS() ))
                     .then(function(data){
                         page = this.getById(page.id);
-                        page.content.parts = _.extend({}, page.content.parts, data.parts);
-                        Actions.updatePage(page);
+                        var results = {}
+                        _.map(data.parts, function(v, k){
+                            results[k] = {fetching: false, fetched: true, html: v};
+                        });
+                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'parts'], results);
+                        this.update();
                     }.bind(this),function(response){
-                        page = this.getById(page.id);
-                        page.content = response.responseJSON || {error: 'A problem occurred'};
-                        Actions.updatePage(page);
+                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
+                            {
+                                title: 'Error',
+                                content: response.responseJSON || {error: 'A problem occurred'}
+
+                            });
+                        this.update();
                     }.bind(this));
             }
-        }*/
+        }
     },
     onRemovePage: function(page_id){
         this.pages = this.pages.splice(this.getIndex(page_id), 1);

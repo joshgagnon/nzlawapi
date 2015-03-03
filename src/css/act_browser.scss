@@ -485,6 +485,10 @@ body{
             @media (min-width: $screen-sm-min) {
                 padding-left: $buttonbar-outer-width;
             }
+
+            .loading{
+                @extends .csspinner.traditional
+            }
         }
 
         .article-overlay {

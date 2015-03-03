@@ -12,7 +12,8 @@ import os
 
 def instrument_skeleton_response(instrument):
     return {
-        'skeleton': instrument.skeleton,
+        #'skeleton': instrument.skeleton,
+        'html_content': instrument.skeleton,
         'html_contents_page': instrument.contents,
         'title': instrument.title,
         'document_id': instrument.id,
@@ -20,7 +21,7 @@ def instrument_skeleton_response(instrument):
         'attributes': instrument.attributes,
         'format': 'skeleton',
         'heights': instrument.heights,
-        'parts': dict(('%d'  % i, v) for i, v in enumerate(instrument.parts) if i < 4),
+        'parts': {}, #dict(('%d'  % i, v) for i, v in enumerate(instrument.parts)),
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,
@@ -103,10 +104,9 @@ def instrument_govt_location(instrument, id):
 
 
 def instrument_more(instrument, parts):
-    instrument.calculate_hooks()
-
-    #todo
-    return {}
+    return {
+        'parts': dict(('%d' % i, v) for i, v in enumerate(instrument.parts) if '%d' % i in parts)
+    }
 
 
 def query_instrument(args):
@@ -137,16 +137,15 @@ def query_instrument(args):
     if find == 'preview':
         return instrument_preview(instrument)
     elif find == 'more':
-        return instrument_more(instrument, args.getlist('requested_parts[]'))
+        return instrument_more(instrument, args.getlist('parts[]'))
     elif find == 'location':
         if args.get('location'):
             return instrument_location(instrument, args.get('location'))
-            #raise CustomException('No location specified')
     elif find == 'govt_location':
         if not govt_location:
             raise CustomException('No location specified')
         return instrument_govt_location(instrument, govt_location)
-    # default is full
+    """ default is full instrument """
     return instrument_full(instrument)
 
 
