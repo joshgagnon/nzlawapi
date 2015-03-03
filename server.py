@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from views import Base
 from validator.validator import Validator
 from query.query import Query

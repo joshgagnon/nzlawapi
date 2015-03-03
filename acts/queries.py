@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from db import get_db
 from util import CustomException, get_title, etree_to_dict, tohtml
 import psycopg2
@@ -12,15 +13,17 @@ import tempfile
 import os
 from subprocess import Popen, PIPE
 import shutil
+import codecs
 
 
 class Instrument(object):
-    def __init__(self, id, tree, attributes, skeleton, contents):
+    def __init__(self, id, tree, attributes, skeleton, contents, heights):
         self.id = id
         self.tree = tree
         self.skeleton = skeleton
         self.contents = contents
-        self.title = get_title(self.tree) #NO!
+        self.title = get_title(self.tree) # NO!
+        self.heights = heights
         self.parts = []
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
@@ -48,14 +51,14 @@ def measure_heights(html):
     tmp_dir = tempfile.mkdtemp()
     html_file = os.path.join(tmp_dir, 'instrument.html')
     result_file = os.path.join(tmp_dir, 'result.json')
-    with open(html_file, 'w') as out_file:
-        out_file.write(render_template('instrument_parts.html', content=html, css_path=css_path))
+    with codecs.open(html_file, 'w', encoding='utf8') as out_file, codecs.open(css_path, encoding='utf8') as css:
+        out_file.write(render_template('instrument_parts.html', content=html, css=css.read()))
 
     p = Popen(['phantomjs', js, html_file, result_file], stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
     with open(result_file) as in_file:
         results = json.loads(in_file.read())
-    shutil.rmtree(tmp_dir , ignore_errors=True)
+    #shutil.rmtree(tmp_dir , ignore_errors=True)
     return results
 
 
@@ -117,7 +120,7 @@ def process_skeleton(id, tree, db=None):
         cur.execute('INSERT INTO document_parts (document_id, num, data) VALUES ' + args_str)
 
     (db or get_db()).commit()
-    return skeleton
+    return skeleton, heights
 
 
 def process_contents(id, tree, db=None):
@@ -159,6 +162,15 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
     return tree
 
 
+def fetch_parts(doc_id, db=None, parts=None):
+    with (db or get_db()).cursor() as cur:
+        if not parts:
+            cur.execute('SELECT data from document_parts WHERE document_id = %(doc_id)s ORDER BY num asc',
+                {'doc_id': doc_id})
+            return map(lambda x: x[0], cur.fetchall())
+        return []
+
+
 def prep_instrument(result, replace, db):
     if not result.get('id'):
         raise CustomException('Instrument not found')
@@ -167,15 +179,26 @@ def prep_instrument(result, replace, db):
     else:
         tree = etree.fromstring(result.get('processed_document'))
     if not result.get('skeleton'):
-        skeleton = process_skeleton(result.get('id'), tree, db=db)
+        skeleton, heights = process_skeleton(result.get('id'), tree, db=db)
     else:
         skeleton = result.get('skeleton')
+        heights = result.get('heights')
     if not result.get('contents'):
         contents = process_contents(result.get('id'), tree, db=db)
     else:
         contents = result.get('contents')
 
-    return Instrument(id=result.get('id'), tree=tree, skeleton=skeleton, contents=contents, attributes=dict(result))
+    instrument = Instrument(
+        id=result.get('id'), 
+        tree=tree, 
+        skeleton=skeleton, 
+        contents=contents, 
+        heights=heights, 
+        attributes=dict(result))
+
+    instrument.parts = fetch_parts(instrument.id, db=db)
+
+    return instrument
 
 
 def get_act_summary(doc_id, db=None):

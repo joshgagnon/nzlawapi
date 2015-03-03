@@ -19,7 +19,8 @@ def instrument_skeleton_response(instrument):
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
         'format': 'skeleton',
-        'parts': dict(('%d'  % i, v) for i, v in enumerate(instrument.parts)),
+        'heights': instrument.heights,
+        'parts': dict(('%d'  % i, v) for i, v in enumerate(instrument.parts) if i < 4),
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,

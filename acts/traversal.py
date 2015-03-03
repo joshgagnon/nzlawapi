@@ -47,24 +47,31 @@ def generate_range(string):
     return tokens
 
 def nodes_from_path_string(tree, path):
+    #todo, rule
     parts = re.compile('(s|sch|section|schedule) ([\.\da-z]+)\W*(cl )?(.*)?').match(path.lower())
     # actually, maybe easier just to get it in canonical form
     keys = []
-    if parts:
-        parts = parts.groups()
-        if parts[0].startswith('sch'):
-            if parts[1] == '1':
-                tree = tree.xpath(".//schedule")[0]
+    try:
+        if parts:
+            parts = parts.groups()
+            if parts[0].startswith('sch'):
+                if parts[1] == '1' or not parts[1]:
+                    tree = tree.xpath(".//schedule")[0]
+                else:
+                    tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
             else:
-                tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
+                tree = tree.xpath(".//body")[0]
+                keys.append(parts[1])
+            if parts[3]:
+                keys += filter(lambda x: len(x), re.split('[^.a-zA-Z\d]+', parts[3]))
         else:
-            tree = tree.xpath(".//body")[0]
-            keys.append(parts[1])
-        if parts[3]:
-            keys += filter(lambda x: len(x), re.split('[^.a-zA-Z\d]+', parts[3]))
-    else:
-        pattern = re.compile('[\W_]+')
-        keys = pattern.sub(' ', path).split()
+            pattern = re.compile('[\W_]+')
+            keys = pattern.sub(' ', path).split()
+            if keys[0].startswith('sch'):
+                tree = tree.xpath(".//schedule")[0]
+                keys = []
+    except IndexError, e:
+        raise CustomException("Path not found")
     return find_sub_node(tree, keys)
 
 

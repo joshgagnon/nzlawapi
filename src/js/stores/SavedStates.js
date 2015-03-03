@@ -88,11 +88,12 @@ module.exports = Reflux.createStore({
         this.listenTo(Actions.removeSaveFolder, this.onRemoveSaveFolder);
         this.listenTo(Actions.renameSavedState, this.onRenameSavedState);
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
+        this.listenTo(Actions.userAction, this.saveCurrent);
+
         this.pages = Immutable.List();
         this.print = Immutable.List();
         this.views = Immutable.Map();
         this.browser = Immutable.Map();
-        this.saveCurrentDebounce = _.debounce(this.saveCurrent, 3000);
         if(localStorage['API_VERSION'] !== window.API_VERSION){
             delete localStorage['current_view'];
             delete localStorage['saved_views'];
@@ -102,31 +103,27 @@ module.exports = Reflux.createStore({
     updatePages: function(pages){
         if(this.pages !== pages.pages){
             this.pages = pages.pages;
-            this.saveCurrentDebounce();
         }
     },
     updateViews: function(views){
         if(this.views !== views.views){
             this.views = views.views;
-            this.saveCurrentDebounce();
         }
     },
     updateBrowser: function(browser){
         if(this.browser !== browser.browser){
             this.browser = browser.browser;
-            this.saveCurrentDebounce();
         }
     },
     updatePrint: function(print){
         this.print = print.print;
-        this.saveCurrentDebounce();
     },
     prepState: function(){
         function pickPage(page){
             return !page.content || (page.content && !page.content.error);
         }
         function prepPage(page){
-            var obj = _.pick(page, 'title', 'query', 'id');
+            var obj = _.pick(page, 'title', 'query', 'id', 'page_type');
             obj.popovers = {}
            _.each(page.popovers || [] ,function(v, k){
                 return obj.popovers[k] = _.pick(v, 'type', 'title', 'url', 'source_sel', 'id');

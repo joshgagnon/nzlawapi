@@ -15,7 +15,7 @@ var MQ = require('react-responsive');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var ArticleError = require('./Warnings.jsx').ArticleError;
 var Perf = React.addons.Perf;
-
+var Immutable = require('immutable');
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
@@ -70,9 +70,18 @@ var ArticleContent = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
-        this.heights= {};
-        this.heights = {"0":375,"1":80,"2":851,"3":1121,"4":741,"5":1625,"6":572,"7":2044,"8":1299,"9":1266,"10":118,"11":1241,"12":603,"13":898,"14":963,"15":1367,"16":1379,"17":2513,"18":1657,"19":1857,"20":1832,"21":2526,"22":1435,"23":1114,"24":1554,"25":1836,"26":1497,"27":1148,"28":2295,"29":819,"30":1861,"31":620,"32":2284,"33":1526,"34":1608,"35":2267,"36":1589,"37":888,"38":1917,"39":1251,"40":1356,"41":1864,"42":1736,"43":659,"44":2022,"45":2092,"46":1180,"47":1402,"48":1131,"49":1330,"50":1516,"51":1564,"52":1354,"53":1230,"54":1507,"55":1896,"56":654,"57":924,"58":1198,"59":1289,"60":1852,"61":1291,"62":1644,"63":1619,"64":1545,"65":777,"66":1369,"67":516,"68":2293,"69":2426,"70":1365,"71":823,"72":1921,"73":2113,"74":720,"75":1685,"76":546,"77":373,"78":2142,"79":921,"80":648,"81":1342,"82":1052,"83":1289,"84":1588,"85":743,"86":1534,"87":1171,"88":930,"89":1008,"90":1454,"91":1028,"92":1634,"93":212,"94":535,"95":1882,"96":990,"97":1598,"98":1803,"99":1582,"100":1634,"101":451,"102":506,"103":1431,"104":402,"105":1695,"106":322,"107":1350,"108":1313,"109":1536,"110":303,"111":336,"112":1623,"113":902,"114":1647,"115":326,"116":586,"117":1990,"118":1944,"119":2265,"120":2306,"121":1755,"122":1933,"123":1481,"124":1363,"125":2322,"126":1463,"127":1368,"128":66,"129":810,"130":2056,"131":1512,"132":1506,"133":398,"134":1557,"135":166,"136":1147,"137":1513,"138":2531,"139":1478,"140":2043,"141":3179,"142":1631,"143":1622,"144":1394,"145":1097,"146":155,"147":1192,"148":118,"149":1347,"150":1558,"151":1309,"152":1742,"153":512,"154":1267,"155":1802,"156":1316,"157":695,"158":1240,"159":1440,"160":213,"161":1254,"162":1589,"163":2124,"164":2125,"165":886,"166":893,"167":1829,"168":65,"169":456,"170":1639,"171":1292,"172":1728,"173":1421,"174":66,"175":142,"176":1424,"177":154,"178":1059,"179":1582,"180":1335,"181":2154,"182":1697,"183":88,"184":1280,"185":1959,"186":1398,"187":676,"188":1148,"189":88,"190":1133,"191":268,"192":781,"193":88,"194":1547,"195":1938,"196":844,"197":106,"198":1605,"199":33,"200":670,"201":1360,"202":1904,"203":447};
-        return {visible: {}};
+        if(this.isPartial()){
+            var heights = this.props.content.getIn(['heights']).toJS();
+            var widths = _.map(_.keys(heights), Number).sort(function(a,b){ return a - b; });
+            this.measured_heights = {};
+            this.calculated_heights = {};
+            return {
+                visible: {},
+                widths: widths,
+                height_ratio: Immutable.fromJS({key: 0, coeff: 1})
+            };
+        }
+        return {};
     },
     componentDidMount: function(){
         this.setup_scroll();
@@ -115,7 +124,7 @@ var ArticleContent = React.createClass({
                     Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
                 }
             }
-            }, 0);
+        }, 0);
         var $parent = this.getScrollContainer();
         //$parent.on('scroll', this.debounce_scroll);
         if(this.isPartial()){
@@ -126,19 +135,37 @@ var ArticleContent = React.createClass({
         }
     },
     reset_heights: function(){
-        this.heights = {};
-    },
-    calculate_height: function(count, width){
-        return 500;
+        this.measured_heights = {};
     },
     resizeSkeleton: function(){
         var self = this;
         _.each(self.refs, function(v, k){
             if(self.props.content.getIn(['parts', k])){
-                self.heights[k] = v.getDOMNode().clientHeight;
+                self.measured_heights[k] = v.getDOMNode().clientHeight;
             }
         });
-        //console.log(JSON.stringify(this.heights))
+        var width = this.getDOMNode().clientWidth;
+
+        var  height_ratio = {key: 0, coeff: 1}
+        for(var i = 0; i < this.state.widths.length; i++){
+            if(i === this.state.widths.length-1 && width >= this.state.widths[i]){
+                height_ratio.coeff = 1;
+                height_ratio.key = i;
+            }
+            else if(width >= this.state.widths[i]){
+                var diff = this.state.widths[i+1] - this.state.widths[i];
+                height_ratio.coeff =  (width - this.state.widths[i]) / diff;
+                height_ratio.key = i
+            }
+        }
+
+        var lower = this.props.content.getIn(['heights', this.state.widths[height_ratio.key-1]+'']).toJS();
+        var upper = this.props.content.getIn(['heights', this.state.widths[Math.min(height_ratio.key, this.state.widths.length)]+'']).toJS();
+        for(var i=0;i < lower.length; i++){
+            this.calculated_heights[i+''] = (lower[i] -upper[i] ) *  height_ratio.coeff  + lower[i];
+        }
+        this.setState({height_ratio: Immutable.fromJS(height_ratio)});
+        console.log(JSON.stringify(height_ratio))
     },
     checkSubVisibility: function(){
         if(this.isMounted()){
@@ -158,30 +185,19 @@ var ArticleContent = React.createClass({
                 }
             });
             if(change){
-                //Perf.start()
                 this.setState({visible: visible})
-                //Perf.stop()
-                //var measurements = Perf.getLastMeasurements();
-                //Perf.printInclusive(measurements)
-                //Perf.printExclusive(measurements)
-                //Perf.printDOM(measurements)
-                //Perf.printWasted(measurements)
-               // console.log(visible)
+
+
+
+                this.setState({visible: visible});
+                //Action.requestPageParts()
             }
-           /*if(!_.isEqual(visible, this.state.visible)){
-                this.setState({visible: visible}, function(){
-                    var to_fetch = _.reject(_.keys(self.state.visible), function(k){
-                        //return _.contains(self.props.requested_parts, k) || self.props.content.get(['parts', 'k']);
-                    });
-                    if(to_fetch.length){
-                        //Actions.getMorePage(this.props.page, {requested_parts: to_fetch});
-                    }
-                });
-            }*/
         }
     },
     shouldComponentUpdate: function(newProps, newState){
-        return this.props.content !== newProps.content || this.state.visible !== newState.visible;
+        return this.props.content !== newProps.content ||
+            this.state.visible !== newState.visible ||
+        !Immutable.is(this.state.height_ratio, newState.height_ratio);
     },
     render: function(){
         console.log('article render')
@@ -217,12 +233,15 @@ var ArticleContent = React.createClass({
             if(attributes['data-hook']){
                 var hook = attributes['data-hook'];
                 attributes['ref'] = hook;
-                if(self.state.visible[hook]){
+                if(self.state.visible[hook] && self.props.content.getIn(['parts', hook])){
                     attributes['data-visible'] = true;
                     attributes['dangerouslySetInnerHTML'] = {__html: self.props.content.getIn(['parts', hook])};
                 }
+                else if(self.measured_heights[hook]){
+                    attributes.style = {height: self.measured_heights[hook]};
+                }
                 else{
-                    attributes.style = {height: self.heights[hook]};
+                    attributes.style = {height: self.calculated_heights[hook]};
                 }
                 //if(self.state.visible[hook]){
                 //    attributes.style = {'backgroundColor': '#00ff00'}
