@@ -7,6 +7,7 @@ DEBUG = True
 CASE_DIR = os.path.join(home, 'legislation_archive/justice')
 ACT_DIR = os.path.join(home, 'legislation_archive/legislation.govt.nz/subscribe')
 BUILD_DIR = './build'
+SCRIPT_DIR = './scripts'
 REPROCESS_DOCS = False
 #REPROCESS_DOCS = True
 

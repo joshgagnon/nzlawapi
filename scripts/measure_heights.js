@@ -7,6 +7,7 @@ var sizes = (system.args[3]||'480,768,992,1200').split(',').map(function(x){
 
 var page = require('webpage').create();
 page.content = fs.read(system.args[1]);
+
 var result = page.evaluate(function(sizes){
 	var obj = {};
 	sizes.forEach(function(size){
@@ -15,6 +16,9 @@ var result = page.evaluate(function(sizes){
 	});
 	return obj
 }, sizes);
-page.content = fs.write(system.args[2], JSON.stringify(result), 'w');
+try{
+	console.log(JSON.stringify(result));
+	fs.write(system.args[2], JSON.stringify(result), 'w');
+}catch(e){}
 phantom.exit();
 

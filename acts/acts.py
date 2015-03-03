@@ -13,7 +13,7 @@ import os
 def instrument_skeleton_response(instrument):
     return {
         'skeleton': instrument.skeleton,
-        'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
@@ -32,7 +32,7 @@ def instrument_full(instrument):
         return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),
-        'html_contents_page': etree.tostring(tohtml(instrument.tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
@@ -67,7 +67,7 @@ def instrument_location(instrument, location):
     tree = cull_tree(find_node_by_location(instrument.tree, location))
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
-        'html_contents_page': etree.tostring(tohtml(tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
@@ -86,7 +86,7 @@ def instrument_govt_location(instrument, id):
     tree = cull_tree(find_node_by_govt_id(instrument.tree, id))
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
-        'html_contents_page': etree.tostring(tohtml(tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html"),
+        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',

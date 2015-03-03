@@ -10,6 +10,8 @@ import datetime
 import json
 import tempfile
 import os
+from subprocess import Popen, PIPE
+import shutil
 
 
 class Instrument(object):
@@ -20,7 +22,7 @@ class Instrument(object):
         self.contents = contents
         self.title = get_title(self.tree) #NO!
         self.parts = []
-        ignore = ['document', 'processed_document', 'attributes', 'skeleton']
+        ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
         self.format_dates()
 
@@ -42,10 +44,19 @@ class Instrument(object):
 
 def measure_heights(html):
     css_path = os.path.abspath(os.path.join(current_app.config.get("BUILD_DIR"), 'css/style.css'))
+    js = os.path.abspath(os.path.join(current_app.config.get("SCRIPT_DIR"), 'measure_heights.js'))
     tmp_dir = tempfile.mkdtemp()
-    with open(os.path.join(tmp_dir, 'instrument.html'), 'w') as out_file:
+    html_file = os.path.join(tmp_dir, 'instrument.html')
+    result_file = os.path.join(tmp_dir, 'result.json')
+    with open(html_file, 'w') as out_file:
         out_file.write(render_template('instrument_parts.html', content=html, css_path=css_path))
-        print out_file
+
+    p = Popen(['phantomjs', js, html_file, result_file], stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate()
+    with open(result_file) as in_file:
+        results = json.loads(in_file.read())
+    shutil.rmtree(tmp_dir , ignore_errors=True)
+    return results
 
 
 def process_skeleton(id, tree, db=None):
@@ -95,14 +106,30 @@ def process_skeleton(id, tree, db=None):
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
     skeleton = etree_to_dict(html.getroot(), end='data-hook')
     with (db or get_db()).cursor() as cur:
-        query = """UPDATE documents d SET skeleton =  %(skeleton)s
+        query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
                     WHERE d.id =  %(id)s """
         cur.execute(query, {
             'id': id,
-            'skeleton': json.dumps(skeleton)})
+            'skeleton': json.dumps(skeleton),
+            'heights': json.dumps(heights)})
+        cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
+        args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, i, p)) for i, p in enumerate(parts))
+        cur.execute('INSERT INTO document_parts (document_id, num, data) VALUES ' + args_str)
 
     (db or get_db()).commit()
     return skeleton
+
+
+def process_contents(id, tree, db=None):
+    with (db or get_db()).cursor() as cur:
+        contents = etree.tostring(tohtml(tree, os.path.join('xslt', 'contents.xslt')), encoding='UTF-8', method="html")
+        query = """UPDATE documents d SET contents=  %(contents)s
+                    WHERE d.id =  %(id)s """
+        cur.execute(query, {
+            'id': id,
+            'contents': contents})
+    (db or get_db()).commit()
+    return contents
 
 
 def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=None):
@@ -128,9 +155,7 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
-
     row.get('id')
-
     return tree
 
 
@@ -141,11 +166,16 @@ def prep_instrument(result, replace, db):
         tree = process_instrument(row=result, db=db)
     else:
         tree = etree.fromstring(result.get('processed_document'))
-    if True or not result.get('skeleton'):
+    if not result.get('skeleton'):
         skeleton = process_skeleton(result.get('id'), tree, db=db)
     else:
         skeleton = result.get('skeleton')
-    return Instrument(id=result.get('id'), tree=tree, skeleton=skeleton, contents=result.get('contents'), attributes=dict(result))
+    if not result.get('contents'):
+        contents = process_contents(result.get('id'), tree, db=db)
+    else:
+        contents = result.get('contents')
+
+    return Instrument(id=result.get('id'), tree=tree, skeleton=skeleton, contents=contents, attributes=dict(result))
 
 
 def get_act_summary(doc_id, db=None):
