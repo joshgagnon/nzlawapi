@@ -64,8 +64,10 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
       });
     }
   },
-  componentDidUpdate: function(){
-
+  componentDidUpdate: function(prevProps){
+    if(prevProps.children.length !== prevProps.children.length){
+      this.setTabVisibility();
+    }
   },
   componentDidMount: function(){
     this._resize_handler = _.debounce(this.setTabVisibility, 100, this);
