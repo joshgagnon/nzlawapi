@@ -76,7 +76,7 @@
                         <h2 lang="en-NZ" class="schedule">
                             <span class="label">
                                 <span class="hit">Schedule</span>
-                                <xsl:if test="text!='Schedule'">&#160;<xsl:value-of select="label"/></xsl:if>
+                                <xsl:if test="./label/text()!='Schedule'">&#160;<xsl:value-of select="label"/></xsl:if>
                             </span><br/>
                             <xsl:value-of select="heading"/>
                         </h2>

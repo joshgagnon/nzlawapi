@@ -71,13 +71,17 @@ var ArticleContent = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     getInitialState: function(){
-        if(this.isPartial()){
+        if(this.isSkeleton()){
             this._refs = {};
             var heights = this.props.content.getIn(['heights']).toJS();
             var widths = _.map(_.keys(heights), Number).sort(function(a,b){ return a - b; });
             this.measured_heights = {};
             this.calculated_heights = {};
             this._visible = {};
+            this._child_ids = {}
+            this._child_locations = {};
+            this._skeleton_locations = {};
+            //this._ordered_keys = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)});
             return {
                 widths: widths,
                 height_ratio: Immutable.fromJS({key: 0, coeff: 1})
@@ -86,45 +90,45 @@ var ArticleContent = React.createClass({
         return {};
     },
     componentDidMount: function(){
-        this.setup_scroll();
-        if(this.isPartial()){
-
-            if(!this.isJSONPartial()){
-                this.popRefs();
-                this.resizeSkeleton();
-                this.setSubVisibility();
-            }
+        if(this.isSkeleton()){
+            this.popRefs();
+            this.resizeSkeleton();
+            this.setSubVisibility();
+           // this.setupSkeletonScroll();
+        }
+        else{
+            this.setupScroll();
         }
     },
     componentDidUpdate: function(){
-        if(this.isPartial()){
+        if(this.isSkeleton()){
+            this.popRefs();
             this.resizeSkeleton();
+            this.setSubVisibility();
         }
     },
-    isPartial: function(){
+    isSkeleton: function(){
         return this.props.content.get('format') === 'skeleton';
-    },
-    isJSONPartial: function(){
-        return !!this.props.content.get('skeleton');
     },
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container');
     },
-    setup_scroll: function(){
+    setupScroll: function(){
         this.offset = 100;
         var self = this;
-        this.refresh();
+        this.refresh(null, true);
         var find_current = function(store){
             var top = self.getScrollContainer().scrollTop();
-            var i = _.sortedIndex(store.offsets, top) -1;
-            return store.targets[Math.min(Math.max(0, i), store.targets.length -1)];
+            // bizzare bug wouldn't le me use sortedIndex iteratee
+            var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top)
+            return store[Math.min(Math.max(0, i), store.length -1)].target;
         };
         this.throttle_visibility = _.throttle(this.setSubVisibility, 300)
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top;
-                if(self.scrollHeight !== $(self.getDOMNode()).height()){
-                    self.refresh();
+                if(!this.isSkeleton() && self.scrollHeight !== $(self.getDOMNode()).height()){
+                    self.refresh(null, true);
                 }
                 var $el = $(find_current(self.locations));
                 var result = getLocationString($el)
@@ -135,21 +139,57 @@ var ArticleContent = React.createClass({
             }
         }, 0);
         var $parent = this.getScrollContainer();
-        //$parent.on('scroll', this.debounce_scroll);
-        if(this.isPartial()){
-            this.setSubVisibility();
-            $parent.on('scroll',  this.throttle_visibility);
-            //$parent.on('touchmove', this.debounce_visibility);
-           // $(window).on('resize', this.reset_heights);
-        }
+        $parent.on('scroll', this.debounce_scroll);
     },
-    reset_heights: function(){
-        this.measured_heights = {};
+    setupSkeletonScroll: function(){
+        this.offset = 100;
+        var self = this;
+        this.refresh(null, true);
+        var find_current_part = function(top){
+            var skele_keys = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)});
+
+            console.log(skele_keys, top)
+            var key = _.sortedIndex(skele_keys, top, function(part){
+                if(part === top) { return top; }
+                return self._skeleton_locations[part].root
+            })-1;
+
+            debugger
+            // do bounds,
+            return key+'';
+        };
+        this.debounce_scroll = _.debounce(function(){
+            if(self.isMounted()){
+                var top = self.getScrollContainer().offset().top;
+                var $el = find_current_part(top);
+                debugger;
+                var result = getLocationString($el)
+                var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+                if(result){
+                    Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
+                }
+            }
+        }, 0);
+        //this.throttle_visibility = _.throttle(this.setSubVisibility, 300);
+        var $parent = this.getScrollContainer();
+        $parent.on('scroll', this.debounce_scroll);
+       //$parent.on('scroll',  this.throttle_visibility);
+       // $(window).on('resize', this.reset_heights);
+
     },
     popRefs: function(){
         var self = this;
+        this._child_ids = {}
+        this._child_locations = {};
        $('[data-hook]', this.getDOMNode()).each(function(){
-            self._refs[this.getAttribute('data-hook')] = this;
+            var hook = this.getAttribute('data-hook');
+            self._refs[hook] = this;
+            (this.getAttribute('data-child-ids') || '').split(';').map(function(id){
+                self._child_ids['#'+id] = hook;
+            });
+            (this.getAttribute('data-child-locations') || '').split(';').map(function(id){
+                self._child_locations[id.trim()] = hook;
+            });
        });
     },
     resizeSkeleton: function(){
@@ -183,7 +223,10 @@ var ArticleContent = React.createClass({
             if(!this.measured_heights[key]){
                 this._refs[key].style.height=this.calculated_heights[key]+'px';
             }
+            this._skeleton_locations[key] = this._skeleton_locations[key] || {};
+            this._skeleton_locations[key].root = this._refs[key].offsetTop;
         }
+        this.refresh(null, true);
     },
     setSubVisibility: function(){
         if(this.isMounted()){
@@ -215,14 +258,12 @@ var ArticleContent = React.createClass({
             }, this);
 
             if(change){
-                console.log('set visible')
-                console.log(requested_parts)
                 Actions.getMorePage(this.props.page_id,
                     {requested_parts: requested_parts});
-                //then hide and show
             }
         }
     },
+
     showPart: function(k, parts){
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
@@ -230,6 +271,14 @@ var ArticleContent = React.createClass({
             this._refs[k].style.height = 'auto';
             this._refs[k].classList.remove('csspinner');
             this.measured_heights[k] = this._refs[k].clientHeight;
+            var top = this._refs[k].offsetTop;
+            var children =  _.zipObject(_.map(this._refs[k].querySelectorAll('[data-location]'),
+                function(el){ return [el.getAttribute('data-location'), el.offsetTop - top];
+            }));
+            this._skeleton_locations[k] = {
+                root: top,
+                children: children
+            };
         }
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
@@ -243,7 +292,7 @@ var ArticleContent = React.createClass({
     updateParts: function(parts){
         _.map(this._visible, function(visible, k){
             if(visible){
-                this.showPart(k, parts)
+                this.showPart(k, parts);
             }
             else if(!visible){
                 this.hidePart(k);
@@ -251,7 +300,7 @@ var ArticleContent = React.createClass({
         }, this);
     },
     shouldComponentUpdate: function(newProps, newState){
-        // total hack job
+        // total hack job, perhaps move to direct pagestore listener
         if(this.props.parts !== newProps.parts){
             this.updateParts(newProps.parts);
         }
@@ -262,12 +311,7 @@ var ArticleContent = React.createClass({
         if(this.props.content.get('error')){
             return this.renderError()
         }
-        else if(this.isPartial() && this.isJSONPartial()){
-            return this.renderSkeleton();
-        }
-        else{
-            return this.renderStandard();
-        }
+        return this.renderStandard();
     },
     renderError: function(){
         return <div className="article-error"><p className="text-danger">{this.props.content.error}</p></div>
@@ -275,74 +319,27 @@ var ArticleContent = React.createClass({
     renderStandard: function(){
         return <div dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
-    renderSkeleton: function(){
-        var self = this;
-        var attrib_transform = {'@class': 'className', '@style': 'fauxstyle', '@tabindex': 'tabIndex', '@colspan': 'colSpan'};
-        var id = 0;
-        var count =0;
-        function to_components(v){
-            var attributes = {}
-            _.each(v, function(v, k){
-                attributes['key'] = id++;
-                if(attrib_transform[k]) attributes[attrib_transform[k]] = v
-                else if(k[0] === '@') attributes[k.substring(1)] = v;
-            });
-            if(attributes['data-hook']){
-                var hook = attributes['data-hook'];
-                attributes['ref'] = hook;
-                if(self.state.visible[hook] && self.props.content.getIn(['parts', hook])){
-                    attributes['data-visible'] = true;
-                    attributes['dangerouslySetInnerHTML'] = {__html: self.props.content.getIn(['parts', hook])};
-                }
-                else if(self.measured_heights[hook]){
-                    attributes.style = {height: self.measured_heights[hook]};
-                }
-                else{
-                    attributes.style = {height: self.calculated_heights[hook]};
-                }
-            }
-            if(attributes['data-hook']){
-                return React.DOM[v.tag](attributes);
-            }
-            count++;
-            return [React.DOM[v.tag](attributes, v['#text'], _.flatten(_.map(v.children, to_components))), v['#tail']];
-        }
-
-        var components = this._components || to_components(this.props.content.get('skeleton').toJS());
-        this._components = components;
-        return <div>
-                { this._components }
-            </div>
-    },
-    refresh: function(){
+    refresh: function(node, reset){
         var self = this;
         var pos = 'offset';
-        this.locations = {
-            offsets: [],
-            targets: []
-        };
+        if(reset){
+            this.locations = [];
+        }
         var offset = this.getScrollContainer().offset().top;
         this.scrollHeight = $(self.getDOMNode()).height();
-        $(self.getDOMNode())
+        this.locations = self.locations.concat($(node || self.getDOMNode())
             .find('[data-location]')
             .map(function() {
                 var $el = $(this);
                 return ( $el.is(':visible') && [
-                    [$el[pos]().top, this]
+                    {offset: $el[pos]().top - offset, target: this}
                 ]) || null
             })
+            .toArray())
+        this.locations
             .sort(function(a, b) {
-                return a[0] - b[0]
-            })
-            .each(function(){
-                    self.locations.offsets.push(this[0] - offset);
-                    self.locations.targets.push(this[1]);
-                });
-        this.hooks = {
-            offsets: [],
-            targets: []
-        };
-
+                return a.offset - b.offset
+            });
     },
     popoverJumpTo: function(){
         Actions.articleJumpTo(this.props.page, {
@@ -360,13 +357,17 @@ var ArticleContent = React.createClass({
                 node = node.find('[data-location^="'+jump.location[i]+'"]');
             }
             target = node;
+            // todo, use _child_locations if not found
         }
         else if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
+            if(!target.length){
+                target = $(this._refs[this._child_ids[jump.id]]);
+            }
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll || this.isSkeleton() ? 0: 300);
         }
         else{
             return 'Not Found';
@@ -375,9 +376,8 @@ var ArticleContent = React.createClass({
     componentWillUnmount: function(){
         var $parent =  this.getScrollContainer();
         $parent.off('scroll', this.debounce_scroll);
-        if(this.isPartial()){
+        if(this.isSkeleton()){
             $parent.off('scroll', this.debounce_visibility);
-            $(window).off('resize', this.reset_heights);
         }
     }
 });

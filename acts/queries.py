@@ -59,7 +59,7 @@ def measure_heights(html):
     out, err = p.communicate()
     with open(result_file) as in_file:
         results = json.loads(in_file.read())
-    #shutil.rmtree(tmp_dir , ignore_errors=True)
+    shutil.rmtree(tmp_dir , ignore_errors=True)
     return results
 
 
@@ -70,11 +70,11 @@ def process_skeleton(id, tree, db=None):
     min_size = 200
     i = [0]
 
-    def wrap(nodes):
+    def wrap(tag, nodes):
         string = ''.join([etree.tostring(n, encoding='UTF-8', method="html") for n in nodes])
         if len(string) < min_size:
             return nodes
-        div = etree.Element('div')
+        div = etree.Element(tag)
         div.attrib['data-hook'] = '%d' % len(parts)
         div[:] = nodes
         parts.append(string)
@@ -86,15 +86,21 @@ def process_skeleton(id, tree, db=None):
         results = []
         for j, n in list(enumerate(node)):
             length = len(etree.tostring(n))
-            if length > max_size:
+            if n.tag == 'table':
                 if len(to_join):
-                    results += wrap(to_join)
+                    results += wrap(n.tag, to_join)
+                    to_join = []
+                results += wrap(n.tag, to_join)
+
+            elif length > max_size:
+                if len(to_join):
+                    results += wrap('div', to_join)
                     to_join = []
                 running = 0
                 results += [depth(n)]
             else:
                 if running + length > max_size:
-                    results += wrap(to_join)
+                    results += wrap('div', to_join)
                     to_join = [n]
                     running = 0
                 else:
@@ -102,7 +108,7 @@ def process_skeleton(id, tree, db=None):
                     to_join.append(n)
 
         if len(to_join):
-            results += wrap(to_join)
+            results += wrap('div', to_join)
         node[:] = results
         return node
 
@@ -117,7 +123,7 @@ def process_skeleton(id, tree, db=None):
         el.attrib['data-child-ids'] = ids
         el.attrib['data-child-locations'] = locations
         el[:] = []
-        
+
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
