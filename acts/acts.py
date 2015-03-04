@@ -12,7 +12,6 @@ import os
 
 def instrument_skeleton_response(instrument):
     return {
-        #'skeleton': instrument.skeleton,
         'html_content': instrument.skeleton,
         'html_contents_page': instrument.contents,
         'title': instrument.title,
@@ -30,7 +29,7 @@ def instrument_skeleton_response(instrument):
     }
 
 def instrument_full(instrument):
-    if current_app.config.get('USE_SKELETON'):
+    if  current_app.config.get('USE_SKELETON'):
         return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),

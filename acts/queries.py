@@ -53,7 +53,6 @@ def measure_heights(html):
     result_file = os.path.join(tmp_dir, 'result.json')
     with codecs.open(html_file, 'w', encoding='utf8') as out_file, codecs.open(css_path, encoding='utf8') as css:
         out_file.write(render_template('instrument_parts.html', content=html, css=css.read()))
-
     p = Popen(['phantomjs', js, html_file, result_file], stdout=PIPE, stderr=PIPE)
     print html_file
     out, err = p.communicate()
@@ -90,7 +89,7 @@ def process_skeleton(id, tree, db=None):
                 if len(to_join):
                     results += wrap(n.tag, to_join)
                     to_join = []
-                results += wrap(n.tag, to_join)
+                results += wrap('div', [n])
 
             elif length > max_size:
                 if len(to_join):
@@ -131,7 +130,8 @@ def process_skeleton(id, tree, db=None):
         cur.execute(query, {
             'id': id,
             'skeleton': skeleton,
-            'heights': json.dumps(heights)})
+            'heights': json.dumps(heights)
+        })
         cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
         args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, i, p)) for i, p in enumerate(parts))
         cur.execute('INSERT INTO document_parts (document_id, num, data) VALUES ' + args_str)
