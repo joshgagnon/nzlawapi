@@ -260,7 +260,6 @@ module.exports = React.createClass({
                 </form>
     },
     render: function(){
-        console.log('render')
        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
         if(this.state.browser.get('underlines') ){

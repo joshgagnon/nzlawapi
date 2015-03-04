@@ -81,7 +81,7 @@ var ArticleContent = React.createClass({
             this._child_ids = {}
             this._child_locations = {};
             this._skeleton_locations = {};
-            //this._ordered_keys = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)});
+            this._part_count = this.props.content.getIn(['heights', widths[0]+'' ]).size;
             return {
                 widths: widths,
                 height_ratio: Immutable.fromJS({key: 0, coeff: 1})
@@ -94,7 +94,7 @@ var ArticleContent = React.createClass({
             this.popRefs();
             this.resizeSkeleton();
             this.setSubVisibility();
-           // this.setupSkeletonScroll();
+            this.setupSkeletonScroll();
         }
         else{
             this.setupScroll();
@@ -119,7 +119,6 @@ var ArticleContent = React.createClass({
         this.refresh(null, true);
         var find_current = function(store){
             var top = self.getScrollContainer().scrollTop();
-            // bizzare bug wouldn't le me use sortedIndex iteratee
             var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top)
             return store[Math.min(Math.max(0, i), store.length -1)].target;
         };
@@ -127,14 +126,11 @@ var ArticleContent = React.createClass({
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top;
-                if(!this.isSkeleton() && self.scrollHeight !== $(self.getDOMNode()).height()){
-                    self.refresh(null, true);
-                }
                 var $el = $(find_current(self.locations));
                 var result = getLocationString($el)
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
-                    Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
+                    Actions.articlePosition({pixel: self.getScrollContainer.scrollTop() + self.offset, repr: result, id: id});
                 }
             }
         }, 0);
@@ -142,40 +138,36 @@ var ArticleContent = React.createClass({
         $parent.on('scroll', this.debounce_scroll);
     },
     setupSkeletonScroll: function(){
-        this.offset = 100;
-        var self = this;
-        this.refresh(null, true);
-        var find_current_part = function(top){
-            var skele_keys = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)});
-
-            console.log(skele_keys, top)
-            var key = _.sortedIndex(skele_keys, top, function(part){
-                if(part === top) { return top; }
-                return self._skeleton_locations[part].root
-            })-1;
-
-            debugger
-            // do bounds,
-            return key+'';
-        };
-        this.debounce_scroll = _.debounce(function(){
-            if(self.isMounted()){
-                var top = self.getScrollContainer().offset().top;
-                var $el = find_current_part(top);
-                debugger;
-                var result = getLocationString($el)
-                var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-                if(result){
-                    Actions.articlePosition({pixel: $(self.getDOMNode()).parents('.tab-content, .results-container').scrollTop() + self.offset, repr: result, id: id});
-                }
-            }
-        }, 0);
-        //this.throttle_visibility = _.throttle(this.setSubVisibility, 300);
         var $parent = this.getScrollContainer();
+        this.debounce_scroll = _.debounce(this.updateSkeletonScroll, 0);
         $parent.on('scroll', this.debounce_scroll);
-       //$parent.on('scroll',  this.throttle_visibility);
-       // $(window).on('resize', this.reset_heights);
-
+        this.debounce_visibility = _.debounce(this.setSubVisibility, 300);
+        $parent.on('scroll',  this.debounce_visibility);
+    },
+    updateSkeletonScroll: function(){
+        var self = this;
+        var find_current_part = function(top){
+            var ordered_skeleton = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
+                .map(function(p){
+                    return {value: p, height: self._skeleton_locations[p].root}
+                });
+            var key = _.sortedIndex(ordered_skeleton, {height: top}, 'height');
+            var part = Math.max(0, key-1)+'';
+            if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length ){
+                return self._refs[part];
+            }
+            var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last);
+            return self._skeleton_locations[part].sorted_children[child_key];
+        };
+        if(self.isMounted()){
+            var top = self.getScrollContainer().scrollTop();
+            var $part = $(find_current_part(top));
+            var result = getLocationString($part)
+            var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+            if(result){
+                Actions.articlePosition({pixel: top, repr: result, id: id});
+            }
+        }
     },
     popRefs: function(){
         var self = this;
@@ -228,6 +220,12 @@ var ArticleContent = React.createClass({
         }
         this.refresh(null, true);
     },
+    recalculateOffsets: function(index){
+        for(var i=index;i < this._part_count.length; i++){
+            var key = i+''
+            this._skeleton_locations[key].root = this._refs[key].offsetTop;
+        }
+    },
     setSubVisibility: function(){
         if(this.isMounted()){
             var self = this;
@@ -235,6 +233,7 @@ var ArticleContent = React.createClass({
             var height = this.getScrollContainer().height();
             var change = false;
             var requested_parts = [];
+             var resize_index =  this._part_count;
             _.each(this._refs, function(r, k){
                 var show = $(r).isOnScreen(self.scroll_threshold);
                 var local_change = false;
@@ -244,7 +243,9 @@ var ArticleContent = React.createClass({
                 this._visible[k] = show;
                 if(local_change){
                     if(show){
-                        this.showPart(k, this.props.parts);
+                        if(this.showPart(k, this.props.parts) && (k|0) < resize_index){
+                            resize_index = k|0;
+                        }
                     }
                     else{
                         this.hidePart(k);
@@ -254,9 +255,10 @@ var ArticleContent = React.createClass({
                 if($(r).isOnScreen(self.fetch_threshold)){
                     requested_parts.push(k);
                 }
-
             }, this);
-
+            if(resize_index < this._part_count){
+                this.recalculateOffsets(resize_index);
+            }
             if(change){
                 Actions.getMorePage(this.props.page_id,
                     {requested_parts: requested_parts});
@@ -265,24 +267,36 @@ var ArticleContent = React.createClass({
     },
 
     showPart: function(k, parts){
+        var height_change = false;
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
+            var old_height = this._refs[k].clientHeight
+            this._refs[k].style.height = 'auto';
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
+            this.measured_heights[k] =  this._refs[k].clientHeight;
+            if(old_height !== this.measured_heights[k]){
+                height_change = true;
+            }
             this._refs[k].setAttribute('data-visible', true);
             this._refs[k].style.height = 'auto';
             this._refs[k].classList.remove('csspinner');
-            this.measured_heights[k] = this._refs[k].clientHeight;
+
             var top = this._refs[k].offsetTop;
-            var children =  _.zipObject(_.map(this._refs[k].querySelectorAll('[data-location]'),
-                function(el){ return [el.getAttribute('data-location'), el.offsetTop - top];
+            var pairs = _.map(this._refs[k].querySelectorAll('[data-location]'),
+                function(el){ return [el, el.offsetTop - top];
+            });
+            var children =  _.zipObject(pairs.map(function(p){
+                return [p[0].getAttribute('data-location'), p[1]]
             }));
             this._skeleton_locations[k] = {
                 root: top,
-                children: children
+                children: children,
+                sorted_children: pairs
             };
         }
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
         }
+        return height_change;
     },
     hidePart: function(k){
         this._refs[k].innerHTML = '';
@@ -290,14 +304,21 @@ var ArticleContent = React.createClass({
         this._refs[k].classList.remove('csspinner');
     },
     updateParts: function(parts){
+        var resize_index =  this._part_count;
         _.map(this._visible, function(visible, k){
             if(visible){
-                this.showPart(k, parts);
+                if(this.showPart(k, parts) && (k|0) < resize_index){
+                    resize_index = k|0;
+                }
             }
             else if(!visible){
                 this.hidePart(k);
             }
         }, this);
+        if(resize_index < this._part_count){
+            this.recalculateOffsets(resize_index);
+        }
+        this.updateSkeletonScroll();
     },
     shouldComponentUpdate: function(newProps, newState){
         // total hack job, perhaps move to direct pagestore listener
@@ -358,6 +379,9 @@ var ArticleContent = React.createClass({
             }
             target = node;
             // todo, use _child_locations if not found
+            if(!target.length){
+                debugger
+            }
         }
         else if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);

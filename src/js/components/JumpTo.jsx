@@ -16,7 +16,9 @@ module.exports = React.createClass({
         return {};
     },
     onPositionChange: function(value){
-        this.setState({article_location: value.repr});
+        if(this.refs.jump_to.getInputDOMNode() !== document.activeElement){
+            this.setState({article_location: value.repr});
+        }
     },
     onKeyDown: function(event){
          if (event.key === 'Enter'){
