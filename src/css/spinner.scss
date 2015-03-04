@@ -15,46 +15,6 @@ $deep-red-trans:rgba($deep-red, 0.7);
   position: relative;
 }
 
-.csspinner:after {
-  z-index: 2;
-  content: "";
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: 0 0 0 -20px;
-  transition: all .75s ease 0s;
-  border-radius: 100%;
-  -webkit-box-shadow: $deep-red-trans 1.5em 0 0 0, $deep-red-trans 1.1em 1.1em 0 0, $deep-red-trans 0 1.5em 0 0, $deep-red-trans -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, $deep-red-trans 0 -1.5em 0 0, $deep-red-trans 1.1em -1.1em 0 0;
-  box-shadow: $deep-red-trans 1.5em 0 0 0, $deep-red-trans 1.1em 1.1em 0 0, $deep-red-trans 0 1.5em 0 0, $deep-red-trans -1.1em 1.1em 0 0, $deep-red-trans -1.5em 0 0 0, $deep-red-trans -1.1em -1.1em 0 0, $deep-red-trans 0 -1.5em 0 0, $deep-red-trans 1.1em -1.1em 0 0;
-  font-size: 10px;
-  border-radius: 0.5em;
-  content: '';
-  display: block;
-  font-size: 10px;
-  width: 1em;
-  height: 1em;
-
-  -webkit-animation: spinner 1500ms infinite linear;
-  -webkit-animation-name: spinner;
--webkit-animation-duration: 1500ms;
--webkit-animation-iteration-count: infinite;
--webkit-animation-timing-function: linear;
--webkit-animation-fill-mode: forwards;
-  -moz-animation: spinner 1500ms infinite linear;
-  -ms-animation: spinner 1500ms infinite linear;
-  -o-animation: spinner 1500ms infinite linear;
-  animation: spinner 1500ms infinite linear;
-  -webkit-transform-origin: center;
-  -ms-transform-origin: center;
-  transform-origin: center;
-  transform-origin: center;
-}
-.csspinner.no-overlay:before {
-  content: none;
-  display: none;
-}
-
 @-webkit-keyframes spinner {
   0% {
     -webkit-transform: rotate(0deg);
@@ -126,3 +86,42 @@ $deep-red-trans:rgba($deep-red, 0.7);
     transform: rotate(360deg);
   }
 }
+
+.full-csspinner,
+.csspinner:after {
+  z-index: 2;
+  content: "";
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0 0 0 -20px;
+  //transition: all .75s ease 0s;
+  border-radius: 100%;
+  -webkit-box-shadow: $deep-red-trans 1.5em 0 0 0, $deep-red-trans 1.1em 1.1em 0 0, $deep-red-trans 0 1.5em 0 0, $deep-red-trans -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, $deep-red-trans 0 -1.5em 0 0, $deep-red-trans 1.1em -1.1em 0 0;
+  box-shadow: $deep-red-trans 1.5em 0 0 0, $deep-red-trans 1.1em 1.1em 0 0, $deep-red-trans 0 1.5em 0 0, $deep-red-trans -1.1em 1.1em 0 0, $deep-red-trans -1.5em 0 0 0, $deep-red-trans -1.1em -1.1em 0 0, $deep-red-trans 0 -1.5em 0 0, $deep-red-trans 1.1em -1.1em 0 0;
+  font-size: 10px;
+  border-radius: 0.5em;
+  content: '';
+  display: block;
+  font-size: 10px;
+  width: 1em;
+  height: 1em;
+
+  -webkit-animation: spinner 1500ms infinite linear;
+  -moz-animation: spinner 1500ms infinite linear;
+  -ms-animation: spinner 1500ms infinite linear;
+  -o-animation: spinner 1500ms infinite linear;
+  animation: spinner 1500ms infinite linear;
+
+  -webkit-transform-origin: center;
+  -ms-transform-origin: center;
+  transform-origin: center;
+  transform-origin: center;
+  -webkit-backface-visibility: hidden;
+}
+
+
+
+
+

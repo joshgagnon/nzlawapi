@@ -514,7 +514,7 @@ var MobilePopovers = React.createClass({
     render: function(){
         // perhaps swap popovers for different view on mobile
         if(!this.props.page.get('content')){
-            return <div className="search-results"><div className="csspinner" /></div>
+            return <div className="search-results"><div className="full-csspinner" /></div>
         }
         return <div><div className="legislation-result" onClick={this.interceptLink} >
            { this.warningsAndErrors() }
