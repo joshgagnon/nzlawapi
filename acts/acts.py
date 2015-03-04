@@ -21,7 +21,7 @@ def instrument_skeleton_response(instrument):
         'attributes': instrument.attributes,
         'format': 'skeleton',
         'heights': instrument.heights,
-        'parts': {}, #dict(('%d'  % i, v) for i, v in enumerate(instrument.parts)),
+        'parts': {},
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,
@@ -105,7 +105,7 @@ def instrument_govt_location(instrument, id):
 
 def instrument_more(instrument, parts):
     return {
-        'parts': dict(('%d' % i, v) for i, v in enumerate(instrument.parts) if '%d' % i in parts)
+        'parts': dict((i, v) for i, v in instrument.parts.items() if i in parts)
     }
 
 

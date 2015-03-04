@@ -107,12 +107,17 @@ def process_skeleton(id, tree, db=None):
         return node
 
     depth(html.getroot())
+    """ super expensive """
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
-    #skeleton = etree_to_dict(html.getroot(), end='data-hook')
 
-    # remove data-hooks
+    """ Now remove all the parts' children, saving things we may need to look up """
     for el in html.xpath('.//*[@data-hook]'):
+        ids = ';'.join(map(lambda e: e.attrib['id'], el.xpath('.//*[@id]')))
+        locations = ';'.join(map(lambda e: e.attrib['data-location'], el.xpath('.//*[@data-location]')))
+        el.attrib['data-child-ids'] = ids
+        el.attrib['data-child-locations'] = locations
         el[:] = []
+        
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
@@ -171,10 +176,12 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
 def fetch_parts(doc_id, db=None, parts=None):
     with (db or get_db()).cursor() as cur:
         if not parts:
-            cur.execute('SELECT data from document_parts WHERE document_id = %(doc_id)s ORDER BY num asc',
+            cur.execute('SELECT num, data from document_parts WHERE document_id = %(doc_id)s ORDER BY num asc',
                 {'doc_id': doc_id})
-            return map(lambda x: x[0], cur.fetchall())
-        return []
+        else:
+            cur.execute('SELECT num, data from document_parts WHERE document_id = %(doc_id)s  and num = ANY(%(parts)s) ORDER BY num asc',
+                    {'doc_id': doc_id, 'parts': parts})
+        return dict(map(lambda x: ('%s' % x[0], x[1]), cur.fetchall()))
 
 
 def prep_instrument(result, replace, db):

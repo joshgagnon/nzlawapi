@@ -350,7 +350,9 @@ var ArticleContent = React.createClass({
         });
     },
     onJumpTo: function(page, jump){
-        if(page.get('id') !== this.props.page_id) return;
+        if(page.get('id') !== this.props.page_id){
+            return;
+        }
         var target;
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
