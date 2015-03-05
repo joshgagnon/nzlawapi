@@ -1,0 +1,3 @@
+DROP MATERIALIZED VIEW IF EXISTS latest_instruments CASCADE;
+
+DROP  VIEW IF EXISTS titles;

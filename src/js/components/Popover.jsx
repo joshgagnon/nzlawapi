@@ -12,7 +12,7 @@ var PopoverBehaviour = {
         return !this.getLocalContent() && this.props.fetch
     },
     renderFooter: function(){
-        if(this.props.type !== 'definition'){
+        if(this.props.type === 'link'){
             return <div className="popover-footer">
                     <div className="row">
                         { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
@@ -24,7 +24,7 @@ var PopoverBehaviour = {
                             null }
                     </div>
                 </div>
-        }else{
+        }else if(this.props.type !== 'definition'){
             return <div className="popover-footer">
                     <div className="row">
                         <Button bsSize="small" onClick={this.addToPrint}>Add To Print</Button >

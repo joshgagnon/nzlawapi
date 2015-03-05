@@ -589,7 +589,20 @@ var MobilePopovers = React.createClass({
                     title: this.props.page.getIn(['content', 'title']) +' '+ getLocationString(target).repr,
                     govt_ids: ids
                 });
+            }
+            else if(link.closest('[data-location]').length){
+                // get location
+               Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
+                    {
+                    type: 'location',
+                    title: link.text(),
+                    id: link.attr('data-def-idx'),
+                    positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                    positionTop:link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
+                    source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
+                    fetched: true,
 
+                });
             }
         }
     },
