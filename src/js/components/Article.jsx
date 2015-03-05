@@ -586,7 +586,7 @@ var MobilePopovers = React.createClass({
                     this.props.page.get('id'),
                     {id: target.attr('id'),
                     document_id: this.props.page.getIn(['content', 'document_id']),
-                    title: this.props.page.get('title') +' '+ getLocationString(target).repr,
+                    title: this.props.page.getIn(['content', 'title']) +' '+ getLocationString(target).repr,
                     govt_ids: ids
                 });
 

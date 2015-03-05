@@ -308,6 +308,16 @@ body{
     .split .results-container:nth-child(2){
         left:50%;
     }
+
+    .split .article-overlay,
+    .print .article-overlay{
+        right: calc(50% + 10px);
+    }
+    .split .results-container:nth-child(2) .article-overlay{
+        right: 10px;
+    }
+
+
     @media print{
         .split .results-container{
             width:100% !important;
@@ -489,6 +499,7 @@ body{
             position: fixed;
             top: $top-bar-height-sm + 10px;
             margin-right:10px;
+            text-align: right;
             @media print{
                 display:none;
             }
