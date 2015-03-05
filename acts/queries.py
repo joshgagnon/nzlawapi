@@ -27,22 +27,24 @@ class Instrument(object):
         self.parts = []
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
-        self.format_dates()
-
-    def format_dates(self):
-        try:
-            assent_date = datetime.datetime.strptime(self.tree.attrib['date.assent'], "%Y-%m-%d").date()
-            self.tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')
-        except:
-            pass
-        try:
-            reprint_date = datetime.datetime.strptime(self.tree.xpath('.//reprint-date')[0].text, "%Y-%m-%d").date()
-            self.tree.attrib['formatted.reprint'] = reprint_date.strftime('%d %B %Y')
-        except:
-            pass
+        format_dates(self.tree)
 
     def select(self, requested):
         return [self.parts[i] for i in requested]
+
+
+
+def format_dates(tree):
+    try:
+        assent_date = datetime.datetime.strptime(tree.attrib['date.assent'], "%Y-%m-%d").date()
+        tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')
+    except:
+        pass
+    try:
+        reprint_date = datetime.datetime.strptime(tree.xpath('.//reprint-date')[0].text, "%Y-%m-%d").date()
+        tree.attrib['formatted.reprint'] = reprint_date.strftime('%d %B %Y')
+    except:
+        pass
 
 
 def measure_heights(html):
@@ -64,6 +66,7 @@ def measure_heights(html):
 
 def process_skeleton(id, tree, db=None):
     parts = []
+    format_dates(tree)
     html = tohtml(tree)
     max_size = 20000
     min_size = 200
@@ -105,7 +108,6 @@ def process_skeleton(id, tree, db=None):
                 else:
                     running += len(etree.tostring(n))
                     to_join.append(n)
-
         if len(to_join):
             results += wrap('div', to_join)
         node[:] = results
@@ -169,7 +171,7 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, x[0], json.dumps(x[1]))) for x in definitions.render().items())
+        args_str = ','.join(cur.mogrify("(%s,%s,%s)", (row.get('id'), x[0], json.dumps(x[1]))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
         cur.execute("INSERT INTO definitions (document_id, key, data) VALUES " + args_str)
         if refresh:

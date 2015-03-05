@@ -607,44 +607,6 @@ body{
         }
     }
 
-    /* bootstrap fixes */
-    .legislation .label{
-        display:initial;
-        color:#000;
-        text-align:initial;
-        white-space: initial;
-        border-radius:initial;
-    }
-    .legislation p.label{
-      display:block;
-    }
-    .legislation a,
-    .legislation a.def-popover,
-    .legislation a.def-popover{
-        color:#000;
-    }
-
-    &.underlines .legislation a{
-        text-decoration: underline;
-        color:#337ab7;
-
-    }
-    &.underlines .legislation{
-        h1,h2,h3,h4,h5,h6 {
-            a{
-                text-decoration: none;
-                color:#000;
-            }
-        }
-    }
-    &.underlines .legislation a.def-popover{
-        color:#000;
-        text-decoration: none;
-        border-bottom: 1px solid #00BD00;
-        cursor:pointer;
-    }
-
-
     .definition-result .catalex-src{
       margin-bottom: 10px;
       font-style: italic;

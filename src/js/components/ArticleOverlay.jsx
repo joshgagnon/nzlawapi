@@ -55,7 +55,6 @@ var ArticleAddPrintButton = React.createClass({
             id: this.props.content.get('document_id')},
             html: this.props.content.get('html_content')
         });
-        Actions.activatePrintMode();
     },
     render: function(){
         return   <button onClick={this.handleClick} className="btn btn-info">Add To Print</button>

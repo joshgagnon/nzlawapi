@@ -193,6 +193,7 @@ var ArticleSkeletonContent = React.createClass({
             var requested_parts = [];
              var resize_index =  this._part_count;
             _.each(this._refs, function(r, k){
+                r
                 var show = $(r).isOnScreen(self.scroll_threshold);
                 var local_change = false;
                 if(this._visible[k] !== show){
@@ -296,7 +297,11 @@ var ArticleSkeletonContent = React.createClass({
         return <div className="article-error"><p className="text-danger">{this.props.content.error}</p></div>
     },
     renderStandard: function(){
-        return <div dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
+        var classes = '';
+        if(this.props.content.getIn(['attributes', 'latest'])){
+            classes += 'latest-version ';
+        }
+        return <div className={classes} dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
     popoverJumpTo: function(){
         Actions.articleJumpTo(this.props.page, {
@@ -395,7 +400,11 @@ var ArticleContent = React.createClass({
         return <div className="article-error"><p className="text-danger">{this.props.content.error}</p></div>
     },
     renderStandard: function(){
-        return <div dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
+        var classes = '';
+        if(this.props.content.getIn(['attributes', 'latest'])){
+            classes += 'latest-version ';
+        }
+        return <div className={classes} dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
     refresh: function(){
         var self = this;

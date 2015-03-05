@@ -79,7 +79,6 @@ module.exports = React.createClass({
             }
         });
         this.close();
-        Actions.activatePrintMode();
     },
     render: function(){
         var last = this.props.sectionView.last();
