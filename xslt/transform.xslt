@@ -323,6 +323,7 @@
         <ul class="label-para">
             <xsl:call-template name="current"/>
             <li>
+                <xsl:call-template name="current"/>
                 <xsl:if test="label != '' and not(ancestor::*[@quote])">
                     <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
                 </xsl:if>

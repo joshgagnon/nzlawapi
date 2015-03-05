@@ -1,7 +1,26 @@
 "use strict";
 
 var React = require('react/addons');
+var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
+var Utils = require('../utils');
+var Immutable = require('immutable');
+
+
+
+var ArticleFocusLocationStore = Reflux.createStore({
+    listenables: Actions,
+    init: function(){
+        this.state = Immutable.fromJS([]);
+    },
+    onArticleFocusLocation: function(state){
+        this.state = Immutable.fromJS(state);
+        this.trigger(this.state)
+    }
+});
+
+
+
 
 var FullArticleButton = React.createClass({
     propTypes: {
@@ -61,6 +80,39 @@ var ArticleAddPrintButton = React.createClass({
     }
 });
 
+var ArticleFocusBreadCrumbs = React.createClass({
+    propTypes: {
+       page: React.PropTypes.object.isRequired,
+    },
+    mixins:[
+       Reflux.listenTo(ArticleFocusLocationStore, 'onLocation')
+    ],
+    getInitialState: function(){
+        return {breadcrumbs: Immutable.fromJS([])};
+    },
+    onLocation: function(location){
+        this.setState({breadcrumbs: location})
+    },
+    handleClick: function(i, event){
+        Actions.newPage({
+            title: this.state.breadcrumbs.getIn([i, 'title']),
+            query: this.state.breadcrumbs.getIn([i, 'query']).toJS(),
+        }, this.props.viewer_id);
+        event.preventDefault();
+    },
+    render: function(){
+        console.log(this.state.breadcrumbs.toJS());
+        return <ol className="breadcrumb">
+                { this.state.breadcrumbs.map(function(v, i){
+                    return <li key={i}>
+                    <a onClick={this.handleClick.bind(this, i)}
+                        href={Utils.queryUrl(v.get('query').toJS())}>
+                    {v.get('repr')}</a></li>
+                }, this).toJS()}
+        </ol>
+
+    }
+});
 
 
 var ArticleOverlay= React.createClass({
@@ -69,6 +121,9 @@ var ArticleOverlay= React.createClass({
     },
     render: function(){
         return <div className="article-overlay">
+
+                 { this.props.page.getIn(['content','format']) === 'fragment'?
+                     <ArticleFocusBreadCrumbs page={this.props.page} viewer_id={this.props.viewer_id}/> : null }
                 <div className="btn-group">
                 { this.props.page.getIn(['content','format']) === 'fragment' ? <FullArticleButton
                     content={this.props.page.get('content')}

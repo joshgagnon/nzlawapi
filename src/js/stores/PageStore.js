@@ -109,7 +109,7 @@ var PageStore = Reflux.createStore({
                         result.query = data.query;
                         result.query_string = null;
                         if(data.query.location){
-                            result.title += ' '+data.query.location;
+                            result.title += ' '+ data.query.location;
                         }
                     }
                     if(data.parts){

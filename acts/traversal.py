@@ -187,3 +187,5 @@ def get_references_for_ids(ids):
             join acts a on a.id = q.parent_id and q.mapper = 'acts' group by id, title """
         cur.execute(query, {'ids': ids})
         return {'references': cur.fetchall()}
+
+

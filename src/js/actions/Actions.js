@@ -22,7 +22,7 @@ module.exports = Reflux.createActions([
 
 	'articlePosition',
 	'articleJumpTo',
-
+	'articleFocusLocation',
 	'toggleAdvanced',
 
 	'requestReferences',

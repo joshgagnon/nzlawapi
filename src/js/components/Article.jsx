@@ -42,22 +42,61 @@ $.fn.isOnScreen = function(tolerance){
 };
 
 function getLocationString($el){
-    var result = ''
+    var repr = ''
+    var locs = [];
     if(!$el.attr('data-location-no-path')){
-        result = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
+        locs = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
             return $(this).attr('data-location');
-        }).toArray().reverse().join('');
+        }).toArray().reverse();
     }
-    result += $el.attr('data-location') || '';
-    return result;
+    locs.push($el.attr('data-location')||'');
+    locs = _.filter(locs);
+    repr = locs.join('')
+    return {repr: repr, locs: locs};
 }
 
-// TODO, break into popovers, and article,
-// return false on equality
+var articleLocation = {
+    _findCurrent: function(){
+        var target = $('.current', this.getDOMNode()).last();
+        var locs = getLocationString(target).locs;
+        var doc_type = this.props.content.getIn(['query', 'doc_type']);
+        var document_id = this.props.content.getIn(['query', 'document_id'])
+        var links = [{
+            repr: this.props.content.get('title'),
+            title: this.props.content.get('title'),
+            query:{
+                doc_type: doc_type,
+                document_id: document_id
+            }
+        }]
+        for(var i=0;i<locs.length;i++){
+            var loc = locs.slice(0, i+1).join('');
+            links.push({
+                repr: locs[i],
+                title: this.props.content.get('title') + ' '+ loc,
+                query:{
+                    doc_type: doc_type,
+                    document_id: document_id,
+                    find: 'location',
+                    location: loc
+                }
+            });
+        }
+        Actions.articleFocusLocation(links);
+    },
+
+    componentDidMount: function(){
+        this._findCurrent();
+    },
+    componentDidUpdate: function(){
+       this._findCurrent();
+    }
+}
 
 var ArticleSkeletonContent = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
+        articleLocation
     ],
     scroll_threshold: 4000,
     fetch_threshold: 12000,
@@ -85,6 +124,7 @@ var ArticleSkeletonContent = React.createClass({
         this.resizeSkeleton();
         this.setSubVisibility();
         this.setupSkeletonScroll();
+        this.updateSkeletonScroll();
     },
     componentDidUpdate: function(){
         this.popRefs();
@@ -120,10 +160,10 @@ var ArticleSkeletonContent = React.createClass({
         if(self.isMounted()){
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
-            var result = getLocationString($part)
+            var repr = getLocationString($part).repr;
             var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-            if(result){
-                Actions.articlePosition({pixel: top, repr: result, id: id});
+            if(repr){
+                Actions.articlePosition({pixel: top, repr: repr, id: id});
             }
         }
     },
@@ -350,6 +390,7 @@ var ArticleSkeletonContent = React.createClass({
 var ArticleContent = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
+        articleLocation
     ],
     scroll_threshold: 4000,
     fetch_threshold: 12000,
@@ -375,7 +416,7 @@ var ArticleContent = React.createClass({
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top;
                 var $el = $(find_current(self.locations));
-                var result = getLocationString($el)
+                var result = getLocationString($el).repr;
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
                     Actions.articlePosition({pixel: self.getScrollContainer().scrollTop() + self.offset, repr: result, id: id});
@@ -545,7 +586,7 @@ var MobilePopovers = React.createClass({
                     this.props.page.get('id'),
                     {id: target.attr('id'),
                     document_id: this.props.page.getIn(['content', 'document_id']),
-                    title: this.props.page.get('title') +' '+ getLocationString(target),
+                    title: this.props.page.get('title') +' '+ getLocationString(target).repr,
                     govt_ids: ids
                 });
 
