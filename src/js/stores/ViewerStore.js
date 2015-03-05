@@ -21,15 +21,15 @@ module.exports =  Reflux.createStore({
         return {views: this.views};
     },
     onSetState: function(data){
-        var views = this.getDefaultData().toJS();
         if(data.get('views')){
-            data.get('views');
-            _.forOwn(data.get('views').toJS(), function(v, k){
-                views[k] = _.defaults(v, this.getDefault())
-            }, this)
+            var views = this.getDefaultData().toJS();
+                data.get('views');
+                _.forOwn(data.get('views').toJS(), function(v, k){
+                    views[k] = _.defaults(v, this.getDefault())
+                }, this)
+            this.views = Immutable.fromJS(views);
+            this.trigger({views: this.views});
         }
-        this.views = Immutable.fromJS(views);
-        this.trigger({views: this.views});
     },
     pageUpdate: function(state){
         // if the active page is removed, we must change active

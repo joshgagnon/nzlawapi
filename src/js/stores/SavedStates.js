@@ -145,9 +145,13 @@ module.exports = Reflux.createStore({
     saveCurrent: function() {
         localStorage['current_view'] = JSON.stringify(this.prepState());
     },
-    onLoadPrevious: function() {
+    onLoadPrevious: function(filter) {
         if(localStorage['current_view']){
-            Actions.setState(Immutable.fromJS(JSON.parse(localStorage['current_view'])));
+            var data = JSON.parse(localStorage['current_view'])
+            if(filter){
+                data = _.pick.apply(_, [data].concat(filter));
+            }
+            Actions.setState(Immutable.fromJS(data));
             Actions.loadedFromStorage();
         }
     },

@@ -24,14 +24,11 @@ var PageStore = Reflux.createStore({
             this.pages = data.get('pages').map(function(page){
                 return Immutable.fromJS(this.generatePage(page.toJS()));
             }, this);
+            this.pages.map(function(p){
+                this.counter = (p.get('id').match(/\d+/)[0]|0) + 1;
+            }, this);
+            this.update();
         }
-        else{
-            this.pages =  Immutable.fromJS([]);
-        }
-        this.pages.map(function(p){
-            this.counter = (p.get('id').match(/\d+/)[0]|0) + 1;
-        }, this);
-        this.update();
     },
     generatePage: function(page){
         page = page || {}

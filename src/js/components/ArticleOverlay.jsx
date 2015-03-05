@@ -101,7 +101,6 @@ var ArticleFocusBreadCrumbs = React.createClass({
         event.preventDefault();
     },
     render: function(){
-        console.log(this.state.breadcrumbs.toJS());
         return <ol className="breadcrumb">
                 { this.state.breadcrumbs.map(function(v, i){
                     return <li key={i}>

@@ -91,9 +91,11 @@ module.exports = React.createClass({
     componentDidMount: function(){
         if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
             Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 'tab-0');
+            Actions.loadPrevious(['browser']);
         }
         else if(this.getParams().doc_type){
             Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 'tab-0');
+            Actions.loadPrevious(['browser']);
         }
         else{
             Actions.loadPrevious();
