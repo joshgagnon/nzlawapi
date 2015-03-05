@@ -1,23 +1,12 @@
-.legislation{
 
-	hr.signature-block,
-	hr.explnote,
-	hr.promulgation,
-	hr.reprint-index,
-	hr.reprint-index{
-		margin: 32px auto;
-	}
-}
-
-
-/* bootstrap fixes */
 .legislation .label{
     display:initial;
     color:#000;
-    text-align:initial;
-    white-space: initial;
+    text-align:left;
+    white-space: normal;
     border-radius:initial;
 }
+
 .legislation p.label{
   display:block;
 }
@@ -50,4 +39,15 @@
 
 .latest-version .legislation .reprint-date{
 	display:none;
+}
+
+.legislation{
+
+	hr.signature-block,
+	hr.explnote,
+	hr.promulgation,
+	hr.reprint-index,
+	hr.reprint-index{
+		margin: 32px auto;
+	}
 }
