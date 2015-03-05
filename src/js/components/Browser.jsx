@@ -174,7 +174,7 @@ module.exports = React.createClass({
             search_query: null,
             location: null
         });
-        Actions.setState(Immutable.Map());
+        Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
     },
 
     toggleAdvanced: function(){
