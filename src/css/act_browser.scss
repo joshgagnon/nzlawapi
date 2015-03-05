@@ -674,11 +674,17 @@ body{
             }
        }
        .popover-title{
-        padding-right: 30px;
+            padding-right: 30px;
+            background-color: $deep-red;
+            border-width: 0;
+            background-image: url(/build/images/hero-bg.jpg);
+            background-position: center center;
+            background-repeat: no-repeat;
+            color: white;
        }
        .show-more{
-        cursor: pointer;
-        text-decoration: none;
+            cursor: pointer;
+            text-decoration: none;
        }
       .popover-footer{
           margin-top: 0px;
@@ -687,6 +693,9 @@ body{
           border-top: 1px solid #ebebeb;
           border-radius: 0 0 5px 5px;
           text-align: center;
+          .btn{
+            margin: 0 10px;
+          }
         }
 
         .popover-close{
@@ -694,7 +703,7 @@ body{
           top: -1px;
           right: 10px;
           font-size: 22px;
-          color: #898989;
+          color: #fff;
           font-weight: bold;
           cursor: pointer;
         }

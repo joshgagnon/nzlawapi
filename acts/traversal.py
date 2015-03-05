@@ -48,7 +48,7 @@ def generate_range(string):
 
 def nodes_from_path_string(tree, path):
     #todo, rule
-    parts = re.compile('(s|sch|section|schedule) ([\.\da-z]+)\W*(cl )?(.*)?').match(path.lower())
+    parts = re.compile('(s|sch|section|schedule) ([\.\da-z ]+)\W*(cl )?(.*)?').match(path.lower())
     # actually, maybe easier just to get it in canonical form
     keys = []
     try:
@@ -70,6 +70,7 @@ def nodes_from_path_string(tree, path):
             if keys[0].startswith('sch'):
                 tree = tree.xpath(".//schedule")[0]
                 keys = []
+        print keys
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)

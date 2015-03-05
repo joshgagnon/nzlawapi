@@ -199,6 +199,8 @@ def prep_instrument(result, replace, db):
         tree = process_instrument(row=result, db=db)
     else:
         tree = etree.fromstring(result.get('processed_document'))
+    if not result.get('latest'):
+        tree.attrib['old-version'] = 'true'        
     if not result.get('skeleton'):
         skeleton, heights = process_skeleton(result.get('id'), tree, db=db)
     else:
@@ -209,6 +211,7 @@ def prep_instrument(result, replace, db):
     else:
         contents = result.get('contents')
 
+
     instrument = Instrument(
         id=result.get('id'), 
         tree=tree, 
@@ -217,6 +220,7 @@ def prep_instrument(result, replace, db):
         heights=heights, 
         attributes=dict(result))
 
+    # dont
     instrument.parts = fetch_parts(instrument.id, db=db)
 
     return instrument

@@ -95,7 +95,7 @@
                     <xsl:value-of select="@data-hook-length"/>
                 </xsl:attribute>
             </xsl:if>
-           <xsl:if test=" ../@formatted.reprint != ''">
+           <xsl:if test=" ../@formatted.reprint != '' and ../@old-version != '' ">
                 <p class="reprint-date">
                     Reprint<br/>as at <xsl:value-of select="../@formatted.reprint" />
                 </p>

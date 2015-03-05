@@ -1,20 +1,21 @@
 "use strict";
 var React = require('react/addons');
 var Glyphicon= require('react-bootstrap/lib/Glyphicon');
-
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
 var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
-var _ = require('lodash');
-var $ = require('jquery');
 var Popover = require('./Popover.jsx');
 var ArticleOverlay= require('./ArticleOverlay.jsx');
 var MQ = require('react-responsive');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var ArticleError = require('./Warnings.jsx').ArticleError;
-var Perf = React.addons.Perf;
+var Utils = require('../utils');
 var Immutable = require('immutable');
+
+var _ = require('lodash');
+var $ = require('jquery');
+
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
@@ -41,24 +42,12 @@ $.fn.isOnScreen = function(tolerance){
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
 };
 
-function getLocationString($el){
-    var repr = ''
-    var locs = [];
-    if(!$el.attr('data-location-no-path')){
-        locs = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
-            return $(this).attr('data-location');
-        }).toArray().reverse();
-    }
-    locs.push($el.attr('data-location')||'');
-    locs = _.filter(locs);
-    repr = locs.join('')
-    return {repr: repr, locs: locs};
-}
+
 
 var articleLocation = {
     _findCurrent: function(){
         var target = $('.current', this.getDOMNode()).last();
-        var locs = getLocationString(target).locs;
+        var locs = Utils.getLocation(target).locs;
         var doc_type = this.props.content.getIn(['query', 'doc_type']);
         var document_id = this.props.content.getIn(['query', 'document_id'])
         var links = [{
@@ -84,7 +73,6 @@ var articleLocation = {
         }
         Actions.articleFocusLocation(links);
     },
-
     componentDidMount: function(){
         this._findCurrent();
     },
@@ -160,7 +148,7 @@ var ArticleSkeletonContent = React.createClass({
         if(self.isMounted()){
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
-            var repr = getLocationString($part).repr;
+            var repr = Utils.getLocation($part).repr;
             var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
             if(repr){
                 Actions.articlePosition({pixel: top, repr: repr, id: id});
@@ -416,7 +404,7 @@ var ArticleContent = React.createClass({
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top;
                 var $el = $(find_current(self.locations));
-                var result = getLocationString($el).repr;
+                var result = Utils.getLocation($el).repr;
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
                     Actions.articlePosition({pixel: self.getScrollContainer().scrollTop() + self.offset, repr: result, id: id});
@@ -575,8 +563,8 @@ var MobilePopovers = React.createClass({
                 });
             }
             else if(link.closest('[id]').length){
-                var target = link.closest('[id]');
-                var title = this.props.page.title + ' ' + target.attr('data-location') ;
+                var $target = link.closest('[id]');
+                var title = this.props.page.getIn(['content', 'title']) + ' ' + $target.attr('data-location') ;
                 var ids = target.find('id').map(function(){
                     return this.attributes.id;
                 }).toArray();
@@ -584,26 +572,34 @@ var MobilePopovers = React.createClass({
                 Actions.sectionSummaryOpened(
                     this.props.viewer_id,
                     this.props.page.get('id'),
-                    {id: target.attr('id'),
+                    {id: $target.attr('id'),
                     document_id: this.props.page.getIn(['content', 'document_id']),
-                    title: this.props.page.getIn(['content', 'title']) +' '+ getLocationString(target).repr,
+                    title: this.props.page.getIn(['content', 'title']) +' '+ Utils.getLocation(target).repr,
                     govt_ids: ids
                 });
             }
-            else if(link.closest('[data-location]').length){
-                // get location
-               Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
+        }
+        else if($(e.target).is('span.label') && $(e.target).closest('[data-location]').length){
+            var $target = $(e.target).closest('[data-location]')
+            var location = Utils.getLocation($target);
+            var title = this.props.page.getIn(['content', 'title']) +' '+ location.repr;
+            Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
                     type: 'location',
-                    title: link.text(),
-                    id: link.attr('data-def-idx'),
-                    positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                    positionTop:link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
-                    source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
-                    fetched: true,
-
+                    title: title,
+                    id: location.repr,
+                    positionLeft: $target.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
+                    positionTop:$target.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
+                    source_sel: Utils.locationsToSelector(location.locs),
+                    fetched: false,
+                    format: 'fragment',
+                    url: Utils.queryUrlJSON({
+                        document_id: this.props.page.getIn(['content', 'document_id']),
+                        find: 'location',
+                        location: location.repr,
+                        doc_type: this.props.page.getIn(['content', 'doc_type'])
+                    }),
                 });
-            }
         }
     },
     componentDidMount: function(){

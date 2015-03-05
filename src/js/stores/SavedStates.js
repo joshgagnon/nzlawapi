@@ -147,7 +147,12 @@ module.exports = Reflux.createStore({
     },
     onLoadPrevious: function(filter) {
         if(localStorage['current_view']){
-            var data = JSON.parse(localStorage['current_view'])
+            var data;
+            try{
+                data = JSON.parse(localStorage['current_view']) || {};
+            }catch(e){
+                data =  {};
+            }
             if(filter){
                 data = _.pick.apply(_, [data].concat(filter));
             }

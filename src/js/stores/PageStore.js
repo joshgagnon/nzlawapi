@@ -88,42 +88,48 @@ var PageStore = Reflux.createStore({
         //todo, guards in Action pre emit
         var page = this.getById(page_id);
         if(!page.get('fetching') && !page.get('fetched')){
+
+            var handleError = function(response){
+                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
+                    {
+                        title: 'Error',
+                        content: response.responseJSON || {error: 'A problem occurred'}
+
+                    });
+                this.update();
+            }.bind(this)
+
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
             this.update();
             var get;
-            get = page.get('query_string') ?
-                $.get(page.get('query_string')) :
-                $.get('/query', page.get('query').toJS());
-            get.then(function(data){
-                    var result = {
-                        fetching: false,
-                        fetched: true,
-                        fragment: data.fragment,
-                        content: data,
-                        title: data.title
-                    };
-                    if(data.query){
-                        result.query = data.query;
-                        result.query_string = null;
-                        if(data.query.location){
-                            result.title += ' '+ data.query.location;
+            try{
+                get = page.get('query_string') ?
+                    $.get(page.get('query_string')) :
+                    $.get('/query', page.get('query').toJS());
+                get.then(function(data){
+                        var result = {
+                            fetching: false,
+                            fetched: true,
+                            fragment: data.fragment,
+                            content: data,
+                            title: data.title
+                        };
+                        if(data.query){
+                            result.query = data.query;
+                            result.query_string = null;
+                            if(data.query.location){
+                                result.title += ' '+ data.query.location;
+                            }
                         }
-                    }
-                    if(data.parts){
-                        result.parts = data.parts;
-                    }
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
-                    this.update();
-                }.bind(this),
-                function(response){
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
-                        {
-                            title: 'Error',
-                            content: response.responseJSON || {error: 'A problem occurred'}
-
-                        });
-                    this.update();
-                }.bind(this));
+                        if(data.parts){
+                            result.parts = data.parts;
+                        }
+                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
+                        this.update();
+                    }.bind(this), handleError);
+            }catch(e){
+                handleError({});
+            }
         }
     },
     onGetMorePage: function(page_id, to_add){

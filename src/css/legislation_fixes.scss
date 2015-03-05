@@ -7,6 +7,10 @@
     border-radius:initial;
 }
 
+.legislation .labelled.label .label{
+    cursor:pointer;
+}
+
 .legislation p.label{
   display:block;
 }
@@ -36,10 +40,10 @@
     cursor:pointer;
 }
 
-
+/*
 .latest-version .legislation .reprint-date{
 	display:none;
-}
+}*/
 
 .legislation{
 

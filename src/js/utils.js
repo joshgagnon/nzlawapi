@@ -1,4 +1,6 @@
 var $ = require('jquery');
+var _ = require('lodash');
+
 
 module.exports = {
     //http://www.seabreezecomputers.com/tips/find.htm
@@ -37,6 +39,28 @@ module.exports = {
     },
     queryUrl: function(query){
         return '/open_article/query?' + $.param(query);
+    },
+    queryUrlJSON: function(query){
+        return '/query?' + $.param(query);
+    },
+    getLocation: function($el){
+        var repr = ''
+        var locs = [];
+        if(!$el.attr('data-location-no-path')){
+            locs = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
+                return $(this).attr('data-location');
+            }).toArray().reverse();
+        }
+        locs.push($el.attr('data-location')||'');
+        locs = _.filter(locs);
+        repr = locs.join('')
+        return {repr: repr, locs: locs};
+    },
+    locationsToSelector: function(locs){
+        return _.map(locs, function(loc){
+            return '[data-location="'+loc+'"]'
+        }).join(' ');
+
     }
 
 }

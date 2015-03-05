@@ -12,22 +12,22 @@ var PopoverBehaviour = {
         return !this.getLocalContent() && this.props.fetch
     },
     renderFooter: function(){
-        if(this.props.type === 'link'){
+        if(this.props.type === 'link' || this.props.type === 'location'){
             return <div className="popover-footer">
                     <div className="row">
                         { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
                         { this.props.format === 'preview' ?
-                            <Button bsSize="small" onClick={this.open}>Open Full Article New Tab</Button > :
-                            <Button bsSize="small" onClick={this.open}>Open In New Tab</Button > }
+                            <Button bsSize="small" bsStyle="primary"  onClick={this.open}>Open Full Article New Tab</Button > :
+                            <Button bsSize="small" bsStyle="primary"  onClick={this.open}>Open In New Tab</Button > }
                         { this.props.format === 'fragment' ?
-                            <Button bsSize="small" onClick={this.addToPrint}>Add To Print</Button > :
+                            <Button bsSize="small" bsStyle="primary"  onClick={this.addToPrint}>Add To Print</Button > :
                             null }
                     </div>
                 </div>
-        }else if(this.props.type !== 'definition'){
+        }else if(this.props.type === 'definition'){
             return <div className="popover-footer">
                     <div className="row">
-                        <Button bsSize="small" onClick={this.addToPrint}>Add To Print</Button >
+                        <Button bsSize="small" bsStyle="primary" onClick={this.addToPrint}>Add To Print</Button >
                     </div>
                 </div>
         }
@@ -66,7 +66,6 @@ var PopoverBehaviour = {
             query: this.props.query,
             html: this.props.html
         });
-        Actions.activatePrintMode();
     },
     scrollTo: function() {
          Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
