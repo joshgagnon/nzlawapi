@@ -9,7 +9,6 @@ var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var $ = require('jquery');
 var Popover = require('./Popover.jsx');
-var SectionSummary = require('./SectionSummary.jsx');
 var ArticleOverlay= require('./ArticleOverlay.jsx');
 var MQ = require('react-responsive');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
@@ -588,7 +587,7 @@ var MobilePopovers = React.createClass({
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>
         }
-        return <div><div className="legislation-result" onClick={this.interceptLink} >
+        return <div className="legislation-result" onClick={this.interceptLink} >
            { this.warningsAndErrors() }
             <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
 
@@ -603,15 +602,6 @@ var MobilePopovers = React.createClass({
                 content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
                 page_id={this.props.page.get('id')} /> }
-
-             { this.props.view.getIn(['section_summaries', this.props.page.get('id')]) &&
-                this.props.view.getIn(['section_summaries', this.props.page.get('id')]).size ?
-                <SectionSummary
-                sectionData={this.props.page.get('section_data')}
-                sectionView={this.props.view.getIn(['section_summaries', this.props.page.get('id')])}
-                viewer_id={this.props.viewer_id}
-                page_id={this.props.page.get('id')} />
-                : null }
 
             <MQ minWidth={480}>
                 { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
@@ -631,8 +621,6 @@ var MobilePopovers = React.createClass({
                     page_id={this.props.page.get('id')} />
                 : null }
             </MQ>
-        </div>
-
         </div>
     }
  });
