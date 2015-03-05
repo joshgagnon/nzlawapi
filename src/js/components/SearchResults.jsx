@@ -64,8 +64,8 @@ module.exports = React.createClass({
         return this.props.page.get('content') !== newProps.page.get('content');
     },
     render: function(){
-        if(this.props.page.get('fetching')){
-            return <div className="search-results"><div className="csspinner traditional" /></div>
+        if(!this.props.page.getIn(['content', 'search_results']) && this.props.page.get('fetching')){
+            return <div className="search-results"><div className="csspinner" /></div>
         }
         else if(this.props.page.getIn(['content', 'search_results'])){
             var total = this.props.page.getIn(['content', 'search_results', 'total']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -75,7 +75,7 @@ module.exports = React.createClass({
                             return <SearchResult key={r.getIn(['fields', 'id', 0])+i} data={r} viewer_id={this.props.viewer_id}/>
                         }, this).toJS()
                     }
-                    {this.props.page.get('fetching') ?  <div className="csspinner traditional" /> : null }
+                    {this.props.page.get('fetching') ?  <div className="csspinner" /> : null }
                 </div>
         }
         else{

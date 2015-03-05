@@ -108,6 +108,9 @@ var PageStore = Reflux.createStore({
                     if(data.query){
                         result.query = data.query;
                         result.query_string = null;
+                        if(data.query.location){
+                            result.title += ' '+data.query.location;
+                        }
                     }
                     if(data.parts){
                         result.parts = data.parts;
@@ -128,33 +131,37 @@ var PageStore = Reflux.createStore({
     },
     onGetMorePage: function(page_id, to_add){
         var page = this.getById(page_id);
-        if(!page.get('finished') && page.get('page_type') === 'search' &&
-            page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
-            $.get('/query', _.extend({
-                offset: page.getIn(['content', 'search_results', 'hits']).size},
-                page.get('query').toJS()))
-                .then(function(data){
-                    var page = this.getById(page_id);
-                    var result = {
-                        offset: data.offset,
-                        content: {
-                            search_results: {
-                                hits: page.getIn(['content', 'search_results', 'hits'])
-                                    .toJS().concat(data.search_results.hits)
-                            }
-                        },
-                        fetching: false
-                    };
-                    if(result.content.search_results.hits.size >= result.content.search_results.total){
-                        result.finished = true;
-                    }
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], Immutable.fromJS(result));
-                    this.update();
-                }.bind(this),
-                function(){
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {finished: true});
-                    this.update();
-                }.bind(this))
+        if(page.get('page_type') === 'search'){
+            if(!page.get('finished') &&
+                !page.get('fetching') &&
+                page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
+                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
+                $.get('/query', _.extend({
+                    offset: page.getIn(['content', 'search_results', 'hits']).size},
+                    page.get('query').toJS()))
+                    .then(function(data){
+                        var page = this.getById(page_id);
+                        var result = {
+                            offset: data.offset,
+                            content: {
+                                search_results: {
+                                    hits: page.getIn(['content', 'search_results', 'hits'])
+                                        .toJS().concat(data.search_results.hits)
+                                }
+                            },
+                            fetching: false
+                        };
+                        if(result.content.search_results.hits.size >= result.content.search_results.total){
+                            result.finished = true;
+                        }
+                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], Immutable.fromJS(result));
+                        this.update();
+                    }.bind(this),
+                    function(){
+                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {finished: true});
+                        this.update();
+                    }.bind(this));
+            }
         }
         else if(to_add.requested_parts && to_add.requested_parts.length){
             var parts = page.get('parts').toJS();

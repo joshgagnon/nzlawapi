@@ -148,17 +148,9 @@ body{
             }
 
             @media (min-width: $screen-md-min) {
-                .main-search {
-
-                }
                 .navbar-form .input-group > .form-control {
                     width:auto;
                     background-color:black;
-                }
-            }
-            @media (min-width: $screen-lg-min){
-                .main-search {
-
                 }
             }
             &.showing-location .main-search{
@@ -518,6 +510,9 @@ body{
                 .search_match{
                     font-weight:bold;
                 }
+            }
+            .csspinner{
+                min-height:60px;
             }
         }
         .article-error{

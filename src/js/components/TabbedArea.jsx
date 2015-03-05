@@ -177,9 +177,10 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   },
   renderTab: function (child) {
     var key = child.props.eventKey;
-    return <NavItem ref={'tab' + key} key={key} className="tab" eventKey={key} >
-          <span className="tab-title">
-            {child.props.tab}
+    // Ugly ontouchstart here, need to replace navitem
+    return <NavItem ref={'tab' + key} key={key} className="tab" eventKey={key} onTouchStart={this.handleSelect.bind(this, key)}>
+              <span className="tab-title">
+              {child.props.tab}
           </span>
           { this.props.onClose ? <span className="tab-close" onClick={this.handleClose.bind(this, key)}>&times;</span> : null }
         </NavItem>

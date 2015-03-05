@@ -10,14 +10,14 @@ var $ = require('jquery');
 var _ = require('lodash');
 
 
+React.initializeTouchEvents(true)
 var App = React.createClass({
-	render: function(){
-		return (
-		        <ReactRouter.RouteHandler/>
-		      );
-	}
+  render: function(){
+    return (
+            <ReactRouter.RouteHandler/>
+          );
+  }
 });
-
 
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App} >

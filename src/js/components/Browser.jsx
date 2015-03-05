@@ -142,7 +142,10 @@ module.exports = React.createClass({
                 doc_type: 'all',
                 query: this.state.search_query
             };
-            title = 'Search: '+this.state.search_query
+            title = 'Search: '+ this.state.search_query
+            if(this.state.location){
+                title += ' '+this.state.location;
+            }
         }
         Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0');
     },
