@@ -195,7 +195,7 @@ var ArticleSkeletonContent = React.createClass({
             }
         }
         var lower = this.props.content.getIn(['heights', this.state.widths[height_ratio.key]+'']).toJS();
-        var upper = this.props.content.getIn(['heights', this.state.widths[Math.min(height_ratio.key+1, this.state.widths.length)]+'']).toJS();
+        var upper = this.props.content.getIn(['heights', this.state.widths[Math.min(height_ratio.key+1, this.state.widths.length-1)]+'']).toJS();
         for(var i=0;i < lower.length; i++){
             var key = i+''
             this.calculated_heights[key] = (lower[i] -upper[i] ) * height_ratio.coeff  + lower[i];
