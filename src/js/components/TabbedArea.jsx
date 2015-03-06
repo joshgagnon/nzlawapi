@@ -89,7 +89,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
           var width = this.width - this.props.dropdown_width_requirement;
           var tab_widths = _.filter(_.map(this.props.children, function(n){
               if(this.refs.tabs && this.refs.tabs.refs && this.refs.tabs.refs['tab'+n.props.eventKey]){
-                return this.refs.tabs.refs['tab'+n.props.eventKey].getDOMNode().clientWidth + 4;
+                return this.refs.tabs.refs['tab'+n.props.eventKey].getDOMNode().clientWidth + 6;
               }
               else{
                 return this.props.max_tab_width;

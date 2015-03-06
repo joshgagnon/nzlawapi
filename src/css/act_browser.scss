@@ -311,11 +311,12 @@ body{
 
     .split .article-overlay,
     .print .article-overlay{
-        right: calc(50% + 10px);
+        right: calc(50% + 10px) !important;
     }
+
     .split .results-container:nth-child(2) .article-overlay{
-        right: 10px;
-        left:calc(50% + #{$buttonbar-outer-width} );
+        right: 10px !important;
+        left:calc(50% + #{$buttonbar-outer-width} ) !important;
     }
 
 
