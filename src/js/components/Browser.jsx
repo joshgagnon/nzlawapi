@@ -215,23 +215,23 @@ module.exports = React.createClass({
         var active = this.getActive();
         if(this.state.browser.get('print_mode') ){
             return <div className="split print">
-                <TabView pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
                 <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'}/>
                 </div>
         }
         else if(this.state.browser.get('split_mode') ){
             return <div className="split">
-                <TabView pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
-                <TabView  pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'}/>
+                <TabView  browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'}/>
                 </div>
         }
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
-                <TabView  pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
                 <ArticleSideBar article={active} viewer_id={'tab-0'} />
                 </div>
         }
-        return  <TabView pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
+        return  <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
 
     },
     renderForm: function(){

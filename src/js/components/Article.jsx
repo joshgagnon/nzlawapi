@@ -108,11 +108,13 @@ var ArticleSkeletonContent = React.createClass({
         };
     },
     componentDidMount: function(){
-        this.popRefs();
-        this.resizeSkeleton();
-        this.setSubVisibility();
-        this.setupSkeletonScroll();
-        this.updateSkeletonScroll();
+        if(!this.props.content.get('error')){
+            this.popRefs();
+            this.resizeSkeleton();
+            this.setSubVisibility();
+            this.setupSkeletonScroll();
+            this.updateSkeletonScroll();
+        }
     },
     componentDidUpdate: function(){
         this.popRefs();
@@ -131,7 +133,6 @@ var ArticleSkeletonContent = React.createClass({
     },
     updateSkeletonScroll: function(){
         var self = this;
-         console.log('update');
         var find_current_part = function(top){
             var ordered_skeleton = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
                 .map(function(p){
@@ -386,7 +387,9 @@ var ArticleContent = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     componentDidMount: function(){
-        this.setupScroll();
+        if(!this.props.content.get('error')){
+            this.setupScroll();
+        }
     },
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container');
@@ -398,7 +401,7 @@ var ArticleContent = React.createClass({
         var find_current = function(store){
             var top = self.getScrollContainer().scrollTop();
             var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top)
-            return store[Math.min(Math.max(0, i), store.length -1)].target;
+            return store[Math.max(Math.min(0, i), store.length -1)].target;
         };
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
@@ -496,7 +499,7 @@ var ArticleContent = React.createClass({
     render: function(){
         return <div>{ this.props.popoverView.map(function(key){
                 var data = this.props.popoverData.get(key);
-                return (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id} {...data.toJS()} page_id={this.props.page_id} id={key} key={key} />)
+                return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id} {...data.toJS()} page_id={this.props.page_id} id={key} key={key} />)
             }, this).toJS()}</div>
     }
  });
@@ -565,16 +568,16 @@ var MobilePopovers = React.createClass({
             else if(link.closest('[id]').length){
                 var $target = link.closest('[id]');
                 var title = this.props.page.getIn(['content', 'title']) + ' ' + $target.attr('data-location') ;
-                var ids = target.find('id').map(function(){
+                var ids = $target.find('id').map(function(){
                     return this.attributes.id;
                 }).toArray();
-                ids.push(target.attr('id'));
+                ids.push($target.attr('id'));
                 Actions.sectionSummaryOpened(
                     this.props.viewer_id,
                     this.props.page.get('id'),
                     {id: $target.attr('id'),
                     document_id: this.props.page.getIn(['content', 'document_id']),
-                    title: this.props.page.getIn(['content', 'title']) +' '+ Utils.getLocation(target).repr,
+                    title: this.props.page.getIn(['content', 'title']) +' '+ Utils.getLocation($target).repr,
                     govt_ids: ids
                 });
             }

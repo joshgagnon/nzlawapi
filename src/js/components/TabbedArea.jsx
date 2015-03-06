@@ -35,8 +35,9 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     return {
       bsStyle: "tabs",
       animation: true,
-      max_tab_width: 200,
-      min_width: 300
+      max_tab_width: 202,
+      min_width: 401,
+      dropdown_width_requirement: 150
     };
   },
 
@@ -65,7 +66,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     }
   },
   componentDidUpdate: function(prevProps){
-    if(prevProps.children.length !== prevProps.children.length){
+    if(prevProps.children.length !== prevProps.children.length || this.width !== this.refs.tabs.getDOMNode().clientWidth){
       this.setTabVisibility();
     }
   },
@@ -79,12 +80,30 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   },
   setTabVisibility: function(){
     if(this.isMounted()){
-      var width = this.refs.tabs.getDOMNode().clientWidth;
-      var tabs = width/this.props.max_tab_width;
-      if(tabs<this.props.children.length){
-        tabs--;
-      }
-      this.setState({visible_tabs: tabs});
+        this.width = this.refs.tabs.getDOMNode().clientWidth;
+        var visible;
+        if(this.width < this.props.min_width){
+          visible = 0;
+        }
+        else{
+          var width = this.width - this.props.dropdown_width_requirement;
+          var tab_widths = _.filter(_.map(this.props.children, function(n){
+              if(this.refs.tabs && this.refs.tabs.refs && this.refs.tabs.refs['tab'+n.props.eventKey]){
+                return this.refs.tabs.refs['tab'+n.props.eventKey].getDOMNode().clientWidth + 4;
+              }
+              else{
+                return this.props.max_tab_width;
+              }
+            }, this));
+          var total_width = _.reduce(tab_widths, function(s, t){ return s+t}, 0);
+          var tab_count = this.props.children.length;
+          visible = tab_count;
+          while(visible > 0 && total_width > width){
+              visible--;
+              total_width -= tab_widths[visible];
+          }
+        }
+      this.setState({visible_tabs: visible});
     }
   },
   countTabs: function(){

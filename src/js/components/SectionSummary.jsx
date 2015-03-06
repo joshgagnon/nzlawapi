@@ -51,7 +51,8 @@ module.exports = React.createClass({
     close: function() {
          Actions.sectionSummaryClosed(this.props.viewer_id, this.props.page_id, this.props.sectionView.last());
     },
-    openLink: function(query, title){
+    openLink: function(query, title, e){
+        e.preventDefault();
         Actions.newPage({
             title: title,
             query_string: query

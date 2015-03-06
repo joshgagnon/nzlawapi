@@ -17,7 +17,11 @@ module.exports = React.createClass({
         Actions.removePage(id);
     },
     shouldComponentUpdate: function(newProps, newState){
-        return newProps.view.get('active_page_id') && (this.props.view !== newProps.view) || (this.props.pages !== newProps.pages);
+        // browser changes layout, which tabs need to collapse properly
+        return newProps.view.get('active_page_id') &&
+            (this.props.view !== newProps.view) ||
+            (this.props.pages !== newProps.pages ||
+            (this.props.browser !== newProps.browser));
     },
     modalVisible: function(){
         var active = this.props.view.get('active_page_id');

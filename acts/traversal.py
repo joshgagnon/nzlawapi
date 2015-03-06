@@ -8,7 +8,6 @@ def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
 
     [n.attrib.update({'current': 'true'}) for n in nodes_to_keep]
-
     all_parents = set()
     [all_parents.update(list(x.iterancestors()) + [x]) for x in nodes_to_keep]
 
@@ -98,6 +97,8 @@ def find_sub_node(tree, keys):
                 #if last part, get all equally shallow results
                 nodes = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))
                 node = [x[0] for x in nodes if x[1] == nodes[0][1]]
+        if not len(keys):
+            node = [node]
         if not len(node):
             raise CustomException("Empty")
         return node

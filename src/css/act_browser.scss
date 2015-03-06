@@ -315,6 +315,7 @@ body{
     }
     .split .results-container:nth-child(2) .article-overlay{
         right: 10px;
+        left:calc(50% + #{$buttonbar-outer-width} );
     }
 
 
@@ -491,19 +492,21 @@ body{
             }
 
             .loading{
-                @extends .csspinner.traditional
+                @extends .csspinner
             }
         }
 
         .article-overlay {
             position: fixed;
             top: $top-bar-height-sm + 10px;
+            left:$buttonbar-outer-width;
+            right:10px;
             margin-right:10px;
             text-align: right;
             @media print{
                 display:none;
             }
-            @media (min-width: $screen-sm-min) {
+            @media (min-width: $screen-md-min) {
                 top: $top-bar-height + 10px;
             }
             .breadcrumb{
@@ -512,11 +515,15 @@ body{
                 background-color: #fff;
                 border-radius: 4px;
                 margin: 4px 0;
+                float:left;
+            }
+            .btn-group{
+                float:right;
             }
         }
         .tab-content .article-overlay{
             top: $tabs-height + $top-bar-height-sm + 10px;
-            @media (min-width: $screen-sm-min) {
+            @media (min-width: $screen-md-min) {
                 top: $tabs-height + $top-bar-height + 10px;
             }
         }

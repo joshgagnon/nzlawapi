@@ -1,4 +1,7 @@
  <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+
+
     <xsl:template match="schedule.group">
       <div class="schedule-group">
                 <xsl:if test="@data-hook!=''">
@@ -57,14 +60,14 @@
 
     <xsl:template match="schedule">
         <div class="schedule">
-                <xsl:if test="@data-hook!=''">
-                    <xsl:attribute name="data-hook">
-                        <xsl:value-of select="@data-hook"/>
-                    </xsl:attribute>
-                    <xsl:attribute name="data-hook-length">
-                        <xsl:value-of select="@data-hook-length"/>
-                    </xsl:attribute>
-                </xsl:if>
+            <xsl:if test="@data-hook!=''">
+                <xsl:attribute name="data-hook">
+                    <xsl:value-of select="@data-hook"/>
+                </xsl:attribute>
+                <xsl:attribute name="data-hook-length">
+                    <xsl:value-of select="@data-hook-length"/>
+                </xsl:attribute>
+            </xsl:if>
             <xsl:call-template name="current"/>
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
@@ -73,7 +76,7 @@
             <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
                 <tbody><tr>
                     <td class="header">
-                        <h2 lang="en-NZ" class="schedule">
+                        <h2 class="schedule">
                             <span class="label">
                                 <span class="hit">Schedule</span>
                                 <xsl:if test="./label/text()!='Schedule'">&#160;<xsl:value-of select="label"/></xsl:if>
