@@ -9,33 +9,6 @@ var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
 var Immutable = require('immutable');
 
-var UserActions = Reflux.createStore({
-    actions: [
-        Actions.newPage,
-        Actions.newAdvancedPage,
-        Actions.showPage,
-        Actions.removePage,
-        Actions.addToPrint,
-        Actions.removeFromPrint,
-        Actions.printMovePosition,
-        Actions.toggleUnderlines,
-        Actions.toggleSplitMode,
-        Actions.togglePrintMode,
-        Actions.loadedFromStorage,
-        Actions.reset
-    ],
-    init: function() {
-        this.actions.map(function(a){
-            this.listenTo(a, this.userAction)
-        }, this)
-    },
-    userAction: function(){
-        console.log('user action')
-        Actions.userAction();
-    }
-});
-
-
 var HistoryStore = Reflux.createStore({
 
     init: function() {
@@ -104,7 +77,6 @@ module.exports = Reflux.createStore({
         }
     },
     updatePages: function(pages){
-        console.log('up')
         if(this.pages !== pages.pages){
             this.pages = pages.pages;
         }
@@ -261,6 +233,33 @@ module.exports = Reflux.createStore({
     },
     onReset: function(){
         Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
+    }
+});
+
+
+var UserActions = Reflux.createStore({
+    actions: [
+        Actions.newPage,
+        Actions.newAdvancedPage,
+        Actions.showPage,
+        Actions.removePage,
+        Actions.addToPrint,
+        Actions.removeFromPrint,
+        Actions.printMovePosition,
+        Actions.toggleUnderlines,
+        Actions.toggleSplitMode,
+        Actions.togglePrintMode,
+        Actions.loadedFromStorage,
+        Actions.popoverOpened,
+        Actions.reset
+    ],
+    init: function() {
+        this.actions.map(function(a){
+            this.listenTo(a, this.userAction)
+        }, this)
+    },
+    userAction: function(){
+        Actions.userAction();
     }
 });
 

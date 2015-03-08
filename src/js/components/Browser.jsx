@@ -56,11 +56,11 @@ var DialogStore = Reflux.createStore({
 var UndoMixin = {
     componentDidMount: function(){
         $(document).on('keypress', function(e){
-            if(e.ctrlKey){
-                if(e.keyCode === 26){
+            if(e.shiftKey){
+                if(e.keyCode === 60){
                     Actions.goBack();
                 }
-                if(e.keyCode === 25){
+                if(e.keyCode === 62){
                     Actions.goForward();
                 }
 
@@ -170,13 +170,17 @@ module.exports = React.createClass({
         e.stopPropagation();
         this.setState({location: e.target.value});
     },
+    handleEnter: function(e){
+        if (e.key === 'Enter') {
+            this.submit(e);
+        }
+    },
     reset: function(){
         this.setState({
             article_type: null,
             search_query: null,
             location: null
         });
-        //Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
         Actions.reset();
     },
 
@@ -246,16 +250,13 @@ module.exports = React.createClass({
                  <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
-                    { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
+                    { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location}
+                        onChange={this.handleLocation} onKeyPress={this.handleEnter}
                         ref="location"  /> : null }
                     <SplitButton bsStyle={'primary'} title={'Search'} onClick={this.submit} >
                             <MenuItem eventKey={'search_all'}>Search All</MenuItem>
-                            <MenuItem eventKey={'search_all'}>Search Acts</MenuItem>
-                            <MenuItem eventKey={'search_all'}>Search Regulations</MenuItem>
-                            {/*<MenuItem eventKey={'search_all'}>Search Cases</a></li>*/}
                             <MenuItem divider />
                             <MenuItem eventKey={'search_advanced'} onClick={this.toggleAdvanced}>Advanced Search</MenuItem>
-
                     </SplitButton>
                      </AutoComplete>
                 </form>
