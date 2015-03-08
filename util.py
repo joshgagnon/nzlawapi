@@ -150,7 +150,7 @@ class MatchError(Exception):
     pass
 
 def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignore_fields=None):
-    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading']
+    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading', 'def-term']
     def process_node(parent):
         for node in parent.childNodes[:]:  # better clone, as we will modify
             if monitor and not monitor.cont():

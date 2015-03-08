@@ -28,6 +28,7 @@ var SaveDialog = require('./SaveDialog.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
+var UserControls = require('./UserControls.jsx');
 
 
 $.fn.focusNextInputField = function() {
@@ -281,6 +282,7 @@ module.exports = React.createClass({
                     { this.renderForm() }
 
                 </nav>
+                <UserControls />
                 </div>
             <div className="buttonbar-wrapper">
                 <a onClick={this.toggleAdvanced}><Glyphicon glyph="search" title="Advanced Search"/></a>

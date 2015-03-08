@@ -45,24 +45,39 @@ def generate_range(string):
     # do stuff
     return tokens
 
+
+def get_number(string):
+    print string
+    match = re.compile('.*(\d+)/*$').match(string)
+    if match:
+        return match.groups()[0]
+
+
 def nodes_from_path_string(tree, path):
     #todo, rule
-    parts = re.compile('(s|sch|section|schedule|part) ([\.\da-z ]+)\W*(cl )?(.*)?').match(path.lower())
+    parts = re.compile('(s|sch|section|schedule|part) +([\.\da-z ]+)\W*(cl )?(.*)?').match(path.lower())
     # actually, maybe easier just to get it in canonical form
     keys = []
     try:
         if parts:
             parts = parts.groups()
             if parts[0].startswith('sch'):
-                if parts[1] == '1' or not parts[1]:
+                if parts[1] == '1' or not parts[1] or not parts[1][0].isdigit():
                     tree = tree.xpath(".//schedule")[0]
+                    if parts[1].startswith('cl'):
+                        keys += [get_number(parts[1])]
                 else:
-                    tree = tree.xpath(".//schedule[label='%s']" % parts[1])[0]
-            if parts[0].startswith('part'):
-                tree = tree.xpath(".//part[label='%s']" % parts[1])[0]
+                    key = parts[1].split()[0].strip()
+                    tree = tree.xpath(".//schedule[label='%s']" % key)[0]
+                    if len(parts[1].split()) > 1 and get_number(parts[1]):
+                        keys += [get_number(parts[1])]
+
+            elif parts[0].startswith('part'):
+                tree = tree.xpath(".//part[label='%s']" % parts[1].strip())[0]
+
             else:
                 tree = tree.xpath(".//body")[0]
-                keys.append(parts[1])
+                keys.append(parts[1].strip())
             if parts[3]:
                 keys += filter(lambda x: len(x), re.split('[^.a-zA-Z\d]+', parts[3]))
         else:
@@ -71,7 +86,6 @@ def nodes_from_path_string(tree, path):
             if keys[0].startswith('sch'):
                 tree = tree.xpath(".//schedule")[0]
                 keys = []
-        print keys
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
