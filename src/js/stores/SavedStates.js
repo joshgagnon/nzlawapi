@@ -21,7 +21,8 @@ var UserActions = Reflux.createStore({
         Actions.toggleUnderlines,
         Actions.toggleSplitMode,
         Actions.togglePrintMode,
-        Actions.loadedFromStorage
+        Actions.loadedFromStorage,
+        Actions.reset
     ],
     init: function() {
         this.actions.map(function(a){
@@ -29,6 +30,7 @@ var UserActions = Reflux.createStore({
         }, this)
     },
     userAction: function(){
+        console.log('user action')
         Actions.userAction();
     }
 });
@@ -89,6 +91,7 @@ module.exports = Reflux.createStore({
         this.listenTo(Actions.renameSavedState, this.onRenameSavedState);
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
         this.listenTo(Actions.userAction, this.saveCurrent);
+        this.listenTo(Actions.reset, this.onReset);
 
         this.pages = Immutable.List();
         this.print = Immutable.List();
@@ -101,6 +104,7 @@ module.exports = Reflux.createStore({
         }
     },
     updatePages: function(pages){
+        console.log('up')
         if(this.pages !== pages.pages){
             this.pages = pages.pages;
         }
@@ -143,6 +147,7 @@ module.exports = Reflux.createStore({
             print: _.map(this.print.toJS(), prepPrint)};
     },
     saveCurrent: function() {
+        console.log('save')
         localStorage['current_view'] = JSON.stringify(this.prepState());
     },
     onLoadPrevious: function(filter) {
@@ -253,6 +258,9 @@ module.exports = Reflux.createStore({
     update: function(){
         this.trigger({saved_views: this.readStates()});
 
+    },
+    onReset: function(){
+        Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
     }
 });
 

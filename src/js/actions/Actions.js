@@ -15,6 +15,8 @@ module.exports = Reflux.createActions([
 	'showPage',
 	'showNewPage',
 
+	'reset',
+
 	'addToPrint',
 	'fetchPrint',
 	'removeFromPrint',

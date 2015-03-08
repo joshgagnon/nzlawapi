@@ -6,6 +6,8 @@ var ReactRouter = require('react-router');
 var Input = require('react-bootstrap/lib/Input');
 var Button = require('react-bootstrap/lib/Button');
 var Glyphicon= require('react-bootstrap/lib/Glyphicon');
+var SplitButton = require('./SplitButton.jsx');
+var MenuItem = require('react-bootstrap/lib/MenuItem');
 var Col= require('react-bootstrap/lib/Col');
 var PageStore = require('../stores/PageStore');
 var ViewerStore = require('../stores/ViewerStore');
@@ -174,7 +176,8 @@ module.exports = React.createClass({
             search_query: null,
             location: null
         });
-        Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
+        //Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
+        Actions.reset();
     },
 
     toggleAdvanced: function(){
@@ -245,22 +248,15 @@ module.exports = React.createClass({
                     ref="autocomplete" >
                     { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location} onChange={this.handleLocation}
                         ref="location"  /> : null }
+                    <SplitButton bsStyle={'primary'} title={'Search'} onClick={this.submit} >
+                            <MenuItem eventKey={'search_all'}>Search All</MenuItem>
+                            <MenuItem eventKey={'search_all'}>Search Acts</MenuItem>
+                            <MenuItem eventKey={'search_all'}>Search Regulations</MenuItem>
+                            {/*<MenuItem eventKey={'search_all'}>Search Cases</a></li>*/}
+                            <MenuItem divider />
+                            <MenuItem eventKey={'search_advanced'} onClick={this.toggleAdvanced}>Advanced Search</MenuItem>
 
-                    <div className="input-group-btn">
-                        <button type="input" className="btn-primary btn" onClick={this.submit} >Search</button>
-                         <button  type="button" className="btn-primary btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                          <span className="caret"></span>
-                          <span className="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <ul className="dropdown-menu" role="menu">
-                            <li><a href="#">Search All</a></li>
-                            <li><a href="#">Search Acts</a></li>
-                            <li><a href="#">Search Regulations</a></li>
-                            <li><a href="#">Search Cases</a></li>
-                            <li className="divider"></li>
-                            <li><a href="#" onClick={this.toggleAdvanced}>Advanced Search</a></li>
-                          </ul>
-                     </div>
+                    </SplitButton>
                      </AutoComplete>
                 </form>
     },
