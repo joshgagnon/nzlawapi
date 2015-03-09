@@ -2,64 +2,66 @@
 
 var Reflux = require('reflux');
 
-module.exports = Reflux.createActions([
-	'queryChange',
+module.exports = Reflux.createActions({
+	'queryChange': {},
 
-	'newPage',
-	'newAdvancedPage',
-	'requestPage',
-	'replacePage',
+	'newPage': {},
+	'newAdvancedPage': {},
+	'requestPage': {asyncResult: true},
+	'replacePage': {},
 
-	'removePage',
-	'getMorePage',
-	'showPage',
-	'showNewPage',
+	'removePage': {},
+	'getMorePage': {asyncResult: true},
+	'showPage': {},
+	'showNewPage': {},
 
-	'reset',
+	'reset': {},
 
-	'addToPrint',
-	'fetchPrint',
-	'removeFromPrint',
-	'printMovePosition',
+	'addToPrint': {},
+	'fetchPrint': {},
+	'removeFromPrint': {},
+	'printMovePosition': {},
 
-	'articlePosition',
-	'articleJumpTo',
-	'articleFocusLocation',
-	'toggleAdvanced',
+	'articlePosition': {},
+	'articleJumpTo': {},
+	'articleFocusLocation': {},
+	'toggleAdvanced': {},
 
-	'requestReferences',
-	'requestSectionReferences',
-	'requestVersions',
-	'popoverOpened',
-	'sectionSummaryOpened',
-	'sectionSummaryClosed',
-	'requestPopoverData',
-	'popoverClosed',
-	'popoverUpdate',
+	'requestReferences': {asyncResult: true},
+	'requestSectionReferences': {asyncResult: true},
+	'requestVersions': {asyncResult: true},
+	'requestContents': {asyncResult: true},
 
-	'closeSaveDialog',
-	'closeLoadDialog',
-	'fetchSavedStates',
+	'popoverOpened': {},
+	'sectionSummaryOpened': {},
+	'sectionSummaryClosed': {},
+	'requestPopoverData': {asyncResult: true},
+	'popoverClosed': {},
+	'popoverUpdate': {},
 
-	'removeSavedState',
-	'updateSavedStates',
-	'createSaveFolder',
-	'removeSaveFolder',
-	'renameSavedState',
+	'closeSaveDialog': {},
+	'closeLoadDialog': {},
+	'fetchSavedStates': {},
+
+	'removeSavedState': {},
+	'updateSavedStates': {},
+	'createSaveFolder': {},
+	'removeSaveFolder': {},
+	'renameSavedState': {},
 
 
-	'toggleUnderlines',
-	'toggleSplitMode',
-	'togglePrintMode',
-	'activatePrintMode',
+	'toggleUnderlines': {},
+	'toggleSplitMode': {},
+	'togglePrintMode': {},
+	'activatePrintMode': {},
 
-	'setState',
-	'saveState',
-	'loadState',
-	'loadPrevious',
-	'loadedFromStorage',
+	'setState': {},
+	'saveState': {},
+	'loadState': {},
+	'loadPrevious': {},
+	'loadedFromStorage': {},
 
-	'userAction',
-	'goForward',
-	'goBack'
-]);
+	'userAction': {},
+	'goForward': {},
+	'goBack': {}
+});

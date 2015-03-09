@@ -281,8 +281,8 @@ module.exports = React.createClass({
                     </div>
                     { this.renderForm() }
 
+                 <UserControls />
                 </nav>
-                <UserControls />
                 </div>
             <div className="buttonbar-wrapper">
                 <a onClick={this.toggleAdvanced}><Glyphicon glyph="search" title="Advanced Search"/></a>

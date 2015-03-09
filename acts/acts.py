@@ -136,7 +136,7 @@ def query_instrument(args):
     if find == 'preview':
         return instrument_preview(instrument)
     elif find == 'more':
-        return instrument_more(instrument, args.getlist('parts[]'))
+        return instrument_more(instrument, args.get('parts').split(','))
     elif find == 'location':
         if args.get('location'):
             return instrument_location(instrument, args.get('location'))

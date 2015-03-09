@@ -3,8 +3,8 @@
 var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
-var $ = require('jquery');
 var Immutable = require('immutable');
+var request = require('superagent-promise');
 
 
 var PageStore = Reflux.createStore({
@@ -52,6 +52,7 @@ var PageStore = Reflux.createStore({
 
         page.references = _.omit(page.references || {}, 'fetching');
         page.versions = _.omit(page.versions || {}, 'fetching');
+        page.contents = _.omit(page.contents || {}, 'fetching');
 
         return page;
     },
@@ -88,112 +89,124 @@ var PageStore = Reflux.createStore({
         //todo, guards in Action pre emit
         var page = this.getById(page_id);
         if(!page.get('fetching') && !page.get('fetched')){
-
-            var handleError = function(response){
-                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
-                    {
-                        title: 'Error',
-                        content: response.responseJSON || {error: 'A problem occurred'}
-
-                    });
-                this.update();
-            }.bind(this)
-
+            var get;
+            get = page.get('query_string') ?
+                request.get(page.get('query_string')) :
+                request.get('/query', page.get('query').toJS());
+            get
+                .end()
+                .then(function(response){ Actions.requestPage.completed(page_id, response.body) })
+                .catch(function(response ){ Actions.requestPage.failed(page_id, response ? response.body: null) })
+        }
+    },
+    onRequestPageCompleted: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            var result = {
+                fetching: false,
+                fetched: true,
+                fragment: data.fragment,
+                content: data,
+                title: data.title
+            };
+            if(data.query){
+                result.query = data.query;
+                result.query_string = null;
+                if(data.query.location){
+                    result.title += ' '+ data.query.location;
+                }
+            }
+            if(data.parts){
+                result.parts = data.parts;
+            }
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
+            this.update();
+        }
+    },
+    onRequestPageFailed: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
+                {
+                title: 'Error',
+                content: data || {error: 'A problem occurred'},
+                error: true
+            });
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
             this.update();
-            var get;
-            try{
-                get = page.get('query_string') ?
-                    $.get(page.get('query_string')) :
-                    $.get('/query', page.get('query').toJS());
-                get.then(function(data){
-                        var result = {
-                            fetching: false,
-                            fetched: true,
-                            fragment: data.fragment,
-                            content: data,
-                            title: data.title
-                        };
-                        if(data.query){
-                            result.query = data.query;
-                            result.query_string = null;
-                            if(data.query.location){
-                                result.title += ' '+ data.query.location;
-                            }
-                        }
-                        if(data.parts){
-                            result.parts = data.parts;
-                        }
-                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], result);
-                        this.update();
-                    }.bind(this), handleError);
-            }catch(e){
-                handleError({});
-            }
         }
     },
     onGetMorePage: function(page_id, to_add){
-        var page = this.getById(page_id);
-        if(page.get('page_type') === 'search'){
-            if(!page.get('finished') &&
-                !page.get('fetching') &&
-                page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
-                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
-                $.get('/query', _.extend({
-                    offset: page.getIn(['content', 'search_results', 'hits']).size},
-                    page.get('query').toJS()))
-                    .then(function(data){
-                        var page = this.getById(page_id);
-                        var result = {
-                            offset: data.offset,
-                            content: {
-                                search_results: {
-                                    hits: page.getIn(['content', 'search_results', 'hits'])
-                                        .toJS().concat(data.search_results.hits)
-                                }
-                            },
-                            fetching: false
-                        };
-                        if(result.content.search_results.hits.size >= result.content.search_results.total){
-                            result.finished = true;
-                        }
-                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], Immutable.fromJS(result));
-                        this.update();
-                    }.bind(this),
-                    function(){
-                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {finished: true});
-                        this.update();
-                    }.bind(this));
+        var page = this.getById(page_id), get;
+        if(page){
+            if(page.get('page_type') === 'search'){
+                if(!page.get('finished') &&
+                    !page.get('fetching') &&
+                    page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
+                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
+                    get = request.get('/query', _.extend({
+                        offset: page.getIn(['content', 'search_results', 'hits']).size},
+                        page.get('query').toJS()));
+
+                }
+            }
+            else if(to_add.requested_parts && to_add.requested_parts.length){
+                var parts = page.get('parts').toJS();
+                var to_fetch = _.filter(to_add.requested_parts, function(p){ return !parts[p] });
+                if(to_fetch.length){
+                    _.map(to_fetch, function(p){
+                        parts[p] = {fetching: true};
+                    });
+                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'parts'], parts);
+                    get = request.get('/query')
+                    get.query(_.defaults({find: 'more', parts: to_fetch}, page.get('query').toJS() ));
+                }
+            }
+            if(get){
+                get
+                    .end()
+                    .then(function(response){ Actions.getMorePage.completed(page_id, response.body) })
+                    .catch(function(response){ Actions.getMorePage.failed(page_id, response.body) });
+                this.update();
             }
         }
-        else if(to_add.requested_parts && to_add.requested_parts.length){
-            var parts = page.get('parts').toJS();
-            var to_fetch = _.filter(to_add.requested_parts, function(p){ return !parts[p] });
-            if(to_fetch.length){
-                _.map(to_fetch, function(p){
-                    parts[p] = {fetching: true};
-                });
-                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'parts'], parts);
-                this.update();
-                $.get('/query', _.defaults({find: 'more', parts: to_fetch}, page.get('query').toJS() ))
-                    .then(function(data){
-                        page = this.getById(page.id);
-                        var results = {}
-                        _.map(data.parts, function(v, k){
-                            results[k] = {fetching: false, fetched: true, html: v};
-                        });
-                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'parts'], results);
-                        this.update();
-                    }.bind(this),function(response){
-                        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],
-                            {
-                                title: 'Error',
-                                content: response.responseJSON || {error: 'A problem occurred'}
-
-                            });
-                        this.update();
-                    }.bind(this));
+    },
+    onGetMorePageCompleted: function(page_id, data){
+        var page = this.getById(page_id), result = {};
+        if(page){
+            if(page.get('page_type') === 'search'){
+                    result = {
+                    offset: data.offset,
+                    content: {
+                        search_results: {
+                            hits: page.getIn(['content', 'search_results', 'hits'])
+                                .toJS().concat(data.search_results.hits)
+                        }
+                    },
+                    fetching: false
+                };
+                if(result.content.search_results.hits.size >= result.content.search_results.total){
+                    result.finished = true;
+                }
             }
+            else{
+                result.parts = {}
+                _.map(data.parts, function(v, k){
+                    result.parts[k] = {fetching: false, fetched: true, html: v};
+                });
+            }
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], Immutable.fromJS(result));
+            this.update();
+        }
+    },
+    onGetMorePageFailed: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)],{
+                title: 'Error',
+                error: true,
+                content: data || {error: 'A problem occurred'}});
+             this.update();
         }
     },
     onRemovePage: function(page_id){
@@ -225,71 +238,151 @@ var PageStore = Reflux.createStore({
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover.id], popover);
         this.update();
     },
+
     onRequestPopoverData: function(page_id, popover_id){
         var page = this.getById(page_id);
-        var popover = page.get('popovers').get(popover_id);
-        if(popover && !popover.get('fetching') && !popover.get('fetched')){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
-                {fetching: true});
-            $.get(popover.get('url'))
-                .then(function(response){
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
-                        {fetched: true, fetching: false});
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
-                        response);
-                }.bind(this),
-                    function(){
-                        //TODO, error
-                    })
-                .always(function(){
-                    this.update();
-                }.bind(this))
+        if(page){
+            var popover = page.get('popovers').get(popover_id);
+            if(popover && !popover.get('fetching') && !popover.get('fetched')){
+                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
+                    {fetching: true});
+                request.get(popover.get('url'))
+                    .end()
+                    .then(function(response) { Actions.requestPopoverData.completed(page_id, popover_id, response.body)})
+                    .catch(function(response) { Actions.requestPopoverData.failed(page_id, popover_id, response.body)});
+                this.update();
+            }
         }
     },
-    onRequestReferences: function(page_id){
+    onRequestPopoverDataCompleted: function(page_id, popover_id, data){
         var page = this.getById(page_id);
-        if(page && !page.getIn(['references', 'fetching']) && !page.getIn(['references', 'fetched'])){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetching: true});
-            $.get('/references/'+page.get('content').get('document_id'))
-                .then(function(response){
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'],
-                        {references_data: response.references, fetched: true, fetching: false});
-                    this.update();
-                }.bind(this))
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
+                _.extend({fetched: true, fetching: false}, data));
             this.update();
         }
     },
-
+    onRequestPopoverDataFailed: function(page_id, popover_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
+                _.extend({fetched: true, fetching: false, error: true}, data));
+            this.update();
+        }
+    },
     onRequestSectionReferences: function(page_id, section_id){
         var page = this.getById(page_id);
         if(!page.getIn(['section_data', section_id, 'fetching']) &&
             !page.getIn(['section_data', section_id, 'fetched'])){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
                 {fetching: true});
-            $.get('/section_references', {govt_ids: page.getIn(['section_data', section_id, 'govt_ids']).toJS()})
-                .then(function(response){
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
-                        {fetched: true, fetching: false});
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
-                        response);
-                    this.update();
-                }.bind(this))
+            require.get('/section_references', {govt_ids: page.getIn(['section_data', section_id, 'govt_ids']).toJS()})
+                .end()
+                .then(function(response){ Actions.onRequestSectionReferences.completed(page_id, section_id, response.data); })
+                .catch(function(response){ Actions.onRequestSectionReferences.failed(page_id, section_id, response.data); });
             this.update();
         }
     },
+    onRequestSectionReferencesCompleted: function(page_id, section_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
+                    _.extend({error: true, fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+    onRequestSectionReferencesFailed: function(page_id, section_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
+                   _.extend( {error: true, fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+
+    // functions below are all basically the sdame
     onRequestVersions: function(page_id){
         var page = this.getById(page_id);
         if(!page.getIn(['versions', 'fetching']) && !page.getIn(['versions', 'fetched'])){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetching: true});
-            $.get('/versions/'+page.get('content').get('document_id'))
-                .then(function(response){
-                    this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'],
-                        {versions_data: response.versions, fetched: true, fetching: false});
-                    this.update();
-                }.bind(this))
+            request.get('/versions/'+page.get('content').get('document_id'))
+                .end()
+                .then(function(response){ Actions.onRequestVersions.completed(page_id, section_id, response.data); })
+                .catch(function(response){ Actions.onRequestVersions.failed(page_id, section_id, response.data); });
             this.update();
         }
     },
+    onRequestVersionsCompleted: function(page_id, section_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'],
+                    _.extend({fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+    onRequestVersionsFailed: function(page_id, section_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'],
+                    _.extend({error: true, fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+    onRequestReferences: function(page_id){
+        var page = this.getById(page_id);
+        if(page && !page.getIn(['references', 'fetching']) && !page.getIn(['references', 'fetched'])){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetching: true});
+            request('/references/'+page.get('content').get('document_id'))
+                .end()
+                .then(function(response){ Actions.onRequestReferences.completed(page_id, response.data); })
+                .catch(function(response){ Actions.onRequestReferences.failed(page_id, response.data); });
+            this.update();
+        }
+    },
+    onRequestReferencesCompleted: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'],
+                    {references_data: data.references, fetched: true, fetching: false});
+            this.update();
+        }
+    },
+    onRequestReferencesFailed: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'],
+                    _.extend({error: true, fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+    onRequestContents: function(page_id){
+        var page = this.getById(page_id);
+        if(!page.getIn(['contents', 'fetching']) && !page.getIn(['contents', 'fetched'])){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'], {fetching: true});
+            request.get('/contents/'+page.get('content').get('document_id'))
+                .end()
+                .then(function(response){ Actions.onRequestContents.completed(page_id, section_id, response.data); })
+                .catch(function(response){ Actions.onRequestContents.failed(page_id, section_id, response.data); });
+            this.update();
+        }
+    },
+    onRequestContentsCompleted: function(page_id, section_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'],
+                    _.extend({fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+    onRequestContentsFailed: function(page_id, section_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'],
+                    _.extend({error: true, fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+
 });
 
 

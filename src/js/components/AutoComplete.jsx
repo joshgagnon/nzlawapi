@@ -3,7 +3,7 @@ var Input = require('react-bootstrap/lib/Input');
 var EventListener = require('react-bootstrap/lib/utils/EventListener');
 var $ = require('jquery');
 var _ = require('lodash');
-
+var request = require('superagent-promise');
 // TODO, scroll overflow on arrows
 
 var AutoComplete = React.createClass({
@@ -21,14 +21,14 @@ var AutoComplete = React.createClass({
     componentDidMount: function(){
         var self = this;
         this.debounceFetch = _.debounce(function(value){
-             $.get(self.props.endpoint, {
+             request.get(self.props.endpoint, {
                     query: value
                 })
-                .then(function(response) {
+             .then(function(response){
                     self.bindRootCloseHandlers();
                     self.setState({
-                        results: response.results,
-                        groups: self.groupCategories(response.results)
+                        results: response.body.results,
+                        groups: self.groupCategories(response.body.results)
                     });
                 });
         }, 250)

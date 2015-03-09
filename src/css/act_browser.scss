@@ -743,4 +743,18 @@ body{
             padding:4px 15px;
         }
     }
+
+
+    .user-controls {
+        right: 0;
+        position: absolute;
+        display:none;
+        @media (min-width: $screen-md-min) {
+            display: block;
+        }
+        a {
+        color: white;
+        padding: 4px;
+        }
+    }
 }
