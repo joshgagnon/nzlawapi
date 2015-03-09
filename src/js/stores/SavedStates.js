@@ -70,11 +70,6 @@ module.exports = Reflux.createStore({
         this.print = Immutable.List();
         this.views = Immutable.Map();
         this.browser = Immutable.Map();
-        if(localStorage['API_VERSION'] !== window.API_VERSION){
-            delete localStorage['current_view'];
-            delete localStorage['saved_views'];
-            localStorage['API_VERSION'] = window.API_VERSION
-        }
     },
     updatePages: function(pages){
         if(this.pages !== pages.pages){
@@ -123,7 +118,7 @@ module.exports = Reflux.createStore({
         localStorage['current_view'] = JSON.stringify(this.prepState());
     },
     onLoadPrevious: function(filter) {
-        if(localStorage['current_view']){
+        if(localStorage && localStorage['current_view']){
             var data;
             try{
                 data = JSON.parse(localStorage['current_view']) || {};
@@ -146,7 +141,7 @@ module.exports = Reflux.createStore({
     },
     readStates: function(){
         var data = {};
-       if(localStorage['saved_views']){
+       if(localstorage && localStorage['saved_views']){
             try{
                 data = JSON.parse(localStorage['saved_views']) || {};
             }catch(e){

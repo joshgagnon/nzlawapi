@@ -39,9 +39,6 @@
     "vinyl-transform": "^1.0.0",
     "watchify": "^2.1.1"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
   },
@@ -67,5 +64,18 @@
   "bugs": {
     "url": "https://github.com/joshgagnon/nzlawapi/issues"
   },
-  "homepage": "https://github.com/joshgagnon/nzlawapi"
+  "homepage": "https://github.com/joshgagnon/nzlawapi",
+  "devDependencies": {
+    "jest-cli": "^0.4.0",
+    "react-tools": "^0.12.2"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/src/js/preprocessor.js",
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/react"
+    ]
+  }
 }
