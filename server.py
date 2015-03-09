@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from views import Base
 from validator.validator import Validator
+from users.users import Users
 from query.query import Query
 import graph
 import sys
@@ -33,6 +34,7 @@ app.config.from_pyfile(sys.argv[1])
 app.register_blueprint(Base)
 app.register_blueprint(Validator)
 app.register_blueprint(Query)
+app.register_blueprint(Users)
 app.json_encoder = CustomJSONEncoder
 app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
 app.secret_key = app.config['SESSION_SECRET']

@@ -174,7 +174,7 @@ var SaveMixin = {
                   <tr><th>Label</th><th colSpan="2">Date</th></tr>
                   </thead>
                   <tbody>
-                  { this.renderTree(this.state.saved_views.children) }
+                  { this.state.saved_views ? this.renderTree(this.state.saved_views.children) : null}
                   </tbody></table>
               </div>
             </div>

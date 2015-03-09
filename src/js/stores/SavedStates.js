@@ -8,44 +8,9 @@ var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
 var Immutable = require('immutable');
+var request = require('superagent-promise');
 
-var HistoryStore = Reflux.createStore({
 
-    init: function() {
-        this.listenTo(PageStore, this.set);
-        this.listenTo(ViewerStore, this.set);
-        this.listenTo(BrowserStore, this.set);
-        this.listenTo(PrintStore, this.set);
-        this.listenTo(Actions.goBack, this.onGoBack);
-        this.listenTo(Actions.goForward, this.onGoForward);
-        this.listenTo(Actions.userAction, this.onUserAction);
-        this.state = Immutable.Map();
-        this.history = [];
-        this.index = -1;
-    },
-    onUserAction: function(){
-        if(this.index < this.history.length-1){
-            this.history = this.history.slice(this.index);
-        }
-        this.history.push(this.state);
-        this.index++;
-    },
-    onGoBack: function(){
-        if(this.index > 0){
-            this.index--;
-            Actions.setState(this.history[this.index]);
-        }
-    },
-    onGoForward: function(){
-        if(this.index < this.history.length-1){
-            this.index++;
-            Actions.setState(this.history[this.index]);
-        }
-    },
-    set: function(state){
-        this.state = this.state.merge(state);
-    }
-});
 
 
 module.exports = Reflux.createStore({
@@ -114,8 +79,9 @@ module.exports = Reflux.createStore({
             print: _.map(this.print.toJS(), prepPrint)};
     },
     saveCurrent: function() {
-        console.log('save')
-        localStorage['current_view'] = JSON.stringify(this.prepState());
+        if(localStorage){
+            localStorage['current_view'] = JSON.stringify(this.prepState());
+        }
     },
     onLoadPrevious: function(filter) {
         if(localStorage && localStorage['current_view']){
@@ -133,29 +99,22 @@ module.exports = Reflux.createStore({
         }
     },
     save: function(path) {
-        var states = this.readStates();
+        var states = this.saved_states;
         var current = this.getFolder(states, path.slice(0, path.length-1));
         current.children = _.reject(current.children, {type: 'state', name: _.last(path)});
         current.children.push({name: _.last(path), type: 'state', value: this.prepState(), date: (new Date()).toLocaleString()});
         this.setStates(states);
     },
-    readStates: function(){
-        var data = {};
-       if(localstorage && localStorage['saved_views']){
-            try{
-                data = JSON.parse(localStorage['saved_views']) || {};
-            }catch(e){
-                data =  {};
-            }
-        }
-        return _.defaults(data, this.createFolder('root'));
-    },
     setStates: function(states){
-        localStorage['saved_views'] = JSON.stringify(states);
+        request.post('/saved_states', {saved_states: states})
+            .end()
+            .then(function(){ this.update() }.bind(this))
+            .catch(function(){ this.update() }.bind(this))
+        this.saved_states = states;
         this.update();
     },
     load: function(path) {
-        var states = this.readStates();
+        var states = this.saved_states;
         var current = states;
         _.map(path, function(p){
             current = _.find(current.children, {name: p});
@@ -179,17 +138,26 @@ module.exports = Reflux.createStore({
         return current;
     },
     onRemoveSavedState: function(path){
-        var states = this.readStates();
+        var states = this.saved_states;
         var current = this.getFolder(states, path.slice(0, path.length-1));
         current.children = _.reject(current.children, {type: 'state', name: _.last(path)});
         this.setStates(states);
     },
     onFetchSavedStates: function(){
-        //will be ajax
-        this.update();
+        return request
+            .get('/saved_states')
+            .end()
+            .then(function(response){
+                this.saved_states = _.defaults(response.body.saved_states || {}, this.createFolder('root'));
+                this.update();
+            }.bind(this))
+            .catch(function(){
+                this.saved_states = this.createFolder('root');
+                this.update();
+            }.bind(this))
     },
     onCreateSaveFolder: function(path){
-        var states = this.readStates();
+        var states = this.saved_states;
         var current = states;
         _.each(path, function(p){
             var folder = _.find(current.children, {name: p, type: 'folder'});
@@ -202,7 +170,7 @@ module.exports = Reflux.createStore({
         this.setStates(states);
     },
     onRemoveSaveFolder: function(path){
-        var states = this.readStates();
+        var states = this.saved_states;
         var current = states;
         _.each(path.slice(0, path.length-1), function(p){
             var folder = _.find(current.children, {name: p, type: 'folder'});
@@ -214,7 +182,7 @@ module.exports = Reflux.createStore({
 
     },
     onRenameSavedState: function(path, new_name){
-        var states = this.readStates()
+        var states = this.saved_states;
         this.getFolder(states, path).name = new_name;
         this.setStates(states);
 
@@ -223,7 +191,7 @@ module.exports = Reflux.createStore({
         return {name: name, type: 'folder', children: []}
     },
     update: function(){
-        this.trigger({saved_views: this.readStates()});
+        this.trigger({saved_views: this.saved_states});
 
     },
     onReset: function(){
@@ -246,6 +214,7 @@ var UserActions = Reflux.createStore({
         Actions.togglePrintMode,
         Actions.loadedFromStorage,
         Actions.popoverOpened,
+        Actions.popoverClosed,
         Actions.reset
     ],
     init: function() {
@@ -258,3 +227,40 @@ var UserActions = Reflux.createStore({
     }
 });
 
+var HistoryStore = Reflux.createStore({
+
+    init: function() {
+        this.listenTo(PageStore, this.set);
+        this.listenTo(ViewerStore, this.set);
+        this.listenTo(BrowserStore, this.set);
+        this.listenTo(PrintStore, this.set);
+        this.listenTo(Actions.goBack, this.onGoBack);
+        this.listenTo(Actions.goForward, this.onGoForward);
+        this.listenTo(Actions.userAction, this.onUserAction);
+        this.state = Immutable.Map();
+        this.history = [];
+        this.index = -1;
+    },
+    onUserAction: function(){
+        if(this.index < this.history.length-1){
+            this.history = this.history.slice(this.index);
+        }
+        this.history.push(this.state);
+        this.index++;
+    },
+    onGoBack: function(){
+        if(this.index > 0){
+            this.index--;
+            Actions.setState(this.history[this.index]);
+        }
+    },
+    onGoForward: function(){
+        if(this.index < this.history.length-1){
+            this.index++;
+            Actions.setState(this.history[this.index]);
+        }
+    },
+    set: function(state){
+        this.state = this.state.merge(state);
+    }
+});
