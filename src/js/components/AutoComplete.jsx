@@ -24,6 +24,7 @@ var AutoComplete = React.createClass({
              request.get(self.props.endpoint, {
                     query: value
                 })
+             .end()
              .then(function(response){
                     self.bindRootCloseHandlers();
                     self.setState({
