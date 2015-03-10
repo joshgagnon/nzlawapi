@@ -338,31 +338,30 @@ var ArticleSkeletonContent = React.createClass({
         }
         return <div className={classes} dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
-    popoverJumpTo: function(){
-        Actions.articleJumpTo(this.props.page, {
-            id: '#' + this.props.target
-        });
-    },
     onJumpTo: function(viewer_id, jump){
         if(viewer_id!== this.props.viewer_id){
             return;
         }
         var target;
-        if(jump.location && jump.location.length){
+        if(jump.id){
+            target = $(this.getDOMNode()).find(jump.id);
+            if(!target.length){
+                target = $(this._refs[this._child_ids[jump.id]]);
+            }
+        }
+        else if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
-            for(var i=0;i<jump.location.length;i++){
-                node = node.find('[data-location^="'+jump.location[i]+'"]');
+            for(var i=0;i<jump.location.length && node.length;i++){
+                var new_node = node.find('[data-location^="'+jump.location[i]+'"]');
+                if(!new_node.length){
+                     new_node = $(this._refs[this._child_locations[jump.location[i]]]);
+                }
+                node = new_node;
             }
             target = node;
             // todo, use _child_locations if not found
             if(!target.length){
-                debugger
-            }
-        }
-        else if(jump.id){
-            target = $(this.getDOMNode()).find(jump.id);
-            if(!target.length){
-                target = $(this._refs[this._child_ids[jump.id]]);
+
             }
         }
         if(target && target.length){
@@ -470,11 +469,6 @@ var ArticleContent = React.createClass({
             .sort(function(a, b) {
                 return a.offset - b.offset
             });
-    },
-    popoverJumpTo: function(){
-        Actions.articleJumpTo(this.props.page, {
-            id: '#' + this.props.target
-        });
     },
     onJumpTo: function(viewer_id, jump){
         if(viewer_id!== this.props.viewer_id){

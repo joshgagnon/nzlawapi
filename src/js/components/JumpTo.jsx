@@ -11,7 +11,7 @@ module.exports = React.createClass({
       React.addons.LinkedStateMixin
     ],
     getInitialState: function(){
-        return {article_location: this.props.position ? this.props.position.get('location') : ''};
+        return {article_location: this.props.position ? this.props.position.get('repr') : ''};
     },
     onPositionChange: function(value){
         if(value && this.refs.jump_to.getInputDOMNode() !== document.activeElement){
@@ -30,7 +30,7 @@ module.exports = React.createClass({
         var loc = this.state.article_location;
         if(loc){
             var m = Utils.splitLocation(loc);
-            Actions.articleJumpTo(this.props.viewer_id, {location: m});
+            Actions.articleJumpTo(this.props.viewer_id, {location: m, id: null, repr: loc});
         }
     },
     componentWillReceiveProps: function(nextProps){

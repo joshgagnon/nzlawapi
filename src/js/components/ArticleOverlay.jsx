@@ -27,12 +27,15 @@ var FullArticleButton = React.createClass({
        content: React.PropTypes.object.isRequired,
     },
     handleClick: function(){
+        var id = this.props.content.getIn(['query', 'govt_location']);
+        var location = Utils.splitLocation(this.props.content.getIn(['query', 'location']) || '');
+
         Actions.newPage({
             title: this.props.content.get('title'),
             query: {doc_type:
             this.props.content.get('doc_type'),
             find: 'full',
-            id: this.props.content.get('document_id')}}, this.props.viewer_id)
+            id: this.props.content.get('document_id')}}, this.props.viewer_id, {position: {id: id, location: location}})
     },
     render: function(){
         return  <button onClick={this.handleClick} className="btn btn-info">Full Article</button>
