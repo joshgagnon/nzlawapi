@@ -61,7 +61,7 @@ module.exports =  Reflux.createStore({
         this.trigger({views: this.views});
     },
     getDefault: function(){
-        return {active_page_id: undefined, settings: {}, popovers: {},section_summaries:{}, tabs: []}
+        return {active_page_id: undefined, settings: {}, popovers: {}, section_summaries:{}, positions: {}}
     },
     update: function(){
         this.trigger({views: this.views});
@@ -76,12 +76,12 @@ module.exports =  Reflux.createStore({
         if(!this.views.getIn([viewer_id, 'section_summaries', page_id])){
             this.views = this.views.mergeDeepIn([viewer_id, 'section_summaries', page_id], {});
         }
+        if(!this.views.getIn([viewer_id, 'positions', page_id])){
+            this.views = this.views.mergeDeepIn([viewer_id, 'positions', page_id], {});
+        }
     },
     onToggleAdvanced: function(viewer_id, page_id){
         this.prepPage(viewer_id, page_id);
-        //this.views[viewer_id].settings[page_id].advanced_search = !this.views[viewer_id].settings[page_id].advanced_search;
-        //this.views[viewer_id] = _.extend({}, this.views[viewer_id]);
-
         this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id ],
             {advanced_search: !this.views.getIn([viewer_id, 'settings', page_id,'advanced_search'])});
         this.update();
@@ -89,7 +89,7 @@ module.exports =  Reflux.createStore({
     onShowPage: function(viewer_id, page_id, options){
         this.prepPage(viewer_id, page_id);
         this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id});
-        this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id ], options);
+        this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id], options);
         this.update();
     },
     onShowNewPage: function(){
@@ -122,5 +122,11 @@ module.exports =  Reflux.createStore({
         var open = this.views.getIn([viewer_id, 'section_summaries', page_id]);
         this.views = this.views.setIn([viewer_id, 'section_summaries', page_id], open.remove(open.indexOf(section_id)));
         this.update();
+    },
+
+    onArticlePosition: function(viewer_id, page_id, position){
+        this.views = this.views.mergeDeepIn([viewer_id, 'positions', page_id], position);
+        this.update();
+
     }
 });

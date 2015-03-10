@@ -3,7 +3,6 @@ var React = require('react/addons');
 var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
-var ArticleStore = require('../stores/ArticleStore');
 var Actions = require('../actions/Actions');
 var Popover = require('./Popover.jsx');
 var ArticleOverlay= require('./ArticleOverlay.jsx');
@@ -16,6 +15,7 @@ var Immutable = require('immutable');
 var _ = require('lodash');
 var $ = require('jquery');
 
+
 var ArticleJumpStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
@@ -25,6 +25,7 @@ var ArticleJumpStore = Reflux.createStore({
         this.trigger(result, jump);
     }
 });
+
 
 function stopPropagation(e){
     e.stopPropagation();
@@ -111,9 +112,13 @@ var ArticleSkeletonContent = React.createClass({
         if(!this.props.content.get('error')){
             this.popRefs();
             this.resizeSkeleton();
+            if(this.props.view.getIn(['positions', this.props.page_id, 'pixel'])){
+                this.getScrollContainer().scrollTop(this.props.view.getIn(['positions', this.props.page_id, 'pixel']))
+            }
             this.setSubVisibility();
             this.setupSkeletonScroll();
             this.updateSkeletonScroll();
+
         }
     },
     componentDidUpdate: function(){
@@ -152,7 +157,8 @@ var ArticleSkeletonContent = React.createClass({
             var repr = Utils.getLocation($part).repr;
             var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
             if(repr){
-                Actions.articlePosition({pixel: top, repr: repr, id: id});
+                Actions.articlePosition(self.props.viewer_id, self.props.page_id,
+                    {pixel: top, repr: repr, id: id});
             }
         }
     },
@@ -410,7 +416,8 @@ var ArticleContent = React.createClass({
                 var result = Utils.getLocation($el).repr;
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
-                    Actions.articlePosition({pixel: self.getScrollContainer().scrollTop() + self.offset, repr: result, id: id});
+                    Actions.articlePosition(self.props.viewer_id, self.props.page_id,
+                        {pixel: self.getScrollContainer().scrollTop() + self.offset, repr: result, id: id});
                 }
             }
         }, 0);
@@ -659,10 +666,12 @@ var MobilePopovers = React.createClass({
                 content={this.props.page.get('content') }
                 parts={this.props.page.get('parts') }
                 viewer_id={this.props.viewer_id}
+                view={this.props.view}
                 page_id={this.props.page.get('id')} />    :
           <ArticleContent ref="articleContent"
                 content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
+                view={this.props.view}
                 page_id={this.props.page.get('id')} /> }
 
             <MQ minWidth={480}>

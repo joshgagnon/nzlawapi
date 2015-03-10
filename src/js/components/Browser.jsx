@@ -237,7 +237,7 @@ module.exports = React.createClass({
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
                 <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
-                <ArticleSideBar article={active} viewer_id={'tab-0'} />
+                <ArticleSideBar article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
                 </div>
         }
         return  <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>

@@ -1,7 +1,6 @@
 "use strict";
 var React = require('react/addons');
 var Reflux = require('reflux');
-var ArticleStore = require('../stores/ArticleStore');
 var JumpTo = require('./JumpTo.jsx');
 var Actions = require('../actions/Actions');
 var $ = require('jquery');
@@ -9,7 +8,6 @@ var utils = require('../utils');
 
 module.exports = React.createClass({
     mixins: [
-      Reflux.listenTo(ArticleStore,"onPositionChange"),
       utils.stopScrollPropagation
     ],
     propTypes: {
@@ -45,9 +43,17 @@ module.exports = React.createClass({
         }
     },
     componentDidMount: function(){
-        this.onPositionChange({});
+        this.onPositionChange(this.props.positions.toJS());
     },
-
+    shouldComponentUpdate: function(nextProps){
+        if(nextProps.article !== this.props.article){
+            return true;
+        }
+        if(nextProps.positions !== this.props.positions){
+            this.onPositionChange(nextProps.positions.toJS());
+        }
+        return false;
+    },
     render: function(){
         return <div onClick={this.interceptLink} onWheel={this.stopScrollPropagation} >
                 <JumpTo article={this.props.article}/>

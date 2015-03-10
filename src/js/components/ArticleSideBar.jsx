@@ -24,7 +24,8 @@ module.exports = React.createClass({
     },
     renderBody: function(childname){
         if(childname=== 'location'){
-            return <ArticleScrollSpy article={this.props.article} viewer_id={this.props.viewer_id}/>;
+            return <ArticleScrollSpy article={this.props.article} viewer_id={this.props.viewer_id}
+              positions={this.props.view.getIn(['positions', this.props.article.get('id')])}/>;
         }
         else if(childname === 'summary'){
              return <ArticleSummary summary={this.props.article.getIn(['content','attributes']) } viewer_id={this.props.viewer_id}/>;
