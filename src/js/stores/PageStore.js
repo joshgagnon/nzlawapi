@@ -56,12 +56,12 @@ var PageStore = Reflux.createStore({
 
         return page;
     },
-    onNewPage: function(page_data, viewer_id){
+    onNewPage: function(page_data, viewer_id, settings){
         var page = this.generatePage(page_data);
         this.pages = this.pages.push(Immutable.fromJS(page));
         Actions.requestPage(page.id);
         if(viewer_id !== undefined){
-            Actions.showNewPage(viewer_id, page.id);
+            Actions.showNewPage(viewer_id, page.id, settings);
         }
         this.update();
     },

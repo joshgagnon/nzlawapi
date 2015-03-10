@@ -22,7 +22,7 @@ module.exports = React.createClass({
             $(this).removeClass('active');
         });
         this.active = [];
-        var active = $el.find('[href=#'+value.id+']');
+        var active = $el.find('[href=#'+value.get('id')+']');
         if(active && active.parent().length){
             active  = active.parent();
             active.addClass('active');
@@ -33,32 +33,33 @@ module.exports = React.createClass({
         }else if($el.find('li:first').siblings().length === 0){
             $el.find('li:first').addClass('active')
         }
+        this.refs.jumpTo.onPositionChange(value);
 
     },
     interceptLink: function(e){
         var link = $(e.target).closest('a');
         if(link.length){
             e.preventDefault();
-            Actions.articleJumpTo(this.props.article, {id: link.attr('href'), noscroll: true});
+            Actions.articleJumpTo(this.props.viewer_id, {id: link.attr('href'), noscroll: true});
         }
     },
     componentDidMount: function(){
-        if(this.props.positions){
-            this.onPositionChange(this.props.positions.toJS());
+        if(this.props.position){
+            this.onPositionChange(this.props.position);
         }
     },
     shouldComponentUpdate: function(nextProps){
         if(nextProps.article !== this.props.article){
             return true;
         }
-        if(nextProps.positions !== this.props.positions){
-            this.onPositionChange(nextProps.positions.toJS());
+        if(nextProps.position !== this.props.position){
+            this.onPositionChange(nextProps.position);
         }
         return false;
     },
     render: function(){
         return <div onClick={this.interceptLink} onWheel={this.stopScrollPropagation} >
-                <JumpTo article={this.props.article}/>
+                <JumpTo ref="jumpTo" position={this.props.position} viewer_id={this.props.viewer_id} />
                 <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.article.getIn(['content','html_contents_page'])}}/>
             </div>
     }

@@ -112,8 +112,8 @@ var ArticleSkeletonContent = React.createClass({
         if(!this.props.content.get('error')){
             this.popRefs();
             this.resizeSkeleton();
-            if(this.props.view.getIn(['positions', this.props.page_id, 'pixel'])){
-                this.getScrollContainer().scrollTop(this.props.view.getIn(['positions', this.props.page_id, 'pixel']))
+            if(this.props.view.getIn(['positions', this.props.page_id])){
+                this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS())
             }
             this.setSubVisibility();
             this.setupSkeletonScroll();
@@ -343,8 +343,8 @@ var ArticleSkeletonContent = React.createClass({
             id: '#' + this.props.target
         });
     },
-    onJumpTo: function(page, jump){
-        if(page.get('id') !== this.props.page_id){
+    onJumpTo: function(viewer_id, jump){
+        if(viewer_id!== this.props.viewer_id){
             return;
         }
         var target;
@@ -369,6 +369,9 @@ var ArticleSkeletonContent = React.createClass({
             var container = this.getScrollContainer();
             container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, 0);
             console.log('jump');
+        }
+        else if(jump.pixel){
+            this.getScrollContainer().scrollTop(jump.pixel);
         }
         else{
             return 'Not Found';
@@ -395,6 +398,9 @@ var ArticleContent = React.createClass({
     componentDidMount: function(){
         if(!this.props.content.get('error')){
             this.setupScroll();
+            if(this.props.view.getIn(['positions', this.props.page_id])){
+                this.onJumpTo(this.props_viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS());
+            }
         }
     },
     getScrollContainer: function(){
@@ -470,8 +476,8 @@ var ArticleContent = React.createClass({
             id: '#' + this.props.target
         });
     },
-    onJumpTo: function(page, jump){
-        if(page.get('id') !== this.props.page_id){
+    onJumpTo: function(viewer_id, jump){
+        if(viewer_id!== this.props.viewer_id){
             return;
         }
         var target;

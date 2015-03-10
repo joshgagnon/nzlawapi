@@ -2,22 +2,20 @@ var React = require('react/addons');
 var Actions = require('../actions/Actions');
 var Input = require('react-bootstrap/lib/Input');
 var Button = require('react-bootstrap/lib/Button');
-var ArticleStore = require('../stores/ArticleStore');
 var Utils = require('../utils.js');
 var Reflux = require('reflux');
 var _ = require('lodash');
 
 module.exports = React.createClass({
     mixins: [
-      Reflux.listenTo(ArticleStore,"onPositionChange"),
       React.addons.LinkedStateMixin
     ],
     getInitialState: function(){
-        return {};
+        return {article_location: this.props.position ? this.props.position.get('location') : ''};
     },
     onPositionChange: function(value){
-        if(this.refs.jump_to.getInputDOMNode() !== document.activeElement){
-            this.setState({article_location: value.repr});
+        if(value && this.refs.jump_to.getInputDOMNode() !== document.activeElement){
+            this.setState({article_location: value.get('repr') });
         }
     },
     onKeyDown: function(event){
@@ -32,7 +30,12 @@ module.exports = React.createClass({
         var loc = this.state.article_location;
         if(loc){
             var m = Utils.splitLocation(loc);
-            Actions.articleJumpTo(this.props.article, {location: m});
+            Actions.articleJumpTo(this.props.viewer_id, {location: m});
+        }
+    },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.position){
+            this.setState({'article_location': this.onPositionChange(nextProps.position)});
         }
     },
     render: function(){
