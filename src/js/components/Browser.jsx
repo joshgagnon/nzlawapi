@@ -293,7 +293,6 @@ module.exports = React.createClass({
                 <a onClick={this.toggleState.bind(this, 'load_dialog')}><Glyphicon glyph="floppy-open" title="Open"/></a>
                 <a onClick={this.toggleState.bind(this, 'save_dialog')}><Glyphicon glyph="floppy-save" title="Save"/></a>
                 <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
-                {/* <a><Glyphicon glyph="star" /></a> */}
             </div>
             { this.state.pages.count() ? this.renderBody() : null}
             <Notifications />

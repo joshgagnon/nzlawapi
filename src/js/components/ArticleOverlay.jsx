@@ -6,8 +6,6 @@ var Actions = require('../actions/Actions');
 var Utils = require('../utils');
 var Immutable = require('immutable');
 
-
-
 var ArticleFocusLocationStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
@@ -18,9 +16,6 @@ var ArticleFocusLocationStore = Reflux.createStore({
         this.trigger(this.state)
     }
 });
-
-
-
 
 var FullArticleButton = React.createClass({
     propTypes: {
@@ -55,16 +50,6 @@ var ArticlePDFButton = React.createClass({
     }
 });
 
-var ArticlePDFButton = React.createClass({
-    base_url: 'http://www.legislation.govt.nz/subscribe/',
-    propTypes: {
-       content: React.PropTypes.object.isRequired,
-    },
-    render: function(){
-        var url = this.props.content.getIn(['attributes', 'path']).replace('.xml', '.pdf');
-        return  <a target="_blank" href={this.base_url + url} className="btn btn-info">PDF</a>
-    }
-});
 
 var ArticleAddPrintButton = React.createClass({
     propTypes: {

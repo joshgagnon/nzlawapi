@@ -28,20 +28,31 @@ module.exports =  Reflux.createStore({
                     views[k] = _.defaults(v, this.getDefault())
                 }, this)
             this.views = Immutable.fromJS(views);
-            this.trigger({views: this.views});
+            this.update();
         }
     },
     pageUpdate: function(state){
         // if the active page is removed, we must change active
         var ids = state.pages.map(function(p){ return p.get('id')});
+        var views = this.views;
         if(ids.size){
             this.views.map(function(v, k){
                 if(!ids.contains(this.views.getIn([k, 'active_page_id']))){
-                    this.views = this.views.setIn([k, 'active_page_id'],  ids.last());
+                    views = this.views.setIn([k, 'active_page_id'],  ids.last());
                 }
             }, this);
         }
-        this.trigger({views: this.views});
+        this.views = views;
+        this.update();
+    },
+    onRemovePage: function(page_id){
+        // clean up, don't publish
+        for(var i=0; i<2;i++){
+            this.views = this.views.deleteIn([i, 'settings', page_id]);
+            this.views = this.views.deleteIn([i, 'popovers', page_id]);
+            this.views = this.views.deleteIn([i, 'section_summaries', page_id]);
+            this.views = this.views.deleteIn([i, 'positions', page_id]);
+        }
     },
     printUpdate: function(state){
         var ids = state.print.map(function(p){ return p.get('id');}).toJS();
@@ -90,7 +101,7 @@ module.exports =  Reflux.createStore({
         this.prepPage(viewer_id, page_id);
         this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id});
         if(options){
-            this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id], _.omit('positions', options));
+            this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id], _.omit(options, 'positions'));
             this.views = this.views.mergeDeepIn([viewer_id, 'positions', page_id], options.position);
         }
         this.update();

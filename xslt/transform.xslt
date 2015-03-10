@@ -538,47 +538,36 @@
       </p>
     </xsl:template>
 
+    <xsl:template match="conv">
+      <div class="conv">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+        <xsl:apply-templates select="conv.body"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="conv.body">
+      <div class="conv-body">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+        <xsl:apply-templates />
+      </div>
+    </xsl:template>
+
     <xsl:template match="head1">
       <div class="head1">
         <xsl:attribute name="id">
             <xsl:value-of select="@id"/>
         </xsl:attribute>
             <h2 class="head1">
+                 <xsl:if test="label != ''">
                 <span class="label"><xsl:value-of select="label"/></span><br/>
+                </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>
-        <xsl:apply-templates select="prov|para"/>
-      </div>
-    </xsl:template>
-
-    <xsl:template match="head4">
-      <div class="head4">
-        <xsl:attribute name="id">
-            <xsl:value-of select="@id"/>
-        </xsl:attribute>
-            <h4 class="head4">
-                <xsl:value-of select="heading"/>
-            </h4>
-      </div>
-    </xsl:template>
-    <xsl:template match="head5">
-      <div class="head4">
-        <xsl:attribute name="id">
-            <xsl:value-of select="@id"/>
-        </xsl:attribute>
-            <h5 class="head5">
-                <xsl:value-of select="heading"/>
-            </h5>
-      </div>
-    </xsl:template>
-    <xsl:template match="head3">
-      <div class="head4">
-        <xsl:attribute name="id">
-            <xsl:value-of select="@id"/>
-        </xsl:attribute>
-            <h3 class="head3">
-                <xsl:value-of select="heading"/>
-            </h3>
+        <xsl:apply-templates select="prov|para|head2|head3|head4|head5"/>
       </div>
     </xsl:template>
 
@@ -590,8 +579,47 @@
             <h2 class="head2">
                 <xsl:value-of select="heading"/>
             </h2>
+        <xsl:apply-templates select="prov|para|head3|head4|head5"/>
       </div>
     </xsl:template>
+
+    <xsl:template match="head3">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h3 class="head3">
+                <xsl:value-of select="heading"/>
+            </h3>
+                <xsl:apply-templates select="prov|para|head4|head5"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="head4">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h4 class="head4">
+                <xsl:value-of select="heading"/>
+            </h4>
+                <xsl:apply-templates select="prov|para|head5"/>
+      </div>
+    </xsl:template>
+
+    <xsl:template match="head5">
+      <div class="head4">
+        <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+        </xsl:attribute>
+            <h5 class="head5">
+                <xsl:value-of select="heading"/>
+            </h5>
+          <xsl:apply-templates select="prov|para"/>
+      </div>
+    </xsl:template>
+
+
 
 
 

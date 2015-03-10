@@ -89,7 +89,7 @@
                     </tr>
                 </tbody>
             </table>
-            <xsl:apply-templates select="schedule.provisions|schedule.misc|schedule.forms|schedule.amendments|notes"/>
+            <xsl:apply-templates select="schedule.provisions|schedule.misc|schedule.forms|schedule.amendments|notes|conv"/>
         </div>
     </xsl:template>
 

@@ -496,6 +496,7 @@ var ArticleContent = React.createClass({
             container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll || this.isSkeleton() ? 0: 300);
         }
         else{
+            // GO TO FULL
             return 'Not Found';
         }
     },

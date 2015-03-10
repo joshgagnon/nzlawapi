@@ -41,6 +41,7 @@ var PageStore = Reflux.createStore({
         });
 
         page.section_data = page.section_data || {};
+
         _.map(page.section_data, function(v, k){
             page.section_data[k] =  _.omit(v, 'fetching');
         });
@@ -68,8 +69,8 @@ var PageStore = Reflux.createStore({
     onNewAdvancedPage: function(page_data, viewer_id){
         var page = this.generatePage(page_data);
         this.pages = this.pages.push(Immutable.fromJS(page));
-        this.update();
         Actions.showNewPage(viewer_id, page.id, {advanced_search: true});
+        this.update();
     },
     getById: function(id){
         return this.pages.find(function(p){
