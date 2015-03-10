@@ -286,7 +286,7 @@ module.exports = React.createClass({
                 </nav>
                 </div>
             <div className="buttonbar-wrapper">
-                <a onClick={this.toggleAdvanced}><Glyphicon glyph="search" title="Advanced Search"/></a>
+                <a onClick={this.toggleAdvanced}><span className="fa fa-search-plus" title="Advanced Search"/></a>
                 <a onClick={Actions.toggleUnderlines}><Glyphicon glyph="text-color" title="Underlines"/></a>
                 <a onClick={Actions.toggleSplitMode}><Glyphicon glyph="object-align-top" title="Columns"/></a>
                 <a onClick={Actions.togglePrintMode}><Glyphicon glyph="print" title="Print"/></a>

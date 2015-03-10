@@ -68,8 +68,8 @@ gulp.task('js', function() {
 
 
 gulp.task('fonts', function() {
-  return gulp.src('./node_modules/bootstrap/fonts/*')
-    .pipe(gulp.dest('./build/fonts/bootstrap'))
+  return gulp.src('./node_modules/font-awesome/fonts/*')
+    .pipe(gulp.dest('./build/fonts'))
 });
 
 gulp.task('images', function() {
@@ -78,31 +78,28 @@ gulp.task('images', function() {
 });
 
 gulp.task('sass-prod', function() { 
-    return gulp.src('./src/css/style.scss')
-        .pipe(dont_break_on_errors())
-         .pipe(sass({
-             style: 'compressed',
-            "sourcemap=none": true, //hack to allow autoprefixer to work
+    return sass('./src/css/style.scss',
+          //  "sourcemap=none": true, //hack to allow autoprefixer to work
+            {sourcemap: false, style: 'compressed',
              loadPath: [
                  './src/css',
-                 './node_modules/bootstrap-sass/assets/stylesheets'
+                 './node_modules/bootstrap-sass/assets/stylesheets',
+                 './node_modules/font-awesome/scss',
              ]
-         }) )
+         }) 
         .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
          .pipe(gulp.dest('./build/css')); 
 });
 
 gulp.task('sass', function() { 
-    return gulp.src('./src/css/style.scss')
-        .pipe(dont_break_on_errors())
-         .pipe(sass({
-          //  "sourcemap=none": true, //hack to allow autoprefixer to work
+    return sass('./src/css/style.scss',
+            {sourcemap: true,
              loadPath: [
                  './src/css',
-                 './node_modules/bootstrap-sass/assets/stylesheets'
+                 './node_modules/bootstrap-sass/assets/stylesheets',
+                 './node_modules/font-awesome/scss',
              ]
-         }) )
-       // .pipe(postcss([ autoprefixer({browsers: ['last 2 version', 'ie 8', 'ie 9', 'ios 6', 'android 4']}) ]))
+         }) 
          .pipe(gulp.dest('./build/css')); 
 });
 
