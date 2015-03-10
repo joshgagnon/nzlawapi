@@ -286,6 +286,8 @@ var ArticleSkeletonContent = React.createClass({
                 children: children,
                 sorted_children: pairs
             };
+            this.handleDelayedJump(k);
+            // check for pending jumpTo for this part
         }
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
@@ -338,7 +340,14 @@ var ArticleSkeletonContent = React.createClass({
         }
         return <div className={classes} dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
+    handleDelayedJump: function(ref){
+        if(this._delayed_jump && this._delayed_jump.ref === ref ){
+            this.onJumpTo(this.props.viewer_id, this._delayed_jump.jump);
+            this._delayed_jump = null;
+        }
+    },
     onJumpTo: function(viewer_id, jump){
+        this._delayed_jump;
         if(viewer_id!== this.props.viewer_id){
             return;
         }
@@ -347,6 +356,7 @@ var ArticleSkeletonContent = React.createClass({
             target = $(this.getDOMNode()).find(jump.id);
             if(!target.length){
                 target = $(this._refs[this._child_ids[jump.id]]);
+                this._delayed_jump = {ref: this._child_ids[jump.id], jump:jump};
             }
         }
         else if(jump.location && jump.location.length){
@@ -354,20 +364,16 @@ var ArticleSkeletonContent = React.createClass({
             for(var i=0;i<jump.location.length && node.length;i++){
                 var new_node = node.find('[data-location^="'+jump.location[i]+'"]');
                 if(!new_node.length){
-                     new_node = $(this._refs[this._child_locations[jump.location[i]]]);
+                    new_node = $(this._refs[this._child_locations[jump.location[i]]]);
+                    this._delayed_jump = {ref: this._child_locations[jump.location[i]], jump: jump};
                 }
                 node = new_node;
             }
             target = node;
-            // todo, use _child_locations if not found
-            if(!target.length){
-
-            }
         }
         if(target && target.length){
             var container = this.getScrollContainer();
             container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, 0);
-            console.log('jump');
         }
         else if(jump.pixel){
             this.getScrollContainer().scrollTop(jump.pixel);

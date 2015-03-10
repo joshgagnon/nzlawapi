@@ -29,7 +29,9 @@ var FullArticleButton = React.createClass({
     handleClick: function(){
         var id = this.props.content.getIn(['query', 'govt_location']);
         var location = Utils.splitLocation(this.props.content.getIn(['query', 'location']) || '');
-
+        if(id){
+            id = '#'+id;
+        }
         Actions.newPage({
             title: this.props.content.get('title'),
             query: {doc_type:
