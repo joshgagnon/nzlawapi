@@ -19,7 +19,7 @@ def login():
     if not all([user_id, timestamp, user_name, admin, provided_code]):
         return redirect(current_app.config.get('USERS_LOGIN_URL'))
 
-    message = str(request.url) + str(user_id) + str(user_name) + str(timestamp) + str(admin)
+    message = str(request.base_url) + str(user_id) + str(user_name) + str(timestamp) + str(admin)
     hash_obj = hmac.new(key=current_app.config.get('SSO_SHARED_SECRET'), msg=message, digestmod=sha256)
     calculated_code = hash_obj.hexdigest()
 
