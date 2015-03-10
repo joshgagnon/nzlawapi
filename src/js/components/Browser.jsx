@@ -204,7 +204,7 @@ module.exports = React.createClass({
         this.setState(s);
     },
     showLocation: function(){
-        return !!this.state.document_id && this.state.find === 'full';
+        return !!this.state.document_id && (this.state.find === 'full' || this.state.find === "govt_location");
     },
     getActive: function(){
         var id = this.state.views.getIn(['tab-0' ,'active_page_id'])
@@ -249,7 +249,7 @@ module.exports = React.createClass({
             formClasses += 'showing-location';
         }
         return   <form className={formClasses}>
-                 <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
+                 <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onKeyPress={this.handleEnter} className='main-search'  autoCapitalize="off" autoCorrect="off"
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
                     { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location}

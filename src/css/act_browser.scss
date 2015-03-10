@@ -707,13 +707,15 @@ body{
         }
 
         .popover-close{
-          position: absolute;
-          top: -1px;
-          right: 10px;
-          font-size: 22px;
-          color: #fff;
-          font-weight: bold;
-          cursor: pointer;
+              position: absolute;
+              top: -1px;
+              right: 0px;
+              font-size: 22px;
+              color: #fff;
+              font-weight: bold;
+              cursor: pointer;
+              margin: 0;
+              padding: 0px 10px;
         }
     }
 

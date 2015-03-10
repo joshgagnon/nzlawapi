@@ -72,7 +72,7 @@ module.exports = React.createClass({
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
                     { this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i){
-                            return <SearchResult key={r.getIn(['fields', 'id', 0])+i} data={r} viewer_id={this.props.viewer_id}/>
+                            return <SearchResult key={r.getIn(['fields', 'id', 0])+''+i} data={r} viewer_id={this.props.viewer_id}/>
                         }, this).toJS()
                     }
                     {this.props.page.get('fetching') ?  <div className="csspinner" /> : null }

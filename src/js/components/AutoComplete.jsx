@@ -134,7 +134,7 @@ var AutoComplete = React.createClass({
                 entries: [result]
             });
         });
-        var order = ['case', 'regulation','act'];
+        var order = ['bill', 'case', 'regulation','act'];
         groups.sort(function(a ,b){
             return order.indexOf(b.type)- order.indexOf(a.type)
         })

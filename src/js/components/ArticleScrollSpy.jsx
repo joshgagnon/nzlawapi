@@ -43,7 +43,9 @@ module.exports = React.createClass({
         }
     },
     componentDidMount: function(){
-        this.onPositionChange(this.props.positions.toJS());
+        if(this.props.positions){
+            this.onPositionChange(this.props.positions.toJS());
+        }
     },
     shouldComponentUpdate: function(nextProps){
         if(nextProps.article !== this.props.article){
