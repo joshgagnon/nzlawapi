@@ -276,10 +276,10 @@ var PageStore = Reflux.createStore({
             !page.getIn(['section_data', section_id, 'fetched'])){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
                 {fetching: true});
-            require.get('/section_references', {govt_ids: page.getIn(['section_data', section_id, 'govt_ids']).toJS()})
+            request.get('/section_references', {govt_ids: page.getIn(['section_data', section_id, 'govt_ids']).toJS()})
                 .end()
-                .then(function(response){ Actions.onRequestSectionReferences.completed(page_id, section_id, response.data); })
-                .catch(function(response){ Actions.onRequestSectionReferences.failed(page_id, section_id, response.data); });
+                .then(function(response){ Actions.requestSectionReferences.completed(page_id, section_id, response.data); })
+                .catch(function(response){ Actions.requestSectionReferences.failed(page_id, section_id, response.data); });
             this.update();
         }
     },
@@ -307,8 +307,8 @@ var PageStore = Reflux.createStore({
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetching: true});
             request.get('/versions/'+page.get('content').get('document_id'))
                 .end()
-                .then(function(response){ Actions.onRequestVersions.completed(page_id, section_id, response.data); })
-                .catch(function(response){ Actions.onRequestVersions.failed(page_id, section_id, response.data); });
+                .then(function(response){ Actions.requestVersions.completed(page_id, section_id, response.data); })
+                .catch(function(response){ Actions.requestVersions.failed(page_id, section_id, response.data); });
             this.update();
         }
     },
@@ -334,8 +334,8 @@ var PageStore = Reflux.createStore({
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetching: true});
             request('/references/'+page.get('content').get('document_id'))
                 .end()
-                .then(function(response){ Actions.onRequestReferences.completed(page_id, response.data); })
-                .catch(function(response){ Actions.onRequestReferences.failed(page_id, response.data); });
+                .then(function(response){ Actions.requestReferences.completed(page_id, response.data); })
+                .catch(function(response){ Actions.requestReferences.failed(page_id, response.data); });
             this.update();
         }
     },
@@ -361,8 +361,8 @@ var PageStore = Reflux.createStore({
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'], {fetching: true});
             request.get('/contents/'+page.get('content').get('document_id'))
                 .end()
-                .then(function(response){ Actions.onRequestContents.completed(page_id, section_id, response.data); })
-                .catch(function(response){ Actions.onRequestContents.failed(page_id, section_id, response.data); });
+                .then(function(response){ Actions.requestContents.completed(page_id, section_id, response.data); })
+                .catch(function(response){ Actions.requestContents.failed(page_id, section_id, response.data); });
             this.update();
         }
     },

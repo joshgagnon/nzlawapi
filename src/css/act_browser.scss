@@ -757,4 +757,23 @@ body{
         padding: 4px;
         }
     }
+
+
+    .notifications {
+      position: absolute;
+      z-index: 1050;
+      right: 40px;
+      bottom: 20px;
+      .notification{
+        margin-bottom: 0;
+        min-width:200px;
+        padding: 10px;
+        cursor:pointer;
+        img{
+            height:30px;
+            width:30px;
+            margin-right:10px;
+        }
+      }
+    }
 }

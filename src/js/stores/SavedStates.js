@@ -7,6 +7,7 @@ var PageStore = require('./PageStore');
 var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
+var HistoryStore = require('./HistoryStore');
 var Immutable = require('immutable');
 var request = require('superagent-promise');
 
@@ -37,19 +38,13 @@ module.exports = Reflux.createStore({
         this.browser = Immutable.Map();
     },
     updatePages: function(pages){
-        if(this.pages !== pages.pages){
-            this.pages = pages.pages;
-        }
+        this.pages = pages.pages;
     },
     updateViews: function(views){
-        if(this.views !== views.views){
-            this.views = views.views;
-        }
+        this.views = views.views;
     },
     updateBrowser: function(browser){
-        if(this.browser !== browser.browser){
-            this.browser = browser.browser;
-        }
+        this.browser = browser.browser;
     },
     updatePrint: function(print){
         this.print = print.print;
@@ -108,8 +103,14 @@ module.exports = Reflux.createStore({
     setStates: function(states){
         request.post('/saved_states', {saved_states: states})
             .end()
-            .then(function(){ this.update() }.bind(this))
-            .catch(function(){ this.update() }.bind(this))
+            .then(function(){
+                this.update();
+                Actions.notify('Session Saved');
+            }.bind(this))
+            .catch(function(){
+                this.update() ;
+                Actions.notify('There was a problem saving', true);
+            }.bind(this));
         this.saved_states = states;
         this.update();
     },
@@ -227,40 +228,3 @@ var UserActions = Reflux.createStore({
     }
 });
 
-var HistoryStore = Reflux.createStore({
-
-    init: function() {
-        this.listenTo(PageStore, this.set);
-        this.listenTo(ViewerStore, this.set);
-        this.listenTo(BrowserStore, this.set);
-        this.listenTo(PrintStore, this.set);
-        this.listenTo(Actions.goBack, this.onGoBack);
-        this.listenTo(Actions.goForward, this.onGoForward);
-        this.listenTo(Actions.userAction, this.onUserAction);
-        this.state = Immutable.Map();
-        this.history = [];
-        this.index = -1;
-    },
-    onUserAction: function(){
-        if(this.index < this.history.length-1){
-            this.history = this.history.slice(this.index);
-        }
-        this.history.push(this.state);
-        this.index++;
-    },
-    onGoBack: function(){
-        if(this.index > 0){
-            this.index--;
-            Actions.setState(this.history[this.index]);
-        }
-    },
-    onGoForward: function(){
-        if(this.index < this.history.length-1){
-            this.index++;
-            Actions.setState(this.history[this.index]);
-        }
-    },
-    set: function(state){
-        this.state = this.state.merge(state);
-    }
-});

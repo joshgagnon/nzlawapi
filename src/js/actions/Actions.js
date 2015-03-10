@@ -63,5 +63,8 @@ module.exports = Reflux.createActions({
 
 	'userAction': {},
 	'goForward': {},
-	'goBack': {}
+	'goBack': {},
+
+	'notify': {},
+	'closeNotification' : {}
 });

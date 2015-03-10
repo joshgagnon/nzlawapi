@@ -4,21 +4,34 @@ var Modal = require('react-bootstrap/lib/Modal');
 var ModalTrigger = require('react-bootstrap/lib/ModalTrigger');
 var Button = require('react-bootstrap/lib/Button');
 var request = require('superagent-promise');
-
+var SavedStates = require('../stores/SavedStates')
 
 var ReportIssueModal = React.createClass({
-
+    mixins:[
+        React.addons.LinkedStateMixin,
+    ],
+    getInitialState: function(){
+        return {details: ''}
+    },
     preventSubmit: function(e){
         e.preventDefault();
     },
     submit: function(){
-
+        request
+            .post('/submit_issue', {
+                state: SavedStates.prepState(),
+                details: this.state.details
+            })
+            .end()
+            .then(function(){
+                this.props.onRequestHide();
+            }.bind(this));
     },
     render: function() {
         return  <Modal {...this.props} title="User Name" animation={true}>
                 <div className="modal-body">
                     <form className="form" onSubmit={this.preventSubmit}>
-                        <Input type="textarea" label="Details" value={this.props.details} onChange={this.props.details} />
+                        <Input type="textarea" label="Details" valueLink={this.linkState('details')}/>
                     </form>
                 </div>
                 <div className="modal-footer">

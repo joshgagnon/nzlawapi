@@ -44,6 +44,7 @@ module.exports = Reflux.createStore({
 		}
 		this.print = this.print.push(Immutable.fromJS(data));
 		this.update();
+		Actions.notify('Added to Print');
 	},
 	onFetchPrint: function(print_id){
 		var print = this.getById(print_id)

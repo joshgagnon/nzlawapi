@@ -1,0 +1,1 @@
+ALTER TABLE error_submissions DROP CONSTRAINT error_submissions_fk;

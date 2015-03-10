@@ -29,6 +29,7 @@ var AdvancedSearch = require('./AdvancedSearch.jsx');
 var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
 var UserControls = require('./UserControls.jsx');
+var Notifications = require('./Notifications.jsx');
 
 
 $.fn.focusNextInputField = function() {
@@ -295,6 +296,7 @@ module.exports = React.createClass({
                 {/* <a><Glyphicon glyph="star" /></a> */}
             </div>
             { this.state.pages.count() ? this.renderBody() : null}
+            <Notifications />
         </div>);
     }
 });
