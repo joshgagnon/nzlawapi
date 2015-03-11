@@ -5,7 +5,6 @@ var Reflux = require('reflux');
 var ReactRouter = require('react-router');
 var Input = require('react-bootstrap/lib/Input');
 var Button = require('react-bootstrap/lib/Button');
-var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 var SplitButton = require('./SplitButton.jsx');
 var MenuItem = require('react-bootstrap/lib/MenuItem');
 var Col= require('react-bootstrap/lib/Col');
@@ -30,7 +29,8 @@ var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
 var UserControls = require('./UserControls.jsx');
 var Notifications = require('./Notifications.jsx');
-
+var ButtonBar = require('./ButtonBar.jsx');
+var MQ = require('react-responsive');
 
 $.fn.focusNextInputField = function() {
     return this.each(function() {
@@ -47,6 +47,12 @@ $.fn.focusNextInputField = function() {
 
 var DialogStore = Reflux.createStore({
     listenables: Actions,
+    onOpenSaveDialog: function(){
+        this.trigger({save_dialog: true});
+    },
+    onOpenLoadDialog: function(){
+        this.trigger({load_dialog: true});
+    },
     onCloseSaveDialog: function(){
         this.trigger({save_dialog: false});
     },
@@ -177,6 +183,7 @@ module.exports = React.createClass({
             this.submit(e);
         }
     },
+    // deprecated
     reset: function(){
         this.setState({
             article_type: null,
@@ -184,19 +191,6 @@ module.exports = React.createClass({
             location: null
         });
         Actions.reset();
-    },
-
-    toggleAdvanced: function(){
-        var active = this.getActive();
-        if(active && active.get('page_type') === 'search'){
-            Actions.toggleAdvanced('tab-0', active.get('id'));
-        }
-        else{
-             Actions.newAdvancedPage(
-                {title: 'Advanced Search',
-                page_type: 'search'
-            }, 'tab-0')
-        }
     },
     toggleState: function(state){
         var s = {};
@@ -244,7 +238,7 @@ module.exports = React.createClass({
 
     },
     renderForm: function(){
-        var formClasses = '';//"navbar-form navbar-left ";
+        var formClasses = '';
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
@@ -285,15 +279,9 @@ module.exports = React.createClass({
                  <UserControls />
                 </nav>
                 </div>
-            <div className="buttonbar-wrapper">
-                <a onClick={this.toggleAdvanced}><span className="fa fa-search-plus" title="Advanced Search"/></a>
-                <a onClick={Actions.toggleUnderlines}><Glyphicon glyph="text-color" title="Underlines"/></a>
-                <a onClick={Actions.toggleSplitMode}><Glyphicon glyph="object-align-top" title="Columns"/></a>
-                <a onClick={Actions.togglePrintMode}><Glyphicon glyph="print" title="Print"/></a>
-                <a onClick={this.toggleState.bind(this, 'load_dialog')}><Glyphicon glyph="floppy-open" title="Open"/></a>
-                <a onClick={this.toggleState.bind(this, 'save_dialog')}><Glyphicon glyph="floppy-save" title="Save"/></a>
-                <a onClick={this.reset}><Glyphicon glyph="trash" title="Reset"/></a>
-            </div>
+            <MQ minWidth={768}>
+                <ButtonBar page={this.getActive()} viewer_id='tab-0'/>
+            </MQ>
             { this.state.pages.count() ? this.renderBody() : null}
             <Notifications />
         </div>);

@@ -7,9 +7,9 @@ var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 var PrintSegment = React.createClass({
     printOverLay: function(){
         return <div className="btn-group">
-            <a onClick={this.moveUp}><Glyphicon glyph="chevron-up" title="Move Up"/></a>
-            <a onClick={this.moveDown}><Glyphicon glyph="chevron-down" title="Move Down"/></a>
-            <a onClick={this.close}><Glyphicon glyph="remove" title="Remove"/></a>
+            <a onClick={this.moveUp}><span className="fa fa-chevron-up" title="Move Up"/></a>
+            <a onClick={this.moveDown}><span className="fa fa-chevron-down"  title="Move Down"/></a>
+            <a onClick={this.close}><span className="fa fa-close"  title="Remove"/></a>
         </div>
     },
     render: function(k){

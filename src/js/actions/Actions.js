@@ -39,10 +39,12 @@ module.exports = Reflux.createActions({
 	'popoverClosed': {},
 	'popoverUpdate': {},
 
+	'openSaveDialog': {},
 	'closeSaveDialog': {},
+	'openLoadDialog': {},
 	'closeLoadDialog': {},
-	'fetchSavedStates': {},
 
+	'fetchSavedStates': {},
 	'removeSavedState': {},
 	'updateSavedStates': {},
 	'createSaveFolder': {},
