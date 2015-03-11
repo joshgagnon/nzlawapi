@@ -199,6 +199,8 @@ body{
                 display:none;
                 position: absolute;
                 background-color:$deep-red;
+                background-image: url(/build/images/hero-bg.jpg);
+                  background-size: 300%;
                 border-radius: 4px;
                 li{
                  width: 100%;
@@ -270,7 +272,7 @@ body{
                 }
             }
             .suboption:hover{
-                   background-color:$deep-red;
+                   background-color:transparent;
                    a, .fa{
                         color:#fff;
                     }
