@@ -110,20 +110,8 @@ var ArticleOverlay= React.createClass({
     },
     render: function(){
         return <div className="article-overlay">
-
                  { this.props.page.getIn(['content','format']) === 'fragment'?
                      <ArticleFocusBreadCrumbs page={this.props.page} viewer_id={this.props.viewer_id}/> : null }
-                <div className="btn-group">
-                { this.props.page.getIn(['content','format']) === 'fragment' ? <FullArticleButton
-                    content={this.props.page.get('content')}
-                    viewer_id={this.props.viewer_id}/> : null }
-                { this.props.page.getIn(['content','format']) === 'fragment' ? <ArticleAddPrintButton
-                    content={this.props.page.get('content')}
-                    viewer_id={this.props.viewer_id}/> : null }
-                { this.props.page.getIn(['content','attributes', 'path']) ? <ArticlePDFButton
-                    content={this.props.page.get('content')}
-                    viewer_id={this.props.viewer_id}/> : null }
-                    </div>
             </div>
     }
 });

@@ -30,7 +30,7 @@ var PrintView = require('./PrintView.jsx');
 var UserControls = require('./UserControls.jsx');
 var Notifications = require('./Notifications.jsx');
 var ButtonBar = require('./ButtonBar.jsx');
-var MQ = require('react-responsive');
+var MQ = require('./Responsive.jsx');
 
 $.fn.focusNextInputField = function() {
     return this.each(function() {
@@ -213,6 +213,18 @@ module.exports = React.createClass({
             return true;
         }
         return false;
+    },
+    toggleAdvanced: function(){
+        var active = this.getActive();
+        if(active && active.get('page_type') === 'search' && !active.get('content')){
+            // actually, for now do nothing
+        }
+        else{
+             Actions.newAdvancedPage(
+                {title: 'Advanced Search',
+                page_type: 'search'
+            }, 'tab-0')
+        }
     },
     renderBody: function(){
         var active = this.getActive();
