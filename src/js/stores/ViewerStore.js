@@ -36,9 +36,9 @@ module.exports =  Reflux.createStore({
         var ids = state.pages.map(function(p){ return p.get('id')});
         var views = this.views;
         if(ids.size){
-            this.views.map(function(v, k){
-                if(!ids.contains(this.views.getIn([k, 'active_page_id']))){
-                    views = this.views.setIn([k, 'active_page_id'],  ids.last());
+            _.map(['tab-0', 'tab-1'], function(k){
+                if(!ids.contains(views.getIn([k, 'active_page_id']))){
+                    views = views.setIn([k, 'active_page_id'],  ids.last());
                 }
             }, this);
         }

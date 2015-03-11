@@ -497,6 +497,15 @@ var ArticleContent = React.createClass({
         }
         else{
             // GO TO FULL
+            Actions.newPage({
+                title: this.props.content.get('title'),
+                query: {doc_type:
+                this.props.content.get('doc_type'),
+                find: 'full',
+                id: this.props.content.get('document_id')}},
+                this.props.viewer_id,
+                {position: {id: jump.id, location: jump.location}
+            });
             return 'Not Found';
         }
     },

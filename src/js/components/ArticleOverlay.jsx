@@ -32,7 +32,9 @@ var FullArticleButton = React.createClass({
             query: {doc_type:
             this.props.content.get('doc_type'),
             find: 'full',
-            id: this.props.content.get('document_id')}}, this.props.viewer_id, {position: {id: id, location: location}})
+            id: this.props.content.get('document_id')}}, this.props.viewer_id,
+            {position: {id: id, location: location}
+        });
     },
     render: function(){
         return  <button onClick={this.handleClick} className="btn btn-info">Full Article</button>

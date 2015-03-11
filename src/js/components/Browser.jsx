@@ -246,6 +246,7 @@ module.exports = React.createClass({
                 <ArticleSideBar article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
                 </div>
         }
+        console.log(this.state.views.get('tab-0').toJS());
         return  <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
 
     },
