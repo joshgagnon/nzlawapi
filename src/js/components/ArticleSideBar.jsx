@@ -48,22 +48,5 @@ module.exports = React.createClass({
                       }.bind(this))}
               </TabbedArea>
             </div>
-    },
-    renderold: function(){
-        return <div className="sidebar-wrapper visible-md-block visible-lg-block">
-
-                <div className="btn-group">
-                  <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    {strings[this.state.active]} <span className="caret"></span>
-                  </button>
-                  <ul className="dropdown-menu" role="menu">
-                    {this.state.options.map(function(k){
-                        return <li onClick={this.setVisible.bind(this, k)} key={k}><a href="#" >{strings[k]}</a></li>
-                    }.bind(this))}
-                  </ul>
-                </div>
-                  {this.renderBody()}
-
-            </div>
-     },
+    }
     });

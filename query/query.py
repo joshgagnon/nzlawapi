@@ -84,7 +84,7 @@ def get_references_route(document_id):
 def get_section_references_route():
     status = 200
     try:
-        result = get_section_references(request.args.getlist('govt_ids[]'))
+        result = get_section_references(request.args.get('govt_ids').split(','))
     except Exception, e:
         result = {'error': str(e)}
         status = 500

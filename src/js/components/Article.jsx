@@ -591,8 +591,8 @@ var MobilePopovers = React.createClass({
             else if(link.closest('[id]').length){
                 var $target = link.closest('[id]');
                 var title = this.props.page.getIn(['content', 'title']) + ' ' + $target.attr('data-location') ;
-                var ids = $target.find('id').map(function(){
-                    return this.attributes.id;
+                var ids = $target.find('[id]').map(function(){
+                    return this.attributes.id.textContent;
                 }).toArray();
                 ids.push($target.attr('id'));
                 Actions.sectionSummaryOpened(
