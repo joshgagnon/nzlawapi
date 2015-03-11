@@ -284,8 +284,12 @@ module.exports = React.createClass({
                   <img className="chev-left hidden-xs" src="/build/images/left-chevron.png"/><img className="chev-right hidden-sm" src="/build/images/right-chevron.png"/>
                     <div className="brand-wrap">
                          <img src="/build/images/law-browser.png" alt="CataLex" className="logo img-responsive center-block hidden-xs"/>
-                         <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block visible-xs-block"/>
-
+                         <MQ maxWidth={768}>
+                            <div className="logo-sml-button visible-xs-block">
+                                <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block "/>
+                                <ButtonBar page={this.getActive()} userControls={true} viewer_id='tab-0'/>
+                            </div>
+                        </MQ>
                     </div>
                     { this.renderForm() }
 

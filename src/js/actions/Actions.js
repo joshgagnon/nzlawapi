@@ -25,7 +25,6 @@ module.exports = Reflux.createActions({
 	'articlePosition': {},
 	'articleJumpTo': {},
 	'articleFocusLocation': {},
-	'toggleAdvanced': {},
 
 	'requestReferences': {asyncResult: true},
 	'requestSectionReferences': {asyncResult: true},
@@ -55,6 +54,7 @@ module.exports = Reflux.createActions({
 	'toggleUnderlines': {},
 	'toggleSplitMode': {},
 	'togglePrintMode': {},
+	'toggleSideBar': {},
 	'activatePrintMode': {},
 
 	'setState': {},

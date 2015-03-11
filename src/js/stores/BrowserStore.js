@@ -41,6 +41,13 @@ module.exports = Reflux.createStore({
         }
         this.update();
     },
+    onToggleSidebar: function(){
+        this.browser = this.browser.set('print_mode', !this.browser.get('print_mode'));
+        if(this.browser.get('print_mode')){
+            this.browser = this.browser.set('split_mode', false);
+        }
+        this.update();
+    },
     onSetState: function(state){
         if(state.get('browser')){
             this.browser = state.get('browser');

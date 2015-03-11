@@ -55,11 +55,32 @@ module.exports = React.createClass({
                 </ul>
             </li>
     },
-
-
+    userControls: function(){
+        if(this.props.userControls){
+            return <li><div className="button">
+                <a><span className="fa fa-user" title="Account" ></span></a>
+                </div>
+                <ul className="children">
+                <li className="title"><span>Account</span></li>
+                <li className="suboption">
+                    <a  href="https://users.catalex.nz">
+                        <span className="fa fa-cog" title="Account Page"/>
+                        <span className="sublabel">Account Page</span>
+                    </a>
+                </li>
+                <li className="suboption">
+                    <a href="/logout">
+                        <span className="fa fa-sign-out"  title="Columns"/>
+                        <span className="sublabel">Logout</span>
+                    </a></li>
+                </ul>
+            </li>
+        }
+    },
     render: function(){
         return <div className="buttonbar-wrapper">
             <ul>
+            { this.userControls() }
             <li onClick={this.toggleAdvanced}><div className="button"><a ><span className="fa fa-search-plus" title="Advanced Search"/></a>
                 </div>
                  <ul className="children">
