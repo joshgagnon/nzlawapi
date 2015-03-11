@@ -1,5 +1,5 @@
 var React = require('react');
-var Actions = require('../Actions/Actions');
+var Actions = require('../actions/Actions');
 
 module.exports = React.createClass({
     base_url: 'http://www.legislation.govt.nz/subscribe/',
