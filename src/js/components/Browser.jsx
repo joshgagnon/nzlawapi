@@ -76,6 +76,20 @@ var UndoMixin = {
         });
     }
 }
+var Modal = require('react-bootstrap/lib/Modal');
+var ArticleInfoTabs= require('./ArticleInfoTabs.jsx');
+
+var PageDialog = React.createClass({
+    render: function(){
+        return <Modal onRequestHide={Actions.closePageDialog} title={this.props.page.get('title')}>
+                <div className="modal-body">
+                    <ArticleInfoTabs article={this.props.page} view={this.props.view} viewer_id={this.props.viewer_id} />
+                </div>
+        </Modal>
+    }
+});
+
+
 
 module.exports = React.createClass({
     mixins: [
@@ -281,6 +295,7 @@ module.exports = React.createClass({
                 <div className="container-fluid">
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }
+                { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
                  <nav className="navbar navbar-default navbar-fixed-top">
                   <img className="chev-left hidden-xs" src="/build/images/left-chevron.png"/><img className="chev-right hidden-sm" src="/build/images/right-chevron.png"/>
                     <div className="brand-wrap">
@@ -288,7 +303,7 @@ module.exports = React.createClass({
                          <MQ maxWidth={768}>
                             <div className="logo-sml-button visible-xs-block">
                                 <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block "/>
-                                <ButtonBar page={active}  sidebar={this.canHaveSidebar(active)} userControls={true} viewer_id='tab-0'/>
+                                <ButtonBar page={active} page_dialog={this.canHaveSidebar(active)} user_controls={true} viewer_id='tab-0'/>
                             </div>
                         </MQ>
                     </div>

@@ -1,0 +1,35 @@
+.legislation-contents{
+
+    .contents{
+        a{
+        color:$gray;
+        }
+        .nav>li>a{
+            padding:0;
+
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        &>ul{
+            padding-left:0;
+        }
+        .nav .nav{
+            padding-left:12px;
+        }
+         .active > a{
+            text-decoration: none;
+            font-weight: bold;;
+        }
+         .nav .nav {
+            display: none;
+        }
+        .nav>.active>ul {
+            display: block;
+        }
+        span.crosshead {
+            font-style: italic;
+        }
+    }
+}

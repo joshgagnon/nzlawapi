@@ -1,0 +1,71 @@
+.sidebar-wrapper{
+    height: 100%;
+    width: $sidebar-width;
+    position: fixed;
+    top: 0;
+    right: 20px;
+    padding:6px;
+    padding-top: $top-bar-height-sm;
+    z-index: $z-toolbars;
+
+    //border-left-width: 1px;
+    //border-left-style:solid;
+    @media (min-width: $screen-md-min) {
+        padding-top: $top-bar-height;
+    }
+    @media print{
+        position:static;
+        height:0;
+        display:none !important;
+    }
+
+    .legislation-contents{
+        overflow-y: auto;
+        position: absolute;
+        top: 200px;
+        bottom: 0;
+        left: 5px;
+        right: 5px;
+    }
+    .form-group{
+        margin-right:16px;
+    }
+    span.no-references {
+        width: 100%;
+        text-align: center;
+        display: inline-block;
+    }
+    .tab-content{
+        padding-top:10px;
+    }
+    .nav-tabs {
+        border-bottom:none;
+        li > a{
+            padding:3px;
+        }
+        li a:hover{
+            border: 1px solid #ddd;
+            border-radius: 0 0 4px 4px;
+            border-color: transparent;
+            color: #fff;
+            background-color:$light-red;
+        }
+        li.active a{
+            border: 1px solid #ddd;
+            border-radius: 0 0 4px 4px;
+            border-color: transparent;
+            color: #fff;
+            background-color:$deep-red;
+        }
+    }
+    .article-references,
+    .article-versions{
+            overflow-y: auto;
+            position: absolute;
+            top: 150px;
+            bottom: 0;
+            left: 5px;
+            right: 5px;
+
+    }
+}

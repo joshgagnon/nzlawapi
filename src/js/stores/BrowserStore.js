@@ -51,9 +51,13 @@ module.exports = Reflux.createStore({
         this.browser = this.browser.set('show_sidebar', !this.browser.get('show_sidebar'));
         this.update();
     },
-    onToggleSidebarOverlay: function(){
-       // this.browser = this.browser.set('show_sidebar', !this.browser.get('show_sidebar'));
-       // this.update();
+    onOpenPageDialog: function(){
+        this.browser = this.browser.set('page_dialog', true);
+        this.update();
+    },
+    onClosePageDialog: function(){
+        this.browser = this.browser.set('page_dialog', false);
+        this.update();
     },
     onSetState: function(state){
         if(state.get('browser')){

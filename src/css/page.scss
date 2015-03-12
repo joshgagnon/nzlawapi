@@ -1,0 +1,162 @@
+    .results-container{
+        .nav{
+            z-index: $z-toolbars;
+            position: absolute;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            @media (min-width: $screen-sm-min) {
+                left: $buttonbar-outer-width;
+            }
+        }
+        .result-tabs{
+            background-color:white;
+            position:absolute;
+        }
+        .nav-tabs{
+            padding-top:5px;
+            @media print{
+                display:none;
+            }
+            &>li{
+                max-width: 200px;
+            }
+            li{
+                &.tab:nth-child(1){
+                    margin-left:10px;
+                }
+                position: relative;
+                a{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    padding-right: 20px;
+                }
+                &:hover .tab-close{
+                    display:block;
+                }
+            }
+            &.nav-dropdown > div{
+                padding: 0 10px 8px 10px;
+                width: 100%;
+                button{
+                    width: 100%;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    white-space: nowrap;
+                }
+            }
+            .dropdown-menu{
+                right:0;
+            }
+            .dropdown-menu .tab-close{
+                top: -4px;
+            }
+            .tab-close{
+                display:none;
+                position: absolute;
+                top: 2px;
+                right: 4px;
+                font-size: 22px;
+                color: #898989;
+                font-weight: bold;
+                cursor: pointer;
+                &:hover{
+                    color:$gray-dark;
+                }
+            }
+            .drops.btn-group{
+                float: right;
+            }
+
+        }
+        &:nth-child(2) .nav{
+            left:0;
+        }
+        .tab-content{
+            top: $tabs-height;
+            position: absolute;
+            bottom: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        -webkit-backface-visibility: hidden;
+            left: 0;
+            right: 0;
+            padding: 0;
+            @media print{
+                position:static;
+                padding-right:0;
+            }
+        }
+         .legislation-result{
+            max-width:$screen-lg-min;
+            margin: 0 auto;
+            margin-top: 60px;
+            margin-bottom:60px;
+            padding-left:10px;
+            @media (min-width: $screen-sm-min) {
+                padding-left: $buttonbar-outer-width;
+            }
+
+            .loading{
+                @extends .csspinner
+            }
+        }
+
+        .article-overlay {
+            position: fixed;
+            top: $top-bar-height-sm + 10px;
+            left:$buttonbar-outer-width;
+            right:10px;
+            margin-right:10px;
+            text-align: right;
+            @media print{
+                display:none;
+            }
+            @media (min-width: $screen-md-min) {
+                top: $top-bar-height + 10px;
+            }
+            .breadcrumb{
+                padding: 4px;
+                list-style: none;
+                background-color: #fff;
+                border-radius: 4px;
+                margin: 4px 0;
+                float:left;
+                font-size: 14px;
+            }
+            .btn-group{
+                float:right;
+            }
+        }
+        .tab-content .article-overlay{
+            top: $tabs-height + $top-bar-height-sm + 10px;
+            @media (min-width: $screen-md-min) {
+                top: $tabs-height + $top-bar-height + 10px;
+            }
+        }
+        .search-results{
+            max-width:$screen-lg-min;
+            margin: 0 auto;
+            margin-top: 20px;
+            padding-left:10px;
+            @media (min-width: $screen-sm-min) {
+                padding-left: $buttonbar-outer-width;
+            }
+
+            .search-result{
+                margin-bottom: 20px;
+
+                .search_match{
+                    font-weight:bold;
+                }
+            }
+            .csspinner{
+                min-height:60px;
+            }
+        }
+        .article-error{
+            text-align:center;
+        }
+    }

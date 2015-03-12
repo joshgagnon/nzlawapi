@@ -42,6 +42,8 @@ module.exports = Reflux.createActions({
 	'closeSaveDialog': {},
 	'openLoadDialog': {},
 	'closeLoadDialog': {},
+	'openPageDialog': {},
+	'closePageDialog': {},
 
 	'fetchSavedStates': {},
 	'removeSavedState': {},

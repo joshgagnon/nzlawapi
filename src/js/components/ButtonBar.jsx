@@ -55,8 +55,19 @@ module.exports = React.createClass({
             </ul>
         </li>
     },
-    userControls: function(){
-        if(this.props.userControls){
+    renderPageControls: function(){
+        if(this.props.page_dialog){
+            return <li onClick={Actions.openPageDialog}><div className="button">
+                <a><span className="fa fa-info-circle" title="Locations & Info"/></a>
+                </div>
+                <ul className="children">
+                     <li className="title"><a>Locations & Info</a></li>
+                </ul>
+            </li>
+        }
+    },
+    renderUserControls: function(){
+        if(this.props.user_controls){
             return <li><div className="button">
                 <a><span className="fa fa-user" title="Account" ></span></a>
                 </div>
@@ -108,7 +119,9 @@ module.exports = React.createClass({
     render: function(){
         return <div className="buttonbar-wrapper">
             <ul>
-            { this.userControls() }
+            { this.renderPageControls() }
+            { this.renderUserControls() }
+
 
             <li onClick={this.toggleAdvanced}><div className="button"><a ><span className="fa fa-search-plus" title="Advanced Search"/></a>
                 </div>

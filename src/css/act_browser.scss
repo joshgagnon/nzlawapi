@@ -76,94 +76,7 @@ body{
          }
     }
 
-    .navbar{
-        background-color: $deep-red;
-        border-width:0;
-        background-image: url(/build/images/hero-bg.jpg);
-        height: $top-bar-height-sm;
-        background-position: center center;
-        background-repeat: no-repeat;
 
-        @media (min-width: $screen-md-min) {
-            height: $top-bar-height;
-        }
-
-        .brand-wrap{
-            position: absolute;
-
-            height: 80%;
-            left:8px;
-            top: 6px;
-            @media (min-width: $screen-sm-min) {
-                left:125px;
-            }
-            @media (min-width: $screen-md-min) {
-                left: 200px;
-                top: 20px;
-                height: 60%;
-            }
-            img{
-                height:100% !important;
-                width: auto !important;
-                display: block;
-            }
-        }
-
-
-        .chev-left{
-            width:auto;
-            height: 100%;
-            position: absolute;
-            left: 70px;
-        }
-        .chev-right{
-            width:auto;
-            height: 100%;
-            position: absolute;
-            right: 313px;
-            display:none;
-            @media (min-width: $screen-md-min) {
-                display:block;
-            }
-        }
-         form{
-
-            position: absolute;
-            top: 8px;
-            right: 20px;
-            left: 60px;
-            @media (min-width: $screen-sm-min) {
-                left: 240px;
-                right: 40px;
-            }
-
-            @media (min-width: $screen-md-min) {
-                left: 400px;
-                top: 40px;
-                min-width:300px;
-                max-width:600px;
-            }
-            .main-search, .location{
-                border-color: white;
-            }
-
-            @media (min-width: $screen-md-min) {
-                .navbar-form .input-group > .form-control {
-                    width:auto;
-                    background-color:black;
-                }
-            }
-            &.showing-location .main-search{
-                width:75%
-            }
-            .location{
-                width:25%;
-            }
-            &.jump-to .form-control-feedback{
-                right: 85px;
-            }
-        }
-    }
     .input-group button{
         line-height: 20px;
     }
@@ -300,85 +213,6 @@ body{
 
     }
 
-    .sidebar-wrapper{
-        height: 100%;
-        width: $sidebar-width;
-        position: fixed;
-        top: 0;
-        right: 20px;
-        padding:6px;
-        padding-top: $top-bar-height-sm;
-        z-index: $z-toolbars;
-
-        //border-left-width: 1px;
-        //border-left-style:solid;
-        @media (min-width: $screen-md-min) {
-            padding-top: $top-bar-height;
-        }
-        @media print{
-            position:static;
-            height:0;
-            display:none !important;
-        }
-        /*& > .btn-group{
-            width:100%;
-            padding:6px;
-            text-align:center;
-            button{
-                width: 75%;
-                float:none;
-            }
-        }*/
-        /*.dropdown-menu{
-            width: 75%;
-            float: none;
-            top: initial;
-            left: 37px;
-        }*/
-
-        .form-group{
-            margin-right:16px;
-        }
-        span.no-references {
-            width: 100%;
-            text-align: center;
-            display: inline-block;
-        }
-        .tab-content{
-            padding-top:10px;
-        }
-        .nav-tabs {
-            border-bottom:none;
-            li > a{
-                padding:3px;
-            }
-            li a:hover{
-                border: 1px solid #ddd;
-                border-radius: 0 0 4px 4px;
-                border-color: transparent;
-                color: #fff;
-                background-color:$light-red;
-            }
-            li.active a{
-                border: 1px solid #ddd;
-                border-radius: 0 0 4px 4px;
-                border-color: transparent;
-                color: #fff;
-                background-color:$deep-red;
-            }
-        }
-        .article-references,
-        .article-versions{
-                overflow-y: auto;
-                position: absolute;
-                top: 150px;
-                bottom: 0;
-                left: 5px;
-                right: 5px;
-
-        }
-
-    }
     .summary{
         dl{
             margin-bottom:0;
@@ -486,168 +320,6 @@ body{
             }
         }
     }
-    .results-container{
-        .nav{
-            z-index: $z-toolbars;
-            position: absolute;
-            left: 0;
-            right: 0;
-            background-color: #fff;
-            @media (min-width: $screen-sm-min) {
-                left: $buttonbar-outer-width;
-            }
-        }
-        .result-tabs{
-            background-color:white;
-            position:absolute;
-        }
-        .nav-tabs{
-            padding-top:5px;
-            @media print{
-                display:none;
-            }
-            &>li{
-                max-width: 200px;
-            }
-            li{
-                &.tab:nth-child(1){
-                    margin-left:10px;
-                }
-                position: relative;
-                a{
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    overflow: hidden;
-                    padding-right: 20px;
-                }
-                &:hover .tab-close{
-                    display:block;
-                }
-            }
-            &.nav-dropdown > div{
-                padding: 0 10px 8px 10px;
-                width: 100%;
-                button{
-                    width: 100%;
-                    text-overflow: ellipsis;
-                    overflow: hidden;
-                    white-space: nowrap;
-                }
-            }
-            .dropdown-menu{
-                right:0;
-            }
-            .dropdown-menu .tab-close{
-                top: -4px;
-            }
-            .tab-close{
-                display:none;
-                position: absolute;
-                top: 2px;
-                right: 4px;
-                font-size: 22px;
-                color: #898989;
-                font-weight: bold;
-                cursor: pointer;
-                &:hover{
-                    color:$gray-dark;
-                }
-            }
-            .drops.btn-group{
-                float: right;
-            }
-
-        }
-        &:nth-child(2) .nav{
-            left:0;
-        }
-        .tab-content{
-            top: $tabs-height;
-            position: absolute;
-            bottom: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        -webkit-backface-visibility: hidden;
-            left: 0;
-            right: 0;
-            padding: 0;
-            @media print{
-                position:static;
-                padding-right:0;
-            }
-        }
-         .legislation-result{
-            max-width:$screen-lg-min;
-            margin: 0 auto;
-            margin-top: 60px;
-            margin-bottom:60px;
-            padding-left:10px;
-            @media (min-width: $screen-sm-min) {
-                padding-left: $buttonbar-outer-width;
-            }
-
-            .loading{
-                @extends .csspinner
-            }
-        }
-
-        .article-overlay {
-            position: fixed;
-            top: $top-bar-height-sm + 10px;
-            left:$buttonbar-outer-width;
-            right:10px;
-            margin-right:10px;
-            text-align: right;
-            @media print{
-                display:none;
-            }
-            @media (min-width: $screen-md-min) {
-                top: $top-bar-height + 10px;
-            }
-            .breadcrumb{
-                padding: 4px;
-                list-style: none;
-                background-color: #fff;
-                border-radius: 4px;
-                margin: 4px 0;
-                float:left;
-                font-size: 14px;
-            }
-            .btn-group{
-                float:right;
-            }
-        }
-        .tab-content .article-overlay{
-            top: $tabs-height + $top-bar-height-sm + 10px;
-            @media (min-width: $screen-md-min) {
-                top: $tabs-height + $top-bar-height + 10px;
-            }
-        }
-        .search-results{
-            max-width:$screen-lg-min;
-            margin: 0 auto;
-            margin-top: 20px;
-            padding-left:10px;
-            @media (min-width: $screen-sm-min) {
-                padding-left: $buttonbar-outer-width;
-            }
-
-            .search-result{
-                margin-bottom: 20px;
-
-                .search_match{
-                    font-weight:bold;
-                }
-            }
-            .csspinner{
-                min-height:60px;
-            }
-        }
-        .article-error{
-            text-align:center;
-        }
-    }
 
     .advanced-search{
         background-color: $navbar-default-bg;
@@ -665,6 +337,7 @@ body{
         }
 
     }
+
     .case{
         line-height:1;
 
@@ -684,50 +357,6 @@ body{
         }
         .page:last-child{
             border-bottom:none;
-        }
-    }
-
-
-
-    .legislation-contents{
-            overflow-y: auto;
-            position: absolute;
-            top: 200px;
-            bottom: 0;
-            left: 5px;
-            right: 5px;
-
-        .contents{
-            a{
-            color:$gray;
-            }
-            .nav>li>a{
-                padding:0;
-
-
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                overflow: hidden;
-            }
-            &>ul{
-                padding-left:0;
-            }
-            .nav .nav{
-                padding-left:12px;
-            }
-             .active > a{
-                text-decoration: none;
-                font-weight: bold;;
-            }
-             .nav .nav {
-                display: none;
-            }
-            .nav>.active>ul {
-                display: block;
-            }
-            span.crosshead {
-                font-style: italic;
-            }
         }
     }
 
@@ -755,93 +384,15 @@ body{
     }
       .modal-dialog,
       .modal-content{
-        max-height:100%
+        max-height:100%;
+        .tab-content {
+          margin-top: 20px;
+        }
       }
       .modal-body{
         height: 80%;
         overflow: auto;
       }
-
-    .cata-popover{
-        z-index:1020;
-       max-width: 500px;
-       min-width:300px;
-       .popover-content{
-        padding: 0;
-            .csspinner{
-                min-height:60px;
-            }
-           &>*{
-              max-height:200px;
-              overflow-y: auto;
-              padding:10px;
-            }
-       }
-       .popover-title{
-            padding-right: 30px;
-            background-color: $deep-red;
-            border-width: 0;
-            background-image: url(/build/images/hero-bg.jpg);
-            background-position: center center;
-            background-repeat: no-repeat;
-            color: white;
-       }
-       .show-more{
-            cursor: pointer;
-            text-decoration: none;
-       }
-      .popover-footer{
-          margin-top: 0px;
-          padding: 8px 14px;
-          background-color: #f7f7f7;
-          border-top: 1px solid #ebebeb;
-          border-radius: 0 0 5px 5px;
-          text-align: center;
-          .btn{
-            margin: 0 10px;
-          }
-        }
-
-        .popover-close{
-              position: absolute;
-              top: -1px;
-              right: 0px;
-              font-size: 22px;
-              color: #fff;
-              font-weight: bold;
-              cursor: pointer;
-              margin: 0;
-              padding: 0px 10px;
-        }
-    }
-
-    .mobile-popovers {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 33%;
-        background-color: white;
-        border-top: 1px solid  #ebebeb;
-        .popover-title {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            }
-        .popover-content{
-            position: absolute;
-            top: 30px;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            overflow-y: auto;
-            padding:4px;
-        }
-        .popover-footer{
-            padding:4px 15px;
-        }
-    }
-
 
     .user-controls {
         right: 0;
@@ -857,21 +408,5 @@ body{
     }
 
 
-    .notifications {
-      position: absolute;
-      z-index: 1050;
-      right: 40px;
-      bottom: 20px;
-      .notification{
-        margin-bottom: 0;
-        min-width:200px;
-        padding: 10px;
-        cursor:pointer;
-        img{
-            height:30px;
-            width:30px;
-            margin-right:10px;
-        }
-      }
-    }
+
 }
