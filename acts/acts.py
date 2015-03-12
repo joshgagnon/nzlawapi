@@ -15,6 +15,7 @@ def instrument_skeleton_response(instrument):
         'html_content': instrument.skeleton,
         'html_contents_page': instrument.contents,
         'title': instrument.title,
+        'full_title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -28,13 +29,15 @@ def instrument_skeleton_response(instrument):
         }
     }
 
+
 def instrument_full(instrument):
-    if  current_app.config.get('USE_SKELETON'):
+    if current_app.config.get('USE_SKELETON'):
         return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
         'title': instrument.title,
+        'full_title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -52,6 +55,7 @@ def instrument_preview(instrument):
     return {
         'html_content': etree.tostring(tohtml(preview), encoding='UTF-8', method="html"),
         'title': instrument.title,
+        'full_title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -69,7 +73,8 @@ def instrument_location(instrument, location):
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
-        'title': '%s %s' % (instrument.title, location),
+        'title': instrument.title,
+        'full_title': '%s %s' % (instrument.title, location),
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -90,6 +95,7 @@ def instrument_govt_location(instrument, id):
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
         'title': instrument.title,
+        'full_title': instrument.title, # todo
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,

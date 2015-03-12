@@ -104,7 +104,8 @@ def find_sub_node(tree, keys):
                     #a = "label = ('%s')" % "','".join(a.split('+'))
                     a = " or ".join(["label = '%s'" % x for x in a.split('+')])
                 else:
-                    a = "starts-with(label, '%s') or starts-with(label, '%s')" % (a, a.upper())
+                    # fuck, starts with is busted
+                    a = "label[normalize-space()] = '%s' or label[normalize-space()] = '%s'" % (a, a.upper())
                 node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
             if i < len(keys) - 1:
                 #get shallowist nodes

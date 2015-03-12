@@ -39,7 +39,7 @@ module.exports = React.createClass({
                 onClose={this.closeTab} viewer_id={this.props.viewer_id} >
                 { this.props.pages.map(function(page){
                         return !page.get('print_only') ?
-                             <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('title')} >
+                             <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
                                 { this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?
                                     <AdvancedSearch  page_id={page.get('id')} /> : null }
                                 { this.renderPage(page) }

@@ -83,7 +83,7 @@ var PrintFull = React.createClass({
             return <PrintSegment seg={this.getPrint(k)} key={i} index={i}/>
         }, this).toJS()}</div>
     }
-})
+});
 
 
 var PrintOverview = React.createClass({
