@@ -68,8 +68,8 @@ gulp.task('js', function() {
 
 
 gulp.task('libs', function() {
-  return gulp.src('./node_modules/respond/src/*')
-    .pipe(gulp.dest('./build/js'))
+  return gulp.src('./node_modules/Respond.js/dest/*min.js')
+            .pipe(gulp.dest('./build/js'))
 });
 
 gulp.task('images', function() {
