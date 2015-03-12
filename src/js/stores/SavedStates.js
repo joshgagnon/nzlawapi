@@ -216,6 +216,7 @@ var UserActions = Reflux.createStore({
         Actions.loadedFromStorage,
         Actions.popoverOpened,
         Actions.popoverClosed,
+        Actions.replacePage,
         Actions.reset
     ],
     init: function() {

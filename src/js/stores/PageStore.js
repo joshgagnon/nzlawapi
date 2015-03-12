@@ -81,10 +81,11 @@ var PageStore = Reflux.createStore({
         return this.pages.indexOf(this.getById(id))
     },
     replacePage: function(page_id, page){
-         this.pages = this.pages.mergeDeepIn(
+        this.pages = this.pages.setIn(
             [this.getIndex(page_id)],
-            _.extend({content: {}, fetching: false, fetched: false}, page));
-         this.update();
+            Immutable.fromJS(_.extend({}, this.getById(page_id).toJS(), {content: {}, fetching: false, fetched: false}, page)));
+        Actions.requestPage(page_id);
+
     },
     onRequestPage: function(page_id){
         //todo, guards in Action pre emit
@@ -110,6 +111,11 @@ var PageStore = Reflux.createStore({
                 content: data,
                 title: data.title
             };
+            if(page.get('page_type') === 'search'){
+                if(result.content.search_results.hits.length >= result.content.search_results.total){
+                    result.finished = true;
+                }
+            }
             if(data.query){
                 result.query = data.query;
                 result.query_string = null;
@@ -186,7 +192,7 @@ var PageStore = Reflux.createStore({
                     },
                     fetching: false
                 };
-                if(result.content.search_results.hits.size >= result.content.search_results.total){
+                if(result.content.search_results.hits.length >= result.content.search_results.total){
                     result.finished = true;
                 }
             }

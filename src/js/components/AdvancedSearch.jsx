@@ -300,7 +300,8 @@ module.exports = React.createClass({
         //SHOULD UPDATEA PAGE
         Actions.replacePage(this.props.page_id, {
             query: query,
-            title: title
+            title: title,
+            page_type: 'search'
         });
     },
     render: function(){
