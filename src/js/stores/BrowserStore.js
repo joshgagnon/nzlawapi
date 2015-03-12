@@ -13,7 +13,13 @@ module.exports = Reflux.createStore({
         this.browser = this.getInitialState().browser;
     },
     getInitialState: function(){
-        return {browser: Immutable.fromJS({})};
+        return {
+            browser: Immutable.fromJS({
+            underlines: true,
+            split_mode: false,
+            print_mode: false,
+            show_sidebar: true
+        })};
     },
     update: function(){
         this.trigger({browser: this.browser});
@@ -42,11 +48,12 @@ module.exports = Reflux.createStore({
         this.update();
     },
     onToggleSidebar: function(){
-        this.browser = this.browser.set('print_mode', !this.browser.get('print_mode'));
-        if(this.browser.get('print_mode')){
-            this.browser = this.browser.set('split_mode', false);
-        }
+        this.browser = this.browser.set('show_sidebar', !this.browser.get('show_sidebar'));
         this.update();
+    },
+    onToggleSidebarOverlay: function(){
+       // this.browser = this.browser.set('show_sidebar', !this.browser.get('show_sidebar'));
+       // this.update();
     },
     onSetState: function(state){
         if(state.get('browser')){

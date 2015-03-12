@@ -58,7 +58,7 @@ var mq = React.createClass({
   },
 
   updateMatches: function(){
-    if (this._mql.matches === this.state.matches || !this.isMounted()) {
+    if (this._mql.matches === this.state.matches) {
       return;
     }
     this.setState({

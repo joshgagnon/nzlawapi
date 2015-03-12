@@ -49,4 +49,4 @@ module.exports = React.createClass({
               </TabbedArea>
             </div>
     }
-    });
+});

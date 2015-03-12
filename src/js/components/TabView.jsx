@@ -34,7 +34,6 @@ module.exports = React.createClass({
     },
     renderTabs: function(){
         var self = this;
-        console.log(this.props.view.get('active_page_id'))
         return  <TabbedArea activeKey={this.props.view.get('active_page_id')}
                 onSelect={this.handleTab}
                 onClose={this.closeTab} viewer_id={this.props.viewer_id} >

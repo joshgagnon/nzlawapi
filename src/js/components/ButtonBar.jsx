@@ -41,19 +41,19 @@ module.exports = React.createClass({
     },
     renderPrint: function(){
         return <li><div className="button">
-                <a ><span className="fa fa-print"  title="Print"/></a>
-                </div>
-                <ul className="children">
-                    <li className="title"><span>Print Options</span></li>
-                    { this.linkPDF() }
-                    { this.addToPrint() }
-                    <li className="suboption">
-                    <a onClick={Actions.togglePrintMode}>
-                        <span className="fa fa-file-text-o" title="Your Print Document"/>
-                        <span className="sublabel">Your Print Document</span>
-                    </a></li>
-                </ul>
-            </li>
+            <a><span className="fa fa-print" title="Print"/></a>
+            </div>
+            <ul className="children">
+                <li className="title"><span>Print Options</span></li>
+                { this.linkPDF() }
+                { this.addToPrint() }
+                <li className="suboption">
+                <a onClick={Actions.togglePrintMode}>
+                    <span className="fa fa-file-text-o" title="Your Print Document"/>
+                    <span className="sublabel">Your Print Document</span>
+                </a></li>
+            </ul>
+        </li>
     },
     userControls: function(){
         if(this.props.userControls){
@@ -77,35 +77,47 @@ module.exports = React.createClass({
             </li>
         }
     },
+    renderViewSettings: function(){
+       return <li><div className="button">
+            <a><span className="fa fa-wrench" title="View Settings" ></span></a>
+            </div>
+            <ul className="children">
+            <li className="title"><span>View Settings</span></li>
+            <li className="suboption">
+                <a onClick={Actions.toggleUnderlines} >
+                    <span className="fa fa-underline" title="Underlines"/>
+                    <span className="sublabel">Underlines</span>
+                </a>
+            </li>
+            <li className="suboption">
+                <a onClick={Actions.toggleSplitMode}>
+                    <span className="fa fa-columns"  title="Columns"/>
+                    <span className="sublabel">Columns</span>
+                </a>
+            </li>
+            { this.props.sidebar ? <li className="suboption">
+                <a onClick={Actions.toggleSidebar}>
+                    <span className="fa fa-list-ul"  title="Side Bar"/>
+                    <span className="sublabel">Side Bar</span>
+                </a>
+            </li> : null }
+
+            </ul>
+        </li>
+    },
     render: function(){
         return <div className="buttonbar-wrapper">
             <ul>
             { this.userControls() }
+
             <li onClick={this.toggleAdvanced}><div className="button"><a ><span className="fa fa-search-plus" title="Advanced Search"/></a>
                 </div>
                  <ul className="children">
                     <li className="title"><a>Advanced Search</a></li>
                 </ul>
             </li>
-            <li><div className="button">
-                <a><span className="fa fa-wrench" title="View Settings" ></span></a>
-                </div>
-                <ul className="children">
-                <li className="title"><span>View Settings</span></li>
-                <li className="suboption">
-                    <a onClick={Actions.toggleUnderlines} >
-                        <span className="fa fa-underline" title="Underlines"/>
-                        <span className="sublabel">Underlines</span>
-                    </a>
-                </li>
-                <li className="suboption">
-                    <a onClick={Actions.toggleSplitMode}>
-                        <span className="fa fa-columns"  title="Columns"/>
-                        <span className="sublabel">Columns</span>
-                    </a></li>
-                </ul>
-            </li>
 
+            { this.renderViewSettings() }
             { this.renderPrint() }
 
             <li onClick={Actions.openLoadDialog}><div className="button"><a><span className="fa fa-folder-open" title="Open Saved Session"/></a>

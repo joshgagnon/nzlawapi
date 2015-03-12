@@ -92,7 +92,7 @@ module.exports = React.createClass({
         return {
             pages: Immutable.List(),
             views: ViewerStore.getDefaultData(),
-            browser: Immutable.Map(),
+            browser: BrowserStore.getInitialState().browser,
             print: Immutable.List(),
             save_dialog: false,
             load_dialog: false,
@@ -116,6 +116,7 @@ module.exports = React.createClass({
             this.__state = {};
         }.bind(this), 0)
     },
+
     onState: function(state){
         this.__state = _.extend(this.__state, state);
         this.aggSetState();
@@ -208,11 +209,11 @@ module.exports = React.createClass({
             });
         }
     },
+    canHaveSidebar: function(page){
+        return (page && page.get('content') && page.get('page_type') !== 'search')
+    },
     showSidebar: function(page){
-        if(page && page.get('content') && page.get('page_type') !== 'search'){
-            return true;
-        }
-        return false;
+        return this.state.browser.get('show_sidebar') && this.canHaveSidebar(page);
     },
     toggleAdvanced: function(){
         var active = this.getActive();
@@ -246,7 +247,6 @@ module.exports = React.createClass({
                 <ArticleSideBar article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
                 </div>
         }
-        console.log(this.state.views.get('tab-0').toJS());
         return  <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
 
     },
@@ -271,6 +271,7 @@ module.exports = React.createClass({
                 </form>
     },
     render: function(){
+        var active = this.getActive();
        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
         if(this.state.browser.get('underlines') ){
@@ -287,7 +288,7 @@ module.exports = React.createClass({
                          <MQ maxWidth={768}>
                             <div className="logo-sml-button visible-xs-block">
                                 <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block "/>
-                                <ButtonBar page={this.getActive()} userControls={true} viewer_id='tab-0'/>
+                                <ButtonBar page={active}  sidebar={this.canHaveSidebar(active)} userControls={true} viewer_id='tab-0'/>
                             </div>
                         </MQ>
                     </div>
@@ -297,7 +298,7 @@ module.exports = React.createClass({
                 </nav>
                 </div>
             <MQ minWidth={768}>
-                <ButtonBar page={this.getActive()} viewer_id='tab-0'/>
+                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0'/>
             </MQ>
             { this.state.pages.count() ? this.renderBody() : null}
             <Notifications />
