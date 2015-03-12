@@ -72,7 +72,7 @@ module.exports = React.createClass({
     },
     addToPrint: function(){
         Actions.addToPrint({
-            type: this.getLast().get('title'),
+            title: this.getLast().get('title'),
             query:{
                 id: this.props.sectionView.last(),
                 doc_type: 'instrument',

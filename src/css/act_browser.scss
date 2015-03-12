@@ -293,33 +293,6 @@ body{
             padding-right:0 !important;
         }
     }
-    .print-container{
-        padding: 10px;
-        .csspinner{
-            min-height: 60px;
-            margin:10px;
-        }
-        .print-section {
-            margin-top:10px;
-            margin-bottom: 20px;
-            display:relative;
-            .btn-group{
-                opacity: 0;
-                position: absolute;
-                right: 10px;
-                transition:.5s;
-                a{
-                    cursor:pointer;
-                }
-                @media print{
-                    display: none;
-                }
-            }
-            &:hover .btn-group{
-                opacity: 1;
-            }
-        }
-    }
 
     .advanced-search{
         background-color: $navbar-default-bg;

@@ -4,7 +4,8 @@ var React = require('react/addons');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 
-var PrintSegment = React.createClass({
+
+var PrintHandler = {
     printOverLay: function(){
         return <div className="btn-group">
             <a onClick={this.moveUp}><span className="fa fa-chevron-up" title="Move Up"/></a>
@@ -12,8 +13,24 @@ var PrintSegment = React.createClass({
             <a onClick={this.close}><span className="fa fa-close"  title="Remove"/></a>
         </div>
     },
+    moveUp: function(){
+        Actions.printMovePosition(this.props.seg.get('id'), this.props.index-1);
+    },
+    moveDown: function(){
+        Actions.printMovePosition(this.props.seg.get('id'), this.props.index+1);
+    },
+    close: function(){
+        Actions.removeFromPrint(this.props.seg.get('id'))
+    }
+}
+
+var PrintSegment = React.createClass({
+    mixins: [
+        PrintHandler
+    ],
     render: function(k){
         if(this.props.seg && this.props.seg.get('html')){
+            console.log(this.props.seg.toJS())
             return <div className="print-section">
                         { this.printOverLay() }
                         <div dangerouslySetInnerHTML={{__html: this.props.seg.get('html')}}/>
@@ -32,35 +49,65 @@ var PrintSegment = React.createClass({
     fetch: function(){
         if(this.props.seg && !this.props.seg.get('fetched')){
             Actions.fetchPrint(this.props.seg.get('id'));
+
         }
     },
-    moveUp: function(){
-        Actions.printMovePosition(this.props.seg.get('id'), this.props.index-1);
-    },
-    moveDown: function(){
-        Actions.printMovePosition(this.props.seg.get('id'), this.props.index+1);
-    },
-    close: function(){
-        Actions.removeFromPrint(this.props.seg.get('id'))
-    }
 });
+
+
+var PrintSummary= React.createClass({
+    mixins: [
+        PrintHandler
+    ],
+    render: function(k){
+        return <tr className="print-summary">
+            <td className="print-title">{this.props.seg.get('title')}</td>
+                    <td className="buttons">{ this.printOverLay() }</td>
+                    </tr>
+    },
+});
+
+
+var GetPrint = {
+    getPrint: function(k){
+        return this.props.print.find(function(p){
+            return p.get('id') === k;
+        });
+    }
+}
+
+var PrintFull = React.createClass({
+    mixins: [GetPrint],
+    render: function(){
+        return <div>{this.props.view.map(function(k, i){
+            return <PrintSegment seg={this.getPrint(k)} key={i} index={i}/>
+        }, this).toJS()}</div>
+    }
+})
+
+
+var PrintOverview = React.createClass({
+    mixins: [GetPrint],
+    render: function(k){
+       return <div className="print-summaries">
+        <table className="table table-hover"> {this.props.view.map(function(k, i){
+            return <PrintSummary seg={this.getPrint(k)} key={i} index={i}/>
+        }, this).toJS()}</table></div>
+    },
+});
+
 
 
 module.exports = React.createClass({
     shouldComponentUpdate: function(newProps, newState){
         return (this.props.view !== newProps.view) || (this.props.print !== newProps.print);
     },
-    getPrint: function(k){
-        return this.props.print.find(function(p){
-            return p.get('id') === k;
-        });
-    },
+
     render: function(){
         return  <div className="print-container legislation-result">
             <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
-                { this.props.view.map(function(k, i){
-                    return <PrintSegment seg={this.getPrint(k)} key={i} index={i}/>
-                }, this).toJS()}
+                <PrintOverview {...this.props} />
+                <PrintFull{...this.props} />
             </div>
     }
 

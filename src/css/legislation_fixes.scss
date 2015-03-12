@@ -20,12 +20,12 @@
     color:#000;
 }
 
-.underlines .legislation a{
+.underlines.results-container .legislation a{
     text-decoration: underline;
     color:#337ab7;
 
 }
-.underlines .legislation{
+.underlines .results-container .legislation{
     h1,h2,h3,h4,h5,h6 {
         a{
             text-decoration: none;
@@ -33,7 +33,7 @@
         }
     }
 }
-.underlines .legislation a.def-popover{
+.underlines .results-container .legislation a.def-popover{
     color:#000;
     text-decoration: none;
     border-bottom: 1px solid #00BD00;

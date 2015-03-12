@@ -562,10 +562,11 @@ var MobilePopovers = React.createClass({
                 if(url.indexOf('/') === -1){
                     url = 'instrument/'+url;
                 }
+                var location = Utils.getLocation(link);
                 Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
                         type: 'link',
-                        title: link.text(),
+                        title: link.text() +' '+location.repr,
                         id: link.attr('data-link-id'),
                         target: link.attr('data-target-id'),
                         source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',

@@ -1,0 +1,67 @@
+    .print-container{
+        .alert{
+            margin-left:20px;
+            margin-right:20px;
+        }
+        padding: 10px;
+        .csspinner{
+            min-height: 60px;
+            margin:10px;
+        }
+        @media print{
+            .print-summaries{
+                display:none !important;
+            }
+        }
+        .print-summaries{
+              width: 80%;
+              margin: 0 auto;
+            .print-summary{
+                &:hover .btn-group{
+                    opacity: 1;
+                }
+                .buttons{
+                    text-align: right;
+                }
+            }
+            a{
+                font-size:16px;
+                margin:0 8px;
+            }
+        }
+        .print-section {
+            margin-top:10px;
+            margin-bottom: 20px;
+            .btn-group{
+                position: absolute;
+                right: 10px;
+                opacity: 0;
+            }
+            &:hover .btn-group{
+                opacity: 1;
+            }
+        }
+        .btn-group{
+            transition:.5s;
+            a{
+                cursor:pointer;
+            }
+            @media print{
+                display: none;
+            }
+
+        }
+
+
+        .legislation{
+            h1.title, h2.part,  h2.schedule, h2.head1, h2.schedule-group, .definition-result .legislation h2.schedule-amendments-group1, .definition-result .legislation h2.sop-part,  h2.part,  h2.schedule,  h2.head1,  h2.schedule-group,  h2.schedule-amendments-group1,  h2.sop-part {
+                margin-top:0.5em;
+            }
+            p.reprint-date{
+                font-size:1em;
+            }
+        }
+
+
+
+    }

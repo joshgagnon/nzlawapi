@@ -61,7 +61,7 @@ var PopoverBehaviour = {
     },
     addToPrint: function(){
         Actions.addToPrint({
-            type: this.props.type,
+            title: this.props.title,
             query_string: this.props.url,
             query: this.props.query,
             html: this.props.html

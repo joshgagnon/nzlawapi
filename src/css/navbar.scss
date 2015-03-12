@@ -9,7 +9,9 @@
         @media (min-width: $screen-md-min) {
             height: $top-bar-height;
         }
-
+        @media print{
+            display:none;
+        }
         .brand-wrap{
             position: absolute;
 

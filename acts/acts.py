@@ -69,7 +69,7 @@ def instrument_location(instrument, location):
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
-        'title': instrument.title,
+        'title': '%s %s' % (instrument.title, location),
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -85,6 +85,7 @@ def instrument_location(instrument, location):
 
 def instrument_govt_location(instrument, id):
     tree = cull_tree(find_node_by_govt_id(instrument.tree, id))
+    # todo get location
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
