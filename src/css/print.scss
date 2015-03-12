@@ -16,13 +16,20 @@
         .print-summaries{
               width: 80%;
               margin: 0 auto;
+              ul,li{
+                list-style: none;
+                padding: 0;
+              }
             .print-summary{
                 &:hover .btn-group{
                     opacity: 1;
                 }
                 .buttons{
-                    text-align: right;
+                    float:right
+
                 }
+                padding:6px;
+                  margin-bottom: 4px;
             }
             a{
                 font-size:16px;

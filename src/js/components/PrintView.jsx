@@ -60,10 +60,10 @@ var PrintSummary= React.createClass({
         PrintHandler
     ],
     render: function(k){
-        return <tr className="print-summary">
-            <td className="print-title">{this.props.seg.get('title')}</td>
-                    <td className="buttons">{ this.printOverLay() }</td>
-                    </tr>
+        return <li className="print-summary panel panel-default">
+            <span className="print-title">{this.props.seg.get('title')}</span>
+                    <span className="buttons">{ this.printOverLay() }</span>
+                    </li>
     },
 });
 
@@ -90,9 +90,9 @@ var PrintOverview = React.createClass({
     mixins: [GetPrint],
     render: function(k){
        return <div className="print-summaries">
-        <table className="table table-hover"> {this.props.view.map(function(k, i){
+        <ul>{this.props.view.map(function(k, i){
             return <PrintSummary seg={this.getPrint(k)} key={i} index={i}/>
-        }, this).toJS()}</table></div>
+        }, this).toJS()}</ul></div>
     },
 });
 
