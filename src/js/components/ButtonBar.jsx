@@ -16,7 +16,7 @@ module.exports = React.createClass({
     },
     handleAddToPrint: function(){
         Actions.addToPrint({
-            title: this.props.page.getIn(['content','title']),
+            title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']),
             query: {doc_type:
             this.props.page.getIn(['content', 'doc_type']),
             find: 'full',

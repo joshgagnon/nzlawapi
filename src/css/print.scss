@@ -44,8 +44,11 @@
                 right: 10px;
                 opacity: 0;
             }
-            &:hover .btn-group{
-                opacity: 1;
+            &:hover {
+                  background-color: #efefef;
+                .btn-group{
+                    opacity: 1;
+                }
             }
         }
         .btn-group{

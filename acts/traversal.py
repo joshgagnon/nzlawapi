@@ -105,7 +105,7 @@ def find_sub_node(tree, keys):
                     a = " or ".join(["label = '%s'" % x for x in a.split('+')])
                 else:
                     # fuck, starts with is busted
-                    a = "label[normalize-space()] = '%s' or label[normalize-space()] = '%s'" % (a, a.upper())
+                    a = "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (a, a.upper())
                 node = node.xpath(".//*[not(self::part) and not(self::subpart)][%s]" % a)
             if i < len(keys) - 1:
                 #get shallowist nodes
@@ -120,6 +120,7 @@ def find_sub_node(tree, keys):
             raise CustomException("Empty")
         return node
     except Exception, e:
+        print e
         raise CustomException("Path not found")
 
 
