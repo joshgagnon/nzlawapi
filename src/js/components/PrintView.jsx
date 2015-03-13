@@ -67,7 +67,7 @@ var PrintSummary= React.createClass({
     ],
     render: function(k){
         return <li className="print-summary panel panel-default">
-            <span className="print-title">{this.props.seg.get('title')}</span>
+            <span className="print-title">{this.props.seg.get('full_title') || this.props.seg.get('title')}</span>
             <span className="buttons">{ this.printOverLay() }</span>
         </li>
     },
@@ -86,8 +86,7 @@ var PrintFull = React.createClass({
     mixins: [GetPrint],
     componentWillUpdate: function(){
      _.map(this._to_hide ||[], function(el){
-            //el.style.display = "initial";
-            el.style.backgroundColor = "";
+            el.style.display = "";
         });
     },
     mangleChildren: function(){
@@ -104,20 +103,22 @@ var PrintFull = React.createClass({
                 prev = null;
             }
         }
-        console.log(this._to_hide)
         _.map(this._to_hide ||[], function(el){
-            //el.style.display = "none";
-            el.style.backgroundColor = "#33ff33";
+            el.style.display = "none";
         });
     },
     hideRepeats: function(first, second){
-
+        var end = false;
         function compare(first, second){
+            if(!first.children.length && first.outerHTML !== second.outerHTML){
+                end = true;
+                return [];
+            }
             if(first.outerHTML === second.outerHTML){
-                return second;
+                return [second];
             }
             return _.filter(_.flatten(_.map(first.children, function(c, i){
-                if(second.children[i]){
+                if(!end && second.children[i]){
                     return compare(first.children[i], second.children[i])
                 }
             })));
@@ -161,8 +162,15 @@ module.exports = React.createClass({
     },
 
     render: function(){
+        var print_button = window && window.print && this.props.view.size;
         return  <div className="print-container legislation-result">
-            <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
+                <div className="row"><div className="col-md-10">
+                    <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
+                    </div>
+                    <div className="col-md-2">
+                    <button onClick={window.print} className="btn btn btn-info">Print</button>
+                    </div>
+                </div>
                 <PrintOverview {...this.props} />
                 <PrintFull{...this.props} />
             </div>

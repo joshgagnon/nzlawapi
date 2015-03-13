@@ -62,7 +62,7 @@ module.exports = Reflux.createStore({
             return obj;
         }
         function prepPrint(print){
-            return _.pick(print, 'query_string', 'query', 'id', 'title');
+            return _.pick(print, 'query_string', 'query', 'id', 'title', 'full_title');
         }
         var views = this.views.toJS();
         _.forOwn(views, function(v, k){
