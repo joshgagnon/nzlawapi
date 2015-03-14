@@ -101,6 +101,12 @@ module.exports = React.createClass({
                 </a>
             </li>
             <li className="suboption">
+                <a onClick={Actions.toggleNotes} >
+                    <span className="fa fa-file-text-o" title="Notes"/>
+                    <span className="sublabel">Notes</span>
+                </a>
+            </li>
+            <li className="suboption">
                 <a onClick={Actions.toggleSplitMode}>
                     <span className="fa fa-columns"  title="Columns"/>
                     <span className="sublabel">Columns</span>

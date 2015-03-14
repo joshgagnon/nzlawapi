@@ -16,9 +16,10 @@ module.exports = Reflux.createStore({
         return {
             browser: Immutable.fromJS({
             underlines: true,
+            notes: true,
             split_mode: false,
             print_mode: false,
-            show_sidebar: true
+            show_sidebar: true,
         })};
     },
     update: function(){
@@ -26,6 +27,10 @@ module.exports = Reflux.createStore({
     },
     onToggleUnderlines: function(){
         this.browser = this.browser.set('underlines', !this.browser.get('underlines'));
+        this.update();
+    },
+    onToggleNotes: function(){
+        this.browser = this.browser.set('notes', !this.browser.get('notes'));
         this.update();
     },
     onToggleSplitMode: function(){
