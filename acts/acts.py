@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util import CustomException, tohtml
+from util import CustomException, tohtml, generate_path_string
 from traversal import cull_tree, \
     find_node_by_govt_id, find_document_id_by_govt_id, \
     find_node_by_location, limit_tree_size
@@ -69,12 +69,14 @@ def instrument_preview(instrument):
 
 
 def instrument_location(instrument, location):
-    tree = cull_tree(find_node_by_location(instrument.tree, location))
+    tree = find_node_by_location(instrument.tree, location)
+    location, _ = generate_path_string(tree[0])
+    tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
         'title': instrument.title,
-        'full_title': '%s %s' % (instrument.title, location),
+        'full_title': location,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -89,13 +91,14 @@ def instrument_location(instrument, location):
 
 
 def instrument_govt_location(instrument, id):
-    tree = cull_tree(find_node_by_govt_id(instrument.tree, id))
-    # todo get location
+    tree = find_node_by_govt_id(instrument.tree, id)
+    location, _ = generate_path_string(tree[0])
+    tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
         'title': instrument.title,
-        'full_title': instrument.title, # todo
+        'full_title': location,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
