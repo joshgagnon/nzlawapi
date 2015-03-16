@@ -7,7 +7,7 @@ var Immutable = require('immutable');
 
 module.exports = Reflux.createStore({
 	listenables: Actions,
-	time_to_live: 3000000,
+	time_to_live: 3000,
 	init: function(){
 		this.id = 0;
 		this.notifications = Immutable.List();
