@@ -455,8 +455,7 @@ def process_file(filename):
             'plea': plea(flat_soup),
             'bench': bench(flat_soup)
         }
-        #if not results['waistband']:
-        #    raise Exception('must have waistband')
+
         if is_appeal(results):
             results['appeal_result'] = appeal_result(flat_soup)
         else:
@@ -482,41 +481,4 @@ if __name__ == "__main__":
             password=config.DB_PW)
     db.set_client_encoding('utf8')
     process(db, config)
-    #db.commit()
 
-"""
-success = 0
-fails = 0
-files = os.listdir(path)
-
-
-
-#with open('failed_files.txt', 'r') as failed_output:
-#    files = failed_output.readlines()
-
-for f in files:
-    f = f.strip()
-    if f.endswith('.html'):
-        try:
-            data = process_file(f)
-            #delete_db(cur, data)
-            #insert_db(cur, data)
-            print pprint.pprint(data)
-            success += 1
-        except NoText:
-            pass
-        except ValueError, e:
-        #except Exception, e:
-            print e
-            #failed_output.write(f)
-            #failed_output.write('\n')
-            fails += 1
-
-    print 'success: %d  fails: %d' % (success, fails)
-
-#conn.commit()
-#cur.close()
-#conn.close()
-
-        #break
-        """

@@ -36,6 +36,7 @@ module.exports = React.createClass({
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var $scroll = $(self.getScrollContainer());
+                // TO DO, calculation returns true too early if advanced search is visible
                 if(self.isMounted() && !self.props.page.get('finished') &&
                     !self.props.page.get('fetching') &&
                     $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
