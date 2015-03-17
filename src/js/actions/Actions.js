@@ -54,6 +54,7 @@ module.exports = Reflux.createActions({
 
 
 	'toggleUnderlines': {},
+	'toggleNotes': {},
 	'toggleSplitMode': {},
 	'togglePrintMode': {},
 	'toggleSidebar': {},

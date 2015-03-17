@@ -62,6 +62,7 @@ var PopoverBehaviour = {
     addToPrint: function(){
         Actions.addToPrint({
             title: this.props.title,
+            full_title: this.props.full_title,
             query_string: this.props.url,
             query: this.props.query,
             html: this.props.html
@@ -73,7 +74,7 @@ var PopoverBehaviour = {
     open: function(){
         //debugger
         Actions.newPage({
-            title: this.props.title,
+            title: this.props.full_title || this.props.title,
             query: this.props.query
         }, this.props.viewer_id)
     }
@@ -124,7 +125,7 @@ module.exports = {
             return (
                 <div className={classes} role="tooltip" style={style}>
                     <div className="arrow"  style={arrowStyle}></div>
-                    <h3 className="popover-title">{this.props.title}</h3>
+                    <h3 className="popover-title">{this.props.full_title || this.props.title}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
                     <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
                         {this.renderBody() }

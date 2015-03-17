@@ -22,13 +22,15 @@ def insert_style(tree, result, path):
 def process_file(filename):
     tmp = mkdtemp()
     outname = 'out.html'
-    cmd = """ pdf2htmlEX %s --embed-javascript 0 --embed-css 0 --printing 0  --process-outline 1 --embed-image 1   --embed-font 1 --embed-external-font 0 --fit-width 992 --dest-dir %s %s"""
+    cmd = """ pdf2htmlEX %s --embed-javascript 0 --embed-css 0 --printing 0  --process-outline 0 --embed-image 1   --embed-font 0 --embed-external-font 1 --fit-width 992 --stretch-narrow-glyph 1 --fallback 0 --dest-dir  %s %s"""
+    print cmd % (filename, tmp, outname)
     p = Popen(cmd % (filename, tmp, outname), shell=True, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
     if out.rstrip():
         print filename, err
     tree = etree.parse(os.path.join(tmp, outname))
     result = etree.Element("div")
+    result.append(etree.fromstring('<meta charset="utf-8" />'))
     insert_content(tree, result)
     insert_style(tree,result, tmp)
     shutil.rmtree(tmp)
@@ -37,6 +39,7 @@ def process_file(filename):
 if __name__ == "__main__":
     files = [f for f in os.listdir(sys.argv[1]) if f.endswith('.pdf')]
     #files = ['0023b100-3624-415b-9b66-e1e40616a6fd.pdf']
+   #files = ['494e2f13-e708-4dd0-92a9-8ce90fe2806b.pdf']
     for i, f in enumerate(files):
         try:
             if i % 100 == 0:

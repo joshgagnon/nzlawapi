@@ -83,7 +83,8 @@ var PageStore = Reflux.createStore({
     replacePage: function(page_id, page){
         this.pages = this.pages.setIn(
             [this.getIndex(page_id)],
-            Immutable.fromJS(_.extend({}, this.getById(page_id).toJS(), {content: {}, fetching: false, fetched: false}, page)));
+            Immutable.fromJS(_.extend({}, this.getById(page_id).toJS(),
+                {content: {}, fetching: false, fetched: false, finished: false}, page)));
         Actions.requestPage(page_id);
 
     },

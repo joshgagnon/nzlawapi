@@ -613,7 +613,7 @@ var MobilePopovers = React.createClass({
             Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
                     {
                     type: 'location',
-                    title: title,
+                    title: title + ' '+ location.repr,
                     id: location.repr,
                     positionLeft: $target.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
                     positionTop:$target.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),

@@ -188,10 +188,10 @@
                      <xsl:when test="ancestor::*[@quote]">
                      </xsl:when>
                     <xsl:when test="ancestor::schedule">
-                        <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
+                        <xsl:attribute name="data-location">, p <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:when>
                         <xsl:otherwise>
-                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
+                        <xsl:attribute name="data-location">p <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
             <h2 class="part">
@@ -201,6 +201,8 @@
             <xsl:apply-templates select="subpart|crosshead|prov|amend/prov"/>
         </div>
     </xsl:template>
+
+
 
     <xsl:template match="subpart">
         <div class="subpart">

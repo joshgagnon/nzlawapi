@@ -19,12 +19,18 @@
 .legislation a.def-popover{
     color:#000;
 }
-
-.underlines.results-container .legislation a{
+.history-note{
+    display:none;
+}
+.notes .results-container .history-note{
+    display: initial;
+}
+.underlines .results-container .legislation a{
     text-decoration: underline;
     color:#337ab7;
 
 }
+
 .underlines .results-container .legislation{
     h1,h2,h3,h4,h5,h6 {
         a{

@@ -16,11 +16,8 @@ module.exports = React.createClass({
     },
     handleAddToPrint: function(){
         Actions.addToPrint({
-            title: this.props.page.getIn(['content','title']),
-            query: {doc_type:
-            this.props.page.getIn(['content', 'doc_type']),
-            find: 'full',
-            id: this.props.page.getIn(['content','document_id'])},
+            title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']),
+            query: this.props.page.getIn(['content', 'query']),
             html: this.props.page.getIn(['content','html_content'])
         });
     },
@@ -98,6 +95,12 @@ module.exports = React.createClass({
                 <a onClick={Actions.toggleUnderlines} >
                     <span className="fa fa-underline" title="Underlines"/>
                     <span className="sublabel">Underlines</span>
+                </a>
+            </li>
+            <li className="suboption">
+                <a onClick={Actions.toggleNotes} >
+                    <span className="fa fa-file-text-o" title="Notes"/>
+                    <span className="sublabel">Notes</span>
                 </a>
             </li>
             <li className="suboption">

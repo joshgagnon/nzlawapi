@@ -4,7 +4,7 @@ import os
 import urllib
 import re
 from xml.dom import minidom
-
+import itertools
 
 class CustomException(Exception):
     pass
@@ -112,7 +112,7 @@ def generate_path_string(node, id=None):
             text = n.xpath('./label')[0].text
             if text:
                 result = '(%s)' % text + result
-    it = iter(node.iterancestors('subprov'))
+    it = itertools.chain([node] if node.tag == 'subprov' else [],  iter(node.iterancestors('subprov')))
     for n in it:
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
@@ -123,14 +123,14 @@ def generate_path_string(node, id=None):
     if len(node.xpath('ancestor::schedule')):
         prov_str = ' cl'
 
-    it = iter(node.iterancestors('prov'))
+    it = itertools.chain([node] if node.tag == 'prov' else [], iter(node.iterancestors('prov')))
     for n in it:
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
             if text:
                 result = u'%s %s' % (prov_str, text + result)
 
-    it = iter(node.iterancestors('schedule'))
+    it = itertools.chain([node] if node.tag == 'schedule' else [], iter(node.iterancestors('schedule')))
     for n in it:
         if len(n.xpath('./label')):
             result = u'sch %s' % (n.xpath('./label')[0].text or '') + result

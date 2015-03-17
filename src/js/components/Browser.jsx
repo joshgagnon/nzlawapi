@@ -289,7 +289,10 @@ module.exports = React.createClass({
        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
         if(this.state.browser.get('underlines') ){
-            parentClass += 'underlines';
+            parentClass += ' underlines';
+        }
+        if(this.state.browser.get('notes') ){
+            parentClass += ' notes';
         }
         return (<div className className={parentClass}>
                 <div className="container-fluid">
