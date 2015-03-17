@@ -71,11 +71,12 @@ var FormHelper = {
     getValue: function(){
         var value = {}, nest=this.nestValues
         _.each(this.refs, function(r, k){
-            if(_.isObject(r.getValue()) && !nest){
-                _.extend(value, r.getValue());
+            var gotValue = r.getValue();
+            if(_.isObject(gotValue) && !nest){
+                _.extend(value, gotValue);
             }
             else{
-                value[k] = r.getValue();
+                value[k] = gotValue;
             }
         })
         return _.pick(_.extend(value, this.state), _.identity);
@@ -161,6 +162,13 @@ var CaseSearch = React.createClass({
 });
 
 var RenderSubInstrument = {
+    initialCheckboxState: function(activeList, fullList){
+        var out = {};
+        _.each(fullList, function(label) {
+            out[label] = activeList.indexOf(label) != -1;
+        });
+        return out;
+    },
     render: function(){
          return  <div className="form-group">
                 { this.renderCategoryLabel('types') }
@@ -177,12 +185,14 @@ var ActSearch = React.createClass({
     mixins: [
         React.addons.LinkedStateMixin,
         ToggleHelper,
-        RenderSubInstrument
+        RenderSubInstrument,
+        FormHelper
     ],
     getInitialState: function(){
-        return {'act_public': true, 'act_local': true,
-                'act_private': true,'act_provincial': true, 'act_imperial': true,
-                'act_principal': true, 'act_amendment_in_force': true}
+        return this.initialCheckboxState(
+            ['act_public', 'act_local', 'act_private', 'act_provincial', 'act_imperial', 'act_principal', 'act_amendment_in_force'],
+            [].concat(this.types, this.status)
+        );
     },
 
 })
@@ -193,12 +203,14 @@ var BillSearch = React.createClass({
     mixins: [
         React.addons.LinkedStateMixin,
         ToggleHelper,
-        RenderSubInstrument
+        RenderSubInstrument,
+        FormHelper
     ],
     getInitialState: function(){
-        return {'act_public': true, 'act_local': true,
-                'act_private': true,'act_provincial': true, 'act_imperial': true,
-                'act_principal': true, 'act_amendment_in_force': true}
+        return this.initialCheckboxState(
+            ['bill_government', 'bill_local', 'bill_private', 'bill_members', 'current_bills', 'enacted_bills'],
+            [].concat(this.types, this.status)
+        );
     }
 })
 
@@ -208,12 +220,14 @@ var OtherSearch = React.createClass({
     mixins: [
         React.addons.LinkedStateMixin,
         ToggleHelper,
-        RenderSubInstrument
+        RenderSubInstrument,
+        FormHelper
     ],
     getInitialState: function(){
-        return {'act_public': true, 'act_local': true,
-                'act_private': true,'act_provincial': true, 'act_imperial': true,
-                'act_principal': true, 'act_amendment_in_force': true}
+        return this.initialCheckboxState(
+            ['other_principal', 'other_not_in_force', 'other_amendment_force'],
+            [].concat(this.types, this.status)
+        );
     }
 })
 
@@ -255,7 +269,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('acts')} />
                     </div>
                     </div>
-                { this.state.acts ? <ActSearch /> : null }
+                { this.state.acts ? <ActSearch ref="actsearch" /> : null }
 
                    <hr/>
                 <div className="form-group">
@@ -264,7 +278,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('bills')} />
                     </div>
                     </div>
-                { this.state.bills ? <BillSearch /> : null }
+                { this.state.bills ? <BillSearch ref="billsearch" /> : null }
 
                    <hr/>
                 <div className="form-group">
@@ -273,7 +287,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('other')} />
                     </div>
                     </div>
-                { this.state.other ? <OtherSearch /> : null }
+                { this.state.other ? <OtherSearch ref="othersearch" /> : null }
 
             </form>
             </div>
@@ -291,7 +305,7 @@ module.exports = React.createClass({
             doc_type: 'instruments',
         }
     },
-    handleType: function(type){
+    handleType: function(doc_type){
         this.setState({doc_type: doc_type});
     },
     search: function(){

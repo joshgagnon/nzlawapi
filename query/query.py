@@ -112,9 +112,6 @@ def get_definition(document_id, key):
         return cur.fetchone()[0]
 
 
-
-
-
 def query_case(args):
     case = args.get('title')
     if case and args.get('validator'):
@@ -225,7 +222,6 @@ def query_case_fields(args):
         if args.get('year'):
             must.append(year_query(args))
 
-
         """'neutral_citation', 'courtfile', , 'year', 'court', 'bench', 'parties', 'matter', 'charge']"""
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset', 0)
@@ -258,6 +254,8 @@ def query_case_fields(args):
 def query_instrument_fields(args):
     must = []
     fields = {}
+    type_filters = []
+
     try:
         if args.get('title'):
             must.append({"simple_query_string": {
@@ -270,6 +268,57 @@ def query_instrument_fields(args):
             must.append(contains_query(args))
         if args.get('year'):
             must.append(year_query(args))
+        if args.get('acts'):
+            act_type_filter = []
+            for arg_name, act_type in [('act_public', 'public'), ('act_local', 'local'), ('act_private', 'private'), ('act_provincial', 'provincial'), ('act_imperial', 'imperial')]:
+                if args.get(arg_name):
+                    act_type_filter.append({"term": {"subtype": act_type}})
+
+            # TODO: status: 'act_principal', 'act_not_in_force', 'act_amendment_in_force', 'act_as_enacted', 'act_repealed'
+            act_status_filter = []
+            # Example heuristic for when ES is populated
+            # if args.get('act_principal'):
+            #     act_status_filter.append({
+            #         "bool": {
+            #             "must": [
+            #                 {"term": {"amendment": false}}
+            #                 {"term": {"status": "in-force"}}  # TODO: status field must have "index" : "not_analyzed" for hyphen to work
+            #             ]
+            #         }
+            #     })
+
+            # To be included type==act and at least one of each type and status filter must match
+            type_filters.append({
+                "bool": {
+                    "must": [
+                        {"term": {"type": "act"}},
+                        {"bool": {"should": act_type_filter}},
+                        {"bool": {"should": act_status_filter}}
+                    ]
+                }
+            })
+        if args.get('bills'):
+            bill_type_filter = []
+            for arg_name, bill_type in [('bill_government', 'government'), ('bill_local', 'local'), ('bill_private', 'private'), ('bill_members', 'member')]:
+                if args.get(arg_name):
+                    bill_type_filter.append({"term": {"subtype": bill_type}})
+
+            # TODO: status: 'current_bills', 'enacted_bills', 'terminated_bills'
+            bill_status_filter = []
+
+            type_filters.append({
+                "bool": {
+                    "must": [
+                        {"term": {"type": "bill"}},
+                        {"bool": {"should": bill_type_filter}},
+                        {"bool": {"should": bill_status_filter}}
+                    ]
+                }
+            })
+        if args.get('other'):
+            # TODO: status: 'other_principal', 'other_not_in_force', 'other_amendment_force','other_as_made', 'other_revoked'
+            type_filters.append({"term": {"type": "regulation"}})
+            type_filters.append({"term": {"type": "sop"}})
 
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset', 0)
@@ -291,6 +340,11 @@ def query_instrument_fields(args):
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
                     "fields": fields
+                },
+                "filter": {
+                    "bool": {
+                        "should": type_filters
+                    }
                 }
             })
         return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
@@ -315,7 +369,7 @@ def query():
     try:
         if query_type == 'all':
             result = query_all(args)
-        elif query_type in ['act', 'regulation',  'sop', 'bill', 'instrument']:
+        elif query_type in ['act', 'regulation', 'sop', 'bill', 'instrument']:
             result = query_instrument(args)
         elif query_type in ['instruments']:
             result = query_instrument_fields(args)
