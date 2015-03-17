@@ -112,9 +112,6 @@ def get_definition(document_id, key):
         return cur.fetchone()[0]
 
 
-
-
-
 def query_case(args):
     case = args.get('title')
     if case and args.get('validator'):
@@ -224,7 +221,6 @@ def query_case_fields(args):
             must.append(contains_query(args))
         if args.get('year'):
             must.append(year_query(args))
-
 
         """'neutral_citation', 'courtfile', , 'year', 'court', 'bench', 'parties', 'matter', 'charge']"""
         es = current_app.extensions['elasticsearch']
@@ -373,7 +369,7 @@ def query():
     try:
         if query_type == 'all':
             result = query_all(args)
-        elif query_type in ['act', 'regulation',  'sop', 'bill', 'instrument']:
+        elif query_type in ['act', 'regulation', 'sop', 'bill', 'instrument']:
             result = query_instrument(args)
         elif query_type in ['instruments']:
             result = query_instrument_fields(args)
