@@ -5,7 +5,7 @@ var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var Immutable = require('immutable');
 var request = require('superagent-promise');
-
+var PAGE_TYPES = require('../constants').PAGE_TYPES;
 
 var PageStore = Reflux.createStore({
     listenables: Actions,
@@ -112,7 +112,7 @@ var PageStore = Reflux.createStore({
                 content: data,
                 title: data.title
             };
-            if(page.get('page_type') === 'search'){
+            if(page.get('page_type') === PAGE_TYPES.SEARCH){
                 if(result.content.search_results.hits.length >= result.content.search_results.total){
                     result.finished = true;
                 }
@@ -147,7 +147,7 @@ var PageStore = Reflux.createStore({
     onGetMorePage: function(page_id, to_add){
         var page = this.getById(page_id), get;
         if(page){
-            if(page.get('page_type') === 'search'){
+            if(page.get('page_type') === PAGE_TYPES.SEARCH){
                 if(!page.get('finished') &&
                     !page.get('fetching') &&
                     page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
@@ -155,7 +155,6 @@ var PageStore = Reflux.createStore({
                     get = request.get('/query', _.extend({
                         offset: page.getIn(['content', 'search_results', 'hits']).size},
                         page.get('query').toJS()));
-
                 }
             }
             else if(to_add.requested_parts && to_add.requested_parts.length){
@@ -182,7 +181,7 @@ var PageStore = Reflux.createStore({
     onGetMorePageCompleted: function(page_id, data){
         var page = this.getById(page_id), result = {};
         if(page){
-            if(page.get('page_type') === 'search'){
+            if(page.get('page_type') === PAGE_TYPES.SEARCH){
                     result = {
                     offset: data.offset,
                     content: {

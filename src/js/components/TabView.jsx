@@ -58,7 +58,7 @@ module.exports = React.createClass({
                 sectionView={this.props.view.getIn(['section_summaries', active])}
                 viewer_id={this.props.viewer_id}
                 page_id={active} />;
-        },
+    },
     render: function(){
         var classes = "results-container ";
         if(this.modalVisible()){

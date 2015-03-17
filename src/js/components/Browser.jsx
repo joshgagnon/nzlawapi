@@ -31,6 +31,8 @@ var UserControls = require('./UserControls.jsx');
 var Notifications = require('./Notifications.jsx');
 var ButtonBar = require('./ButtonBar.jsx');
 var MQ = require('./Responsive.jsx');
+var constants = require('../constants');
+
 
 $.fn.focusNextInputField = function() {
     return this.each(function() {
@@ -145,7 +147,7 @@ module.exports = React.createClass({
         }
         var query;
         var title;
-        var page_type = 'article';
+        var page_type = constants.PAGE_TYPES.INSTRUMENT;
         if(this.showLocation()){
             query = {
                 doc_type: this.state.article_type,
@@ -164,7 +166,7 @@ module.exports = React.createClass({
             title = this.state.search_query
         }
         else{
-            page_type = 'search';
+            page_type = constants.PAGE_TYPES.SEARCH;
             query = {
                 doc_type: 'all',
                 query: this.state.search_query
@@ -224,20 +226,20 @@ module.exports = React.createClass({
         }
     },
     canHaveSidebar: function(page){
-        return (page && page.get('content') && page.get('page_type') !== 'search')
+        return (page && page.get('content') && page.get('page_type') !==  constants.PAGE_TYPES.SEARCH)
     },
     showSidebar: function(page){
         return this.state.browser.get('show_sidebar') && this.canHaveSidebar(page);
     },
     toggleAdvanced: function(){
         var active = this.getActive();
-        if(active && active.get('page_type') === 'search' && !active.get('content')){
+        if(active && active.get('page_type') === constants.PAGE_TYPES.SEARCH && !active.get('content')){
             // actually, for now do nothing
         }
         else{
              Actions.newAdvancedPage(
                 {title: 'Advanced Search',
-                page_type: 'search'
+                page_type: constants.PAGE_TYPES.SEARCH
             }, 'tab-0')
         }
     },

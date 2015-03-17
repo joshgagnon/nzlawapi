@@ -118,9 +118,6 @@ def is_bold(el):
     return el_class_style(el).get('font-weight') == 'bold'
 
 
-def get_info(doc_id, json_data):
-    return json_data[doc_id] or {}
-
 def neutral_cite(soup):
     try:
         return neutral_cite_el(soup).text
@@ -530,8 +527,9 @@ def process_file(filename, config, json_dict):
         'appearances': json_dict.get('Appearances'),
         'jurisdiciton': json_dict.get('Jurisdiction'),
         'judgment_date': ISO_date(json_dict.get('JudgmentDate')),
-        'document': generate_pretty_html(filename, config, tmp)
+        'document': None#generate_pretty_html(filename, config, tmp)
     }
+
     if is_appeal(results):
         results['appeal_result'] = appeal_result(flat_soup, tmp)
     print results
