@@ -3,10 +3,20 @@ from bs4 import BeautifulSoup
 import os
 import json
 import re
-import pprint
 from PIL import Image
 import psycopg2
-import json
+import sys
+import datetime
+from subprocess import Popen, PIPE
+from tempfile import mkdtemp
+import shutil
+import importlib
+from lxml import etree
+
+
+# source
+"""https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
+
 
 
 courtfile_variants = [
@@ -23,20 +33,57 @@ courtfile_variants = [
 
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
+def generate_parsable_html(filename, config, tmp):
+    outname = os.path.join(tmp, 'out.html')
+    cmd = """%s -p -c -noframes %s %s"""
+    print cmd % (config.PDFTOHTML, filename, outname)
+    p = Popen(cmd % (config.PDFTOHTML, filename, outname), shell=True, stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate()
+    if out.rstrip():
+        print filename, err
+    with open(outname) as f:
+        return f.read()
 
 
-#with open(json_path) as f:
-#   json_data = json.loads(f.read())
+def generate_pretty_html(filename, config, tmp):
+    def insert_content(tree, result):
+        result.extend(map(lambda x: etree.fromstring(etree.tostring(x, method="html",encoding='UTF-8')), tree.xpath('.//*[@id="page-container"]')))
+
+    def insert_style(tree, result, path):
+        style = etree.Element("style")
+        style.text = ''
+        for f in tree.xpath('.//*[@rel="stylesheet"]'):
+            if f.attrib['href'] != 'fancy.min.css':
+                with open(os.path.join(path, f.attrib['href'])) as css:
+                    style.text += css.read()
+        result.append(style)
+
+    outname = 'out.html'
+    cmd = """%s %s --embed-javascript 0 --embed-css 0 --printing 0  --process-outline 0 --embed-image 1   --embed-font 0 --embed-external-font 1 --fit-width 992 --stretch-narrow-glyph 1 --fallback 0 --dest-dir  %s %s"""
+    print cmd % (config.PDFTOHTMLEX, filename, tmp, outname)
+    p = Popen(cmd % (config.PDFTOHTMLEX, filename, tmp, outname), shell=True, stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate()
+    if out.rstrip():
+        print filename, err
+    tree = etree.parse(os.path.join(tmp, outname))
+    result = etree.Element("div")
+    result.append(etree.fromstring('<meta charset="utf-8" />'))
+    insert_content(tree, result)
+    insert_style(tree,result, tmp)
+    return etree.tostring(result, method="html",encoding='UTF-8')
+
 
 
 class NoText(Exception):
     pass
+
 
 def next_tag(el, name):
     el = el.next_sibling
     while  el.name != name:
         el = el.next_sibling
     return el
+
 
 def prev_tag(el, name):
     el = el.previous_sibling
@@ -48,6 +95,7 @@ def prev_tag(el, name):
 def left_margin(soup):
     return get_left_position(soup.find('div'))
 
+
 def el_class_style(el):
     try:
         class_name = el.find('span').attrs['class'][0]
@@ -57,8 +105,10 @@ def el_class_style(el):
     except (AttributeError, StopIteration):
         return {}
 
+
 def style_to_dict(line):
     return dict([x.split(':') for x in line.split(';') if x])
+
 
 def font_size(el):
     return int(re.match(r'\d+', el_class_style(el).get('font-size', '16px')).group())
@@ -67,16 +117,16 @@ def font_size(el):
 def is_bold(el):
     return el_class_style(el).get('font-weight') == 'bold'
 
+
 def get_info(doc_id, json_data):
-    for j in json_data['response']['docs']:
-        if j['DocumentName'] == doc_id + '.pdf':
-            return j
+    return json_data[doc_id] or {}
 
 def neutral_cite(soup):
     try:
         return neutral_cite_el(soup).text
     except StopIteration:
         pass
+
 
 def neutral_cite_el(soup):
     reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
@@ -116,11 +166,14 @@ def court(soup):
         result +=  [next_el.text]
     return result
 
+
 def get_left_position(el):
     return int(re.search(r'.*left:(\d+).*', el.attrs['style']).group(1))
 
+
 def get_top_position(el):
     return int(re.search(r'.*top:(\d+).*', el.attrs['style']).group(1))
+
 
 def consecutive_align(el):
     results = []
@@ -129,6 +182,7 @@ def consecutive_align(el):
         results.append(el.text)
         el = next_tag(el, 'div')
     return (results, el)
+
 
 def parse_between(soup):
     results = {}
@@ -139,8 +193,7 @@ def parse_between(soup):
         re.compile('.*Applicant[s]?'),
         re.compile('.*Appellant[s]?'),
         re.compile('.*Insolvent[s]?')
-        ]
-
+    ]
     # while not at next section
 
     while el.text in between:
@@ -206,11 +259,13 @@ def parties(soup):
         result[court_file(soup)] = {}
         return result
 
+
 def element_after_column(soup, strings):
     el = (e for e in soup.find_all('div') if e.text in strings).next()
     while get_left_position(el) == get_left_position(next_tag(el, 'div')):
         el = next_tag(el, 'div')
     return next_tag(el, 'div')
+
 
 def text_after_column(soup, strings):
     try:
@@ -218,12 +273,14 @@ def text_after_column(soup, strings):
     except StopIteration:
         pass
 
+
 def texts_after_column(soup, strings):
     try:
         els = consecutive_align(element_after_column(soup, strings))
         return ' '.join(els[0])
     except StopIteration:
         pass
+
 
 def judgment(soup):
     return text_after_column(soup, ['Judgment:', 'Sentence:', 'Sentenced:'])
@@ -249,7 +306,7 @@ def bench(soup):
     return text_after_column(soup, ['Court:'])
 
 
-def find_bars(soup):
+def find_bars(soup, path):
     def is_black(pixel):
         return sum(pixel) < 150
 
@@ -280,8 +337,10 @@ def find_bars(soup):
 
     return results
 
+
 def get_page(el):
     return int(el.find_previous_sibling('img').attrs['name'])
+
 
 def el_between_bars(soup, bars):
     try:
@@ -290,18 +349,19 @@ def el_between_bars(soup, bars):
     except StopIteration:
         return False
 
+
 def first_el_after_bar(soup, bars):
     el = soup.select('img[name=%d]'%bars[0][0])[0]
     line_gap = 50
     top = bars[0][1]
     return (div for div in el.find_next_siblings('div')
-        if top < get_top_position(div) < top + line_gap
-        ).next()
+        if top < get_top_position(div) < top + line_gap).next()
 
 
-def waistband_el(soup):
+
+def waistband_el(soup, path):
     results = []
-    bars = find_bars(soup)
+    bars = find_bars(soup, path)
     underscore = re.compile('^_+$')
     line_height = 10
     if len(bars) == 2:
@@ -337,8 +397,8 @@ def waistband_el(soup):
     return [' '.join(results), el]
 
 
-def waistband(soup):
-    return waistband_el(soup)[0]
+def waistband(soup, path):
+    return waistband_el(soup, path)[0]
 
 
 def counsel(soup):
@@ -366,6 +426,7 @@ def counsel(soup):
         return counsel
     except: pass
 
+
 def matter(soup):
     result = {}
     result['UNDER'] = texts_after_column(soup, ['UNDER'])
@@ -377,13 +438,14 @@ def matter(soup):
             del result[k]
     return result
 
+
 def is_appeal(info):
     if info.get('neutral_citation'):
         return re.compile('.*NZ(CA|SC).*').match(info.get('neutral_citation'))
 
 
-def appeal_result(soup):
-    el = waistband_el(soup)[1]
+def appeal_result(soup, path):
+    el = waistband_el(soup, path)[1]
     results = {}
     position = re.search(r'.*(left:\d+).*', el.attrs['style']).group(1)
     text_re = re.compile('.*[a-zA-Z]+.*')
@@ -401,6 +463,7 @@ def appeal_result(soup):
 
     return results
 
+
 def mangle_format(soup):
     flat_soup = BeautifulSoup('<div/>').select('div')[0]
     # first give all bg images page numbers
@@ -415,10 +478,16 @@ def mangle_format(soup):
         raise NoText('contains no text')
     return flat_soup
 
+def ISO_date(value):
+    if value:
+        return datetime.datetime(*map(int, re.split('\D', value)[:-1]))
+
+
 def delete_db(cur, data):
     query = """delete from cases where source_id = %(id)s"""
     cur.execute(query, data)
     return
+
 
 def insert_db(cur, data):
     query = """INSERT INTO cases (source_id, neutral_citation, court, full_citation, parties,
@@ -433,40 +502,54 @@ def insert_db(cur, data):
     cur.execute(query, data)
 
 
-def process_file(filename):
-    #print get_info(filename.replace('.html', ''), json_data)
-    with open(os.path.join(path, filename)) as f:
-        soup = BeautifulSoup(f.read())
-        flat_soup = mangle_format(soup)
-        print filename
-        results = {
-            'source_id': filename,
-            'neutral_citation': neutral_cite(flat_soup),
-            'court': court(flat_soup),
-            'full_citation': full_citation(flat_soup),
-            'parties': parties(flat_soup),
-            'counsel': counsel(flat_soup),
-            'judgment': judgment(flat_soup),
-            'waistband': waistband(flat_soup),
-            'hearing': hearing(flat_soup),
-            'received': received(flat_soup),
-            'matter': matter(flat_soup),
-            'charge': charge(flat_soup),
-            'plea': plea(flat_soup),
-            'bench': bench(flat_soup)
-        }
 
-        if is_appeal(results):
-            results['appeal_result'] = appeal_result(flat_soup)
-        else:
-            results['appeal_result'] = {}
-        return results
+
+
+def process_file(filename, config, json_dict):
+    tmp = mkdtemp()
+    html1 = generate_parsable_html(filename, config, tmp)
+    soup = BeautifulSoup(html1)
+    flat_soup = mangle_format(soup)
+    results = {
+        'source_id': filename[:4],
+        'neutral_citation': json_dict.get('MNC') or neutral_cite(flat_soup),
+        'court': court(flat_soup),
+        'full_citation': json_dict.get('CaseName') or full_citation(flat_soup),
+        'parties': parties(flat_soup),
+        'counsel': counsel(flat_soup),
+        'judgment': judgment(flat_soup),
+        'waistband': waistband(flat_soup, tmp),
+        'hearing': hearing(flat_soup),
+        'received': received(flat_soup),
+        'matter': matter(flat_soup),
+        'charge': charge(flat_soup),
+        'plea': plea(flat_soup),
+        'bench': bench(flat_soup),
+        'file_number': json_dict.get('FileNumber'),
+        'location': json_dict.get('Location'),
+        'appearances': json_dict.get('Appearances'),
+        'jurisdiciton': json_dict.get('Jurisdiction'),
+        'judgment_date': ISO_date(json_dict.get('JudgmentDate')),
+        'document': generate_pretty_html(filename, config, tmp)
+    }
+    if is_appeal(results):
+        results['appeal_result'] = appeal_result(flat_soup, tmp)
+    print results
+    #shutil.rmtree(tmp)
+    return results
 
 
 def process(db, config):
-    json_path = '/Users/josh/legislation_archive/justice.json'
-    files = config.CASE_DIR
-    data = process_file(f)
+    json_file = os.path.join(config.CASE_DIR , '../', 'cases.json')
+    json_dict = {}
+    with open(json_file) as j:
+        for j in json.loads(re.match( '^[^(]+\((.*)\)$', j.read(), re.MULTILINE).groups(1)[0])['response']['docs']:
+            json_dict[j['DocumentName'][:-4]] = j
+    files = ['494e2f13-e708-4dd0-92a9-8ce90fe2806b.pdf']
+    for f in files:
+        data = process_file(os.path.join(config.CASE_DIR, f), config, json_dict)
+    # delete then insert
+
 
 if __name__ == "__main__":
     if not len(sys.argv) > 1:

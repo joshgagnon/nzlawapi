@@ -1,0 +1,1 @@
+ALTER TABLE cases ADD COLUMN file_number text;

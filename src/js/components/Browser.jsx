@@ -245,24 +245,23 @@ module.exports = React.createClass({
         var active = this.getActive();
         if(this.state.browser.get('print_mode') ){
             return <div className="split print">
-                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
                 <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'}/>
                 </div>
         }
-        else if(this.state.browser.get('split_mode') ){
+        else if(this.state.browser.get('split_mode')){
             return <div className="split">
-                <TabView  browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
                 <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'}/>
                 </div>
         }
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
-                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
-                <ArticleSideBar article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
+                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
                 </div>
         }
-        return  <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
-
+        return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
     },
     renderForm: function(){
         var formClasses = '';
