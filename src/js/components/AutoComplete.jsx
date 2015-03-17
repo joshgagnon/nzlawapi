@@ -3,7 +3,7 @@ var Input = require('react-bootstrap/lib/Input');
 var EventListener = require('react-bootstrap/lib/utils/EventListener');
 var $ = require('jquery');
 var _ = require('lodash');
-var request = require('superagent-promise');
+var request = require('superagent-bluebird-promise');
 // TODO, scroll overflow on arrows
 
 var AutoComplete = React.createClass({
@@ -24,7 +24,7 @@ var AutoComplete = React.createClass({
              request.get(self.props.endpoint, {
                     query: value
                 })
-             .end()
+             .promise()
              .then(function(response){
                     self.bindRootCloseHandlers();
                     self.setState({

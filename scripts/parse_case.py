@@ -11,6 +11,7 @@ from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 import shutil
 import importlib
+from collections import defaultdict
 from lxml import etree
 
 
@@ -47,7 +48,7 @@ def generate_parsable_html(filename, config, tmp):
 
 def generate_pretty_html(filename, config, tmp):
     def insert_content(tree, result):
-        result.extend(map(lambda x: etree.fromstring(etree.tostring(x, method="html",encoding='UTF-8')), tree.xpath('.//*[@id="page-container"]')))
+        result.extend(tree.xpath('.//*[@id="page-container"]'))
 
     def insert_style(tree, result, path):
         style = etree.Element("style")
@@ -69,6 +70,9 @@ def generate_pretty_html(filename, config, tmp):
     result = etree.Element("div")
     result.append(etree.fromstring('<meta charset="utf-8" />'))
     insert_content(tree, result)
+
+    for child in result:
+        child.attrib.pop('id', None)
     insert_style(tree,result, tmp)
     return etree.tostring(result, method="html",encoding='UTF-8')
 
@@ -475,40 +479,45 @@ def mangle_format(soup):
         raise NoText('contains no text')
     return flat_soup
 
-def ISO_date(value):
+
+def iso_date(value):
     if value:
         return datetime.datetime(*map(int, re.split('\D', value)[:-1]))
 
 
 def delete_db(cur, data):
-    query = """delete from cases where source_id = %(id)s"""
-    cur.execute(query, data)
-    return
+    query = """delete from documents d  USING cases c WHERE d.id = c.id and source_id = %(source_id)s"""
+    return cur.execute(query, data)
 
 
 def insert_db(cur, data):
-    query = """INSERT INTO cases (source_id, neutral_citation, court, full_citation, parties,
-        counsel, judgment, waistband, hearing, received, matter, charge, plea, bench)
-        VALUES (%(id)s, %(neutral_citation)s, %(court)s, %(full_citation)s, %(parties)s,
-        %(counsel)s, %(judgment)s, %(waistband)s, %(hearing)s, %(received)s, %(matter)s, %(charge)s, %(plea)s, %(bench)s)"""
+    query = """INSERT INTO documents (document) VALUES (%(document)s) RETURNING id"""
+    cur.execute(query, data)
+    id = cur.fetchone()[0]
+
+    query = """INSERT INTO cases (id, source_id, neutral_citation, court, full_citation, parties,
+        counsel, judgment, waistband, hearing, received, matter, charge, plea, bench, file_number,
+        location, appearances, jurisdiction, judgment_date)
+        VALUES (%(id)s, %(source_id)s, %(neutral_citation)s, %(court)s, %(full_citation)s, %(parties)s,
+        %(counsel)s, %(judgment)s, %(waistband)s, %(hearing)s, %(received)s, %(matter)s,
+        %(charge)s, %(plea)s, %(bench)s, %(file_number)s, %(location)s, %(appearances)s, %(jurisdiction)s,
+        %(judgment_date)s)"""
 
     data = dict(data.items())
+    data['id'] = id
     data['parties'] = json.dumps(data['parties'])
     data['appeal_result'] = json.dumps(data['appeal_result'])
     data['matter'] = json.dumps(data['matter'])
     cur.execute(query, data)
 
 
-
-
-
-def process_file(filename, config, json_dict):
+def process_file(id, filename, config, json_dict):
     tmp = mkdtemp()
     html1 = generate_parsable_html(filename, config, tmp)
     soup = BeautifulSoup(html1)
     flat_soup = mangle_format(soup)
     results = {
-        'source_id': filename[:4],
+        'source_id': id,
         'neutral_citation': json_dict.get('MNC') or neutral_cite(flat_soup),
         'court': court(flat_soup),
         'full_citation': json_dict.get('CaseName') or full_citation(flat_soup),
@@ -525,28 +534,29 @@ def process_file(filename, config, json_dict):
         'file_number': json_dict.get('FileNumber'),
         'location': json_dict.get('Location'),
         'appearances': json_dict.get('Appearances'),
-        'jurisdiciton': json_dict.get('Jurisdiction'),
-        'judgment_date': ISO_date(json_dict.get('JudgmentDate')),
-        'document': None#generate_pretty_html(filename, config, tmp)
+        'jurisdiction': json_dict.get('Jurisdiction'),
+        'judgment_date': iso_date(json_dict.get('JudgmentDate')),
+        'document': generate_pretty_html(filename, config, tmp)
     }
-
     if is_appeal(results):
         results['appeal_result'] = appeal_result(flat_soup, tmp)
-    print results
-    #shutil.rmtree(tmp)
+    shutil.rmtree(tmp)
     return results
 
 
 def process(db, config):
     json_file = os.path.join(config.CASE_DIR , '../', 'cases.json')
-    json_dict = {}
+    json_dict = defaultdict(dict)
     with open(json_file) as j:
         for j in json.loads(re.match( '^[^(]+\((.*)\)$', j.read(), re.MULTILINE).groups(1)[0])['response']['docs']:
             json_dict[j['DocumentName'][:-4]] = j
     files = ['494e2f13-e708-4dd0-92a9-8ce90fe2806b.pdf']
-    for f in files:
-        data = process_file(os.path.join(config.CASE_DIR, f), config, json_dict)
-    # delete then insert
+    with db.cursor() as cur:
+        for f in files:
+            data = process_file(f[:4], os.path.join(config.CASE_DIR, f), config, json_dict.get(f[:-4]))
+            delete_db(cur, data)
+            insert_db(cur, data)
+    db.commit()
 
 
 if __name__ == "__main__":

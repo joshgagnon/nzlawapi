@@ -2,13 +2,14 @@
 window.API_VERSION = '0.1.1';
 
 var React = require('react/addons');
+var Reflux = require('Reflux');
 var Actions = require('./actions/Actions');
 var ReactRouter = require('react-router');
 var Browser = require('./components/Browser.jsx');
 //var Graph = require('./components/Graph.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
-
+Reflux.setPromise(require('bluebird'));
 
 React.initializeTouchEvents(true)
 var App = React.createClass({

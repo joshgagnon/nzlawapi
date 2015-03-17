@@ -10,30 +10,6 @@ import re
 
 
 
-
-def act_full_search(query):
-    result = es.search(
-        index="legislation",
-        doc_type='act',
-        body={
-            "from": 0, "size": 25,
-            "fields": ["id", "title"],
-            "sort": [
-                "_score",
-            ],
-            "query": {"query_string": {"query": query}},
-            "aggregations": {
-                "my_agg": {
-                    "terms": {
-                        "field": "content"
-                    }
-                }
-            }
-        })
-    print("Got %d Hits:" % result['hits']['total'])
-    return result
-
-
 def case_search(query, offset=0):
     result = es.search(
         index="legislation",
@@ -117,22 +93,21 @@ def process_case_contents(tree):
     return tree, render_template('case_contents.html', results=results)
 
 
-def get_full_case(case=None, id=None):
+def get_full_case(id=None):
     try:
         with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            query = """select * from cases where (%(case)s is null or full_citation = %(case)s) and (%(id)s is null or id =  %(id)s)"""
-            cur.execute(query, {'case': case, 'id': id})
+            query = """select * from documents d join cases c on c.id = d.id where d.id =  %(id)s"""
+            cur.execute(query, {'id': id})
             results = cur.fetchone()
-            print os.path.join(current_app.config['CASE_DIR'], results.get('source_id'))
-            with open(os.path.join(current_app.config['CASE_DIR'], results.get('source_id')), 'U') as f:
-                tree = process_case(etree.HTML(f.read()))
-                tree, contents = process_case_contents(tree)
-                return {
-                    'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
-                    'html_contents_page': contents,
-                    'title': results.get('full_citation'),
-                    'type': 'case'
-                }
+
+            tree = etree.HTML(results['document'])
+            #tree, contents = process_case_contents(tree)
+            return {
+                'html_content': etree.tostring(tree, encoding='UTF-8', method="html"),
+                'html_contents_page': '', #contents,
+                'title': results.get('full_citation'),
+                'type': 'case'
+            }
         return results
     except (psycopg2.DataError, AttributeError):
         raise CustomException('Case not found')

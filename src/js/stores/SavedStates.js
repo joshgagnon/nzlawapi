@@ -9,7 +9,7 @@ var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
 var HistoryStore = require('./HistoryStore');
 var Immutable = require('immutable');
-var request = require('superagent-promise');
+var request = require('superagent-bluebird-promise');
 
 
 
@@ -102,7 +102,7 @@ module.exports = Reflux.createStore({
     },
     setStates: function(states){
         request.post('/saved_states', {saved_states: states})
-            .end()
+            .promise()
             .then(function(){
                 this.update();
                 Actions.notify('Session Saved');
@@ -147,7 +147,7 @@ module.exports = Reflux.createStore({
     onFetchSavedStates: function(){
         return request
             .get('/saved_states')
-            .end()
+            .promise()
             .then(function(response){
                 this.saved_states = _.defaults(response.body.saved_states || {}, this.createFolder('root'));
                 this.update();

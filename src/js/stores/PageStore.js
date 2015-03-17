@@ -4,7 +4,7 @@ var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var Immutable = require('immutable');
-var request = require('superagent-promise');
+var request = require('superagent');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 
 var PageStore = Reflux.createStore({
@@ -91,15 +91,19 @@ var PageStore = Reflux.createStore({
     onRequestPage: function(page_id){
         //todo, guards in Action pre emit
         var page = this.getById(page_id);
-        if(!page.get('fetching') && !page.get('fetched')){
+        if(!page.get('fetching') && !page.get('fetched') && !page.get('error')){
             var get;
             get = page.get('query_string') ?
                 request.get(page.get('query_string')) :
                 request.get('/query', page.get('query').toJS());
             get
-                .end()
-                .then(function(response){ Actions.requestPage.completed(page_id, response.body) })
-                .catch(function(response ){ Actions.requestPage.failed(page_id, response ? response.body: null) })
+                .promise()
+                .then(function(response){ Actions.requestPage.completed(page_id, response.body); })
+                .catch(function(response){ Actions.requestPage.failed(page_id, response.body); })
+                .done()
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
+            this.update();
+
         }
     },
     onRequestPageCompleted: function(page_id, data){
@@ -140,7 +144,7 @@ var PageStore = Reflux.createStore({
                 content: data || {error: 'A problem occurred'},
                 error: true
             });
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  false});
             this.update();
         }
     },
@@ -171,7 +175,7 @@ var PageStore = Reflux.createStore({
             }
             if(get){
                 get
-                    .end()
+                    .promise()
                     .then(function(response){ Actions.getMorePage.completed(page_id, response.body) })
                     .catch(function(response){ Actions.getMorePage.failed(page_id, response.body) });
                 this.update();
@@ -254,7 +258,7 @@ var PageStore = Reflux.createStore({
                 this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
                     {fetching: true});
                 request.get(popover.get('url'))
-                    .end()
+                    .promise()
                     .then(function(response) { Actions.requestPopoverData.completed(page_id, popover_id, response.body)})
                     .catch(function(response) { Actions.requestPopoverData.failed(page_id, popover_id, response.body)});
                 this.update();
@@ -285,7 +289,7 @@ var PageStore = Reflux.createStore({
                 {fetching: true});
             request.get('/section_references')
                 .query({govt_ids: (page.getIn(['section_data', section_id, 'govt_ids']).toJS() || [])})
-                .end()
+                .promise()
                 .then(function(response){ Actions.requestSectionReferences.completed(page_id, section_id, response.body); })
                 .catch(function(response){ Actions.requestSectionReferences.failed(page_id, section_id, response.body); });
             this.update();
@@ -314,7 +318,7 @@ var PageStore = Reflux.createStore({
         if(!page.getIn(['versions', 'fetching']) && !page.getIn(['versions', 'fetched'])){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetching: true});
             request.get('/versions/'+page.get('content').get('document_id'))
-                .end()
+                .promise()
                 .then(function(response){ Actions.requestVersions.completed(page_id, response.body); })
                 .catch(function(response){ Actions.requestVersions.failed(page_id, response.body); });
             this.update();
@@ -341,7 +345,7 @@ var PageStore = Reflux.createStore({
         if(page && !page.getIn(['references', 'fetching']) && !page.getIn(['references', 'fetched'])){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetching: true});
             request.get('/references/'+page.get('content').get('document_id'))
-                .end()
+                .promise()
                 .then(function(response){ Actions.requestReferences.completed(page_id, response.body); })
                 .catch(function(response){ Actions.requestReferences.failed(page_id, response.body);; });
             this.update();
@@ -368,7 +372,7 @@ var PageStore = Reflux.createStore({
         if(!page.getIn(['contents', 'fetching']) && !page.getIn(['contents', 'fetched'])){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'], {fetching: true});
             request.get('/contents/'+page.get('content').get('document_id'))
-                .end()
+                .promise()
                 .then(function(response){ Actions.requestContents.completed(page_id, section_id, response.body); })
                 .catch(function(response){ Actions.requestContents.failed(page_id, section_id, response.body); });
             this.update();

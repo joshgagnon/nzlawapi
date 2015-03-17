@@ -3,7 +3,7 @@ var Input = require('react-bootstrap/lib/Input');
 var Modal = require('react-bootstrap/lib/Modal');
 var ModalTrigger = require('react-bootstrap/lib/ModalTrigger');
 var Button = require('react-bootstrap/lib/Button');
-var request = require('superagent-promise');
+var request = require('superagent-bluebird-promise');
 var SavedStates = require('../stores/SavedStates')
 
 var ReportIssueModal = React.createClass({
@@ -22,7 +22,7 @@ var ReportIssueModal = React.createClass({
                 state: SavedStates.prepState(),
                 details: this.state.details
             })
-            .end()
+            .promise()
             .then(function(){
                 this.props.onRequestHide();
             }.bind(this));
