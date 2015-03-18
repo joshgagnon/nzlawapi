@@ -20,6 +20,11 @@ module.exports = React.createClass({
         }
         return null;
     },
+    componentDidMount: function(){
+       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
+            Actions.requestPage(this.props.page.get('id'));
+       }
+    },
     render: function(){
         return <div className="case-container" onClick={this.interceptLink} >
             { this.warningsAndErrors() }

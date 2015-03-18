@@ -50,7 +50,7 @@ module.exports = React.createClass({
                 result = <Case {...props} />
                 break;
             default:
-                // error
+                // TODO error
                 result = <div/>;
         }
         return result;

@@ -123,17 +123,18 @@ def process_skeleton(id, tree, db=None):
         el[:] = []
 
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
-    with (db or get_db()).cursor() as cur:
-        query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
-                    WHERE d.id =  %(id)s """
-        cur.execute(query, {
-            'id': id,
-            'skeleton': skeleton,
-            'heights': json.dumps(heights)
-        })
-        cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
-        args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, i, p)) for i, p in enumerate(parts))
-        cur.execute('INSERT INTO document_parts (document_id, num, data) VALUES ' + args_str)
+    if len(parts):
+        with (db or get_db()).cursor() as cur:
+            query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
+                        WHERE d.id =  %(id)s """
+            cur.execute(query, {
+                'id': id,
+                'skeleton': skeleton,
+                'heights': json.dumps(heights)
+            })
+            cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
+            args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, i, p)) for i, p in enumerate(parts))
+            cur.execute('INSERT INTO document_parts (document_id, num, data) VALUES ' + args_str)
 
     (db or get_db()).commit()
     return skeleton, heights
@@ -174,7 +175,6 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
-    row.get('id')
     return tree
 
 

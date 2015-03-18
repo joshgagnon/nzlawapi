@@ -228,7 +228,9 @@ module.exports = React.createClass({
         }
     },
     canHaveSidebar: function(page){
-        return (page && page.get('content') && page.get('page_type') !==  constants.PAGE_TYPES.SEARCH)
+        return page && page.get('content') &&
+            (page.get('page_type') !==  constants.PAGE_TYPES.INSTRUMENT ||
+            page.get('page_type') !==  constants.PAGE_TYPES.CASE)
     },
     showSidebar: function(page){
         return this.state.browser.get('show_sidebar') && this.canHaveSidebar(page);
@@ -246,7 +248,7 @@ module.exports = React.createClass({
         }
     },
     sidebar: function(active){
-        if(active.get('page_type') ===  constants.PAGE_TYPES.ARTICLE){
+        if(active.get('page_type') === constants.PAGE_TYPES.INSTRUMENT){
             return <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
         }
     },
