@@ -20,6 +20,14 @@ def connect_db():
     return conn
 
 
+def connect_db_config(config):
+    conn = psycopg2.connect(
+            database=config.DB,
+            user=config.DB_USER,
+            password=config.DB_PW)
+    return conn
+
+
 def init_db():
     pass
 

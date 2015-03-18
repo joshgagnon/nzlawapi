@@ -5,13 +5,27 @@ import urllib
 import re
 from xml.dom import minidom
 import itertools
+import time
+
+
+def timing(f):
+    def wrap(*args, **kwargs):
+        time1 = time.time()
+        ret = f(*args, **kwargs)
+        time2 = time.time()
+        print '%s function took %0.3f ms' % (f.func_name, (time2 - time1) * 1000.0)
+        return ret
+    return wrap
+
 
 class CustomException(Exception):
     pass
 
+
 class Monitor(object):
     i = 0
     matches = 0
+
     def __init__(self, max=None):
         self.max = max
 
@@ -21,6 +35,7 @@ class Monitor(object):
 
     def match(self):
         self.matches += 1
+
 
 def levenshtein(s1, s2):
     if len(s1) < len(s2):
@@ -106,7 +121,7 @@ def text_compare(t1, t2):
 
 def generate_path_string(node, id=None):
     result = unicode('')
-    it = iter(node.iterancestors('label-para'))
+    it = itertools.chain([node] if node.tag == 'label-para' else [], iter(node.iterancestors('label-para')))
     for n in it:
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
@@ -142,7 +157,7 @@ def generate_path_string(node, id=None):
             'doc_type': 'instrument',
             'find': 'location',
             'title': title.encode('utf-8')
-            }))
+            }), result)
 
 
 

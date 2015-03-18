@@ -17,18 +17,20 @@ import codecs
 
 
 class Instrument(object):
-    def __init__(self, id, tree, attributes, skeleton, contents, heights):
+    def __init__(self, id, document, attributes, skeleton, contents, heights={}, title=None, length=0):
         self.id = id
-        self.tree = tree
+        self.document = document
         self.skeleton = skeleton
         self.contents = contents
-        self.title = get_title(self.tree) # NO!
+        self.title = title or get_title(self.tree)
         self.heights = heights
         self.parts = []
+        self.length = length
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
-        format_dates(self.tree)
 
+    def get_tree(self):
+        return etree.fromstring(self.document)
 
 
 def format_dates(tree):
@@ -152,14 +154,17 @@ def process_contents(id, tree, db=None):
     return contents
 
 
-def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=None):
+def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=None, latest=False):
     if not tree:
         tree = etree.fromstring(row.get('document'))
+    if not latest:
+        tree.attrib['old-version'] = 'true'
     if not definitions:
         if row.get('title') != 'Interpretation Act 1999':
             _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
         else:
             definitions = Definitions()
+    format_dates(tree)
     tree = process_instrument_links(tree, db)
     tree, definitions = process_definitions(tree, definitions)
     with (db or get_db()).cursor() as cur:
@@ -193,28 +198,29 @@ def prep_instrument(result, replace, db):
     if not result.get('id'):
         raise CustomException('Instrument not found')
     if replace or not result.get('processed_document'):
-        tree = process_instrument(row=result, db=db)
+        document = etree.fromstring(process_instrument(row=result, db=db, latest=result.get('latest')))
     else:
-        tree = etree.fromstring(result.get('processed_document'))
-    if not result.get('latest'):
-        tree.attrib['old-version'] = 'true'
+        document = result.get('processed_document')
+
     if not result.get('skeleton'):
-        skeleton, heights = process_skeleton(result.get('id'), tree, db=db)
+        skeleton, heights = process_skeleton(result.get('id'), etree.fromstring(document), db=db)
     else:
         skeleton = result.get('skeleton')
         heights = result.get('heights')
     if not result.get('contents'):
-        contents = process_contents(result.get('id'), tree, db=db)
+        contents = process_contents(result.get('id'), etree.fromstring(document), db=db)
     else:
         contents = result.get('contents')
 
     return Instrument(
         id=result.get('id'),
-        tree=tree,
+        document=document,
         skeleton=skeleton,
         contents=contents,
         heights=heights,
-        attributes=dict(result))
+        length=len(result.get('document')),
+        title=result.get('title'),
+        attributes=result)
 
 
 def get_act_summary(doc_id, db=None):

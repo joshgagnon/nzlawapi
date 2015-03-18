@@ -31,10 +31,10 @@ def instrument_skeleton_response(instrument):
 
 
 def instrument_full(instrument):
-    if current_app.config.get('USE_SKELETON') and etree.tostring(instrument.tree) > 100000:
+    if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
         return instrument_skeleton_response(instrument)
     return {
-        'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),
+        'html_content': instrument.document,
         'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': instrument.title,
@@ -51,7 +51,7 @@ def instrument_full(instrument):
 
 
 def instrument_preview(instrument):
-    preview = limit_tree_size(instrument.tree)
+    preview = limit_tree_size(instrument.get_tree())
     return {
         'html_content': etree.tostring(tohtml(preview), encoding='UTF-8', method="html"),
         'title': instrument.title,
@@ -69,8 +69,8 @@ def instrument_preview(instrument):
 
 
 def instrument_location(instrument, location):
-    tree = find_node_by_location(instrument.tree, location)
-    location, _ = generate_path_string(tree[0])
+    tree = find_node_by_location(instrument.get_tree(), location)
+    location = generate_path_string(tree[0])[2]
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
@@ -91,8 +91,8 @@ def instrument_location(instrument, location):
 
 
 def instrument_govt_location(instrument, id):
-    tree = find_node_by_govt_id(instrument.tree, id)
-    location, _ = generate_path_string(tree[0])
+    tree = find_node_by_govt_id(instrument.get_tree(), id)
+    location = generate_path_string(tree[0])[2]
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
@@ -123,7 +123,7 @@ def query_instrument(args):
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
         id = args.get('id', args.get('document_id'))
-        if id.startswith('DLM'):
+        if type(id) == str and id.startswith('DLM'):
             govt_id = id
             id = find_document_id_by_govt_id(id)
             instrument = get_instrument_object(

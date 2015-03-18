@@ -5,6 +5,7 @@ from acts.definitions import *
 from acts.acts import *
 from acts.traversal import *
 from util import xml_compare, generate_path_string
+from db import connect_db_config
 import os
 
 
@@ -32,12 +33,6 @@ class TestQueries(unittest.TestCase):
     def test_definition_query_counts(self):
         self.assertEqual(len(find_definitions(self.xml, 'company')), 20)
         self.assertRaises(CustomException, find_definitions, self.xml, 'balderdash')
-
-    @unittest.skip("need db")
-    def test_id_search(self):
-        conn = connect_db()
-        self.assertEqual(len(find_node_by_id('DLM320106', db=conn)[0]), 1)
-        self.conn.close()
 
     def test_search(self):
         self.assertEqual(len(find_node_by_query(self.xml, 'constitution')), 910)
@@ -87,7 +82,6 @@ def transform_eqn(filename, parser):
 def print_error(msg):
     print msg
 
-
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -114,6 +108,67 @@ class TestPathExtraction(unittest.TestCase):
         self.assertEqual(generate_path_string(el)[0], 'Test Act 666 s 2(1)')
         el = tree.xpath('.//*[@id="aaa"]')[0]
         self.assertEqual(generate_path_string(el)[0], 'Test Act 666 sch 1 cl 1(1)')
+
+
+
+# TODO, assumes data in db, but in a hurry
+# TODO, replace companies act with much much smaller act, everywhere
+class InstrumentTest(unittest.TestCase):
+
+    def setUp(self):
+        import importlib
+        config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
+        self.conn = connect_db_config(config)
+        with self.conn.cursor() as cur, app.test_request_context():
+            cur.execute("""select id from latest_instruments where title = 'Companies Act 1993'""");
+            self.document_id = document_id = cur.fetchone()[0]
+
+    def tearDown(self):
+        self.conn.close()
+
+    def test_companies_act_full(self):
+        with app.test_request_context():
+            self.assertIsNotNone(self.document_id)
+            full = query_instrument({'document_id': '%s' % self.document_id})
+            self.assertIsNotNone(full['html_content'])
+            self.assertEqual(full['format'], 'skeleton')
+            self.assertEqual(full['title'], 'Companies Act 1993')
+
+    def test_companies_act_full_govt_id(self):
+        with app.test_request_context():
+            full = query_instrument({'id': 'DLM319569'})
+            self.assertIsNotNone(full['html_content'])
+            self.assertEqual(full['format'], 'skeleton')
+            self.assertEqual(full['title'], 'Companies Act 1993')
+
+    def test_companies_act_govt_fragment(self):
+        with app.test_request_context():
+            fragment = query_instrument({'document_id': '%s' % self.document_id, 'govt_location': 'DLM320681', 'find': 'govt_location'})
+            self.assertIsNotNone(fragment['html_content'])
+            self.assertEqual(fragment['format'], 'fragment')
+            self.assertEqual(fragment['full_title'], 'Companies Act 1993 s 146')
+
+    def test_companies_act_fragment(self):
+        with app.test_request_context():
+            fragment = query_instrument({'document_id': '%s' % self.document_id, 'location': 's 146(2)(a)(iv)', 'find': 'location'})
+            self.assertIsNotNone(fragment['html_content'])
+            self.assertEqual(fragment['format'], 'fragment')
+            self.assertEqual(fragment['full_title'], 'Companies Act 1993 s 146(2)(a)(iv)')
+
+    def test_companies_act_preview(self):
+        with app.test_request_context():
+            preview = query_instrument({'document_id': '%s' % self.document_id, 'find': 'preview'})
+            self.assertIsNotNone(preview['html_content'])
+            self.assertEqual(preview['format'], 'preview')
+            self.assertEqual(preview['full_title'], 'Companies Act 1993')
+
+    def test_companies_act_more(self):
+        with app.test_request_context():
+            parts = query_instrument({'document_id': '%s' % self.document_id, 'find': 'more', 'parts': '4,5,6'})
+            self.assertIsNotNone(parts['parts'])
+            self.assertEqual(len(parts['parts']), 3)
+
+
 if __name__ == '__main__':
     #hack
     unittest.main(argv=[sys.argv[0]])

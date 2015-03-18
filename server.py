@@ -54,24 +54,27 @@ def map():
     return jsonify(result), status
 
 
-@app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, 'db'):
-        g.db.close()
+
+def run():
+    @app.teardown_appcontext
+    def close_db(error):
+        if hasattr(g, 'db'):
+            g.db.close()
 
 
-@app.before_request
-def before_request():
-    g.start = time.time()
+    @app.before_request
+    def before_request():
+        g.start = time.time()
 
 
-@app.teardown_request
-def teardown_request(exception=None):
-    diff = time.time() - g.start
-    if diff > 2:
-        print 'Request took %.2f seconds' % diff
+    @app.teardown_request
+    def teardown_request(exception=None):
+        diff = time.time() - g.start
+        if diff > 2:
+            print 'Request took %.2f seconds' % diff
+    app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])
 
 
 if __name__ == '__main__':
+    run()
 
-    app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])
