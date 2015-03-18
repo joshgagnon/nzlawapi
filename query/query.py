@@ -1,6 +1,6 @@
 from acts.acts import query_instrument
 from acts.queries import get_references, get_versions, get_section_references
-from cases.cases import get_full_case, get_case_info, case_search
+from cases.cases import query_case
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
 from security.auth import require_auth
@@ -110,28 +110,6 @@ def get_definition(document_id, key):
             'key': key
         })
         return cur.fetchone()[0]
-
-
-def query_case(args):
-    case = args.get('title')
-    if case and args.get('validator'):
-        return get_case_info(case)
-    if case:
-        return get_full_case(case)
-    # TODO id
-    if args.get('id'):
-        return get_full_case(id=args.get('id'))
-    raise CustomException('Invalid search type')
-
-
-def query_cases(args):
-    query = args.get('query')
-    if args.get('find') == 'id':
-        return get_full_case(id=query)
-    if not query:
-        raise CustomException('Query missing')
-    results = case_search(re.escape(args.get('query', '')))
-    return {'results': results, 'title': 'Search: %s' % query}
 
 
 def year_query(args):
@@ -376,10 +354,7 @@ def query():
         elif query_type == 'case':
             result = query_case(args)
         elif query_type == 'cases':
-            if args.get('search') == 'advanced':
-                result = query_case_fields(args)
-            else:
-                result = query_cases(args)
+            result = query_case_fields(args)
         else:
             raise CustomException('Badly formed query')
     except CustomException, e:

@@ -29,9 +29,6 @@ class Instrument(object):
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
         format_dates(self.tree)
 
-    def select(self, requested):
-        return [self.parts[i] for i in requested]
-
 
 
 def format_dates(tree):
@@ -200,7 +197,7 @@ def prep_instrument(result, replace, db):
     else:
         tree = etree.fromstring(result.get('processed_document'))
     if not result.get('latest'):
-        tree.attrib['old-version'] = 'true'        
+        tree.attrib['old-version'] = 'true'
     if not result.get('skeleton'):
         skeleton, heights = process_skeleton(result.get('id'), tree, db=db)
     else:
@@ -211,19 +208,13 @@ def prep_instrument(result, replace, db):
     else:
         contents = result.get('contents')
 
-
-    instrument = Instrument(
-        id=result.get('id'), 
-        tree=tree, 
-        skeleton=skeleton, 
-        contents=contents, 
-        heights=heights, 
+    return Instrument(
+        id=result.get('id'),
+        tree=tree,
+        skeleton=skeleton,
+        contents=contents,
+        heights=heights,
         attributes=dict(result))
-
-    # dont
-    instrument.parts = fetch_parts(instrument.id, db=db)
-
-    return instrument
 
 
 def get_act_summary(doc_id, db=None):

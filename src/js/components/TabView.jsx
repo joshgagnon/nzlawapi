@@ -1,4 +1,5 @@
-var _ = require('lodash');
+"use strict"
+;var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react/addons');
 var Actions = require('../actions/Actions');
@@ -6,8 +7,11 @@ var SearchResults = require('./SearchResults.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
+var Case = require('./Case.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
+var PAGE_TYPES = require('../constants').PAGE_TYPES;
+
 
 module.exports = React.createClass({
     handleTab: function(active){
@@ -28,9 +32,28 @@ module.exports = React.createClass({
         return !!this.props.view.getIn(['section_summaries', active]);
     },
     renderPage: function(page){
-        return page.get('page_type') === 'search' ?
-                    <SearchResults key={page.get('id')} page={page} viewer_id={this.props.viewer_id} view={this.props.view}/> :
-                    <Article key={page.get('id')} page={page} view={this.props.view} viewer_id={this.props.viewer_id} />
+        var props = {
+            key: page.get('id'),
+            page: page,
+            viewer_id: this.props.viewer_id,
+            view: this.props.view
+        };
+        var result;
+        switch(page.get('page_type')){
+            case(PAGE_TYPES.SEARCH):
+                result = <SearchResults {...props}/>
+                break;
+            case(PAGE_TYPES.INSTRUMENT):
+                result = <Article {...props} />
+                break;
+            case(PAGE_TYPES.CASE):
+                result = <Case {...props} />
+                break;
+            default:
+                // error
+                result = <div/>;
+        }
+        return result;
     },
     renderTabs: function(){
         var self = this;

@@ -120,7 +120,9 @@ module.exports = React.createClass({
             Actions.loadPrevious(['browser']);
         }
         else if(this.getParams().doc_type){
-            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 'tab-0');
+            Actions.newPage({page_type: this.getParams().doc_type,
+                query: {doc_type: this.getParams().doc_type,
+                id: this.getParams().id}}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
         else{
@@ -243,6 +245,11 @@ module.exports = React.createClass({
             }, 'tab-0')
         }
     },
+    sidebar: function(active){
+        if(active.get('page_type') ===  constants.PAGE_TYPES.ARTICLE){
+            return <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
+        }
+    },
     renderBody: function(){
         var active = this.getActive();
         if(this.state.browser.get('print_mode') ){
@@ -260,7 +267,7 @@ module.exports = React.createClass({
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
                 <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
-                <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
+                { this.sidebar(active)}
                 </div>
         }
         return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>

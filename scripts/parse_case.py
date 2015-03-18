@@ -12,7 +12,7 @@ from tempfile import mkdtemp
 import shutil
 import importlib
 from collections import defaultdict
-from lxml import etree
+from lxml import etree, html
 
 
 # source
@@ -54,7 +54,7 @@ def generate_pretty_html(filename, config, tmp):
         style = etree.Element("style")
         style.text = ''
         for f in tree.xpath('.//*[@rel="stylesheet"]'):
-            if f.attrib['href'] != 'fancy.min.css':
+            if f.attrib['href'] != 'fancy.min.css' and f.attrib['href'] != 'base.min.css' :
                 with open(os.path.join(path, f.attrib['href'])) as css:
                     style.text += css.read()
         result.append(style)
@@ -66,15 +66,13 @@ def generate_pretty_html(filename, config, tmp):
     out, err = p.communicate()
     if out.rstrip():
         print filename, err
-    tree = etree.parse(os.path.join(tmp, outname))
-    result = etree.Element("div")
-    result.append(etree.fromstring('<meta charset="utf-8" />'))
+    tree = html.parse(os.path.join(tmp, outname))
+    result = html.fromstring("<div><meta charset='utf-8'/></div>")
     insert_content(tree, result)
-
     for child in result:
         child.attrib.pop('id', None)
     insert_style(tree,result, tmp)
-    return etree.tostring(result, method="html",encoding='UTF-8')
+    return etree.tostring(result, encoding='UTF-8', method="html")
 
 
 
@@ -540,7 +538,7 @@ def process_file(id, filename, config, json_dict):
     }
     if is_appeal(results):
         results['appeal_result'] = appeal_result(flat_soup, tmp)
-    shutil.rmtree(tmp)
+    #shutil.rmtree(tmp)
     return results
 
 

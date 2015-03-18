@@ -184,7 +184,9 @@ var ArticleSkeletonContent = React.createClass({
         }
         _.each(self._refs, function(v, k){
             if(self.props.content.getIn(['parts', k])){
-                self.measured_heights[k] = v.getDOMNode().clientHeight;
+                // TODO, investigate
+                //self.measured_heights[k] = v.getDOMNode().clientHeight;
+
             }
         });
         var width = this.getDOMNode().clientWidth;

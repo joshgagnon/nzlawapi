@@ -6,11 +6,11 @@ from traversal import cull_tree, \
     find_node_by_location, limit_tree_size
 from lxml import etree
 from flask import current_app
-from queries import get_instrument_object, get_latest_instrument_object
-import os
+from queries import get_instrument_object, get_latest_instrument_object, fetch_parts
 
 
 def instrument_skeleton_response(instrument):
+    # TODO, bake in first couple of parts
     return {
         'html_content': instrument.skeleton,
         'html_contents_page': instrument.contents,
@@ -21,7 +21,7 @@ def instrument_skeleton_response(instrument):
         'attributes': instrument.attributes,
         'format': 'skeleton',
         'heights': instrument.heights,
-        'parts': {},
+        'parts': fetch_parts(instrument.id, parts=[0, 1]),
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,
@@ -114,7 +114,7 @@ def instrument_govt_location(instrument, id):
 
 def instrument_more(instrument, parts):
     return {
-        'parts': dict((i, v) for i, v in instrument.parts.items() if i in parts)
+        'parts': fetch_parts(instrument.id, parts=map(lambda p: int(p), parts))
     }
 
 
@@ -160,4 +160,3 @@ def query_instrument(args):
 
 def query_acts(args):
     raise CustomException('Not Implemented')
-
