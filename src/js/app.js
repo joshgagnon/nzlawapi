@@ -2,7 +2,7 @@
 window.API_VERSION = '0.1.1';
 
 var React = require('react/addons');
-var Reflux = require('Reflux');
+var Reflux = require('reflux');
 var Actions = require('./actions/Actions');
 var ReactRouter = require('react-router');
 var Browser = require('./components/Browser.jsx');

@@ -13,6 +13,7 @@ var Utils = require('../utils');
 var Immutable = require('immutable');
 var CaseError = require('./Warnings.jsx').CaseError;
 
+
 module.exports = React.createClass({
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
@@ -26,9 +27,8 @@ module.exports = React.createClass({
        }
     },
     render: function(){
-        return <div className="case-container" onClick={this.interceptLink} >
-            { this.warningsAndErrors() }
-            <div className="case-scaler" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
-        </div>
+        return <div className="case-container">
+                <div className="case-scaler" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
+            </div>
     }
  });
