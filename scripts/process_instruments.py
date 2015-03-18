@@ -20,7 +20,7 @@ def run(db, config):
             cur.execute("""SELECT * FROM instruments i
                 JOIN documents d on d.id = i.id
                 where i.id =  %(id)s""", {'id': r['id']})
-            queries.process_instrument(cur.fetchone(), db, defs.__deepcopy__(), refresh=False)
+            queries.process_instrument(cur.fetchone(), db, defs.__deepcopy__(), refresh=False, latest=True)
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     db.close()
 
