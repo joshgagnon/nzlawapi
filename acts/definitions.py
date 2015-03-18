@@ -199,7 +199,7 @@ def find_all_definitions(tree, definitions, expire=True):
                 src = etree.Element('catalex-src')
                 # todo tricky rules
                 src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
-                src.text, src.attrib['href'] = generate_path_string(node)
+                src.text, src.attrib['href'], _ = generate_path_string(node)
 
                 base = lmtzr.lemmatize(text.lower())
                 expiry_tag = infer_life_time(parent) if expire else None

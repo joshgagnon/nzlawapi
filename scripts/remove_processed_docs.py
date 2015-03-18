@@ -6,7 +6,7 @@ import importlib
 
 def process(db, config):
     with db.cursor() as cur:
-        cur.execute("""update documents set processed_document == null where processed_document is not null;
+        cur.execute("""update documents set processed_document = null where processed_document is not null;
 """)
 
 
