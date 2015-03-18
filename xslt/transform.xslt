@@ -27,8 +27,7 @@
         <xsl:if test="../@quote = '1'"><xsl:attribute name="quote"></xsl:attribute>“</xsl:if>
     </xsl:template>
 
-    <xsl:template match="act">
-
+    <xsl:template match="act|bill">
         <div class="legislation">
             <div>
                 <div class="act top-level">
@@ -49,6 +48,7 @@
             </div>
         </div>
     </xsl:template>
+
 
     <xsl:template match="regulation">
         <div class="legislation">
