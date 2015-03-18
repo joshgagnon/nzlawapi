@@ -282,7 +282,7 @@ body{
         padding-left: 0;
         padding-right: 0;
         overflow-y: auto;
-        overflow-x: hidden;
+        overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         -webkit-backface-visibility: hidden;
 
@@ -306,6 +306,7 @@ body{
         border-bottom: 1px solid $navbar-default-border;
         padding: 15px;
         padding-left:65px;
+          transform: translateZ(0);
         .btn-toolbar{
             text-align:center;
             padding-bottom:15px;
@@ -314,7 +315,6 @@ body{
         .form-group .form-group{
             margin-bottom:0px;
         }
-
     }
 
     .case{

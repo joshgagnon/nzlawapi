@@ -31,7 +31,7 @@ def instrument_skeleton_response(instrument):
 
 
 def instrument_full(instrument):
-    if current_app.config.get('USE_SKELETON'):
+    if current_app.config.get('USE_SKELETON') and etree.tostring(instrument.tree) > 100000:
         return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.tree), encoding='UTF-8', method="html"),
