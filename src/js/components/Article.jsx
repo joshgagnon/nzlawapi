@@ -95,10 +95,10 @@ var ArticleSkeletonContent = React.createClass({
     getInitialState: function(){
         this._refs = {};
         var heights = this.props.content.getIn(['heights']).toJS();
-        this._part_count = this.props.content.getIn(['heights', widths[0]+'' ]).size;
         var widths = _.map(_.keys(heights), Number).sort(function(a,b){ return a - b; });
         this.measured_heights = {};
         this.calculated_heights = {};
+        this._part_count = this.props.content.getIn(['heights', widths[0]+'' ]).size;
         this._visible = {};
         this._child_ids = {}
         this._child_locations = {};
