@@ -60,7 +60,8 @@ def generate_pretty_html(filename, config, tmp):
         result.append(style)
 
     outname = 'out.html'
-    cmd = """%s %s --embed-javascript 0 --embed-css 0 --printing 0 --embed-font 0 --embed-external-font 0  --process-outline 0 --embed-image 1  --fit-width 992 --stretch-narrow-glyph 1  --auto-hint 1 --fallback 0 --dest-dir  %s %s"""
+    """gs -sDEVICE=pdfwrite -sOutputFile='output.pdf' -dNOPAUSE -dBATCH input.pdf"""
+    cmd = """%s %s --embed-javascript 0 --embed-css 0 --printing 0 --embed-font 1 --embed-external-font 1  --process-outline 0 --embed-image 1  --fit-width 992 --dest-dir  %s %s"""
     print cmd % (config.PDFTOHTMLEX, filename, tmp, outname)
     p = Popen(cmd % (config.PDFTOHTMLEX, filename, tmp, outname), shell=True, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
