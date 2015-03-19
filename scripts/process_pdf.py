@@ -22,7 +22,7 @@ def insert_style(tree, result, path):
 def process_file(filename):
     tmp = mkdtemp()
     outname = 'out.html'
-    cmd = """ pdf2htmlEX %s --embed-javascript 0 --embed-css 0 --printing 0  --process-outline 0 --embed-image 1   --embed-font 0 --embed-external-font 1 --fit-width 992 --stretch-narrow-glyph 1 --fallback 0 --dest-dir  %s %s"""
+    cmd = """ pdf2htmlEX %s --embed-javascript 0 --embed-css 0 --printing 0  --optimize-text 1 --process-outline 0 --embed-image 1  --font-format "ttf"  --embed-font 1 --embed-external-font 0 --fit-width 992 --stretch-narrow-glyph 1 --fallback 0 --dest-dir  %s %s"""
     print cmd % (filename, tmp, outname)
     p = Popen(cmd % (filename, tmp, outname), shell=True, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
