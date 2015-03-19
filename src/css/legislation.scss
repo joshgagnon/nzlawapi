@@ -314,14 +314,14 @@
     font-size: 1em
 }
 .legislation div.cover {
-    margin-right: -1.5em
+   // margin-right: -1.5em
 }
 .legislation h1.title {
     font-size: 1.7em;
     font-weight: bold;
     margin-top: 2em;
     text-align: center;
-    padding: 0 3em
+    padding:0
 }
 .legislation table.cover-properties {
     text-align: center;
@@ -403,7 +403,7 @@
     margin-top: 1em;
     font-size: 1.2em;
     font-weight: bold;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.contents-note p {
     text-align: center;
@@ -423,7 +423,7 @@
     margin-left: 0;
     font-size: 1.5em;
     font-weight: bold;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.schedule-forms h4.head4, .legislation div.schedule-amendments h4.head4 {
     font-weight: normal;
@@ -439,7 +439,7 @@
     margin-left: 0;
     font-size: 1.5em;
     font-weight: bold;
-    padding: 0 3em
+    padding:0
 }
 .legislation h2.schedule-amendments-group1 {
     font-weight: normal
@@ -454,7 +454,7 @@
 .legislation h3.subpart, .legislation h3.conv, .legislation h3.head2, .legislation h3.sop-subpart, .legislation h3.heading {
     text-align: center;
     margin-top: 1em;
-    padding: 0 3em
+    padding:0
 }
 .legislation h3.subpart {
     font-size: 1.5em
@@ -492,7 +492,7 @@
     font-style: italic;
     margin-top: 1em;
     margin-left: 0;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.schedule-provisions h4.crosshead {
     font-style: normal
@@ -517,7 +517,7 @@
     text-align: center;
     margin-top: 1em;
     margin-left: 0;
-    padding: 0 3em
+    padding:0
 }
 .legislation h4.form span.label a.label {
     margin-left: 0;
@@ -555,7 +555,7 @@
     text-align: center;
     font-weight: bold;
     margin-left: 0;
-    padding: 0 3em;
+    padding:0;
     margin-top: 0.5em
 }
 .legislation h6.figure span.label {
@@ -978,7 +978,7 @@
     margin-top: 0.75em;
     margin-left: 0;
     font-weight: bold;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.toc p.schedule a.label, .legislation div.toc p.part a.label, .legislation div.toc p.schedule-group a.label, .legislation div.toc p.schedule-amendments-group1 a.label, .legislation div.toc p.head1 a.label {
     margin-left: 0;
@@ -993,7 +993,7 @@
 .legislation div.toc p.subpart, .legislation div.toc p.conv, .legislation div.toc p.head2 {
     text-align: center;
     margin-top: 1em;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.toc p.subpart a.label, .legislation div.toc p.conv a.label {
     margin-left: 0;
@@ -1017,7 +1017,7 @@
     font-style: italic;
     margin-top: 1em;
     margin-left: 0;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.toc p.crosshead a.toc span.spc, .legislation div.toc p.ird-crosshead a.toc span.spc, .legislation div.toc p.head3 a.toc span.spc, .legislation div.toc p.head4 a.toc span.spc {
     float: none;
@@ -1045,7 +1045,7 @@
     text-align: center;
     font-weight: bold;
     margin-left: 0;
-    padding: 0 3em;
+    padding:0;
     margin-top: 0.5em
 }
 .legislation div.toc p.figure a.label {
@@ -1077,13 +1077,13 @@
     font-style: italic;
     text-align: center;
     margin-top: 1em;
-    padding: 0 3em
+    padding:0
 }
 .legislation div.toc-schedule-provisions p.crosshead {
     font-style: normal;
     text-align: center;
     margin-top: 1em;
     margin-left: 0;
-    padding: 0 3em
+    padding:0
 }
 }
