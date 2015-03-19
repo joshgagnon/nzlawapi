@@ -6,6 +6,7 @@ var constants = require('../constants');
 module.exports = React.createClass({
     base_url: 'http://www.legislation.govt.nz/subscribe/',
     toggleAdvanced: function(){
+        // TODO, belongs in store
         var active = this.props.page;
         if(active && active.get('page_type') === constants.PAGE_TYPES.SEARCH){
             if(active.get('content')){

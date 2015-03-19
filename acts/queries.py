@@ -17,7 +17,7 @@ import codecs
 
 
 class Instrument(object):
-    def __init__(self, id, document, attributes, skeleton, contents, heights={}, title=None, length=0):
+    def __init__(self, id, document, attributes, skeleton, contents, tree=None, heights={}, title=None):
         self.id = id
         self.document = document
         self.skeleton = skeleton
@@ -25,12 +25,13 @@ class Instrument(object):
         self.title = title or get_title(self.tree)
         self.heights = heights
         self.parts = []
-        self.length = length
+        self.tree = tree
+        self.length = len(self.document)
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
     def get_tree(self):
-        return etree.fromstring(self.document)
+        return self.tree or etree.fromstring(self.document)
 
 
 def format_dates(tree):
@@ -55,7 +56,6 @@ def measure_heights(html):
     with codecs.open(html_file, 'w', encoding='utf8') as out_file, codecs.open(css_path, encoding='utf8') as css:
         out_file.write(render_template('instrument_parts.html', content=html, css=css.read()))
     p = Popen(['phantomjs', js, html_file, result_file], stdout=PIPE, stderr=PIPE)
-    print html_file
     out, err = p.communicate()
     with open(result_file) as in_file:
         results = json.loads(in_file.read())
@@ -197,18 +197,20 @@ def fetch_parts(doc_id, db=None, parts=None):
 def prep_instrument(result, replace, db):
     if not result.get('id'):
         raise CustomException('Instrument not found')
+    tree = None
     if replace or not result.get('processed_document'):
-        document = etree.fromstring(process_instrument(row=result, db=db, latest=result.get('latest')))
+        tree = process_instrument(row=result, db=db, latest=result.get('latest'), refresh=False)
+        document = etree.tostring(tree, encoding='UTF-8', method="html")
     else:
         document = result.get('processed_document')
 
     if not result.get('skeleton'):
-        skeleton, heights = process_skeleton(result.get('id'), etree.fromstring(document), db=db)
+        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document), db=db)
     else:
         skeleton = result.get('skeleton')
         heights = result.get('heights')
     if not result.get('contents'):
-        contents = process_contents(result.get('id'), etree.fromstring(document), db=db)
+        contents = process_contents(result.get('id'), tree if tree is not None else  etree.fromstring(document), db=db)
     else:
         contents = result.get('contents')
 
@@ -218,7 +220,6 @@ def prep_instrument(result, replace, db):
         skeleton=skeleton,
         contents=contents,
         heights=heights,
-        length=len(result.get('document')),
         title=result.get('title'),
         attributes=result)
 
