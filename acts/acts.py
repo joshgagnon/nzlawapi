@@ -34,7 +34,7 @@ def instrument_full(instrument):
     if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
         return instrument_skeleton_response(instrument)
     return {
-        'html_content': instrument.document,
+        'html_content': etree.tostring(tohtml(instrument.get_tree()), encoding='UTF-8', method="html"),
         'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': instrument.title,
