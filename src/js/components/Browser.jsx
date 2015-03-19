@@ -229,16 +229,22 @@ module.exports = React.createClass({
     },
     canHaveSidebar: function(page){
         return page && page.get('content') &&
-            (page.get('page_type') ===  constants.PAGE_TYPES.INSTRUMENT ||
-            page.get('page_type') ===  constants.PAGE_TYPES.CASE)
+            (page.get('page_type') ===  constants.PAGE_TYPES.INSTRUMENT
+            //|| page.get('page_type') ===  constants.PAGE_TYPES.CASE
+            )
     },
     showSidebar: function(page){
         return this.state.browser.get('show_sidebar') && this.canHaveSidebar(page);
     },
     toggleAdvanced: function(){
         var active = this.getActive();
-        if(active && active.get('page_type') === constants.PAGE_TYPES.SEARCH && !active.get('content')){
-            // actually, for now do nothing
+        if(active && active.get('page_type') === constants.PAGE_TYPES.SEARCH){
+            if(active.get('content')){
+                Actions.toggleAdvanced('tab-0', active.get('id'));
+            }
+            else{
+                Actions.removePage(active.get('id'));
+            }
         }
         else{
              Actions.newAdvancedPage(
