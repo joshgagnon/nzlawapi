@@ -229,8 +229,8 @@ module.exports = React.createClass({
     },
     canHaveSidebar: function(page){
         return page && page.get('content') &&
-            (page.get('page_type') !==  constants.PAGE_TYPES.INSTRUMENT ||
-            page.get('page_type') !==  constants.PAGE_TYPES.CASE)
+            (page.get('page_type') ===  constants.PAGE_TYPES.INSTRUMENT ||
+            page.get('page_type') ===  constants.PAGE_TYPES.CASE)
     },
     showSidebar: function(page){
         return this.state.browser.get('show_sidebar') && this.canHaveSidebar(page);
