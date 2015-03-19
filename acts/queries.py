@@ -111,7 +111,6 @@ def process_skeleton(id, tree, db=None):
             results += wrap('div', to_join)
         node[:] = results
         return node
-
     depth(html.getroot())
     """ super expensive """
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
@@ -199,7 +198,7 @@ def prep_instrument(result, replace, db):
         raise CustomException('Instrument not found')
     tree = None
     if replace or not result.get('processed_document'):
-        tree = process_instrument(row=result, db=db, latest=result.get('latest'), refresh=False)
+        tree = process_instrument(row=result, db=db, latest=result.get('latest'))
         document = etree.tostring(tree, encoding='UTF-8', method="html")
     else:
         document = result.get('processed_document')

@@ -17,7 +17,7 @@
 
 
     <xsl:template match="sop">
-        <xsl:apply-templates select="bill.sop.body/bill" />
+        <xsl:apply-templates select="bill.sop.body/bill|billref|body" />
     </xsl:template>
 
 
