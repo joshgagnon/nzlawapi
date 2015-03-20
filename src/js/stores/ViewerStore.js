@@ -139,6 +139,7 @@ module.exports =  Reflux.createStore({
     },
 
     onArticlePosition: function(viewer_id, page_id, position){
+        console.log(position)
         this.views = this.views.mergeDeepIn([viewer_id, 'positions', page_id], position);
         this.update();
 

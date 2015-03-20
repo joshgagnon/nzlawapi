@@ -22,7 +22,7 @@ module.exports = React.createClass({
             $(this).removeClass('active');
         });
         this.active = [];
-        var active = $el.find('[href=#'+value.get('id')+']');
+        var active = $el.find('[href='+value.get('id')+']');
         if(active && active.parent().length){
             active  = active.parent();
             active.addClass('active');
@@ -57,7 +57,13 @@ module.exports = React.createClass({
         }
         return false;
     },
+    componentDidUpdate: function(){
+        if(this.props.position){
+            this.onPositionChange(this.props.position);  
+        }
+    },
     render: function(){
+        console.log('render')
         return <div onClick={this.interceptLink} onWheel={this.stopScrollPropagation} >
                 <JumpTo ref="jumpTo" position={this.props.position} viewer_id={this.props.viewer_id} />
                 <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.article.getIn(['content','html_contents_page'])}}/>

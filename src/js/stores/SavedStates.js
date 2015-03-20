@@ -212,6 +212,7 @@ var UserActions = Reflux.createStore({
         Actions.printMovePosition,
         Actions.toggleUnderlines,
         Actions.toggleSplitMode,
+        Actions.toggleSidebar,
         Actions.togglePrintMode,
         Actions.loadedFromStorage,
         Actions.popoverOpened,

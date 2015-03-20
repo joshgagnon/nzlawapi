@@ -113,11 +113,15 @@ var ArticleSkeletonContent = React.createClass({
             this.popRefs();
             this.resizeSkeleton();
             if(this.props.view.getIn(['positions', this.props.page_id])){
-                this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS())
+                this.setupSkeletonScroll();
+                this.updateSkeletonScroll();
+                this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS());
             }
-            this.setSubVisibility();
-            this.setupSkeletonScroll();
-            this.updateSkeletonScroll();
+            else{
+                this.setSubVisibility();
+                this.setupSkeletonScroll();
+                this.updateSkeletonScroll();
+            }
 
         }
     },
@@ -149,16 +153,16 @@ var ArticleSkeletonContent = React.createClass({
                 return self._refs[part];
             }
             var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last);
-            return self._skeleton_locations[part].sorted_children[child_key];
+            return self._skeleton_locations[part].sorted_children[child_key] || self._refs[part];
         };
         if(self.isMounted()){
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
             var repr = Utils.getLocation($part).repr;
-            var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-            if(repr){
+            var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id') || $part.attr('id');
+            if(repr || id){
                 Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                    {pixel: top, repr: repr, id: id});
+                    {pixel: top, repr: repr, id: id ? '#'+id : id});
             }
         }
     },
@@ -265,16 +269,22 @@ var ArticleSkeletonContent = React.createClass({
     showPart: function(k, parts){
         var height_change = false;
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
-            var old_height = this._refs[k].clientHeight
-            this._refs[k].style.height = 'auto';
+            var container_height = this.getScrollContainer()[0].scrollHeight;
+            var old_height = this._refs[k].offsetHeight;
+           this._refs[k].style.height = 'auto';
+           this._refs[k].style.overflow = 'auto';
+           this._refs[k].classList.remove('csspinner');
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
-            this.measured_heights[k] =  this._refs[k].clientHeight;
+            this.measured_heights[k] =  this._refs[k].offsetHeight;
             if(old_height !== this.measured_heights[k]){
                 height_change = true;
+                var scroll = this.getScrollContainer().scrollTop();
+                if(scroll > this._refs[k].offsetTop + this.measured_heights[k]){
+                   this.getScrollContainer().scrollTop(scroll - (container_height - this.getScrollContainer()[0].scrollHeight)) ;
+                }
             }
             this._refs[k].setAttribute('data-visible', true);
-            this._refs[k].style.height = 'auto';
-            this._refs[k].classList.remove('csspinner');
+            
 
             var top = this._refs[k].offsetTop;
             var pairs = _.map(this._refs[k].querySelectorAll('[data-location]'),
@@ -294,11 +304,13 @@ var ArticleSkeletonContent = React.createClass({
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
         }
+                    this.debounce_scroll();
         return height_change;
     },
-    hidePart: function(k){
+    hidePart: function(k){        
         this._refs[k].innerHTML = '';
         this._refs[k].style.height = (this.measured_heights[k] || this.calculated_heights[k]) + 'px';
+        this._refs[k].style.overflow="hidden"
         this._refs[k].classList.remove('csspinner');
     },
     updateParts: function(parts){
@@ -316,7 +328,7 @@ var ArticleSkeletonContent = React.createClass({
         if(resize_index < this._part_count){
             this.recalculateOffsets(resize_index);
         }
-        this.updateSkeletonScroll();
+        //this.updateSkeletonScroll();
     },
     shouldComponentUpdate: function(newProps, newState){
         // total hack job, perhaps move to direct pagestore listener
@@ -357,8 +369,8 @@ var ArticleSkeletonContent = React.createClass({
         if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
             if(!target.length){
-                target = $(this._refs[this._child_ids[jump.id]]);
                 this._delayed_jump = {ref: this._child_ids[jump.id], jump:jump};
+                target = $(this._refs[this._child_ids[jump.id]]);
             }
         }
         else if(jump.location && jump.location.length){
@@ -375,7 +387,8 @@ var ArticleSkeletonContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, 0);
+            container.scrollTop(container.scrollTop()+target.position().top + 10);
+            this.debounce_scroll();
         }
         else if(jump.pixel){
             this.getScrollContainer().scrollTop(jump.pixel);
@@ -414,23 +427,22 @@ var ArticleContent = React.createClass({
         return $(this.getDOMNode()).parents('.tab-content, .results-container');
     },
     setupScroll: function(){
-        this.offset = 100;
         var self = this;
         this.refresh();
         var find_current = function(store){
             var top = self.getScrollContainer().scrollTop();
-            var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top)
-            return store[Math.max(Math.min(0, i), store.length -1)].target;
+            var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top);
+            return store[Math.min(Math.max(0, i), store.length -1)].target;
         };
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top;
                 var $el = $(find_current(self.locations));
                 var result = Utils.getLocation($el).repr;
-                var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+                var id = '#'+$el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
                     Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                        {pixel: self.getScrollContainer().scrollTop() + self.offset, repr: result, id: id});
+                        {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id});
                 }
             }
         }, 0);
