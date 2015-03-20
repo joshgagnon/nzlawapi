@@ -123,7 +123,7 @@ def query_instrument(args):
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
         id = args.get('id', args.get('document_id'))
-        if type(id) == str and id.startswith('DLM'):
+        if isinstance(id, basestring) and id.startswith('DLM'):
             govt_id = id
             id = find_document_id_by_govt_id(id)
             instrument = get_instrument_object(
