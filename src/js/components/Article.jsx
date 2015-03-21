@@ -439,7 +439,8 @@ var ArticleContent = React.createClass({
                 var offset = self.getScrollContainer().offset().top;
                 var $el = $(find_current(self.locations));
                 var result = Utils.getLocation($el).repr;
-                var id = '#'+$el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+                var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+                console.log(result)
                 if(result){
                     Actions.articlePosition(self.props.viewer_id, self.props.page_id,
                         {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id});
