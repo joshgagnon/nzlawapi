@@ -8,7 +8,7 @@ var utils = require('../utils');
 
 module.exports = React.createClass({
     mixins: [
-      utils.stopScrollPropagation
+      {stopScrollPropagation: utils.stopScrollPropagation}
     ],
     propTypes: {
        article: React.PropTypes.object.isRequired,
@@ -59,7 +59,7 @@ module.exports = React.createClass({
     },
     componentDidUpdate: function(){
         if(this.props.position){
-            this.onPositionChange(this.props.position);  
+            this.onPositionChange(this.props.position);
         }
     },
     render: function(){

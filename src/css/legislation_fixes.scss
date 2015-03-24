@@ -45,7 +45,11 @@
     border-bottom: 1px solid #00BD00;
     cursor:pointer;
 }
-
+.legislation {
+    *[data-hook], *[data-location]{
+        overflow:auto;
+    }
+}
 /*
 .latest-version .legislation .reprint-date{
 	display:none;

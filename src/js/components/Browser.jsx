@@ -104,6 +104,9 @@ module.exports = React.createClass({
         ReactRouter.State,
         UndoMixin
     ],
+    contextTypes: {
+        router: React.PropTypes.func.isRequired
+      },
     getInitialState: function(){
         return {
             pages: Immutable.List(),
@@ -115,14 +118,14 @@ module.exports = React.createClass({
         };
     },
     componentDidMount: function(){
-        if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
-            Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 'tab-0');
+        if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
+            Actions.newPage({query: this.context.router.getParams(), title: this.getQuery.title}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
-        else if(this.getParams().doc_type){
-            Actions.newPage({page_type: this.getParams().doc_type,
-                query: {doc_type: this.getParams().doc_type,
-                id: this.getParams().id}}, 'tab-0');
+        else if(this.context.router.getCurrentParams().doc_type){
+            Actions.newPage({page_type: this.context.router.getCurrentParams().doc_type,
+                query: {doc_type: this.context.router.getCurrentParams().doc_type,
+                id: this.context.router.getCurrentParams().id}}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
         else{
