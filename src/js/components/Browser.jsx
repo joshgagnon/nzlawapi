@@ -105,7 +105,7 @@ module.exports = React.createClass({
         UndoMixin
     ],
     contextTypes: {
-        router: React.PropTypes.func.isRequired
+        //router: React.PropTypes.func.isRequired
       },
     getInitialState: function(){
         return {
@@ -118,7 +118,9 @@ module.exports = React.createClass({
         };
     },
     componentDidMount: function(){
-        if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
+        /*
+        when we update router, then use
+            if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
             Actions.newPage({query: this.context.router.getParams(), title: this.getQuery.title}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
@@ -127,6 +129,13 @@ module.exports = React.createClass({
                 query: {doc_type: this.context.router.getCurrentParams().doc_type,
                 id: this.context.router.getCurrentParams().id}}, 'tab-0');
             Actions.loadPrevious(['browser']);
+        }
+        */
+        if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
+            Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 'tab-0');
+        }
+        else if(this.getParams().doc_type){
+            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 'tab-0');
         }
         else{
             Actions.loadPrevious();
