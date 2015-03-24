@@ -376,12 +376,12 @@ var PageStore = Reflux.createStore({
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'], {fetching: true});
             request.get('/contents/'+page.get('content').get('document_id'))
                 .promise()
-                .then(function(response){ Actions.requestContents.completed(page_id, section_id, response.body); })
-                .catch(function(response){ Actions.requestContents.failed(page_id, section_id, response.body); });
+                .then(function(response){ Actions.requestContents.completed(page_id, response.body); })
+                .catch(function(response){ Actions.requestContents.failed(page_id, response.body); });
             this.update();
         }
     },
-    onRequestContentsCompleted: function(page_id, section_id, data){
+    onRequestContentsCompleted: function(page_id, data){
         var page = this.getById(page_id);
         if(page){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'],
@@ -389,7 +389,7 @@ var PageStore = Reflux.createStore({
             this.update();
         }
     },
-    onRequestContentsFailed: function(page_id, section_id, data){
+    onRequestContentsFailed: function(page_id, data){
         var page = this.getById(page_id);
         if(page){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'],

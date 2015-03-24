@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from db import get_db
-from util import CustomException, get_title, etree_to_dict, tohtml
+from util import CustomException, get_title, tohtml
 import psycopg2
 from psycopg2 import extras
 from lxml import etree
@@ -17,11 +17,10 @@ import codecs
 
 
 class Instrument(object):
-    def __init__(self, id, document, attributes, skeleton, contents, tree=None, heights={}, title=None):
+    def __init__(self, id, document, attributes, skeleton, tree=None, heights={}, title=None):
         self.id = id
         self.document = document
         self.skeleton = skeleton
-        self.contents = contents
         self.title = title or get_title(self.tree)
         self.heights = heights
         self.parts = []
@@ -208,16 +207,10 @@ def prep_instrument(result, replace, db):
     else:
         skeleton = result.get('skeleton')
         heights = result.get('heights')
-    if not result.get('contents'):
-        contents = process_contents(result.get('id'), tree if tree is not None else  etree.fromstring(document), db=db)
-    else:
-        contents = result.get('contents')
-
     return Instrument(
         id=result.get('id'),
         document=document,
         skeleton=skeleton,
-        contents=contents,
         heights=heights,
         title=result.get('title'),
         attributes=result)
@@ -295,6 +288,21 @@ def get_versions(document_id):
                     where s.id = %(id)s order by i.date_as_at desc
             """, {'id': document_id})
         return {'versions': map(lambda x: dict(x), cur.fetchall())}
+
+
+
+def get_contents(document_id):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(""" SELECT contents from documents WHERE id = %(document_id)s""",
+            {'document_id': document_id})
+        result = cur.fetchone()
+        if not result.get('contents'):
+            contents = process_contents(document_id, etree.fromstring(get_instrument_object(document_id).document), db=db)
+        else:
+            contents = result.get('contents')
+        return {'html': contents}
+
 
 
 def get_instrument_object(id=None, db=None, replace=False):

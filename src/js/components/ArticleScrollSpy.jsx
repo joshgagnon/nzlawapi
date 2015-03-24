@@ -44,6 +44,7 @@ module.exports = React.createClass({
         }
     },
     componentDidMount: function(){
+        Actions.requestContents(this.props.article.get('id'));
         if(this.props.position){
             this.onPositionChange(this.props.position);
         }
@@ -58,15 +59,18 @@ module.exports = React.createClass({
         return false;
     },
     componentDidUpdate: function(){
+        Actions.requestContents(this.props.article.get('id'));
         if(this.props.position){
             this.onPositionChange(this.props.position);
         }
     },
     render: function(){
-        console.log('render')
         return <div onClick={this.interceptLink} onWheel={this.stopScrollPropagation} >
                 <JumpTo ref="jumpTo" position={this.props.position} viewer_id={this.props.viewer_id} />
-                <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.article.getIn(['content','html_contents_page'])}}/>
+                { this.props.article.getIn(['contents', 'html']) ?
+                <div className="legislation-contents" dangerouslySetInnerHTML={{__html:this.props.article.getIn(['contents', 'html'])}}/> :
+                null }
+
             </div>
     }
 });

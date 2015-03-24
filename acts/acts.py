@@ -13,7 +13,6 @@ def instrument_skeleton_response(instrument):
     # TODO, bake in first couple of parts
     return {
         'html_content': instrument.skeleton,
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': instrument.title,
         'document_id': instrument.id,
@@ -35,7 +34,6 @@ def instrument_full(instrument):
         return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.get_tree()), encoding='UTF-8', method="html"),
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': instrument.title,
         'document_id': instrument.id,
@@ -74,7 +72,6 @@ def instrument_location(instrument, location):
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': full_location,
         'document_id': instrument.id,
@@ -96,7 +93,6 @@ def instrument_govt_location(instrument, id):
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': full_location,
         'document_id': instrument.id,

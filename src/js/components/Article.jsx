@@ -149,7 +149,6 @@ var ArticleSkeletonContent = React.createClass({
             var part = Math.max(0, key-1)+'';
             // if between hooks, get next id
             if(top > self._refs[part].offsetTop + self._refs[part].clientHeight){
-                console.log(self._refs[key+''])
                 return self._refs[key+'']
             }
             // if we haven't processesed children or there are no children
@@ -164,7 +163,6 @@ var ArticleSkeletonContent = React.createClass({
         if(self.isMounted()){
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
-            console.log($part)
             var repr = Utils.getLocation($part).repr;
             var id = $part.attr('id') || $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
 
@@ -399,7 +397,6 @@ var ArticleSkeletonContent = React.createClass({
         if(target && target.length){
             var container = this.getScrollContainer();
             container.scrollTop(container.scrollTop()+target.position().top + 10);
-            console.log(target[0])
             this.debounce_scroll();
         }
         else if(jump.pixel){
@@ -452,7 +449,6 @@ var ArticleContent = React.createClass({
                 var $el = $(find_current(self.locations));
                 var result = Utils.getLocation($el).repr;
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-                console.log(result)
                 if(result){
                     Actions.articlePosition(self.props.viewer_id, self.props.page_id,
                         {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id});

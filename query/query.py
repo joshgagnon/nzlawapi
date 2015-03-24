@@ -1,5 +1,5 @@
 from acts.acts import query_instrument
-from acts.queries import get_references, get_versions, get_section_references
+from acts.queries import get_references, get_versions, get_section_references, get_contents
 from cases.cases import query_case
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
@@ -97,6 +97,18 @@ def get_versions_route(document_id):
     status = 200
     try:
         result = get_versions(document_id)
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
+
+
+@Query.route('/contents/<int:document_id>')
+@require_auth
+def get_contents_route(document_id):
+    status = 200
+    try:
+        result = get_contents(document_id)
     except Exception, e:
         result = {'error': str(e)}
         status = 500
