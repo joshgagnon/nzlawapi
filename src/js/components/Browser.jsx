@@ -118,9 +118,7 @@ module.exports = React.createClass({
         };
     },
     componentDidMount: function(){
-        /*
-        when we update router, then use
-            if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
+        if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
             Actions.newPage({query: this.context.router.getParams(), title: this.getQuery.title}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
@@ -129,13 +127,6 @@ module.exports = React.createClass({
                 query: {doc_type: this.context.router.getCurrentParams().doc_type,
                 id: this.context.router.getCurrentParams().id}}, 'tab-0');
             Actions.loadPrevious(['browser']);
-        }
-        */
-        if(this.getParams().query === 'query' && !_.isEmpty(this.getQuery())){
-            Actions.newPage({query: this.getQuery(), title: this.getQuery.title}, 'tab-0');
-        }
-        else if(this.getParams().doc_type){
-            Actions.newPage({query: {doc_type: this.getParams().doc_type,  id: this.getParams().id}}, 'tab-0');
         }
         else{
             Actions.loadPrevious();
@@ -314,8 +305,9 @@ module.exports = React.createClass({
     },
     render: function(){
         var active = this.getActive();
-       var resultsClass = 'results-container ';
+        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
+
         if(this.state.browser.get('underlines') ){
             parentClass += ' underlines';
         }
