@@ -48,11 +48,13 @@ def process_instrument_links(tree, db=None):
         match.setAttribute('link-id', '%s' % mon.i)
         match.appendChild(doc.createTextNode(word))
         return match
+
     mon = Monitor()
     for a in tree.xpath('.//*[@href]'):
         a.attrib['link-id'] = '%d' % mon.i
         mon.cont()
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+    #tree = node_replace(tree, links, create_link, monitor=mon)
     domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree

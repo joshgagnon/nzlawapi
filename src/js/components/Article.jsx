@@ -88,7 +88,7 @@ var ArticleSkeletonContent = React.createClass({
         articleLocation
     ],
     scroll_threshold: 4000,
-    fetch_threshold: 12000,
+    fetch_threshold: 10000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
@@ -146,16 +146,17 @@ var ArticleSkeletonContent = React.createClass({
 
             var key = _.sortedIndex(self._ordered_skeleton, {height: top}, 'height');
             // get current hook
-            var part = Math.max(0, key-1)+'';
+            key = Math.min(Math.max(0, key-1), self._ordered_skeleton.length-1 );
+            var part = key+'';
+            // the current focus is a child of a hook, get it from precalculated index
             // if between hooks, get next id
-            if(top > self._refs[part].offsetTop + self._refs[part].clientHeight){
-                return self._refs[key+'']
+            if(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length){
+                part = (1+key)+'';
             }
             // if we haven't processesed children or there are no children
             if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length ){
                 return self._refs[part];
             }
-            // the current focus is a child of a hook, get it from precalculated index
             var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last) -1;
             child_key = Math.max(0, Math.min(self._skeleton_locations[part].sorted_children.length, child_key));
             return self._skeleton_locations[part].sorted_children[child_key] || self._refs[part];
@@ -265,6 +266,7 @@ var ArticleSkeletonContent = React.createClass({
                     }
                 }
                 change = change || local_change;
+                // replace with above and below threadhols
                 if($(r).isOnScreen(self.fetch_threshold)){
                     requested_parts.push(k);
                 }
@@ -282,7 +284,8 @@ var ArticleSkeletonContent = React.createClass({
     showPart: function(k, parts){
         var height_change = false;
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
-            var container_height = this.getScrollContainer()[0].scrollHeight;
+            var scroll_el = this.getScrollContainer()[0]
+            var container_height = scroll_el.scrollHeight;
             var old_height = this._refs[k].offsetHeight;
            this._refs[k].style.height = 'auto';
            this._refs[k].classList.remove('csspinner');
@@ -290,9 +293,10 @@ var ArticleSkeletonContent = React.createClass({
             this.measured_heights[k] =  this._refs[k].offsetHeight;
             if(old_height !== this.measured_heights[k]){
                 height_change = true;
-                var scroll = this.getScrollContainer()[0].scrollTop;
-                if(scroll + this.getScrollContainer()[0].clientHeight/2 > this._refs[k].offsetTop + this.measured_heights[k]){
-                   this.getScrollContainer().scrollTop(scroll - (container_height - this.getScrollContainer()[0].scrollHeight)) ;
+                var scroll = scroll_el.scrollTop;
+
+                if(scroll + scroll_el.clientHeight > this._refs[k].offsetTop + this.measured_heights[k]){
+                   this.getScrollContainer().scrollTop(scroll - (container_height - scroll_el.scrollHeight)) ;
                 }
             }
             this._refs[k].setAttribute('data-visible', true);
@@ -396,7 +400,7 @@ var ArticleSkeletonContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.scrollTop(container.scrollTop()+target.position().top + 10);
+            container.scrollTop(container.scrollTop()+target.position().top + 4);
             this.debounce_scroll();
         }
         else if(jump.pixel){
@@ -419,8 +423,6 @@ var ArticleContent = React.createClass({
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
         articleLocation
     ],
-    scroll_threshold: 4000,
-    fetch_threshold: 12000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
@@ -516,7 +518,7 @@ var ArticleContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll || this.isSkeleton() ? 0: 300);
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
         }
         else{
             // GO TO FULL

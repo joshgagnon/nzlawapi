@@ -48,8 +48,12 @@
     cursor:pointer;
 }
 .legislation {
-    *[data-hook], *[data-location]{
+    // fixed margin collapse, for height calculations
+    *[data-location]{
         overflow:auto;
+    }
+    .prov *{
+        overflow:visible;
     }
 }
 /*
