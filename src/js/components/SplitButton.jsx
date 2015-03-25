@@ -1,12 +1,10 @@
 var React = require('react');
-var joinClasses = require('react-bootstrap/lib/utils/joinClasses');
-var classSet = require('react-bootstrap/lib/utils/classSet');
 var BootstrapMixin = require('react-bootstrap/lib/BootstrapMixin');
 var DropdownStateMixin = require('react-bootstrap/lib/DropdownStateMixin');
 var Button = require('react-bootstrap/lib/Button');
 var ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
 var DropdownMenu = require('react-bootstrap/lib/DropdownMenu');
-
+var classSet = require('classnames');
 
 var InputGroup = React.createClass({displayName: "InputButtonGroup",
 
@@ -25,7 +23,7 @@ var InputGroup = React.createClass({displayName: "InputButtonGroup",
     return (
       React.createElement("div", React.__spread({},
         this.props,
-        {className: joinClasses(this.props.className, classSet(classes))}),
+        {className: classSet(this.props.className, classSet(classes))}),
         this.props.children
       )
     );
@@ -74,7 +72,7 @@ var SplitButton = React.createClass({displayName: "SplitButton",
       React.createElement(Button, React.__spread({},
         this.props,
         {ref: "dropdownButton",
-        className: joinClasses(this.props.className, 'dropdown-toggle'),
+        className: classSet(this.props.className, 'dropdown-toggle'),
         onClick: this.handleDropdownClick,
         title: null,
         href: null,

@@ -23,8 +23,10 @@
     display:none;
 }
 .notes .results-container .history-note{
-    display: initial;
+    display: inherit;
+
 }
+
 .underlines .results-container .legislation a{
     text-decoration: underline;
     color:#337ab7;
@@ -45,7 +47,15 @@
     border-bottom: 1px solid #00BD00;
     cursor:pointer;
 }
-
+.legislation {
+    // fixed margin collapse, for height calculations
+    *[data-location], *[data-hook]{
+        overflow:auto;
+    }
+    .prov *{
+        overflow:visible;
+    }
+}
 /*
 .latest-version .legislation .reprint-date{
 	display:none;

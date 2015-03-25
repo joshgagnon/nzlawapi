@@ -52,7 +52,7 @@
                         <label auto.number="no" denominator="no" />
                         <para xml:lang="en-NZ">
                             <text>
-                                I just got accounting period all over my shirt
+                                I <strong>just</strong> got accounting period all over my shirt
                             </text>
                         </para>
                     </subprov>
@@ -84,7 +84,7 @@
                         </subprov>
                     </prov.body>
                 </prov>
-                <prov id="DLM320433" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                <prov id="DLM320439" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
                     <label auto.number="no" denominator="yes">79</label>
                     <heading xml:lang="en-NZ">Disclosure document</heading>
                     <prov.body>
@@ -140,7 +140,7 @@
                     </subprov>
                 </prov.body>
             </prov>
-            <prov id="DLM320433" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+            <prov id="DLM320436" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
                 <label auto.number="no" denominator="yes">79</label>
                 <heading xml:lang="en-NZ">Disclosure document</heading>
                 <prov.body>

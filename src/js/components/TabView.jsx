@@ -13,6 +13,22 @@ var SectionSummary = require('./SectionSummary.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 
 
+var LoadUnknown = React.createClass({
+    request: function(){
+        Actions.requestPage(this.props.page.get('id'));
+    },
+    componentDidMount: function(){
+        this.request();
+    },
+    componentDidUpdate: function(){
+        this.request();
+    },
+    render: function(){
+        //TODO change class
+        return <div className="search-result"><div className="csspinner" /></div>
+    }
+})
+
 module.exports = React.createClass({
     handleTab: function(active){
         Actions.showPage(this.props.viewer_id, active);
@@ -50,8 +66,7 @@ module.exports = React.createClass({
                 result = <Case {...props} />
                 break;
             default:
-                // TODO error
-                result = <div/>;
+                result = <LoadUnknown {...props} />;
         }
         return result;
     },

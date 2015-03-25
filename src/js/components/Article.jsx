@@ -88,7 +88,7 @@ var ArticleSkeletonContent = React.createClass({
         articleLocation
     ],
     scroll_threshold: 4000,
-    fetch_threshold: 12000,
+    fetch_threshold: 10000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
@@ -113,11 +113,15 @@ var ArticleSkeletonContent = React.createClass({
             this.popRefs();
             this.resizeSkeleton();
             if(this.props.view.getIn(['positions', this.props.page_id])){
-                this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS())
+                this.setupSkeletonScroll();
+                this.updateSkeletonScroll();
+                this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS());
             }
-            this.setSubVisibility();
-            this.setupSkeletonScroll();
-            this.updateSkeletonScroll();
+            else{
+                this.setupSkeletonScroll();
+                this.updateSkeletonScroll();
+                this.setSubVisibility();
+            }
 
         }
     },
@@ -131,7 +135,7 @@ var ArticleSkeletonContent = React.createClass({
     },
     setupSkeletonScroll: function(){
         var $parent = this.getScrollContainer();
-        this.debounce_scroll = _.debounce(this.updateSkeletonScroll, 0);
+        this.debounce_scroll = _.debounce(this.updateSkeletonScroll, 10);
         $parent.on('scroll', this.debounce_scroll);
         this.debounce_visibility = _.debounce(this.setSubVisibility, 300);
         $parent.on('scroll',  this.debounce_visibility);
@@ -139,26 +143,33 @@ var ArticleSkeletonContent = React.createClass({
     updateSkeletonScroll: function(){
         var self = this;
         var find_current_part = function(top){
-            var ordered_skeleton = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
-                .map(function(p){
-                    return {value: p, height: self._skeleton_locations[p].root}
-                });
-            var key = _.sortedIndex(ordered_skeleton, {height: top}, 'height');
-            var part = Math.max(0, key-1)+'';
+
+            var key = _.sortedIndex(self._ordered_skeleton, {height: top}, 'height');
+            // get current hook
+            key = Math.min(Math.max(0, key-1), self._ordered_skeleton.length-1 );
+            var part = key+'';
+            // the current focus is a child of a hook, get it from precalculated index
+            // if between hooks, get next id
+            if(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length){
+                part = (1+key)+'';
+            }
+            // if we haven't processesed children or there are no children
             if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length ){
                 return self._refs[part];
             }
-            var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last);
-            return self._skeleton_locations[part].sorted_children[child_key];
+            var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last) -1;
+            child_key = Math.max(0, Math.min(self._skeleton_locations[part].sorted_children.length, child_key));
+            return self._skeleton_locations[part].sorted_children[child_key] || self._refs[part];
         };
         if(self.isMounted()){
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
             var repr = Utils.getLocation($part).repr;
-            var id = $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+            var id = $part.attr('id') || $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+
             if(repr){
                 Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                    {pixel: top, repr: repr, id: id});
+                    {pixel: top, repr: repr, id: id ? '#'+id : id});
             }
         }
     },
@@ -183,10 +194,8 @@ var ArticleSkeletonContent = React.createClass({
             return;
         }
         _.each(self._refs, function(v, k){
-            if(self.props.content.getIn(['parts', k])){
-                // TODO, investigate
-                //self.measured_heights[k] = v.getDOMNode().clientHeight;
-
+            if(self.props.content.getIn(['parts', k]) && v.innerHTML){
+                self.measured_heights[k] = v.clientHeight;
             }
         });
         var width = this.getDOMNode().clientWidth;
@@ -213,12 +222,22 @@ var ArticleSkeletonContent = React.createClass({
             this._skeleton_locations[key] = this._skeleton_locations[key] || {};
             this._skeleton_locations[key].root = this._refs[key].offsetTop;
         }
+        this._ordered_skeleton = _.keys(this._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
+                .map(function(p){
+                    return {value: p, height: self._skeleton_locations[p].root}
+                });
     },
     recalculateOffsets: function(index){
+        var self = this;
+        console.log(index)
         for(var i=index;i < this._part_count.length; i++){
             var key = i+''
             this._skeleton_locations[key].root = this._refs[key].offsetTop;
         }
+        this._ordered_skeleton = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
+                .map(function(p){
+                    return {value: p, height: self._skeleton_locations[p].root}
+                });
         this.updateSkeletonScroll()
     },
     setSubVisibility: function(){
@@ -230,7 +249,6 @@ var ArticleSkeletonContent = React.createClass({
             var requested_parts = [];
              var resize_index =  this._part_count;
             _.each(this._refs, function(r, k){
-                r
                 var show = $(r).isOnScreen(self.scroll_threshold);
                 var local_change = false;
                 if(this._visible[k] !== show){
@@ -248,10 +266,12 @@ var ArticleSkeletonContent = React.createClass({
                     }
                 }
                 change = change || local_change;
+                // replace with above and below threadhols
                 if($(r).isOnScreen(self.fetch_threshold)){
                     requested_parts.push(k);
                 }
             }, this);
+
             if(resize_index < this._part_count){
                 this.recalculateOffsets(resize_index);
             }
@@ -265,16 +285,23 @@ var ArticleSkeletonContent = React.createClass({
     showPart: function(k, parts){
         var height_change = false;
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
-            var old_height = this._refs[k].clientHeight
-            this._refs[k].style.height = 'auto';
+            var scroll_el = this.getScrollContainer()[0]
+            var container_height = scroll_el.scrollHeight;
+            var old_height = this._refs[k].offsetHeight;
+           this._refs[k].style.height = 'auto';
+           this._refs[k].classList.remove('csspinner');
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
-            this.measured_heights[k] =  this._refs[k].clientHeight;
+            this.measured_heights[k] =  this._refs[k].offsetHeight;
             if(old_height !== this.measured_heights[k]){
                 height_change = true;
+                var scroll = scroll_el.scrollTop;
+
+                if(scroll + scroll_el.clientHeight > this._refs[k].offsetTop + this.measured_heights[k]){
+                   this.getScrollContainer().scrollTop(scroll - (container_height - scroll_el.scrollHeight)) ;
+                }
             }
             this._refs[k].setAttribute('data-visible', true);
-            this._refs[k].style.height = 'auto';
-            this._refs[k].classList.remove('csspinner');
+
 
             var top = this._refs[k].offsetTop;
             var pairs = _.map(this._refs[k].querySelectorAll('[data-location]'),
@@ -289,7 +316,6 @@ var ArticleSkeletonContent = React.createClass({
                 sorted_children: pairs
             };
             this.handleDelayedJump(k);
-            // check for pending jumpTo for this part
         }
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
@@ -298,6 +324,7 @@ var ArticleSkeletonContent = React.createClass({
     },
     hidePart: function(k){
         this._refs[k].innerHTML = '';
+        // Hiding should not change document height by mroe than a rounding error
         this._refs[k].style.height = (this.measured_heights[k] || this.calculated_heights[k]) + 'px';
         this._refs[k].classList.remove('csspinner');
     },
@@ -316,7 +343,6 @@ var ArticleSkeletonContent = React.createClass({
         if(resize_index < this._part_count){
             this.recalculateOffsets(resize_index);
         }
-        this.updateSkeletonScroll();
     },
     shouldComponentUpdate: function(newProps, newState){
         // total hack job, perhaps move to direct pagestore listener
@@ -357,8 +383,8 @@ var ArticleSkeletonContent = React.createClass({
         if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
             if(!target.length){
-                target = $(this._refs[this._child_ids[jump.id]]);
                 this._delayed_jump = {ref: this._child_ids[jump.id], jump:jump};
+                target = $(this._refs[this._child_ids[jump.id]]);
             }
         }
         else if(jump.location && jump.location.length){
@@ -375,7 +401,8 @@ var ArticleSkeletonContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, 0);
+            container.scrollTop(container.scrollTop()+target.position().top + 4);
+            this.debounce_scroll();
         }
         else if(jump.pixel){
             this.getScrollContainer().scrollTop(jump.pixel);
@@ -397,8 +424,6 @@ var ArticleContent = React.createClass({
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
         articleLocation
     ],
-    scroll_threshold: 4000,
-    fetch_threshold: 12000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
@@ -414,13 +439,12 @@ var ArticleContent = React.createClass({
         return $(this.getDOMNode()).parents('.tab-content, .results-container');
     },
     setupScroll: function(){
-        this.offset = 100;
         var self = this;
         this.refresh();
         var find_current = function(store){
             var top = self.getScrollContainer().scrollTop();
-            var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top)
-            return store[Math.max(Math.min(0, i), store.length -1)].target;
+            var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top);
+            return store[Math.min(Math.max(0, i), store.length -1)].target;
         };
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
@@ -430,7 +454,7 @@ var ArticleContent = React.createClass({
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
                     Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                        {pixel: self.getScrollContainer().scrollTop() + self.offset, repr: result, id: id});
+                        {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id});
                 }
             }
         }, 0);
@@ -495,7 +519,7 @@ var ArticleContent = React.createClass({
         }
         if(target && target.length){
             var container = this.getScrollContainer();
-            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll || this.isSkeleton() ? 0: 300);
+            container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
         }
         else{
             // GO TO FULL

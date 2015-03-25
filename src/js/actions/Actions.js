@@ -58,6 +58,7 @@ module.exports = Reflux.createActions({
 	'toggleSplitMode': {},
 	'togglePrintMode': {},
 	'toggleSidebar': {},
+	'toggleAdvanced': {},
 	'activatePrintMode': {},
 
 	'setState': {},

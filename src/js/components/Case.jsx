@@ -29,7 +29,9 @@ module.exports = React.createClass({
     render: function(){
         return <div className="case-container">
                 { this.warningsAndErrors() }
-                <div className="case-scaler" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
+                {this.props.page.getIn(['content','html_content']) ?
+                    <div className="case-scaler" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} /> :
+                    null }
             </div>
     }
  });

@@ -200,7 +200,7 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                 lines = filter(lambda x: x, lines)
                 new_nodes = map(lambda x: domxml.createTextNode(x) if isinstance(x, basestring) else x, lines)
 
-                if len(new_nodes) > 0:
+                if count and len(new_nodes) > 0:
                     [parent.insertBefore(n, node) for n in new_nodes]
                     parent.removeChild(node)
             else:
@@ -211,6 +211,70 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
 
     process_node(domxml)
     return domxml
+
+
+def node_replace_etree(tree, store, create_wrapper, lower=False, monitor=None, ignore_fields=None):
+    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading', 'def-term', 'catalex-def']
+
+    def process_node(parent):
+        if store.use_life_cycle and parent.attrib.get('id'):
+            store.enable_tag(parent.attrib.get('id'))
+
+        for node in list(parent):  # better clone, as we will modify
+            if monitor and not monitor.cont():
+                return
+            if node.tag in ignore_fields:
+                continue
+            process_node(node)
+            for mode in ['text', 'tail']:
+                reg = store.get_regex()
+                if not getattr(node, mode):
+                    continue
+                lines = [getattr(node, mode)]
+                i = 0
+                count = 0
+                while i < len(lines):
+                    line = lines[i]
+                    while isinstance(line, basestring):
+                        match = reg.search(line.lower() if lower else line)
+                        if not match or not match.group(2).strip():
+                            break
+                        if monitor:
+                            monitor.match()
+                        try:
+                            result = store.get_active(match.group(2))
+                            span = (match.span(2)[0], match.span(3)[1])
+                            lines[i:i + 1] = [line[:span[0]], create_wrapper(None, line[span[0]:span[1]], result, count), line[span[1]:]]
+                            i += 2
+                            count += 1
+                            line = line[span[1]:]
+                        except MatchError:
+                            break
+                    i += 1
+
+                new_nodes = map(lambda x: x if isinstance(x, basestring) else x, lines)
+
+                if count and len(new_nodes) > 0:
+                    prev = node
+                    setattr(prev, mode, None)
+                    child_idx = 0
+                    for new_node in new_nodes:
+                        if isinstance(new_node, basestring):
+                            if prev == node:
+                                setattr(prev, mode, new_node)
+                            else:
+                                prev.tail = new_node
+                        else:
+                            node.insert(child_idx, new_node)
+                            prev = new_node
+                            child_idx += 1
+
+        if store.use_life_cycle and parent.attrib.get('id'):
+            store.expire_tag(parent.attrib.get('id'))
+
+    process_node(tree.getroot() if not isinstance(tree, etree._Element) else tree)
+    return tree
+
 
 def etree_to_dict(t, end=None):
     d = {'children' : map(lambda x: etree_to_dict(x, end),

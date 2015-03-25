@@ -1,6 +1,6 @@
 var React = require('react/addons');
 var BootstrapMixin = require('react-bootstrap/lib/BootstrapMixin');
-var cloneWithProps = require('react-bootstrap/lib/utils/cloneWithProps');
+var cloneElement = React.cloneElement;
 
 var ValidComponentChildren = require('react-bootstrap/lib/utils/ValidComponentChildren');
 var Nav = require('react-bootstrap/lib/Nav');
@@ -67,7 +67,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     }
   },
   componentDidUpdate: function(prevProps){
-    if(prevProps.children.length !== prevProps.children.length || this.width !== this.refs.tabs.getDOMNode().clientWidth){
+    if(this.props.children.length !== prevProps.children.length || this.width !== this.refs.tabs.getDOMNode().clientWidth){
       this.setTabVisibility();
     }
   },
@@ -82,7 +82,9 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   setTabVisibility: function(){
     if(this.isMounted()){
         this.width = this.refs.tabs.getDOMNode().clientWidth;
+
         var visible;
+
         if(this.width < this.props.min_width){
           visible = 0;
         }
@@ -182,7 +184,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
 
   renderPane: function (child, index) {
     var activeKey = this.getActiveKey();
-    return cloneWithProps(
+    return cloneElement(
         child,
         {
           active: (child.props.eventKey === activeKey &&

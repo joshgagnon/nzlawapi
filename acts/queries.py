@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from db import get_db
-from util import CustomException, get_title, etree_to_dict, tohtml
+from util import CustomException, get_title, tohtml
 import psycopg2
 from psycopg2 import extras
 from lxml import etree
@@ -17,20 +17,20 @@ import codecs
 
 
 class Instrument(object):
-    def __init__(self, id, document, attributes, skeleton, contents, heights={}, title=None, length=0):
+    def __init__(self, id, document, attributes, skeleton, tree=None, heights={}, title=None):
         self.id = id
         self.document = document
         self.skeleton = skeleton
-        self.contents = contents
         self.title = title or get_title(self.tree)
         self.heights = heights
         self.parts = []
-        self.length = length
+        self.tree = tree
+        self.length = len(self.document)
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
     def get_tree(self):
-        return etree.fromstring(self.document)
+        return self.tree or etree.fromstring(self.document)
 
 
 def format_dates(tree):
@@ -55,7 +55,6 @@ def measure_heights(html):
     with codecs.open(html_file, 'w', encoding='utf8') as out_file, codecs.open(css_path, encoding='utf8') as css:
         out_file.write(render_template('instrument_parts.html', content=html, css=css.read()))
     p = Popen(['phantomjs', js, html_file, result_file], stdout=PIPE, stderr=PIPE)
-    print html_file
     out, err = p.communicate()
     with open(result_file) as in_file:
         results = json.loads(in_file.read())
@@ -111,7 +110,6 @@ def process_skeleton(id, tree, db=None):
             results += wrap('div', to_join)
         node[:] = results
         return node
-
     depth(html.getroot())
     """ super expensive """
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
@@ -174,9 +172,9 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        args_str = ','.join(cur.mogrify("(%s,%s,%s)", (row.get('id'), x[0], json.dumps(x[1]))) for x in definitions.render().items())
+        args_str = ','.join(cur.mogrify("(%s,'%s',%s,%s)", (row.get('id'), x[0], x[1]['word'], json.dumps(x[1]['html']))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
-        cur.execute("INSERT INTO definitions (document_id, key, data) VALUES " + args_str)
+        cur.execute("INSERT INTO definitions (document_id, word, key, data) VALUES " + args_str)
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
@@ -197,28 +195,23 @@ def fetch_parts(doc_id, db=None, parts=None):
 def prep_instrument(result, replace, db):
     if not result.get('id'):
         raise CustomException('Instrument not found')
+    tree = None
     if replace or not result.get('processed_document'):
-        document = etree.fromstring(process_instrument(row=result, db=db, latest=result.get('latest')))
+        tree = process_instrument(row=result, db=db, latest=result.get('latest'))
+        document = etree.tostring(tree, encoding='UTF-8', method="html")
     else:
         document = result.get('processed_document')
 
     if not result.get('skeleton'):
-        skeleton, heights = process_skeleton(result.get('id'), etree.fromstring(document), db=db)
+        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document), db=db)
     else:
         skeleton = result.get('skeleton')
         heights = result.get('heights')
-    if not result.get('contents'):
-        contents = process_contents(result.get('id'), etree.fromstring(document), db=db)
-    else:
-        contents = result.get('contents')
-
     return Instrument(
         id=result.get('id'),
         document=document,
         skeleton=skeleton,
-        contents=contents,
         heights=heights,
-        length=len(result.get('document')),
         title=result.get('title'),
         attributes=result)
 
@@ -295,6 +288,21 @@ def get_versions(document_id):
                     where s.id = %(id)s order by i.date_as_at desc
             """, {'id': document_id})
         return {'versions': map(lambda x: dict(x), cur.fetchall())}
+
+
+
+def get_contents(document_id):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(""" SELECT contents from documents WHERE id = %(document_id)s""",
+            {'document_id': document_id})
+        result = cur.fetchone()
+        if not result.get('contents'):
+            contents = process_contents(document_id, etree.fromstring(get_instrument_object(document_id).document), db=db)
+        else:
+            contents = result.get('contents')
+        return {'html': contents}
+
 
 
 def get_instrument_object(id=None, db=None, replace=False):

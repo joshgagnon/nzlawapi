@@ -1,16 +1,25 @@
 var React = require('react');
 var Actions = require('../actions/Actions');
+var constants = require('../constants');
+
 
 module.exports = React.createClass({
     base_url: 'http://www.legislation.govt.nz/subscribe/',
     toggleAdvanced: function(){
-        if(this.props.page && this.props.page.get('page_type') === 'search' && !this.props.page.get('content')){
-            //do nothing
+        // TODO, belongs in store
+        var active = this.props.page;
+        if(active && active.get('page_type') === constants.PAGE_TYPES.SEARCH){
+            if(active.get('content')){
+                Actions.toggleAdvanced('tab-0', active.get('id'));
+            }
+            else{
+                Actions.removePage(active.get('id'));
+            }
         }
         else{
              Actions.newAdvancedPage(
                 {title: 'Advanced Search',
-                page_type: 'search'
+                page_type: constants.PAGE_TYPES.SEARCH
             }, this.props.viewer_id)
         }
     },

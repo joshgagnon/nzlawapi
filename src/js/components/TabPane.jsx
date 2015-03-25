@@ -1,6 +1,5 @@
 var React = require('react/addons');
-var joinClasses = require('react-bootstrap/lib/utils/joinClasses');
-var classSet = require('react-bootstrap/lib/utils/classSet');
+var classSet = require('classnames');
 var TransitionEvents = require('react-bootstrap/lib/utils/TransitionEvents');
 
 var TabPane = React.createClass({displayName: "TabPane",
@@ -70,7 +69,7 @@ var TabPane = React.createClass({displayName: "TabPane",
           'in': this.props.active && !this.state.animateIn
         };
         return (
-            <div {...this.props} className={joinClasses(this.props.className, classSet(classes))}>
+            <div {...this.props} className={ classSet(this.props.className, classes)}>
                 { this.props.active ? this.props.children : null}
             </div>
         );

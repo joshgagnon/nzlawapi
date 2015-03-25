@@ -113,7 +113,7 @@ class Definitions(object):
         return self.regex
 
     def render(self):
-        return {v.id: v.render() for v in self.items()}
+        return {v.id: {'htm': v.render(), 'word': v.full_word} for v in self.items()}
 
     def apply_definitions(self, tree):
         dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}

@@ -57,16 +57,12 @@ def init_database(filename):
 
     return conn
 
-
+#@unittest.skip("skipping")
 class TestQueries(unittest.TestCase):
 
     def setUp(self):
         self.parser = etree.XMLParser(remove_blank_text=True)
         self.xml = etree.parse('tests/companiesact.xml', parser=self.parser)
-
-    def tearDown(self):
-        pass
-        # self.conn.close()
 
     def test_path_query_counts(self):
         # test path queries return correct number of leaf nodes
@@ -132,6 +128,7 @@ def print_error(msg):
     print msg
 
 
+#@unittest.skip("skipping")
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -193,6 +190,7 @@ class AutocompleteTest(unittest.TestCase):
 
 # TODO, assumes data in db, but in a hurry
 # TODO, replace companies act with much much smaller act, everywhere
+#@unittest.skip("skipping")
 class InstrumentTest(unittest.TestCase):
 
     def setUp(self):

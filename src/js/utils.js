@@ -44,15 +44,24 @@ module.exports = {
         return '/query?' + $.param(query);
     },
     getLocation: function($el){
+
         var repr = ''
-        var locs = [];
-        if(!$el.attr('data-location-no-path')){
-            locs = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
-                return $(this).attr('data-location');
-            }).toArray().reverse();
+        function traverse($el){
+            var locs = [];
+            if(!$el.attr('data-location-no-path')){
+                locs = $el.parents('[data-location]').not('[data-location-no-path]').map(function(){
+                    return $(this).attr('data-location');
+                }).toArray().reverse();
+                if($el.attr('data-location')){
+                    locs.push($el.attr('data-location'));
+                }
+            }
+            return  _.filter(locs);
         }
-        locs.push($el.attr('data-location')||'');
-        locs = _.filter(locs);
+        var locs = traverse($el);
+        if(!locs.length){
+            locs = traverse($el.parent('[id]').find('[data-location]').not('[data-location-no-path]').first())
+        }
         repr = locs.join('')
         return {repr: repr, locs: locs};
     },

@@ -31,7 +31,7 @@ gulp.task('js-prod', function() {
    {debug: false,
     entries: ['./src/js/app.js'],
     transform: [reactify],
-    cache: {}, packageCache: {}, fullPaths: false})
+    cache: {}, packageCache: {}, fullPaths: false, dedupe: true, sort: true})
     .bundle()
     .pipe(source('app.js'))
     .pipe(streamify(uglify()))

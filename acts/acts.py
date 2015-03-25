@@ -13,7 +13,6 @@ def instrument_skeleton_response(instrument):
     # TODO, bake in first couple of parts
     return {
         'html_content': instrument.skeleton,
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': instrument.title,
         'document_id': instrument.id,
@@ -35,7 +34,6 @@ def instrument_full(instrument):
         return instrument_skeleton_response(instrument)
     return {
         'html_content': etree.tostring(tohtml(instrument.get_tree()), encoding='UTF-8', method="html"),
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
         'full_title': instrument.title,
         'document_id': instrument.id,
@@ -70,13 +68,12 @@ def instrument_preview(instrument):
 
 def instrument_location(instrument, location):
     tree = find_node_by_location(instrument.get_tree(), location)
-    location = generate_path_string(tree[0])[2]
+    full_location, _, location = generate_path_string(tree[0])
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
-        'full_title': location,
+        'full_title': full_location,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -92,13 +89,12 @@ def instrument_location(instrument, location):
 
 def instrument_govt_location(instrument, id):
     tree = find_node_by_govt_id(instrument.get_tree(), id)
-    location = generate_path_string(tree[0])[2]
+    full_location, _, location = generate_path_string(tree[0])
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
-        'html_contents_page': instrument.contents,
         'title': instrument.title,
-        'full_title': location,
+        'full_title': full_location,
         'document_id': instrument.id,
         'doc_type': 'instrument',
         'attributes': instrument.attributes,
@@ -123,7 +119,7 @@ def query_instrument(args):
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
         id = args.get('id', args.get('document_id'))
-        if type(id) == str and id.startswith('DLM'):
+        if isinstance(id, basestring) and id.startswith('DLM'):
             govt_id = id
             id = find_document_id_by_govt_id(id)
             instrument = get_instrument_object(
