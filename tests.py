@@ -18,18 +18,12 @@ from query.query import *
 
 def init_database(filename):
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
-
     # Drop and recreate test database ready for each TestCase to enter data
     conn = psycopg2.connect(database='postgres', user=config.DB_USER, password=config.DB_PW)
-    conn.autocommit = True
+    conn.set_isolation_level(0)
+
     with conn.cursor() as cur:
-        try:
-            cur.execute('DROP DATABASE ' + config.DB + ';')
-        except psycopg2.ProgrammingError, e:
-            if str(e) == 'database "' + config.DB + '" does not exist\n':
-                print 'Test db does not yet exist, creating ' + config.DB
-            else:
-                raise e
+        cur.execute('DROP DATABASE IF EXISTS ' + config.DB + ';')
         cur.execute('CREATE DATABASE ' + config.DB + ';')
     conn.close()
 
@@ -38,13 +32,9 @@ def init_database(filename):
     with open('tests/schema.sql') as f, conn.cursor() as cur:
         cur.execute(f.read())
     conn.commit()
-    conn.close()
-
-    conn = connect_db_config(config)
 
     with open(os.path.join('tests/data', filename)) as f, conn.cursor() as cur:
         cur.execute(f.read())
-        cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
     conn.commit()
 
     # Intercept stdout during migrations
