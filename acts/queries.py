@@ -159,7 +159,9 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
         tree.attrib['old-version'] = 'true'
     if not definitions:
         if row.get('title') != 'Interpretation Act 1999':
-            _, definitions = populate_definitions(get_act_exact('Interpretation Act 1999', db=db))
+            interpretation = get_act_exact('Interpretation Act 1999', db=db)
+
+            _, definitions = populate_definitions(interpretation)
         else:
             definitions = Definitions()
     format_dates(tree)

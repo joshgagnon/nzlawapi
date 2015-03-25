@@ -150,13 +150,12 @@ def infer_life_time(node):
         if text.startswith('in the formula'):
             return get_id(parent.iterancestors('prov').next())
         if 'in subsection' in text or 'of subsection' in text:
-            #prov on purpose
+            # prov on purpose
             return get_id(parent.iterancestors('prov').next())
         if 'this section' in text:
             return get_id(parent.iterancestors('prov').next())
         if 'in schedule' in text or 'in this schedule':
             return get_id(parent.iterancestors('schedule').next())
-
         if 'in this subpart' in text:
             return get_id(parent.iterancestors('subpart').next())
         if 'in this part' in text:

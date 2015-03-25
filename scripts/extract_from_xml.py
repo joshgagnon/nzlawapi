@@ -40,10 +40,10 @@ def process(type, db, config):
                         title = etree.tostring(tree.xpath('.//billref|.//title')[0], method="text", encoding="UTF-8")
                         #TODO
                         title = title.replace('\n', '').strip()
-                        query = """INSERT INTO instruments (id, govt_id, version, title, path, number, date_as_at, type,
+                        query = """INSERT INTO instruments (id, govt_id, version, title, path, number, date_as_at,date_assent, type,
                                 date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed, in_amend,
                                 pco_suffix, raised_by, official, subtype, terminated, stage, date_signed, imperial, instructing_office, attributes)
-                            VALUES (%(id)s, %(govt_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_as_at)s, %(type)s,
+                            VALUES (%(id)s, %(govt_id)s, %(version)s, %(title)s, %(path)s, %(number)s, %(date_as_at)s,%(date_assent)s, %(type)s,
                                 %(date_first_valid)s, %(date_gazetted)s, %(date_terminated)s, %(date_imprint)s,
                                 %(year)s, %(repealed)s, %(in_amend)s, %(pco_suffix)s, %(raised_by)s, %(official)s, %(subtype)s,
                                 %(terminated)s, %(stage)s, %(date_signed)s, %(imperial)s, %(instructing_office)s, %(attr)s); """
@@ -66,6 +66,7 @@ def process(type, db, config):
                             'date_terminated': safe_date(attrib.get('date.terminated')),
                             'date_imprint': safe_date(attrib.get('date.imprint')),
                             'date_as_at': safe_date(attrib.get('date.as.at')),
+                            'date_assent': safe_date(attrib.get('date.assent')),
                             'year': int(attrib.get('year')),
                             'repealed': attrib.get('terminated') == "repealed",
                             'in_amend': attrib.get('in.amend') != 'false',
