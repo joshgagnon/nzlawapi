@@ -49,7 +49,7 @@
 }
 .legislation {
     // fixed margin collapse, for height calculations
-    *[data-location]{
+    *[data-location], *[data-hook]{
         overflow:auto;
     }
     .prov *{

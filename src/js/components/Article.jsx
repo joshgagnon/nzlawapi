@@ -229,6 +229,7 @@ var ArticleSkeletonContent = React.createClass({
     },
     recalculateOffsets: function(index){
         var self = this;
+        console.log(index)
         for(var i=index;i < this._part_count.length; i++){
             var key = i+''
             this._skeleton_locations[key].root = this._refs[key].offsetTop;
@@ -248,7 +249,6 @@ var ArticleSkeletonContent = React.createClass({
             var requested_parts = [];
              var resize_index =  this._part_count;
             _.each(this._refs, function(r, k){
-                r
                 var show = $(r).isOnScreen(self.scroll_threshold);
                 var local_change = false;
                 if(this._visible[k] !== show){
@@ -271,6 +271,7 @@ var ArticleSkeletonContent = React.createClass({
                     requested_parts.push(k);
                 }
             }, this);
+
             if(resize_index < this._part_count){
                 this.recalculateOffsets(resize_index);
             }
@@ -315,7 +316,6 @@ var ArticleSkeletonContent = React.createClass({
                 sorted_children: pairs
             };
             this.handleDelayedJump(k);
-            // check for pending jumpTo for this part
         }
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
@@ -324,6 +324,7 @@ var ArticleSkeletonContent = React.createClass({
     },
     hidePart: function(k){
         this._refs[k].innerHTML = '';
+        // Hiding should not change document height by mroe than a rounding error
         this._refs[k].style.height = (this.measured_heights[k] || this.calculated_heights[k]) + 'px';
         this._refs[k].classList.remove('csspinner');
     },
