@@ -229,7 +229,6 @@ var ArticleSkeletonContent = React.createClass({
     },
     recalculateOffsets: function(index){
         var self = this;
-        console.log(index)
         for(var i=index;i < this._part_count.length; i++){
             var key = i+''
             this._skeleton_locations[key].root = this._refs[key].offsetTop;

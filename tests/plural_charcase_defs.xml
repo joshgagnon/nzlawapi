@@ -1,0 +1,132 @@
+<act id="DLM319569" instructing.office="Economic Development" irdnumbering="no" xml:lang="en-NZ" year.imprint="2014" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" date.first.valid="2007-09-18" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" sonz="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="" prospective.consolidation.base.version="">
+
+    <cover><title>Test</title></cover>
+    <body id="DLM319573" prov-type="section" xml:lang="en-NZ">
+        <prov id="DLM319574" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+            <label auto.number="no" denominator="yes">1</label>
+            <heading xml:lang="en-NZ">Short Title and commencement</heading>
+            <prov.body>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">1</label>
+                    <para xml:lang="en-NZ">
+                        <text>This Act may be cited as the Companies Act 1993.</text>
+                    </para>
+                </subprov>
+                <subprov skeleton="no" xml:lang="en-NZ">
+                    <label auto.number="no" denominator="yes">2</label>
+                    <para xml:lang="en-NZ">
+                        <text>This Act shall come into force on 1 July 1994.</text>
+                    </para>
+                </subprov>
+            </prov.body>
+        </prov>
+
+
+
+        <part id="DLM319575" irdnumbering="no" toc="yes" xml:lang="en-NZ" date.first.valid="2007-09-18" sonz="" act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.terminated="nulldate" hard.copy.reprint="nulldate" stage="reprint" year="1993" description="" terminated="" prospective.consolidation="F" prospective.consolidation.based.on="">
+            <label auto.number="no" denominator="yes">1</label>
+            <heading xml:lang="en-NZ">Preliminary</heading>
+            <prov id="DLM319576" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                <label auto.number="no" denominator="yes">2</label>
+                <heading xml:lang="en-NZ">Interpretation</heading>
+                <prov.body>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">1</label>
+                        <para xml:lang="en-NZ">
+                            <text>
+                                In this Act, unless the context otherwise requires,—
+                            </text>
+                            <def-para id="DLM319577" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM319578" xml:lang="en-NZ">Capital letter</def-term>
+                                        Should only match capitals.
+                                    </text>
+                                </para>
+                            </def-para>
+                            <def-para id="DLM319579" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM319580" xml:lang="en-NZ">plural</def-term>
+                                        should match stuff
+                                    </text>
+                                </para>
+                            </def-para>
+                            <def-para id="DLM319581" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM319582" xml:lang="en-NZ">child</def-term>
+                                        should match the proper version
+                                    </text>
+                                </para>
+                            </def-para>
+                        </para>
+                    </subprov>
+                </prov.body>
+            </prov>
+            <prov id="DLM3195766" irdnumbering="no" skeleton="no" toc="yes" xml:lang="en-NZ">
+                <label auto.number="no" denominator="yes">3</label>
+                <heading xml:lang="en-NZ">Texty</heading>
+                <prov.body>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">1</label>
+                        <para xml:lang="en-NZ">
+                            <text match="false" cid="case_wrong_start">
+                                Capital Letter.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">2</label>
+                        <para xml:lang="en-NZ">
+                            <text match="false" cid="case_wrong_end">
+                                How about this Capital Letter.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">3</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="case_correct">
+                                How about this Capital letter.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">4</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="case_plural_correct">
+                                How about this Capital letters.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">5</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="plural_correct">
+                                And the multiple is plurals.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">6</label>
+                        <para xml:lang="en-NZ">
+                            <text match="false" cid="plural_wrong">
+                                And the multiple is not childs.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">7</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="complex_plural_correct">
+                                Instead the multiple is children.
+                            </text>
+                        </para>
+                    </subprov>
+                </prov.body>
+            </prov>
+
+        </part>
+    </body>
+</act>

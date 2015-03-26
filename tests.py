@@ -47,7 +47,7 @@ def init_database(filename):
 
     return conn
 
-#@unittest.skip("skipping")
+
 class TestQueries(unittest.TestCase):
 
     def setUp(self):
@@ -84,9 +84,9 @@ class TestDefinitions(unittest.TestCase):
         definitions = Definitions()
         find_all_definitions(tree, definitions, expire=False)
         self.assertEqual(len(definitions.items()), 3)
-        self.assertTrue('accounting period' in definitions.active)
-        self.assertTrue('address for service' in definitions.active)
-        self.assertTrue('annual meeting' in definitions.active)
+        self.assertTrue(('accounting period', 'accounting periods') in definitions.active)
+        self.assertTrue(('address for service', 'addresses for service') in definitions.active)
+        self.assertTrue(('annual meeting', 'annual meetings') in definitions.active)
 
     def test_definition_transience_simple(self):
         tree = etree.parse('tests/transient_defs.xml', parser=self.parser)
@@ -105,6 +105,20 @@ class TestDefinitions(unittest.TestCase):
         self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-id'], 'def-xxx')
         self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-id'], 'def-zzz')
 
+    def test_case_and_plurals(self):
+        tree = etree.parse('tests/plural_charcase_defs.xml', parser=self.parser)
+        definitions = Definitions()
+        tree, _ = process_definitions(tree, definitions)
+        self.assertEqual(len(definitions.items()), 3)
+        self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
+        self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_start"]/catalex-def-def')), 0)
+        self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_end"]/catalex-def')), 0)
+        self.assertEqual(len(tree.xpath('.//*[@cid="case_correct"]/catalex-def')), 1)
+        self.assertEqual(len(tree.xpath('.//*[@cid="case_plural_correct"]/catalex-def')), 1)
+        self.assertEqual(len(tree.xpath('.//*[@cid="plural_correct"]/catalex-def')), 1)
+        self.assertEqual(len(tree.xpath('.//*[@cid="plural_wrong"]/catalex-def')), 0)
+        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_wrong"]/catalex-def')), 0)
+
 
 def transform_eqn(filename, parser):
     transform = etree.XSLT(etree.parse('xslt/equations_root.xslt'))
@@ -118,7 +132,7 @@ def print_error(msg):
     print msg
 
 
-#@unittest.skip("skipping")
+
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -180,7 +194,7 @@ class AutocompleteTest(unittest.TestCase):
 
 # TODO, assumes data in db, but in a hurry
 # TODO, replace companies act with much much smaller act, everywhere
-#@unittest.skip("skipping")
+
 class InstrumentTest(unittest.TestCase):
 
     def setUp(self):

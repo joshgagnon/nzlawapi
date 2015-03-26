@@ -194,7 +194,8 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                             i += 2
                             count += 1
                             line = line[span[1]:]
-                        except MatchError:
+                        # key error will occur is case doesn't match
+                        except (MatchError, KeyError):
                             break
                     i += 1
                 lines = filter(lambda x: x, lines)

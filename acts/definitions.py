@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from util import tohtml, generate_path_string, node_replace, Monitor
-#from nltk.stem import *
 from lxml import etree
-#from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
-#from nltk.corpus import wordnet as wn
+from pattern.en import pluralize, singularize
 from xml.dom import minidom
 from copy import deepcopy
 from collections import defaultdict
@@ -20,19 +18,20 @@ lmtzr = WordNetLemmatizer()
 """
 
 
-def key_regex(string):
-    match_string = u"(^|\W)(%s[es'’]{,3})($|\W)" % re.sub('[][()]', '', string)
-    return re.compile(match_string, flags=re.I)
+def key_set(full_word):
+    if singularize(full_word) == full_word:
+        return (full_word, pluralize(full_word))
+    else:
+        return (singularize(full_word), full_word)
 
 
 class Definition(object):
 
-    def __init__(self, full_word, key, xmls, regex, id, expiry_tag=None):
+    def __init__(self, full_word, xmls, id, expiry_tag=None):
         id = 'def-%s' % id
         self.full_word = full_word
-        self.key = key
+        self.keys = key_set(full_word)
         self.xmls = xmls
-        self.regex = regex
         self.id = id
         self.expiry_tag = expiry_tag
 
@@ -65,11 +64,12 @@ class Definitions(object):
         self.regex = None
 
     def get_active(self, key):
-        fix_key = lmtzr.lemmatize(key)
-        if fix_key in self.active:
-            return self.active[fix_key][-1]
-        elif key in self.active:
-            return self.active[key][-1]
+        keys = key_set(key)
+        if keys in self.active:
+            return self.active[keys][-1]
+        keys = key_set(key.lower())
+        if keys in self.active:
+            return self.active[keys][-1]
         else:
             raise KeyError
 
@@ -81,30 +81,30 @@ class Definitions(object):
                 return
         self.pool[definition.expiry_tag].append(definition)
         if not definition.expiry_tag:
-            self.active[definition.key].append(definition)
+            self.active[definition.keys].append(definition)
 
     def items(self):
         return list(chain.from_iterable(self.pool.values()))
 
     def enable_tag(self, tag):
         for definition in self.pool[tag]:
-            self.active[definition.key].append(definition)
+            self.active[definition.keys].append(definition)
             self.regex = None
 
     def expire_tag(self, tag):
         for definition in self.pool[tag]:
-            self.active[definition.key].remove(definition)
-            if not len(self.active[definition.key]):
-                del self.active[definition.key]
+            self.active[definition.keys].remove(definition)
+            if not len(self.active[definition.keys]):
+                del self.active[definition.keys]
             self.regex = None
 
     def ordered_defs(self):
         current = map(lambda x: x[-1], self.active.values())
-        return sorted(current, key=lambda x: len(x.key), reverse=True)
+        return sorted(current, key=lambda x: len(x.keys), reverse=True)
 
     def combined_reg(self):
-        keys = map(lambda x:  re.escape(x.key), self.ordered_defs())
-        match_string = u"(^|\W)(%s)([es'’]{,3})($|\W)" % '|'.join(keys)
+        keys = map(lambda x: '|'.join([re.escape(y) for y in x.keys]), self.ordered_defs())
+        match_string = u"(^|\W)(%s)($|\W)" % '|'.join(keys)
         return re.compile(match_string, flags=re.I)
 
     def get_regex(self):
@@ -141,7 +141,6 @@ def infer_life_time(node):
         except StopIteration:
             pass
         text = etree.tostring(parent.xpath('.//text')[0], method="text", encoding='UTF-8').strip().lower()
-        print text
         if text.startswith('in this act') or text.startswith('in these regulations'):
             return get_id(parent.iterancestors('act', 'regulation', 'bill', 'sop').next())
         if text.startswith('in this part'):
@@ -168,7 +167,6 @@ def infer_life_time(node):
         # couldn't find safe parent
         pass
     return get_id(parent.iterancestors('act', 'regulation', 'sop', 'bill').next())
-
 
 
 def find_all_definitions(tree, definitions, expire=True):
@@ -201,18 +199,17 @@ def find_all_definitions(tree, definitions, expire=True):
                 src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
                 src.text, src.attrib['href'], _ = generate_path_string(node)
 
-                base = lmtzr.lemmatize(text.lower())
                 expiry_tag = infer_life_time(parent) if expire else None
                 xmls = [temp_id, src]
                 try:
                     context_parent = parent.iterancestors('para').next()
                     context = context_parent.xpath('./text')[0]
                     xmls = [context, temp_id, src]
-                except StopIteration:
+                except (StopIteration, IndexError):
                     xmls = [temp_id, src]
 
-                definitions.add(Definition(full_word=text, key=base, xmls=xmls,
-                                id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
+                definitions.add(Definition(full_word=text, xmls=xmls,
+                                id=src.attrib['src'], expiry_tag=expiry_tag))
         except StopIteration:
             pass
 
@@ -231,7 +228,7 @@ def process_definitions(tree, definitions):
 
     monitor = Monitor(500000)
     domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    domxml = node_replace(domxml, definitions, create_def, lower=True, monitor=monitor)
+    domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     definitions.apply_definitions(tree)
 
