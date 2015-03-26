@@ -6,7 +6,7 @@ import re
 from xml.dom import minidom
 import itertools
 import time
-
+import datetime
 
 def timing(f):
     def wrap(*args, **kwargs):
@@ -287,3 +287,11 @@ def etree_to_dict(t, end=None):
         d['#tail'] = t.tail or ''
     return d
 
+
+
+
+def safe_date(string, date_format='%Y-%m-%d'):
+    try:
+        return datetime.datetime.strptime(string, date_format).date()
+    except:
+        return None

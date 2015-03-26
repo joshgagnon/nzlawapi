@@ -27,15 +27,7 @@
                 </div>
     </xsl:template>
 
-       <xsl:template match="catalex-src">
-        <span class="catalex-src">
-        Source: <a >
-        <xsl:attribute name="href">/act_search_id/<xsl:value-of select="@href"/>
-        </xsl:attribute>
-            <xsl:value-of select="."/>
-        </a>
-        </span>
-    </xsl:template>
+
 
    <xsl:template match="catalex-def">
         <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
@@ -69,6 +61,16 @@
             </xsl:attribute>
             <xsl:value-of select="."/>
         </a>
+    </xsl:template>
+
+    <xsl:template match="catalex-src[@href]">
+        <span class="catalex-src">
+        Source: <a >
+        <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/>
+        </xsl:attribute>
+            <xsl:value-of select="."/>
+        </a>
+        </span>
     </xsl:template>
 
    <xsl:template match="para/text|insertwords">

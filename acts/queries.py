@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from db import get_db
-from util import CustomException, get_title, tohtml
+from util import CustomException, get_title, tohtml, safe_date
 import psycopg2
 from psycopg2 import extras
 from lxml import etree
 from definitions import populate_definitions, process_definitions, Definitions
 from links import process_instrument_links
 from flask import render_template, current_app
+from traversal import nodes_from_path_string
 import datetime
 import json
 import tempfile
@@ -160,7 +161,12 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
     if not definitions:
         if row.get('title') != 'Interpretation Act 1999':
             interpretation = get_act_exact('Interpretation Act 1999', db=db)
-
+            act_date  = row.get('date_assent')
+            interpret_date = safe_date(interpretation.attrib.get('date.assent'))
+            if not act_date or (act_date and  interpret_date < act_date):
+                # remove s 30 from interpretation act
+                node = nodes_from_path_string(interpretation, 's 30')[0]
+                node.getparent().remove(node)
             _, definitions = populate_definitions(interpretation)
         else:
             definitions = Definitions()
@@ -174,9 +180,10 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        args_str = ','.join(cur.mogrify("(%s,'%s',%s,%s)", (row.get('id'), x[0], x[1]['word'], json.dumps(x[1]['html']))) for x in definitions.render().items())
+        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], x[1]['word'], json.dumps(x[1]['html']))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
-        cur.execute("INSERT INTO definitions (document_id, word, key, data) VALUES " + args_str)
+        keys =  [x[0] for x in definitions.render().items()]
+        cur.execute("INSERT INTO definitions (document_id, key, word, data) VALUES " + args_str)
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
