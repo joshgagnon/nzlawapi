@@ -11,7 +11,7 @@
         <xsl:template match="catalex-def-para">
             <div class="definition-result">
                 <div class="legislation">
-                    <xsl:apply-templates select="def-para|para|catalex-src"/>
+                    <xsl:apply-templates select="text|def-para|para|catalex-src"/>
                 </div>
         </div>
     </xsl:template>
@@ -87,13 +87,13 @@
     </xsl:template>
 
     <xsl:template match="def-term">
-             <dfn class="def-term">
-                <xsl:attribute name="id">
-                        <xsl:value-of select="def-term/@id"/>
-                    </xsl:attribute>
-                    <xsl:apply-templates/>
-                </dfn>
-            </xsl:template>
+         <dfn class="def-term">
+            <xsl:attribute name="id">
+                    <xsl:value-of select="def-term/@id"/>
+                </xsl:attribute>
+                <xsl:apply-templates/>
+            </dfn>
+    </xsl:template>
 
        <xsl:template match="label">
         <p class="labelled label">
@@ -113,4 +113,9 @@
         </p>
     </xsl:template>
 
+       <xsl:template match="text">
+            <div class="catalex-def-context">
+             <xsl:apply-templates/>
+            </div>
+       </xsl:template>
 </xsl:stylesheet>

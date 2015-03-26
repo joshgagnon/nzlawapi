@@ -205,13 +205,14 @@ def prep_instrument(result, replace, db):
     if not result.get('id'):
         raise CustomException('Instrument not found')
     tree = None
+    redo_skele = False
     if replace or not result.get('processed_document'):
         tree = process_instrument(row=result, db=db, latest=result.get('latest'))
         document = etree.tostring(tree, encoding='UTF-8', method="html")
+        redo_skele = True
     else:
         document = result.get('processed_document')
-
-    if not result.get('skeleton'):
+    if redo_skele or not result.get('skeleton'):
         skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document), db=db)
     else:
         skeleton = result.get('skeleton')

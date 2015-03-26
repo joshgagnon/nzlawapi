@@ -119,7 +119,8 @@ module.exports = React.createClass({
     },
     componentDidMount: function(){
         if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
-            Actions.newPage({query: this.context.router.getParams(), title: this.getQuery.title}, 'tab-0');
+
+            Actions.newPage({query: this.context.router.getCurrentQuery(), title: this.context.router.getCurrentQuery().title}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
         else if(this.context.router.getCurrentParams().doc_type){

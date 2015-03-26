@@ -140,7 +140,8 @@ def infer_life_time(node):
             parent = node.iterancestors('para').next()
         except StopIteration:
             pass
-        text = parent.xpath('.//text()')[0].strip().lower()
+        text = etree.tostring(parent.xpath('.//text')[0], method="text", encoding='UTF-8').strip().lower()
+        print text
         if text.startswith('in this act') or text.startswith('in these regulations'):
             return get_id(parent.iterancestors('act', 'regulation', 'bill', 'sop').next())
         if text.startswith('in this part'):
@@ -154,7 +155,7 @@ def infer_life_time(node):
             return get_id(parent.iterancestors('prov').next())
         if 'this section' in text:
             return get_id(parent.iterancestors('prov').next())
-        if 'in schedule' in text or 'in this schedule':
+        if 'in schedule' in text or 'in this schedule' in text:
             return get_id(parent.iterancestors('schedule').next())
         if 'in this subpart' in text:
             return get_id(parent.iterancestors('subpart').next())
@@ -202,7 +203,15 @@ def find_all_definitions(tree, definitions, expire=True):
 
                 base = lmtzr.lemmatize(text.lower())
                 expiry_tag = infer_life_time(parent) if expire else None
-                definitions.add(Definition(full_word=text, key=base, xmls=[temp_id, src],
+                xmls = [temp_id, src]
+                try:
+                    context_parent = parent.iterancestors('para').next()
+                    context = context_parent.xpath('./text')[0]
+                    xmls = [context, temp_id, src]
+                except StopIteration:
+                    xmls = [temp_id, src]
+
+                definitions.add(Definition(full_word=text, key=base, xmls=xmls,
                                 id=src.attrib['src'], regex=key_regex(base), expiry_tag=expiry_tag))
         except StopIteration:
             pass

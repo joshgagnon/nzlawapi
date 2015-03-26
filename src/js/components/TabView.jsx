@@ -11,7 +11,7 @@ var Case = require('./Case.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
-
+var UnknownError = require('./Warnings.jsx').UnknownError;
 
 var LoadUnknown = React.createClass({
     request: function(){
@@ -25,7 +25,12 @@ var LoadUnknown = React.createClass({
     },
     render: function(){
         //TODO change class
-        return <div className="search-result"><div className="csspinner" /></div>
+        if(this.props.page.getIn(['content', 'error'])){
+            return <div className="legislation-result"><UnknownError error={this.props.page.getIn(['content', 'error'])}/></div>
+        }
+        else {
+            return <div className="legislation-result" ><div className="csspinner" /></div>
+        }
     }
 })
 
