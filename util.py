@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from lxml import etree
 from collections import defaultdict
 import os
@@ -165,7 +166,7 @@ class MatchError(Exception):
     pass
 
 def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignore_fields=None):
-    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading', 'def-term']
+    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading', 'def-term', 'cataref']
     def process_node(parent):
         for node in parent.childNodes[:]:  # better clone, as we will modify
             if monitor and not monitor.cont():
@@ -189,7 +190,7 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                             monitor.match()
                         try:
                             result = store.get_active(match.group(2))
-                            span = (match.span(2)[0], match.span(3)[1])
+                            span = match.span(2)
                             lines[i:i + 1] = [line[:span[0]], create_wrapper(domxml, line[span[0]:span[1]], result, count), line[span[1]:]]
                             i += 2
                             count += 1
@@ -288,7 +289,8 @@ def etree_to_dict(t, end=None):
         d['#tail'] = t.tail or ''
     return d
 
-
+def remove_nbsp(input):
+    return unicode(input, 'utf-8').replace(u"\u00A0", u' ').encode('utf-8')
 
 
 def safe_date(string, date_format='%Y-%m-%d'):

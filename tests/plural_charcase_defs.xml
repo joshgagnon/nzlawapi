@@ -124,6 +124,14 @@
                             </text>
                         </para>
                     </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">8</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="complex_plural_possessive_correct">
+                                Take the taco to the children's hopsital.
+                            </text>
+                        </para>
+                    </subprov>
                 </prov.body>
             </prov>
 

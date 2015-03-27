@@ -8,7 +8,7 @@
     <xsl:import href="end.xslt" />
     <xsl:import href="schedules.xslt" />
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
-    <xsl:variable name="symbols-skip-insert-space"> ,.;:)(</xsl:variable>
+    <xsl:variable name="symbols-skip-insert-space"> ,.;:'`’")(</xsl:variable>
 
     <xsl:template match="/">
 

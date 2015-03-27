@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 import re
 from xml.dom import minidom
 from db import get_db
-from util import Monitor, node_replace, MatchError
+from util import Monitor, node_replace, MatchError, remove_nbsp
 from lxml import etree
 
 
@@ -21,7 +22,7 @@ def process_instrument_links(tree, db=None):
 
         def combined_reg(self):
             match_string = u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), self.ordered()))
-            return re.compile(match_string, flags=re.I)
+            return re.compile(match_string, flags=re.I & re.UNICODE)
 
         def get_regex(self):
             if not self.regex:
@@ -53,8 +54,7 @@ def process_instrument_links(tree, db=None):
     for a in tree.xpath('.//*[@href]'):
         a.attrib['link-id'] = '%d' % mon.i
         mon.cont()
-    domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
-    #tree = node_replace(tree, links, create_link, monitor=mon)
+    domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html", encoding="UTF-8")))
     domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     return tree

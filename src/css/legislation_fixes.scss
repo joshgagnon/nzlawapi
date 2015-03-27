@@ -52,7 +52,7 @@
     *[data-location], *[data-hook]{
         overflow:auto;
     }
-    .prov *{
+    .prov *, .label-para *{
         overflow:visible;
     }
 }

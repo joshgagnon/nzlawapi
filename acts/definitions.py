@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from util import tohtml, generate_path_string, node_replace, Monitor
+from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp
 from lxml import etree
 from nltk.stem.wordnet import WordNetLemmatizer
 from pattern.en import pluralize, singularize
@@ -67,11 +67,15 @@ class Definitions(object):
         keys = key_set(key)
         if keys in self.active:
             return self.active[keys][-1]
+        # try lower
         keys = key_set(key.lower())
         if keys in self.active:
             return self.active[keys][-1]
-        else:
-            raise KeyError
+        # remove possession
+        keys = key_set(re.split("['`’]", key)[0])
+        if keys in self.active:
+            return self.active[keys][-1]
+        raise KeyError
 
     def add(self, definition):
         for d in self.pool[definition.expiry_tag]:
@@ -103,8 +107,8 @@ class Definitions(object):
         return sorted(current, key=lambda x: len(x.keys), reverse=True)
 
     def combined_reg(self):
-        keys = map(lambda x: '|'.join([re.escape(y) for y in x.keys]), self.ordered_defs())
-        match_string = u"(^|\W)(%s)($|\W)" % '|'.join(keys)
+        keys = map(lambda x: u'|'.join([re.escape(y) for y in x.keys]), self.ordered_defs())
+        match_string = u"(^|\W)(%s[s'`’]{,2})($|\W)" % '|'.join(keys)
         return re.compile(match_string, flags=re.I)
 
     def get_regex(self):
@@ -227,7 +231,7 @@ def process_definitions(tree, definitions):
         return match
 
     monitor = Monitor(500000)
-    domxml = minidom.parseString(etree.tostring(tree, encoding='UTF-8', method="html"))
+    domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html")))
     domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     definitions.apply_definitions(tree)

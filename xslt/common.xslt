@@ -107,7 +107,7 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <div class="long-title">
-                 <xsl:value-of select="long-title/para/text"/>
+                <xsl:apply-templates select="long-title/para/text"/>
 
                 <xsl:apply-templates select="long-title/para/label-para"/>
              </div>

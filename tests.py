@@ -110,14 +110,15 @@ class TestDefinitions(unittest.TestCase):
         definitions = Definitions()
         tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(definitions.items()), 3)
-        self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
+        self.assertEqual(len(tree.xpath('.//catalex-def')), 5)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_start"]/catalex-def-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_end"]/catalex-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_correct"]/catalex-def')), 1)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_plural_correct"]/catalex-def')), 1)
         self.assertEqual(len(tree.xpath('.//*[@cid="plural_correct"]/catalex-def')), 1)
         self.assertEqual(len(tree.xpath('.//*[@cid="plural_wrong"]/catalex-def')), 0)
-        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_wrong"]/catalex-def')), 0)
+        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_correct"]/catalex-def')), 1)
+        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct"]/catalex-def')), 1)
 
 
 def transform_eqn(filename, parser):
