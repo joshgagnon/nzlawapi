@@ -60,6 +60,30 @@
                                     </text>
                                 </para>
                             </def-para>
+                            <def-para id="DLM319581" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM319" xml:lang="en-NZ">fish</def-term>
+                                        and chups
+                                    </text>
+                                </para>
+                            </def-para>          
+                            <def-para id="DLM319581" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM319xx" xml:lang="en-NZ">sheep</def-term>
+                                        are the sexiest
+                                     </text>
+                                </para>
+                            </def-para>
+                            <def-para id="DLM319581" xml:lang="en-NZ">
+                                <para xml:lang="en-NZ">
+                                    <text>
+                                        <def-term id="DLM31958xxx" xml:lang="en-NZ">Taco</def-term>
+                                        is in this case a proper noun
+                                    </text>
+                                </para>
+                            </def-para>                                              
                         </para>
                     </subprov>
                 </prov.body>
@@ -132,6 +156,33 @@
                             </text>
                         </para>
                     </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">9</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="complex_plural_possessive_correct_2">
+                                Steal the fish's sheep.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">10</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="complex_plural_correct_2">
+                                Taco should match. But taco should not.
+                            </text>
+                        </para>
+                    </subprov>
+                    <subprov skeleton="no" xml:lang="en-NZ">
+                        <label auto.number="no" denominator="yes">11</label>
+                        <para xml:lang="en-NZ">
+                            <text match="true" cid="complex_plural_possessive_correct_3">
+                                Fishes fish for other fish's fish.
+                            </text>
+                        </para>
+                    </subprov>
+
+
+
                 </prov.body>
             </prov>
 
