@@ -109,8 +109,8 @@ class TestDefinitions(unittest.TestCase):
         tree = etree.parse('tests/plural_charcase_defs.xml', parser=self.parser)
         definitions = Definitions()
         tree, _ = process_definitions(tree, definitions)
-        self.assertEqual(len(definitions.items()), 3)
-        self.assertEqual(len(tree.xpath('.//catalex-def')), 5)
+        self.assertEqual(len(definitions.items()), 6)
+        self.assertEqual(len(tree.xpath('.//catalex-def')), 10)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_start"]/catalex-def-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_end"]/catalex-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_correct"]/catalex-def')), 1)
@@ -118,7 +118,10 @@ class TestDefinitions(unittest.TestCase):
         self.assertEqual(len(tree.xpath('.//*[@cid="plural_correct"]/catalex-def')), 1)
         self.assertEqual(len(tree.xpath('.//*[@cid="plural_wrong"]/catalex-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_correct"]/catalex-def')), 1)
+        print etree.tostring(tree.xpath('.//*[@cid="complex_plural_possessive_correct"]')[0])
+        print  [x.keys for x in definitions.items()]
         self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct"]/catalex-def')), 1)
+        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_2"]/catalex-def')), 2)
 
 
 def transform_eqn(filename, parser):

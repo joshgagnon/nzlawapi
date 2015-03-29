@@ -67,7 +67,7 @@
                                         and chups
                                     </text>
                                 </para>
-                            </def-para>          
+                            </def-para>
                             <def-para id="DLM319581" xml:lang="en-NZ">
                                 <para xml:lang="en-NZ">
                                     <text>
@@ -83,7 +83,7 @@
                                         is in this case a proper noun
                                     </text>
                                 </para>
-                            </def-para>                                              
+                            </def-para>
                         </para>
                     </subprov>
                 </prov.body>
@@ -152,7 +152,7 @@
                         <label auto.number="no" denominator="yes">8</label>
                         <para xml:lang="en-NZ">
                             <text match="true" cid="complex_plural_possessive_correct">
-                                Take the taco to the children's hopsital.
+                                Take the taco to the children's hospital.
                             </text>
                         </para>
                     </subprov>
