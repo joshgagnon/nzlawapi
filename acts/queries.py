@@ -180,7 +180,7 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], x[1]['words'], json.dumps(x[1]['html']))) for x in definitions.render().items())
+        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], list(x[1]['words']), json.dumps(x[1]['html']))) for x in definitions.render().items())
         cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
         keys =  [x[0] for x in definitions.render().items()]
         cur.execute("INSERT INTO definitions (document_id, key, words, data) VALUES " + args_str)
