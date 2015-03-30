@@ -51,6 +51,7 @@ class Definition(object):
         [xml.append(deepcopy(x)) for x in self.xmls]
         return {
             'title': self.full_word,
+            'words': self.keys,
             'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
         }
 

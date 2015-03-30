@@ -180,10 +180,11 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                 lines = [node.nodeValue]
                 i = 0
                 count = 0
+                offset = 0
                 while i < len(lines):
                     line = lines[i]
                     while isinstance(line, basestring):
-                        match = reg.search(line.lower() if lower else line)
+                        match = reg.search(line.lower() if lower else line, offset)
                         if not match or not match.group(2).strip():
                             break
                         if monitor:
@@ -195,8 +196,11 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                             i += 2
                             count += 1
                             line = line[span[1]:]
-                        # key error will occur is case doesn't match
-                        except (MatchError, KeyError):
+                            offset = 0
+                        # key error will occur if case doesn't match
+                        except KeyError:
+                            offset = match.span(2)[0]+1
+                        except (MatchError):
                             break
                     i += 1
                 lines = filter(lambda x: x, lines)
