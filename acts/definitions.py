@@ -51,7 +51,6 @@ class Definition(object):
         [xml.append(deepcopy(x)) for x in self.xmls]
         return {
             'title': self.full_word,
-            'words': self.keys,
             'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
         }
 
@@ -118,7 +117,7 @@ class Definitions(object):
         return self.regex
 
     def render(self):
-        return {v.id: {'html': v.render(), 'word': v.full_word} for v in self.items()}
+        return {v.id: {'html': v.render(), 'words': v.keys} for v in self.items()}
 
     def apply_definitions(self, tree):
         dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}
