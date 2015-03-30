@@ -120,7 +120,7 @@ def text_compare(t1, t2):
     return (t1 or '').strip() == (t2 or '').strip()
 
 
-def generate_path_string(node, id=None):
+def generate_path_string(node, id=None, title=None):
     result = unicode('')
     it = itertools.chain([node] if node.tag == 'label-para' else [], iter(node.iterancestors('label-para')))
     for n in it:
@@ -150,7 +150,7 @@ def generate_path_string(node, id=None):
     for n in it:
         if len(n.xpath('./label')):
             result = u'sch %s' % (n.xpath('./label')[0].text or '') + result
-    title = get_title(node.getroottree())
+    title = title or get_title(node.getroottree())
 
     return (u'%s %s' % (title, result),
         'query?%s' % urllib.urlencode({
@@ -159,6 +159,7 @@ def generate_path_string(node, id=None):
             'find': 'location',
             'title': title.encode('utf-8')
             }), result)
+
 
 
 
