@@ -51,6 +51,7 @@
     // fixed margin collapse, for height calculations
     *[data-location], *[data-hook]{
         overflow:auto;
+        -webkit-overflow-scrolling: auto;
     }
     .prov *, .label-para *{
         overflow:visible;
