@@ -4,7 +4,7 @@ from util import CustomException, get_title, tohtml, safe_date
 import psycopg2
 from psycopg2 import extras
 from lxml import etree
-from definitions import populate_definitions, process_definitions, Definitions
+from definitions import populate_definitions, process_definitions, Definitions, Definition
 from links import process_instrument_links
 from flask import render_template, current_app
 from traversal import nodes_from_path_string
@@ -18,7 +18,7 @@ import codecs
 
 
 class Instrument(object):
-    def __init__(self, id, document, attributes, skeleton, tree=None, heights={}, title=None):
+    def __init__(self, id, document, attributes, skeleton, tree=None, heights={}, title=None, definitions=None):
         self.id = id
         self.document = document
         self.skeleton = skeleton
@@ -26,6 +26,7 @@ class Instrument(object):
         self.heights = heights
         self.parts = []
         self.tree = tree
+        self.definitions = definitions
         self.length = len(self.document)
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
@@ -152,6 +153,19 @@ def process_contents(id, tree, db=None):
     (db or get_db()).commit()
     return contents
 
+def get_parent_definitions(row, db=None, definitions=None):
+    with (db or get_db()).cursor() as cur:
+        cur.execute(""" SELECT parent_id FROM subordinates s JOIN instruments i ON parent_id = id
+            WHERE child_id = %(id)s AND title != %(title)s """, row)
+        instruments = [get_instrument_object(r[0]) for r in cur.fetchall()]
+
+        for instrument in instruments:
+
+            for defs in instrument.definitions:
+                [definitions.add(Definition(**k)) for k in defs]
+                definitions.enable_tag(row.get('govt_id'))
+            #print instrument.definitions
+    return definitions
 
 def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=None, latest=False):
     if not tree:
@@ -159,20 +173,35 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
     if not latest:
         tree.attrib['old-version'] = 'true'
     if not definitions:
-        if row.get('title') != 'Interpretation Act 1999':
-            interpretation = get_act_exact('Interpretation Act 1999', db=db)
-            act_date  = row.get('date_assent')
-            interpret_date = safe_date(interpretation.attrib.get('date.assent'))
-            if not act_date or (act_date and  interpret_date < act_date):
-                # remove s 30 from interpretation act
-                node = nodes_from_path_string(interpretation, 's 30')[0]
-                node.getparent().remove(node)
-            _, definitions = populate_definitions(interpretation)
-        else:
-            definitions = Definitions()
+        definitions = Definitions()
+
     format_dates(tree)
+
     tree = process_instrument_links(tree, db)
-    tree, definitions = process_definitions(tree, definitions, title=row.get('title'))
+
+    tree, definitions = populate_definitions(tree, definitions, title=row.get('title'), expire=True)
+
+    with (db or get_db()).cursor() as cur:
+        cur.execute("""UPDATE documents SET definitions = %(defs)s where id = %(id)s""" ,
+            {'defs': definitions.to_json(), 'id': row.get('id')})
+
+    if row.get('title') != 'Interpretation Act 1999':
+        interpretation = get_act_exact('Interpretation Act 1999', db=db)
+        act_date  = row.get('date_assent')
+        interpret_date = safe_date(interpretation.attrib.get('date.assent'))
+        if not act_date or (act_date and  interpret_date < act_date):
+            # remove s 30 from interpretation act
+            node = nodes_from_path_string(interpretation, 's 30')[0]
+            node.getparent().remove(node)
+        _, definitions = populate_definitions(interpretation, definitions=definitions)
+
+
+    # get defs from all parent instruments
+    definitions = get_parent_definitions(row, definitions=definitions, db=db)
+
+    # now mark them
+    tree, _ = process_definitions(tree, definitions)
+
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET processed_document =  %(doc)s
                     WHERE  d.id =  %(id)s """
@@ -186,7 +215,7 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
-    return tree
+    return tree, definitions
 
 
 def fetch_parts(doc_id, db=None, parts=None):
@@ -201,16 +230,20 @@ def fetch_parts(doc_id, db=None, parts=None):
 
 
 def prep_instrument(result, replace, db):
+    print 'prepping ', result.get('title')
     if not result.get('id'):
         raise CustomException('Instrument not found')
     tree = None
+    definitions = None
     redo_skele = False
     if replace or not result.get('processed_document'):
-        tree = process_instrument(row=result, db=db, latest=result.get('latest'))
+        tree, definitions = process_instrument(row=result, db=db, latest=result.get('latest'))
+        definitions = definitions.to_json()
         document = etree.tostring(tree, encoding='UTF-8', method="html")
         redo_skele = True
     else:
         document = result.get('processed_document')
+        definitions = result.get('definitions')
     if redo_skele or not result.get('skeleton'):
         skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document), db=db)
     else:
@@ -222,6 +255,7 @@ def prep_instrument(result, replace, db):
         skeleton=skeleton,
         heights=heights,
         title=result.get('title'),
+        definitions=definitions,
         attributes=result)
 
 

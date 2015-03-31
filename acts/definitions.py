@@ -130,6 +130,8 @@ class Definitions(object):
 
     def apply_definitions(self, tree):
         dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}
+        for n in dicttree.values():
+            del n.attrib['temp-def-id']
         for p in self.pool:
             for d in self.pool[p]:
                 d.apply_definitions(dicttree)
@@ -141,15 +143,7 @@ class Definitions(object):
         return newone
 
     def to_json(self):
-        defs = [{'key': k, 'value': v} for k, v in self.pool.items()]
-        return json.dumps(defs, default=lambda o: o.__dict__)
-
-    def from_json(self, data):
-        self.pool = defaultdict(list)
-        self.active = defaultdict(list)
-        self.regex = None
-        for d in data:
-            self.pool[d['key']] = [Definition(**x) for x in d['value']]
+        return json.dumps(self.pool.values(), default=lambda o: o.__dict__)
 
 
 def infer_life_time(node):
@@ -239,31 +233,24 @@ def find_all_definitions(tree, definitions, expire=True, title=None):
             pass
 
 
-def process_definitions(tree, definitions, title=None):
-    find_all_definitions(tree, definitions, expire=True, title=title)
-
-    print 'Completed definition extraction'
-    print '%d nodes to scan' % len(tree.xpath('.//*'))
-
+def process_definitions(tree, definitions):
     def create_def(doc, word, definition, index):
         match = doc.createElement('catalex-def')
         match.setAttribute('def-id', definition.id)
         match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
-
     monitor = Monitor(5000000)
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html")))
     domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
-    definitions.apply_definitions(tree)
 
     return tree, definitions
 
 
-def populate_definitions(tree, definitions=None, expire=False):
+def populate_definitions(tree, definitions=None, expire=False, title=None):
     if not definitions:
         definitions = Definitions()
-    find_all_definitions(tree, definitions, expire=expire)
+    find_all_definitions(tree, definitions, expire=expire, title=title)
     definitions.apply_definitions(tree)
     return tree, definitions

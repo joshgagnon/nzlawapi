@@ -279,7 +279,7 @@
                 <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="label"/>
-            <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov" />
+            <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov|label-para" />
         </div>
     </xsl:template>
 
