@@ -248,7 +248,7 @@ def process_definitions(tree, definitions):
     return tree, definitions
 
 
-def populate_definitions(tree, definitions=None, expire=False, title=None):
+def populate_definitions(tree, definitions=None, expire=True, title=None):
     if not definitions:
         definitions = Definitions()
     find_all_definitions(tree, definitions, expire=expire, title=title)

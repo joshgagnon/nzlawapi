@@ -163,10 +163,9 @@ def add_parent_definitions(row, db=None, definitions=None):
             JOIN documents d on i.id = d.id
             WHERE child_id = %(id)s AND title != %(title)s """, row)
         for result in cur.fetchall():
-
             if not result.get('definitions'):
                 title = unicode(result.get('title').decode('utf-8'))
-                parent_definitions = process_save_definitions(
+                parent_definitions = extract_save_definitions(
                     etree.fromstring(result.get('document'),
                         parser=etree.XMLParser(huge_tree=True)),
                     id=result.get('id'), db=db, title=title)
@@ -213,7 +212,7 @@ def process_instrument(row=None, db=None, existing_definitions=None, refresh=Tru
             # remove s 30 from interpretation act
             node = nodes_from_path_string(interpretation, 's 30')[0]
             node.getparent().remove(node)
-        _, existing_definitions = populate_definitions(interpretation, definitions=definitions)
+        _, existing_definitions = populate_definitions(interpretation, definitions=definitions, expire=False)
     for definition in existing_definitions.pool.values():
         [definitions.add(d) for d in definition]
 
@@ -251,7 +250,7 @@ def fetch_parts(doc_id, db=None, parts=None):
 
 
 def prep_instrument(result, replace, db):
-    print 'Prepping: ', result.get('title')
+    # TODO, delete all these steps: assume everything is processed
     if not result.get('id'):
         raise CustomException('Instrument not found')
     tree = None

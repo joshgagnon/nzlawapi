@@ -90,14 +90,14 @@ class TestDefinitions(unittest.TestCase):
 
     def test_definition_transience_simple(self):
         tree = etree.parse('tests/transient_defs.xml', parser=self.parser)
-        definitions = Definitions()
+        tree, definitions = populate_definitions(tree)
         tree = process_definitions(tree, definitions)
         self.assertEqual(len(definitions.active), 0)
         self.assertEqual(len(definitions.items()), 4)
 
     def test_definition_redefinitions(self):
         tree = etree.parse('tests/redefinitions.xml', parser=self.parser)
-        definitions = Definitions()
+        tree, definitions = populate_definitions(tree)
         tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
         self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-id'], 'def-xxx')
@@ -107,7 +107,7 @@ class TestDefinitions(unittest.TestCase):
 
     def test_case_and_plurals(self):
         tree = etree.parse('tests/plural_charcase_defs.xml', parser=self.parser)
-        definitions = Definitions()
+        tree, definitions = populate_definitions(tree)
         tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(definitions.items()), 6)
         self.assertEqual(len(tree.xpath('.//catalex-def')), 11)
