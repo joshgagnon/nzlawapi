@@ -35,14 +35,8 @@ def run(db, config):
             if not len(result):
                 break
 
-            act_date = result[0].get('date_assent')
-            if not act_date or (act_date and interpret_date < act_date):
-                existing_definitions = post_defs
-            else:
-                existing_definitions = pre_defs
             queries.process_instrument(
                     row=result[0], db=db,
-                    existing_definitions=existing_definitions,
                     refresh=False,
                     latest=result[0].get('latest'))
             count += 1

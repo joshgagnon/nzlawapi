@@ -156,32 +156,48 @@ def process_contents(id, tree, db=None):
     return contents
 
 
-def add_parent_definitions(row, db=None, definitions=None, refresh=False, existing_definitions=None):
+def add_parent_definitions(row, db=None, definitions=None, refresh=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest
             FROM subordinates s
             JOIN instruments i ON parent_id = i.id
             JOIN documents d on i.id = d.id
             WHERE child_id = %(id)s AND title != %(title)s """, row)
-        for result in cur.fetchall():
-            if not result.get('definitions'):
-                tree, definitions = process_instrument(
-                    row=result, db=db,
-                    existing_definitions=existing_definitions,
-                    refresh=refresh, latest=result.get('latest'))
-                parent_definitions = json.loads(definitions.to_json())
-            else:
-                parent_definitions = result.get('definitions')
+        results = cur.fetchall()
+        for result in results:
+            print 'Parent: ', result.get('title')
+            if result.get('title') not in definitions.titles:
+                if not result.get('definitions'):
+                    tree, definitions = process_instrument(
+                        row=result, db=db,
+                        refresh=refresh, latest=result.get('latest'))
+                    parent_definitions = json.loads(definitions.to_json())
+                else:
+                    parent_definitions = result.get('definitions')
+                for defs in parent_definitions['values']:
+                    [definitions.add(Definition(**k)) for k in defs]
+                    definitions.enable_tag(result.get('govt_id'))
+                definitions.titles += parent_definitions['titles']
 
-            for defs in parent_definitions:
-                [definitions.add(Definition(**k)) for k in defs]
-                definitions.enable_tag(row.get('govt_id'))
+        if not len(results) and row.get('title') != 'Interpretation Act 1999' and 'Interpretation Act 1999' not in definitions.titles:
+            interpretation = get_act_exact('Interpretation Act 1999', db=db)
+            act_date = row.get('date_assent')
+            interpret_date = safe_date(interpretation.attrib.get('date.assent'))
+            if not act_date or (act_date and  interpret_date < act_date):
+                # remove s 30 from interpretation act
+                node = nodes_from_path_string(interpretation, 's 30')[0]
+                node.getparent().remove(node)
+            interpret_tree, existing_definitions = populate_definitions(interpretation, expire=False, title="Interpretation Act 1999")
+            interpret_tree, _ = process_definitions(interpret_tree, existing_definitions)
+
+            for definition in existing_definitions.pool.values():
+                [definitions.add(d) for d in definition]
 
     return definitions
 
 
-def process_instrument(row=None, db=None, existing_definitions=None, refresh=True, tree=None, latest=False):
-    print 'Processing ', row.get('title')
+def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False):
+    print 'Processing: ', row.get('title')
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
     if not latest:
@@ -192,35 +208,21 @@ def process_instrument(row=None, db=None, existing_definitions=None, refresh=Tru
     format_dates(tree)
 
     tree = process_instrument_links(tree, db)
+
     title = unicode(row.get('title').decode('utf-8'))
     tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True)
 
-    if row.get('title') != 'Interpretation Act 1999':
-        if not existing_definitions:
-            interpretation = get_act_exact('Interpretation Act 1999', db=db)
-            act_date = row.get('date_assent')
-            interpret_date = safe_date(interpretation.attrib.get('date.assent'))
-            if not act_date or (act_date and  interpret_date < act_date):
-                # remove s 30 from interpretation act
-                node = nodes_from_path_string(interpretation, 's 30')[0]
-                node.getparent().remove(node)
-            interpret_tree, existing_definitions = populate_definitions(interpretation, expire=False)
-            interpret_tree, _ = process_definitions(interpret_tree, existing_definitions)
-
-        for definition in existing_definitions.pool.values():
-            [definitions.add(d) for d in definition]
-
-    # get defs from all parent instruments
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
-        refresh=refresh, existing_definitions=existing_definitions)
+        refresh=refresh)
 
     # now mark them
     tree, _ = process_definitions(tree, definitions)
 
-
     with (db or get_db()).cursor() as cur:
+        data = definitions.to_json()
+        print len(data)
         cur.execute("""UPDATE documents SET definitions = %(defs)s where id = %(id)s""" ,
-            {'defs': definitions.to_json(), 'id': row.get('id')})
+            {'defs': data, 'id': row.get('id')})
 
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET processed_document =  %(doc)s

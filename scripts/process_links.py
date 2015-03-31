@@ -41,8 +41,8 @@ def run(db, config, do_id_lookup):
 
         db.commit()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        cur.execute(""" delete from document_references""")
-        cur.execute(""" delete from section_references""")
+        #cur.execute(""" delete from document_references""")
+        #cur.execute(""" delete from section_references""")
         cur.execute(""" delete from subordinates""")
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
@@ -55,6 +55,7 @@ def run(db, config, do_id_lookup):
         cur.execute(query)
 
         titles = {unicode(x['title'].decode('utf-8')): x['id'] for x in cur.fetchall()}
+        id_to_title = {v:k for k, v in titles.items()}
 
         keys = sorted(titles.keys(), key=lambda x: len(x), reverse=True)
         regex = re.compile(u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
@@ -70,30 +71,33 @@ def run(db, config, do_id_lookup):
                 count += 1
                 tree = etree.fromstring(document['document'], parser=p)
                 source_id = document['id']
-                links = map(lambda x: {'id': x.attrib['href'],
-                    'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
-                    tree.xpath('.//extref[@href]|.//intref[@href]'))
-                counters = defaultdict(int)
-                for link in links:
-                    if link['id'] in id_lookup:
-                        counters[id_lookup[link['id']]] = counters[id_lookup[link['id']]] + 1
-                if len(counters.items()):
-                    flattened = map(lambda x: (source_id, x[0], x[1]), counters.items())
-                    args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in flattened)
-                    out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
+                if False:
+                    links = map(lambda x: {'id': x.attrib['href'],
+                        'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
+                        tree.xpath('.//extref[@href]|.//intref[@href]'))
+                    counters = defaultdict(int)
+                    for link in links:
+                        if link['id'] in id_lookup:
+                            counters[id_lookup[link['id']]] = counters[id_lookup[link['id']]] + 1
+                    if len(counters.items()):
+                        flattened = map(lambda x: (source_id, x[0], x[1]), counters.items())
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in flattened)
+                        out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
 
-                    flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1]), links)
-                    args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", x) for x in flattened)
-                    out.execute("INSERT INTO section_references (source_document_id, target_govt_id, repr, url) VALUES " + args_str)
+                        flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1]), links)
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", x) for x in flattened)
+                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, repr, url) VALUES " + args_str)
+
                 ids = []
                 pursuant = tree.xpath('.//pursuant')
+                title = unicode(document['title'].decode('utf-8'))
                 if len(pursuant):
                     try:
                         refs = pursuant[0].xpath('.//extref')
                         if len(refs):
                             ids = [id_lookup[ref.attrib['href']] for ref in refs]
                         else:
-                            ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8")) if x != document.get('title')]
+                            ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
                         ids = list(set(ids))
                     except KeyError:
                         print refs, document.get('title')
@@ -102,18 +106,30 @@ def run(db, config, do_id_lookup):
                     principal = tree.xpath('//text[contains(., "is called the principal Act")]')
                     if not len(principal):
                         principal = tree.xpath('//text[contains(., "These regulations amend the")]')
+                    if not len(principal):
+                        principal = tree.xpath('//long-title[contains(., "An Act to Amend the")]')
+                    if not len(principal):
+                        principal = tree.xpath('//long-title[contains(., "This Act amends the")]')
+                    if not len(principal):
+                        principal = tree.xpath('//long-title[contains(., "These regulations amend the")]')
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(., "the principal Act")]')
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(., "the principal Regulations")]')
                     try:
                         if len(principal):
                             link = principal[0].xpath('./extref')
                             if len(link):
                                 link_id = link[0].attrib['href']
-                                ids = [id_lookup[link_ids]]
+                                ids = [id_lookup[link_id]]
                             else:
-                                ids = [titles[x[1]] for x in regex.findall(etree.tostring(principal[0], method="text", encoding="UTF-8")) if x != document.get('title')]
+                                ids = [titles[x[1]] for x in regex.findall(etree.tostring(principal[0], method="text", encoding="UTF-8"))]
                     except (KeyError, IndexError):
                         print document.get('title')
                     # 'These regulations amend the'
+                ids = list(set([i for i in ids if i != document.get('id') and id_to_title.get(i) != title]))
                 if len(ids):
+                    print document.get('title'), [id_to_title.get(i) for i in ids]
                     args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
                     out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
             documents = cur.fetchmany(1)

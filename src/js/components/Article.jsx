@@ -598,6 +598,10 @@ var MobilePopovers = React.createClass({
                         positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
                         positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
                         fetched: false,
+                        query: {
+                            id: link.attr('data-href'),
+                            doc_type: 'instrument'
+                        },
                         url: '/link/'+url
                     });
                 }

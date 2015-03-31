@@ -69,6 +69,7 @@ class Definitions(object):
         self.pool = defaultdict(list)
         self.active = defaultdict(list)
         self.regex = None
+        self.titles= []
 
     def get_active(self, key):
         keys = key_set(key)
@@ -147,7 +148,10 @@ class Definitions(object):
         return newone
 
     def to_json(self):
-        return json.dumps(self.pool.values(), default=lambda o: o.__dict__)
+        return json.dumps({
+            'values': self.pool.values(),
+            'titles': self.titles},
+            default=lambda o: o.__dict__)
 
 
 def infer_life_time(node):
@@ -255,5 +259,7 @@ def process_definitions(tree, definitions):
 def populate_definitions(tree, definitions=None, expire=True, title=None):
     if not definitions:
         definitions = Definitions()
-    find_all_definitions(tree, definitions, expire=expire, title=title)
+    if title not in definitions.titles:
+        find_all_definitions(tree, definitions, expire=expire, title=title)
+    definitions.titles.append(title)
     return tree, definitions

@@ -6,13 +6,14 @@ var Button = require('react-bootstrap/lib/Button');
 var Actions = require('../actions/Actions');
 var ArticleSummary = require('./ArticleSummary.jsx');
 var $ = require('jquery');
+var _ = require('lodash');
 
 var PopoverBehaviour = {
     needFetch: function(){
-        return !this.getLocalContent() && this.props.fetch
+        return !this.getLocalContent() && !this.props.fetched
     },
     renderFooter: function(){
-        if(this.props.type === 'link' || this.props.type === 'location'){
+        if((this.props.type === 'link' || this.props.type === 'location')){
             return <div className="popover-footer">
                     <div className="row">
                         { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
@@ -72,10 +73,13 @@ var PopoverBehaviour = {
          Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
     },
     open: function(){
-        //debugger
+        var query = _.extend({}, this.props.query);
+        if(query.find === 'preview'){
+            query.find = 'full';
+        }
         Actions.newPage({
             title: this.props.full_title || this.props.title,
-            query: this.props.query
+            query: query
         }, this.props.viewer_id)
     }
 }
@@ -121,7 +125,6 @@ module.exports = {
             var arrowStyle = {};
             arrowStyle['left'] = this.props.arrowOffsetLeft;
             arrowStyle['top'] = this.props.arrowOffsetTop;
-
             return (
                 <div className={classes} role="tooltip" style={style}>
                     <div className="arrow"  style={arrowStyle}></div>
@@ -152,7 +155,7 @@ module.exports = {
                     <div className="popover-close" onClick={this.close}>&times;</div>
                     <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
                         {this.renderBody() }
-                        {this.renderFooter() }
+                        { this.renderFooter() }
                     </div>
                 </div>
         }

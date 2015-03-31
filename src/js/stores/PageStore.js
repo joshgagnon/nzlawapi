@@ -229,21 +229,17 @@ var PageStore = Reflux.createStore({
     },
     onPopoverOpened: function(viewer_id, page_id, popover){
         var page = this.getById(page_id);
-        if(!page.getIn(['popovers', popover.id ])){
-            var result = {};
-            result[popover.id] = popover;
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers'], result);
-            this.update();
-        }
+        var result = {};
+        result[popover.id] = popover;
+        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers'], result);
+        this.update();
     },
     onSectionSummaryOpened: function(viewer_id, page_id, section_data){
         var page = this.getById(page_id);
-        if(!page.getIn(['section_data', section_data.id ])){
-            var result = {};
-            result[section_data.id] = section_data;
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data'], result);
-            this.update();
-        }
+        var result = {};
+        result[section_data.id] = section_data;
+        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data'], result);
+        this.update();
     },
 
     //TODO position, should be in view
