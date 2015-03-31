@@ -113,11 +113,15 @@ class Definitions(object):
 
     def ordered_defs(self):
         current = map(lambda x: x[-1], self.active.values())
-        return sorted(current, key=lambda x: len(x.keys), reverse=True)
+        keys = []
+        for c in current:
+            keys += c.keys
+        keys = list(set(keys))
+        return sorted(keys, key=lambda x: len(x), reverse=True)
 
     def combined_reg(self):
-        keys = map(lambda x: u'|'.join([re.escape(y) for y in x.keys]), self.ordered_defs())
-        match_string = u"(^|\W)(%s[s'`’]{,2})($|\W)" % '|'.join(keys)
+        keys = u'|'.join([re.escape(y) for y in self.ordered_defs()])
+        match_string = u"(^|\W)(%s[s'`’]{,2})($|\W)" % keys
         return re.compile(match_string, flags=re.I)
 
     def get_regex(self):

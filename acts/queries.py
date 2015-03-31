@@ -212,7 +212,7 @@ def process_instrument(row=None, db=None, existing_definitions=None, refresh=Tru
             # remove s 30 from interpretation act
             node = nodes_from_path_string(interpretation, 's 30')[0]
             node.getparent().remove(node)
-        _, existing_definitions = populate_definitions(interpretation, definitions=definitions, expire=False)
+        _, existing_definitions = populate_definitions(interpretation, expire=False)
     for definition in existing_definitions.pool.values():
         [definitions.add(d) for d in definition]
 
