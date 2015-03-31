@@ -180,7 +180,8 @@ def add_parent_definitions(row, db=None, definitions=None, refresh=False, existi
     return definitions
 
 
-def process_instrument(row=None, db=None, existing_definitions=None, refresh=False, tree=None, latest=False):
+def process_instrument(row=None, db=None, existing_definitions=None, refresh=True, tree=None, latest=False):
+    print 'Processing ', row.get('title')
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
     if not latest:

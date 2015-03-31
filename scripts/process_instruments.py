@@ -24,9 +24,10 @@ def run(db, config):
         cur.execute(query)
         total = cur.fetchone()['count']
     count = 0
+
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
-        query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
-                JOIN documents d on d.id = i.id
+        cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
+        query = """SELECT *, true as latest FROM latest_instruments i
                 where processed_document is null limit 1 """
         while True:
             print '%d/%d' % (count, total)
@@ -43,6 +44,7 @@ def run(db, config):
             queries.process_instrument(
                     row=result[0], db=db,
                     existing_definitions=existing_definitions,
+                    refresh=False,
                     latest=result[0].get('latest'))
             count += 1
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
