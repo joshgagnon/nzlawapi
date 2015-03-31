@@ -16,6 +16,8 @@ from subprocess import Popen, PIPE
 import shutil
 import codecs
 
+large_parser = etree.XMLParser(huge_tree=True)
+
 
 class Instrument(object):
     def __init__(self, id, document, attributes, skeleton, tree=None, heights={}, title=None, definitions=None):
@@ -32,7 +34,7 @@ class Instrument(object):
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
     def get_tree(self):
-        return self.tree or etree.fromstring(self.document)
+        return self.tree or etree.fromstring(self.document, parser=large_parser)
 
 
 def format_dates(tree):
@@ -153,39 +155,57 @@ def process_contents(id, tree, db=None):
     (db or get_db()).commit()
     return contents
 
-def get_parent_definitions(row, db=None, definitions=None):
-    with (db or get_db()).cursor() as cur:
-        cur.execute(""" SELECT parent_id FROM subordinates s JOIN instruments i ON parent_id = id
+
+def add_parent_definitions(row, db=None, definitions=None):
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute(""" SELECT * FROM subordinates s
+            JOIN instruments i ON parent_id = i.id
+            JOIN documents d on i.id = d.id
             WHERE child_id = %(id)s AND title != %(title)s """, row)
-        instruments = [get_instrument_object(r[0]) for r in cur.fetchall()]
+        for result in cur.fetchall():
 
-        for instrument in instruments:
+            if not result.get('definitions'):
+                title = unicode(result.get('title').decode('utf-8'))
+                parent_definitions = process_save_definitions(
+                    etree.fromstring(result.get('document'),
+                        parser=etree.XMLParser(huge_tree=True)),
+                    id=result.get('id'), db=db, title=title)
+                parent_definitions = json.loads(parent_definitions.to_json())
+            else:
+                parent_definitions = result.get('definitions')
 
-            for defs in instrument.definitions:
+            for defs in parent_definitions:
                 [definitions.add(Definition(**k)) for k in defs]
                 definitions.enable_tag(row.get('govt_id'))
-            #print instrument.definitions
+
     return definitions
 
-def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=None, latest=False):
+
+def extract_save_definitions(tree, id, definitions=None, db=None, title=None):
+    tree, definitions = populate_definitions(tree, definitions, title=title, expire=True)
+    with (db or get_db()).cursor() as cur:
+        cur.execute("""UPDATE documents SET definitions = %(defs)s where id = %(id)s""" ,
+            {'defs': definitions.to_json(), 'id': id})
+    return definitions
+
+def process_instrument(row=None, db=None, existing_definitions=None, refresh=True, tree=None, latest=False):
     if not tree:
-        tree = etree.fromstring(row.get('document'))
+        tree = etree.fromstring(row.get('document'), parser=large_parser)
     if not latest:
         tree.attrib['old-version'] = 'true'
-    if not definitions:
-        definitions = Definitions()
+
+    definitions = Definitions()
 
     format_dates(tree)
 
     tree = process_instrument_links(tree, db)
-
-    tree, definitions = populate_definitions(tree, definitions, title=row.get('title'), expire=True)
-
+    title = unicode(row.get('title').decode('utf-8'))
+    tree, definitions = populate_definitions(tree, definitions, title=title, expire=True)
     with (db or get_db()).cursor() as cur:
         cur.execute("""UPDATE documents SET definitions = %(defs)s where id = %(id)s""" ,
             {'defs': definitions.to_json(), 'id': row.get('id')})
 
-    if row.get('title') != 'Interpretation Act 1999':
+    if not existing_definitions and row.get('title') != 'Interpretation Act 1999':
         interpretation = get_act_exact('Interpretation Act 1999', db=db)
         act_date  = row.get('date_assent')
         interpret_date = safe_date(interpretation.attrib.get('date.assent'))
@@ -193,11 +213,12 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
             # remove s 30 from interpretation act
             node = nodes_from_path_string(interpretation, 's 30')[0]
             node.getparent().remove(node)
-        _, definitions = populate_definitions(interpretation, definitions=definitions)
-
+        _, existing_definitions = populate_definitions(interpretation, definitions=definitions)
+    for definition in existing_definitions.pool.values():
+        [definitions.add(d) for d in definition]
 
     # get defs from all parent instruments
-    definitions = get_parent_definitions(row, definitions=definitions, db=db)
+    definitions = add_parent_definitions(row, definitions=definitions, db=db)
 
     # now mark them
     tree, _ = process_definitions(tree, definitions)
@@ -230,7 +251,7 @@ def fetch_parts(doc_id, db=None, parts=None):
 
 
 def prep_instrument(result, replace, db):
-    print 'prepping ', result.get('title')
+    print 'Prepping: ', result.get('title')
     if not result.get('id'):
         raise CustomException('Instrument not found')
     tree = None
@@ -245,7 +266,7 @@ def prep_instrument(result, replace, db):
         document = result.get('processed_document')
         definitions = result.get('definitions')
     if redo_skele or not result.get('skeleton'):
-        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document), db=db)
+        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         skeleton = result.get('skeleton')
         heights = result.get('heights')
@@ -292,7 +313,7 @@ def get_act_exact(title=None, doc_id=None, db=None):
         cur.execute(query, {'title': title, 'id': doc_id})
         try:
             result = cur.fetchone()
-            return etree.fromstring(result[0])
+            return etree.fromstring(result[0], parser=large_parser)
         except:
             raise CustomException("Instrument not found")
 
@@ -341,11 +362,11 @@ def get_contents(document_id):
             {'document_id': document_id})
         result = cur.fetchone()
         if not result.get('contents'):
-            contents = process_contents(document_id, etree.fromstring(get_instrument_object(document_id).document), db=db)
+            contents = process_contents(document_id,
+                etree.fromstring(get_instrument_object(document_id).document, parser=large_parser), db=db)
         else:
             contents = result.get('contents')
         return {'html': contents}
-
 
 
 def get_instrument_object(id=None, db=None, replace=False):
