@@ -14,7 +14,7 @@ do_id_lookup = True
 p = etree.XMLParser(huge_tree=True)
 
 def run(db, config):
-    if False and do_id_lookup:
+    if do_id_lookup:
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute(""" delete from id_lookup""")
         with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
