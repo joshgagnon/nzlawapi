@@ -7,14 +7,17 @@ import os
 from lxml import etree
 
 def run(db, config):
-    """tree, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
-    tree, pre_defs = definitions.process_definitions(interpretation)
+
+    tree, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
+    tree, pre_defs = definitions.process_definitions(tree, pre_defs)
+    interpret_date = util.safe_date(tree.attrib.get('date.assent'))
     interpretation = queries.get_act_exact('Interpretation Act 1999', db=db)
     interpretation_date = util.safe_date(interpretation.attrib.get('date.assent'))
     node = traversal.nodes_from_path_string(interpretation, 's 30')[0]
     node.getparent().remove(node)
     tree, post_defs = definitions.populate_definitions(interpretation)
-    tree, post_defs = definitions.process_definitions(interpretation)"""
+    tree, post_defs = definitions.process_definitions(tree, post_defs)
+
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """select count(*) as count from instruments i join documents d on i.id = d.id where processed_document is null """
@@ -22,14 +25,25 @@ def run(db, config):
         total = cur.fetchone()['count']
     count = 0
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
-        query = """select i.id, title from instruments i join documents d on i.id = d.id where processed_document is null limit 1 """
+        query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
+                JOIN documents d on d.id = i.id
+                where processed_document is null limit 1 """
         while True:
             print '%d/%d' % (count, total)
             cur.execute(query)
             result = cur.fetchall()
             if not len(result):
                 break
-            queries.get_instrument_object(id=result[0]['id'], db=db)
+
+            act_date = result[0].get('date_assent')
+            if not act_date or (act_date and interpret_date < act_date):
+                existing_definitions = post_defs
+            else:
+                existing_definitions = pre_defs
+            queries.process_instrument(
+                    row=result[0], db=db,
+                    existing_definitions=existing_definitions,
+                    latest=result[0].get('latest'))
             count += 1
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
 
