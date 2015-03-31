@@ -90,15 +90,18 @@ def run(db, config):
 
                 pursuant = tree.xpath('.//pursuant')
                 if len(pursuant):
-                    refs = pursuant[0].xpath('.//extref')
-                    if len(refs):
-                        ids = [id_lookup[ref.attrib['href']] for ref in refs]
-                    else:
-                        ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
-                    ids = list(set(ids))
-                    if len(ids):
-                        args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
-                        out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
+                    try:
+                        refs = pursuant[0].xpath('.//extref')
+                        if len(refs):
+                            ids = [id_lookup[ref.attrib['href']] for ref in refs]
+                        else:
+                            ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
+                        ids = list(set(ids))
+                        if len(ids):
+                            args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
+                            out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
+                    except KeyError:
+                        print refs, document.get('title')
                 else:
                     pass
                     # do nothing

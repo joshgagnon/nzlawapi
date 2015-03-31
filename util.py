@@ -161,20 +161,20 @@ def generate_path_string(node, id=None, title=None):
             }), result)
 
 
-
-
 class MatchError(Exception):
     pass
 
+
 def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignore_fields=None):
     ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading', 'def-term', 'cataref']
+
     def process_node(parent):
         for node in parent.childNodes[:]:  # better clone, as we will modify
             if monitor and not monitor.cont():
                 return
             if node.nodeType == node.ELEMENT_NODE and node.tagName in ignore_fields:
                 continue
-            elif store.use_life_cycle and  node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+            elif store.use_life_cycle and node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
                 store.enable_tag(node.getAttribute('id'))
             if node.nodeType == node.TEXT_NODE:
                 reg = store.get_regex()

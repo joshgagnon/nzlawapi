@@ -4,12 +4,12 @@ from lxml import etree
 from nltk.stem.wordnet import WordNetLemmatizer
 from pattern.en import pluralize, singularize
 from xml.dom import minidom
-from copy import deepcopy
 from collections import defaultdict
 from itertools import chain
 import re
 import os
 import uuid
+import json
 
 lmtzr = WordNetLemmatizer()
 
@@ -27,11 +27,10 @@ def key_set(full_word):
 
 class Definition(object):
 
-    def __init__(self, full_word, xmls, id, expiry_tag=None):
-        id = 'def-%s' % id
+    def __init__(self, full_word, results, id, expiry_tag=None, **kwargs):
         self.full_word = full_word
         self.keys = key_set(full_word)
-        self.xmls = xmls
+        self.results = results
         self.id = id
         self.expiry_tag = expiry_tag
 
@@ -40,19 +39,26 @@ class Definition(object):
 
     def combine(self, other):
         # to do, prioritize
-        self.xmls += other.xmls
+        self.results += other.results
 
     def apply_definitions(self, dicttree):
-        for i, x in enumerate(self.xmls):
-            if isinstance(x, str):
-                self.xmls[i] = dicttree[x]
+        for result in self.results:
+            if 'temp_id' in result:
+                result['xml'] = etree.tostring(dicttree[result['temp_id']], encoding='UTF-8', method="html")
+                del result['temp_id']
 
     def render(self):
         xml = etree.Element('catalex-def-para')
-        [xml.append(deepcopy(x)) for x in self.xmls]
+        for result in self.results:
+            if 'context' in result:
+                xml.append(etree.fromstring(result['context']))
+            xml.append(etree.fromstring(result['xml']))
+            if 'src' in result:
+                xml.append(etree.fromstring(result['src']))
+        html = etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
         return {
             'title': self.full_word,
-            'html': etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
+            'html': html
         }
 
 
@@ -92,16 +98,18 @@ class Definitions(object):
         return list(chain.from_iterable(self.pool.values()))
 
     def enable_tag(self, tag):
-        for definition in self.pool[tag]:
-            self.active[definition.keys].append(definition)
-            self.regex = None
+        if tag in self.pool:
+            for definition in self.pool[tag]:
+                self.active[definition.keys].append(definition)
+                self.regex = None
 
     def expire_tag(self, tag):
-        for definition in self.pool[tag]:
-            self.active[definition.keys].remove(definition)
-            if not len(self.active[definition.keys]):
-                del self.active[definition.keys]
-            self.regex = None
+        if tag in self.pool:
+            for definition in self.pool[tag]:
+                self.active[definition.keys].remove(definition)
+                if not len(self.active[definition.keys]):
+                    del self.active[definition.keys]
+                self.regex = None
 
     def ordered_defs(self):
         current = map(lambda x: x[-1], self.active.values())
@@ -133,8 +141,15 @@ class Definitions(object):
         return newone
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                sort_keys=True, indent=4)
+        defs = [{'key': k, 'value': v} for k, v in self.pool.items()]
+        return json.dumps(defs, default=lambda o: o.__dict__)
+
+    def from_json(self, data):
+        self.pool = defaultdict(list)
+        self.active = defaultdict(list)
+        self.regex = None
+        for d in data:
+            self.pool[d['key']] = [Definition(**x) for x in d['value']]
 
 
 def infer_life_time(node):
@@ -207,24 +222,26 @@ def find_all_definitions(tree, definitions, expire=True, title=None):
                 # todo tricky rules
                 src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
                 src.text, src.attrib['href'], _ = generate_path_string(node, title=title)
-
+                src_id = src.attrib['src']
+                src = etree.tostring(src, method="html", encoding="UTF-8")
                 expiry_tag = infer_life_time(parent) if expire else None
-                xmls = [temp_id, src]
                 try:
                     context_parent = parent.iterancestors('para').next()
                     context = context_parent.xpath('./text')[0]
-                    xmls = [context, temp_id, src]
+                    context = etree.tostring(context, method="html", encoding="UTF-8")
+                    result = {'context': context, 'temp_id': temp_id, 'src': src}
                 except (StopIteration, IndexError):
-                    xmls = [temp_id, src]
+                    result = {'temp_id': temp_id, 'src': src}
 
-                definitions.add(Definition(full_word=text, xmls=xmls,
-                                id=src.attrib['src'], expiry_tag=expiry_tag))
+                definitions.add(Definition(full_word=text, results=[result],
+                                id='def-%s' % src_id, expiry_tag=expiry_tag))
         except StopIteration:
             pass
 
 
 def process_definitions(tree, definitions, title=None):
     find_all_definitions(tree, definitions, expire=True, title=title)
+
     print 'Completed definition extraction'
     print '%d nodes to scan' % len(tree.xpath('.//*'))
 
@@ -235,7 +252,7 @@ def process_definitions(tree, definitions, title=None):
         match.appendChild(doc.createTextNode(word))
         return match
 
-    monitor = Monitor(500000)
+    monitor = Monitor(5000000)
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html")))
     domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
