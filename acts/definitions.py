@@ -39,6 +39,7 @@ class Definition(object):
         return self.id == other.id
 
     def combine(self, other):
+        # to do, prioritize
         self.xmls += other.xmls
 
     def apply_definitions(self, dicttree):
@@ -131,6 +132,10 @@ class Definitions(object):
         newone.active = self.active.copy()
         return newone
 
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                sort_keys=True, indent=4)
+
 
 def infer_life_time(node):
     def get_id(node):
@@ -173,7 +178,7 @@ def infer_life_time(node):
     return get_id(parent.iterancestors('act', 'regulation', 'sop', 'bill').next())
 
 
-def find_all_definitions(tree, definitions, expire=True):
+def find_all_definitions(tree, definitions, expire=True, title=None):
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::schedule.amendments)]")
 
     def get_parent(node):
@@ -201,7 +206,7 @@ def find_all_definitions(tree, definitions, expire=True):
                 src = etree.Element('catalex-src')
                 # todo tricky rules
                 src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
-                src.text, src.attrib['href'], _ = generate_path_string(node)
+                src.text, src.attrib['href'], _ = generate_path_string(node, title=title)
 
                 expiry_tag = infer_life_time(parent) if expire else None
                 xmls = [temp_id, src]
@@ -218,8 +223,8 @@ def find_all_definitions(tree, definitions, expire=True):
             pass
 
 
-def process_definitions(tree, definitions):
-    find_all_definitions(tree, definitions, expire=True)
+def process_definitions(tree, definitions, title=None):
+    find_all_definitions(tree, definitions, expire=True, title=title)
     print 'Completed definition extraction'
     print '%d nodes to scan' % len(tree.xpath('.//*'))
 

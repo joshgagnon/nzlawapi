@@ -172,7 +172,7 @@ def process_instrument(row=None, db=None, definitions=None, refresh=True, tree=N
             definitions = Definitions()
     format_dates(tree)
     tree = process_instrument_links(tree, db)
-    tree, definitions = process_definitions(tree, definitions)
+    tree, definitions = process_definitions(tree, definitions, title=row.get('title'))
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET processed_document =  %(doc)s
                     WHERE  d.id =  %(id)s """

@@ -7,11 +7,14 @@ import importlib
 import os
 from lxml import etree
 from collections import defaultdict
+import re
+
 
 do_id_lookup = True
+p = etree.XMLParser(huge_tree=True)
 
 def run(db, config):
-    if do_id_lookup:
+    if False and do_id_lookup:
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute(""" delete from id_lookup""")
         with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
@@ -24,7 +27,7 @@ def run(db, config):
                     if count % 10 == 0:
                         print count, len(id_results)
                     count += 1
-                    for el in etree.fromstring(result['document']).xpath('//*[@id]'):
+                    for el in etree.fromstring(result['document'], parser=p).xpath('//*[@id]'):
                         new_id = el.attrib.get('id')
                         id_results.append( (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0]))
                 results = cur.fetchmany(1)
@@ -42,7 +45,7 @@ def run(db, config):
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" delete from document_references""")
         cur.execute(""" delete from section_references""")
-        cur.execute(""" delete from subordinate""")
+        cur.execute(""" delete from subordinates""")
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         result_to_dict = lambda r: (r['govt_id'], r['parent_id'])
@@ -60,16 +63,18 @@ def run(db, config):
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
         count = 0
-        cur.execute("""SELECT document, d.id from instruments i join documents d on i.id = d.id """)
+        cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id """)
         documents = cur.fetchmany(1)
         while len(documents):
             for document in documents:
                 if count % 100 == 0:
                     print count
                 count += 1
-                tree = etree.fromstring(document['document'])
+                tree = etree.fromstring(document['document'], parser=p)
                 source_id = document['id']
-                links = map(lambda x: {'id': x.attrib['href'], 'path': generate_path_string(x)}, tree.xpath('.//extref[@href]|.//intref[@href]'))
+                links = map(lambda x: {'id': x.attrib['href'],
+                    'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
+                    tree.xpath('.//extref[@href]|.//intref[@href]'))
                 counters = defaultdict(int)
                 for link in links:
                     if link['id'] in id_lookup:
@@ -91,9 +96,9 @@ def run(db, config):
                     else:
                         ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
                     ids = list(set(ids))
-                    print ids
-                    args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
-                    out.execute("INSERT INTO subordinate (parent_id, child_id) VALUES " + args_str)
+                    if len(ids):
+                        args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
+                        out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
                 else:
                     pass
                     # do nothing
