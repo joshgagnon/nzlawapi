@@ -7,45 +7,30 @@ import os
 from lxml import etree
 
 def run(db, config):
-    _, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
+    """tree, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
+    tree, pre_defs = definitions.process_definitions(interpretation)
     interpretation = queries.get_act_exact('Interpretation Act 1999', db=db)
     interpretation_date = util.safe_date(interpretation.attrib.get('date.assent'))
     node = traversal.nodes_from_path_string(interpretation, 's 30')[0]
     node.getparent().remove(node)
-    _, post_defs = definitions.populate_definitions(interpretation)
+    tree, post_defs = definitions.populate_definitions(interpretation)
+    tree, post_defs = definitions.process_definitions(interpretation)"""
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """select i.id, title from instruments i join documents d on i.id = d.id where definitions is null """
+        query = """select count(*) as count from instruments i join documents d on i.id = d.id where processed_document is null """
         cur.execute(query)
-        results = cur.fetchall()
-
-        for i, r in enumerate(results):
-            print '%d/%d' % (i, len(results))
-            cur.execute("""SELECT * FROM instruments i
-                JOIN documents d on d.id = i.id
-                where i.id =  %(id)s""", {'id': r['id']})
-            row = cur.fetchone()
-            title = unicode(row.get('title').decode('utf-8'))
-            queries.extract_save_definitions(etree.fromstring(row.get('document'), parser=etree.XMLParser(huge_tree=True)), row.get('id'), db=db, title=title)
-
-            db.commit()
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """select i.id, title from instruments i join documents d on i.id = d.id where processed_document is null """
-        cur.execute(query)
-        results = cur.fetchall()
-        for i, r in enumerate(results):
-            print '%d/%d' % (i, len(results))
-            cur.execute("""SELECT * FROM instruments i
-                JOIN documents d on d.id = i.id
-                where i.id =  %(id)s""", {'id': r['id']})
-            row = cur.fetchone()
-            act_date = row.get('date_assent')
-            if not act_date or (act_date and  interpretation_date < act_date):
-                defs = post_defs.__deepcopy__()
-            else:
-                defs = pre_defs.__deepcopy__()
-            queries.process_instrument(row, db, defs, refresh=False, latest=True)
-            db.commit()
+        total = cur.fetchone()['count']
+    count = 0
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
+        query = """select i.id, title from instruments i join documents d on i.id = d.id where processed_document is null limit 1 """
+        while True:
+            print '%d/%d' % (count, total)
+            cur.execute(query)
+            result = cur.fetchall()
+            if not len(result):
+                break
+            queries.get_instrument_object(id=result[0]['id'], db=db)
+            count += 1
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
 
 if __name__ == "__main__":
@@ -61,6 +46,7 @@ if __name__ == "__main__":
     from acts import traversal
     from acts import queries
     import util
+    import server
     db = psycopg2.connect(
             database=config.DB,
             user=config.DB_USER,

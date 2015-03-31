@@ -248,7 +248,7 @@ def process_definitions(tree, definitions):
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html")))
     domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
-
+    definitions.apply_definitions(tree)
     return tree, definitions
 
 
@@ -256,5 +256,4 @@ def populate_definitions(tree, definitions=None, expire=True, title=None):
     if not definitions:
         definitions = Definitions()
     find_all_definitions(tree, definitions, expire=expire, title=title)
-    definitions.apply_definitions(tree)
     return tree, definitions
