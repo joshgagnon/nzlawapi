@@ -24,26 +24,31 @@ def run(db, config):
         else:
             existing_definitions = pre_defs
         for definition in existing_definitions.pool.values():
-            [definitions.add(d) for d in definition]
+            [definitions.add(d) for d in definition if d.source not in definitions.titles]
         definitions.titles += existing_definitions.titles
+        definitions.titles = list(set(definitions.titles))
         return definitions
 
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """select count(*) as count from instruments i join documents d on i.id = d.id where processed_document is null """
-        cur.execute(query)
-        total = cur.fetchone()['count']
+    def get_total():
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+            query = """select count(*) as count from instruments i join documents d on i.id = d.id where processed_document is null """
+            cur.execute(query)
+            return cur.fetchone()['count']
+
     count = 0
+    total = 0
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
+        cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
         # Remove the and " exists(select 1 from latest_instruments where id=i.id)" line to do full processing
         query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
                 JOIN documents d on d.id = i.id
-                where title = 'Local Government Elected Members (2014/15) (Certain Local Authorities) Determination 2014 Amendment Determination 2014'
-                and  exists(select 1 from latest_instruments where id=i.id)
+                where processed_document is null
                 order by year desc
                 limit 1 """
 
-                #where processed_document is null
         while True:
+            if count % 100 == 0:
+                total = get_total()
             print '%d/%d' % (count, total)
             cur.execute(query)
             result = cur.fetchall()

@@ -27,12 +27,13 @@ def key_set(full_word):
 
 class Definition(object):
 
-    def __init__(self, full_word, results, id, expiry_tag=None, **kwargs):
+    def __init__(self, full_word, results, id, source, expiry_tag=None, **kwargs):
         self.full_word = full_word
         self.keys = key_set(full_word)
         self.results = results
         self.id = id
         self.expiry_tag = expiry_tag
+        self.source = source
 
     def __eq__(self, other):
         return self.id == other.id
@@ -236,7 +237,7 @@ def find_all_definitions(tree, definitions, expire=True, title=None):
                     result = {'temp_id': temp_id, 'src': src}
 
                 definitions.add(Definition(full_word=text, results=[result],
-                                id='def-%s' % src_id, expiry_tag=expiry_tag))
+                                id='def-%s' % src_id, source=title, expiry_tag=expiry_tag))
         except StopIteration:
             pass
 

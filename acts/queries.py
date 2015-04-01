@@ -30,7 +30,7 @@ class Instrument(object):
         self.tree = tree
         self.definitions = definitions
         self.length = len(self.document)
-        ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents', 'definitions']
+        ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
     def get_tree(self):
@@ -166,8 +166,9 @@ def get_interpretation_defs(instrument_date, definitions, db=None):
     interpret_tree, _ = process_definitions(interpret_tree, existing_definitions)
 
     for definition in existing_definitions.pool.values():
-        [definitions.add(d) for d in definition]
+        [definitions.add(d) for d in definition if d.source not in definitions.titles]
     definitions.titles += existing_definitions.titles
+    definitions.titles = list(set(definitions.titles))
     return definitions
 
 
@@ -192,9 +193,12 @@ def add_parent_definitions(row, db=None, definitions=None, refresh=False, leaf_d
                 else:
                     parent_definitions = result.get('definitions')
                 for defs in parent_definitions['values']:
-                    [definitions.add(Definition(**k)) for k in defs]
+                    # Add unseen defs
+                    [definitions.add(Definition(**k)) for k in defs if k['source'] not in definitions.titles]
+                    # Enable non locally scoped defs
                     definitions.enable_tag(result.get('govt_id'))
                 definitions.titles += parent_definitions['titles']
+                definitions.titles = list(set(definitions.titles))
 
         if not processed_parent and row.get('title') != 'Interpretation Act 1999' and 'Interpretation Act 1999' not in definitions.titles:
             leaf_defs(row.get('date_assent'), definitions, db=db)
