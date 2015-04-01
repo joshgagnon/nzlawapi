@@ -164,7 +164,6 @@ def get_interpretation_defs(instrument_date, definitions, db=None):
         node.getparent().remove(node)
     interpret_tree, existing_definitions = populate_definitions(interpretation, expire=False, title="Interpretation Act 1999")
     interpret_tree, _ = process_definitions(interpret_tree, existing_definitions)
-
     for definition in existing_definitions.pool.values():
         [definitions.add(d) for d in definition if d.source not in definitions.titles]
     definitions.titles += existing_definitions.titles
@@ -172,7 +171,8 @@ def get_interpretation_defs(instrument_date, definitions, db=None):
     return definitions
 
 
-def add_parent_definitions(row, db=None, definitions=None, refresh=False, leaf_defs=get_interpretation_defs):
+def add_parent_definitions(row, db=None, definitions=None, refresh=False,
+    strategy={'leaf_defs': get_interpretation_defs, 'links': process_instrument_links}):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest
             FROM subordinates s
@@ -188,7 +188,7 @@ def add_parent_definitions(row, db=None, definitions=None, refresh=False, leaf_d
                     tree, parent_definitions = process_instrument(
                         row=result, db=db,
                         refresh=refresh, latest=result.get('latest'),
-                        leaf_defs=leaf_defs)
+                        strategy=strategy)
                     parent_definitions = json.loads(parent_definitions.to_json())
                 else:
                     parent_definitions = result.get('definitions')
@@ -199,13 +199,14 @@ def add_parent_definitions(row, db=None, definitions=None, refresh=False, leaf_d
                 definitions.titles = list(set(definitions.titles))
 
         if not processed_parent and row.get('title') != 'Interpretation Act 1999' and 'Interpretation Act 1999' not in definitions.titles:
-            leaf_defs(row.get('date_assent'), definitions, db=db)
+            strategy['leaf_defs'](row.get('date_assent'), definitions, db=db)
         print definitions.titles
 
     return definitions
 
 
-def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False, leaf_defs=get_interpretation_defs):
+def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
+        strategy={'leaf_defs': get_interpretation_defs, 'links': process_instrument_links}):
     print 'Processing: ', row.get('title')
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
@@ -216,19 +217,18 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
 
     format_dates(tree)
 
-    tree = process_instrument_links(tree, db)
+    tree = strategy['links'](tree, db)
 
     title = unicode(row.get('title').decode('utf-8'))
     tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True)
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
-        refresh=refresh, leaf_defs=leaf_defs)
+        refresh=refresh, strategy=strategy)
 
     # now mark them
-    tree, _ = process_definitions(tree, definitions)
+    tree, definitions = process_definitions(tree, definitions)
 
     with (db or get_db()).cursor() as cur:
         data = definitions.to_json()
-        print len(data)
         cur.execute("""UPDATE documents SET definitions = %(defs)s where id = %(id)s""" ,
             {'defs': data, 'id': row.get('id')})
 

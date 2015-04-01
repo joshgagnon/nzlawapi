@@ -10,7 +10,7 @@ from queries import get_instrument_object, get_latest_instrument_object, fetch_p
 
 
 def instrument_skeleton_response(instrument):
-    # TODO, bake in first couple of parts
+    # maybe, bake in first couple of parts
     return {
         'html_content': instrument.skeleton,
         'title': instrument.title,
@@ -20,7 +20,7 @@ def instrument_skeleton_response(instrument):
         'attributes': instrument.attributes,
         'format': 'skeleton',
         'heights': instrument.heights,
-        'parts': fetch_parts(instrument.id, parts=[0, 1]),
+        'parts': {},
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,

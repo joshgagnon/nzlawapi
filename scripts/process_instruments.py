@@ -18,6 +18,11 @@ def run(db, config):
     tree, post_defs = definitions.populate_definitions(interpretation, title=inter_title)
     tree, post_defs = definitions.process_definitions(tree, post_defs)
 
+    link_store = links.get_links(db)
+
+    def get_links(tree, db):
+        return links.process_instrument_links(tree, db, links=link_store)
+
     def get_interpretation_defs(instrument_date, definitions, db):
         if not instrument_date or (instrument_date and interpretation_date < instrument_date):
             existing_definitions = post_defs
@@ -59,7 +64,9 @@ def run(db, config):
                 row=result[0], db=db,
                 refresh=False,
                 latest=result[0].get('latest'),
-                leaf_defs=get_interpretation_defs)
+                strategy={
+                'leaf_defs': get_interpretation_defs,
+                'links': get_links})
             count += 1
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
 
@@ -75,6 +82,7 @@ if __name__ == "__main__":
     from acts import definitions
     from acts import traversal
     from acts import queries
+    from acts import links
     import util
     import server
     db = psycopg2.connect(

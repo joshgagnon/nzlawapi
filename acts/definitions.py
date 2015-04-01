@@ -87,7 +87,6 @@ class Definitions(object):
         raise KeyError
 
     def add(self, definition):
-        print definition,definition.expiry_tag, definition.full_word
         for d in self.pool[definition.expiry_tag]:
             if d.full_word == definition.full_word:
                 # same scope, must join together

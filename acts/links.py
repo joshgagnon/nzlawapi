@@ -6,7 +6,7 @@ from util import Monitor, node_replace, MatchError, remove_nbsp
 from lxml import etree
 
 
-def process_instrument_links(tree, db=None):
+def get_links(db=None):
     class InstrumentLink(object):
         use_life_cycle = False
 
@@ -42,6 +42,18 @@ def process_instrument_links(tree, db=None):
         links = InstrumentLink()
         map(lambda x: links.add(x[0], x[1]), results)
 
+    return links
+
+
+
+
+def process_instrument_links(tree, db=None, links=None):
+    links = links or get_links(db)
+    mon = Monitor()
+    for a in tree.xpath('.//*[@href]'):
+        a.attrib['link-id'] = '%d' % mon.i
+        mon.cont()
+
     def create_link(doc, word, result, index):
         match = doc.createElement('cataref')
         match.setAttribute('href', 'instrument/%s' % result['id'])
@@ -50,10 +62,6 @@ def process_instrument_links(tree, db=None):
         match.appendChild(doc.createTextNode(word))
         return match
 
-    mon = Monitor()
-    for a in tree.xpath('.//*[@href]'):
-        a.attrib['link-id'] = '%d' % mon.i
-        mon.cont()
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html", encoding="UTF-8")))
     domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
