@@ -239,7 +239,7 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        defs = definitions.render(title).items()
+        defs = definitions.render().items()
         if len(defs):
             args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], list(x[1]['words']), json.dumps(x[1]['html'])))
                 for x in defs)
