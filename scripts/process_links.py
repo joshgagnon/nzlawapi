@@ -11,7 +11,7 @@ import re
 
 p = etree.XMLParser(huge_tree=True)
 
-def run(db, config, do_id_lookup, do_references=False):
+def run(db, config, do_id_lookup=True, do_references=True):
     if do_id_lookup:
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute(""" delete from id_lookup""")
@@ -184,6 +184,6 @@ if __name__ == "__main__":
             user=config.DB_USER,
             host=config.DB_HOST,
             password=config.DB_PW)
-    run(db, config, False if len(sys.argv) > 2 and sys.argv[2] == 'skip_id' else True)
+    run(db, config)
     db.close()
 
