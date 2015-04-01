@@ -159,7 +159,7 @@ module.exports = React.createClass({
                 doc_type: this.state.article_type,
                 find: !this.state.location ? 'full' : 'location',
                 location: this.state.location,
-                id: this.state.query || this.state.document_id
+                document_id: this.state.query || this.state.document_id
             };
             title = this.state.search_query
         }
@@ -167,7 +167,7 @@ module.exports = React.createClass({
             query = {
                 doc_type: this.state.article_type,
                 find: this.state.find,
-                id: this.state.query || this.state.document_id
+                document_id: this.state.query || this.state.document_id
             };
             title = this.state.search_query
         }
@@ -232,7 +232,7 @@ module.exports = React.createClass({
         }
     },
     canHaveSidebar: function(page){
-        return page && page.get('content') &&
+        return page &&
             (page.get('page_type') ===  constants.PAGE_TYPES.INSTRUMENT
             //|| page.get('page_type') ===  constants.PAGE_TYPES.CASE
             )

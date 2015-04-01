@@ -22,6 +22,7 @@ module.exports = React.createClass({
         this.setState({active: active})
     },
     renderBody: function(childname){
+
         if(childname === 'location'){
             return <ArticleScrollSpy article={this.props.article} viewer_id={this.props.viewer_id}
               position={this.props.view.getIn(['positions', this.props.article.get('id')])}/>;
@@ -41,7 +42,7 @@ module.exports = React.createClass({
                   onSelect={this.setVisible}>
                       {this.state.options.map(function(k){
                         return <TabPane key={k} eventKey={k} tab={strings[k]}>
-                                { this.renderBody(k) }
+                                 { this.props.article.get('content') ? this.renderBody(k) : null }
                             </TabPane>
                       }.bind(this))}
               </TabbedArea>

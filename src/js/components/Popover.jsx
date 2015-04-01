@@ -10,7 +10,7 @@ var _ = require('lodash');
 
 var PopoverBehaviour = {
     needFetch: function(){
-        return !this.getLocalContent() && !this.props.fetched
+        return !this.getLocalContent() && !this.props.fetched;
     },
     renderFooter: function(){
         if((this.props.type === 'link' || this.props.type === 'location')){
@@ -35,6 +35,7 @@ var PopoverBehaviour = {
     },
     getLocalContent: function(){
         return false;
+        // can't work in skeleton, fragment mode
         /*if (this.props.target && $('#' + this.props.target)[0]) {
             return true;
         }*/
@@ -73,18 +74,19 @@ var PopoverBehaviour = {
          Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
     },
     open: function(){
-        var query = _.extend({}, this.props.query);
-        if(query.find === 'preview'){
-            query.find = 'full';
+        var query = this.props.query
+        if(query && query.find === 'preview'){
+            query = _.extend({}, query, {find: 'full'});
         }
         Actions.newPage({
             title: this.props.full_title || this.props.title,
+            query_string: this.props.url,
             query: query
         }, this.props.viewer_id)
     }
 }
 
-
+// USING PLAIN JS
 module.exports = {
     Popover: React.createClass({
         mixins: [BootstrapMixin, PopoverBehaviour],

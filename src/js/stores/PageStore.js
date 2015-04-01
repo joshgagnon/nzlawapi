@@ -56,14 +56,34 @@ var PageStore = Reflux.createStore({
         page.contents = _.omit(page.contents || {}, 'fetching');
         return page;
     },
+    findDuplicate: function(page){
+        // we will fine a duplicate as having the same set of query fields
+        var fields = ['document_id', 'find', 'location', 'govt_location', 'govt', 'query'];
+        // consider page_type,
+        // beware of necessary tranformsation
+        // consider just hashing that object above
+        // or, could add NaN or some other hack to mark 'dirty' pages, maybe after user interaction
+        return this.pages.find(function(p){
+            var p_js = p.get('query').toJS();
+            return _.all(_.map(fields, function(field){
+                return !p_js[field] && !page.query[field] || page.query[field]===p_js[field];
+            }));
+        });
+    },
     onNewPage: function(page_data, viewer_id, settings){
-        var page = this.generatePage(page_data);
-        this.pages = this.pages.push(Immutable.fromJS(page));
-        Actions.requestPage(page.id);
-        if(viewer_id !== undefined){
-            Actions.showNewPage(viewer_id, page.id, settings);
+        var existing_page = this.findDuplicate(page_data);
+        if(existing_page && viewer_id !== undefined){
+            Actions.showPage(viewer_id, existing_page.get('id'));
         }
-        this.update();
+        else{
+            var page = this.generatePage(page_data);
+            this.pages = this.pages.push(Immutable.fromJS(page));
+            Actions.requestPage(page.id);
+            if(viewer_id !== undefined){
+                Actions.showNewPage(viewer_id, page.id, settings);
+            }
+            this.update();
+        }
     },
     onNewAdvancedPage: function(page_data, viewer_id){
         var page = this.generatePage(page_data);
