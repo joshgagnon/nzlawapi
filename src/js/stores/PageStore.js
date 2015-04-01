@@ -67,6 +67,9 @@ var PageStore = Reflux.createStore({
             if(page_data.query_string && page_data.query_string===p.get('query_string')){
                 return true;
             }
+            if(!page_data.query){
+                return false;
+            }
             var p_js = p.get('query').toJS();
             return _.all(_.map(fields, function(field){
                 return !p_js[field] && !page_data.query[field] || page_data.query[field]===p_js[field];

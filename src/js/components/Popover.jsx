@@ -29,6 +29,7 @@ var PopoverBehaviour = {
             return <div className="popover-footer">
                     <div className="row">
                         <Button bsSize="small" bsStyle="primary" onClick={this.addToPrint}>Add To Print</Button >
+                        <Button bsSize="small" bsStyle="primary"  onClick={this.open}>Open In New Tab</Button >
                     </div>
                 </div>
         }

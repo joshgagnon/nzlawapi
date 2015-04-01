@@ -16,6 +16,7 @@ var ArticleError = React.createClass({
 module.exports ={
 	NotLatestVersion: NotLatestVersion,
 	ArticleError: ArticleError,
-	CaseError: ArticleError,
+    CaseError: ArticleError,
+	DefinitionError: ArticleError,
 	UnknownError: ArticleError
 };

@@ -8,6 +8,7 @@ var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var Case = require('./Case.jsx');
+var Definition = require('./Definition.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
@@ -69,6 +70,9 @@ module.exports = React.createClass({
                 break;
             case(PAGE_TYPES.CASE):
                 result = <Case {...props} />
+                break;
+            case(PAGE_TYPES.DEFINTION):
+                result = <Definition {...props} />
                 break;
             default:
                 result = <LoadUnknown {...props} />;
