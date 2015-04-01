@@ -11,7 +11,7 @@ import re
 
 p = etree.XMLParser(huge_tree=True)
 
-def run(db, config, do_id_lookup):
+def run(db, config, do_id_lookup, do_references=False):
     if do_id_lookup:
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute(""" delete from id_lookup""")
@@ -41,8 +41,9 @@ def run(db, config, do_id_lookup):
 
         db.commit()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        #cur.execute(""" delete from document_references""")
-        #cur.execute(""" delete from section_references""")
+        if do_references:
+            cur.execute(""" delete from document_references""")
+            cur.execute(""" delete from section_references""")
         cur.execute(""" delete from subordinates""")
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
@@ -71,7 +72,9 @@ def run(db, config, do_id_lookup):
                 count += 1
                 tree = etree.fromstring(document['document'], parser=p)
                 source_id = document['id']
-                if False:
+
+                # todo, break up processing steps
+                if do_references:
                     links = map(lambda x: {'id': x.attrib['href'],
                         'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
                         tree.xpath('.//extref[@href]|.//intref[@href]'))
@@ -89,7 +92,7 @@ def run(db, config, do_id_lookup):
                         out.execute("INSERT INTO section_references (source_document_id, target_govt_id, repr, url) VALUES " + args_str)
 
                 ids = []
-                pursuant = tree.xpath('.//pursuant')
+                pursuant = tree.xpath('.//pursuant[not(ancestor::end)][not(ancestor::skeleton)]')
                 title = unicode(document['title'].decode('utf-8'))
                 if len(pursuant):
                     try:
@@ -103,24 +106,25 @@ def run(db, config, do_id_lookup):
                         print refs, document.get('title')
                 else:
                     # see if there is a 'is called the principal Act'
-                    principal = tree.xpath('//text[contains(., "is called the principal Act")]')
+                    rules = ('translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")', '[not(ancestor::end)][not(ancestor::skeleton)]')
+                    principal = tree.xpath('//text[contains(%s, "is called the principal act")]%s' % rules)
                     if not len(principal):
-                        principal = tree.xpath('//text[contains(., "These regulations amend the")]')
+                        principal = tree.xpath('//text[contains(%s, "these regulations amend the")]%s' % rules)
                     if not len(principal):
-                        principal = tree.xpath('//long-title[contains(., "An Act to Amend the")]')
+                        principal = tree.xpath('//text[contains(%s, "an act to amend the")]%s' % rules)
                     if not len(principal):
-                        principal = tree.xpath('//long-title[contains(., "This Act amends the")]')
+                        principal = tree.xpath('//text[contains(%s, "this act amends the")]%s' % rules)
                     if not len(principal):
-                        principal = tree.xpath('//long-title[contains(., "These regulations amend the")]')
+                        principal = tree.xpath('//text[contains(%s, "these regulations amend the")]%s' % rules)
                     if not len(principal):
-                        principal = tree.xpath('//text[contains(., "the principal Act")]')
+                        principal = tree.xpath('//def-term[contains(%s, "principal act")]%s' % rules)
                     if not len(principal):
-                        principal = tree.xpath('//text[contains(., "the principal Regulations")]')
+                        principal = tree.xpath('//def-term[contains(%s, "principal regulations")]%s' % rules)
                     try:
                         if len(principal):
-                            link = principal[0].xpath('./extref')
+                            link = principal[0].xpath('./extref|./def-term')
                             if len(link):
-                                link_id = link[0].attrib['href']
+                                link_id = link[0].attrib.get('href') or link[0].attrib.get('id')
                                 ids = [id_lookup[link_id]]
                             else:
                                 ids = [titles[x[1]] for x in regex.findall(etree.tostring(principal[0], method="text", encoding="UTF-8"))]
@@ -132,7 +136,37 @@ def run(db, config, do_id_lookup):
                     print document.get('title'), [id_to_title.get(i) for i in ids]
                     args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
                     out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
+                else:
+                    if 'Amendment' in document.get('title'):
+                        print document.get('title')
             documents = cur.fetchmany(1)
+    db.commit()
+
+    # find and remove cycles
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """
+            WITH RECURSIVE search_graph(child_id, parent_id, depth, path, cycle) AS (
+                SELECT g.child_id, g.parent_id, 1,
+                  ARRAY[g.child_id],
+                  false
+                FROM subordinates g
+              UNION ALL
+                SELECT g.child_id, g.parent_id, sg.depth + 1,
+                  path || g.child_id,
+                  g.child_id = ANY(path)
+                FROM subordinates g, search_graph sg
+                WHERE g.child_id = sg.parent_id AND NOT cycle )
+
+            SELECT distinct child_id, parent_id, year FROM search_graph g join instruments on id = child_id where cycle = true order by year limit 1; """
+        rm_query = """delete from subordinates where child_id = %(child_id)s and parent_id = %(parent_id)s"""
+        while True:
+            cur.execute(query)
+            results = cur.fetchall()
+            if len(results):
+                print 'removing'
+                cur.execute(rm_query, results[0])
+            else:
+                break
     db.commit()
 
 

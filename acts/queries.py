@@ -156,30 +156,32 @@ def process_contents(id, tree, db=None):
     return contents
 
 
-def add_parent_definitions(row, db=None, definitions=None, refresh=False):
+def add_parent_definitions(row, db=None, definitions=None, refresh=False, parents=[]):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest
             FROM subordinates s
             JOIN instruments i ON parent_id = i.id
             JOIN documents d on i.id = d.id
             WHERE child_id = %(id)s AND title != %(title)s """, row)
-        results = cur.fetchall()
-        for result in results:
+        processed_parent = False
+        for result in cur.fetchall():
             print 'Parent: ', result.get('title')
-            if result.get('title') not in definitions.titles:
-                if not result.get('definitions'):
-                    tree, definitions = process_instrument(
-                        row=result, db=db,
-                        refresh=refresh, latest=result.get('latest'))
-                    parent_definitions = json.loads(definitions.to_json())
-                else:
-                    parent_definitions = result.get('definitions')
-                for defs in parent_definitions['values']:
-                    [definitions.add(Definition(**k)) for k in defs]
-                    definitions.enable_tag(result.get('govt_id'))
-                definitions.titles += parent_definitions['titles']
-
-        if not len(results) and row.get('title') != 'Interpretation Act 1999' and 'Interpretation Act 1999' not in definitions.titles:
+            if result.get('title') not in parents:
+                processed_parent = True
+                if result.get('title') not in definitions.titles:
+                    if not result.get('definitions'):
+                        tree, definitions = process_instrument(
+                            row=result, db=db,
+                            refresh=refresh, latest=result.get('latest'), parents=parents)
+                        parent_definitions = json.loads(definitions.to_json())
+                    else:
+                        parent_definitions = result.get('definitions')
+                    for defs in parent_definitions['values']:
+                        [definitions.add(Definition(**k)) for k in defs]
+                        definitions.enable_tag(result.get('govt_id'))
+                    definitions.titles += parent_definitions['titles']
+                    print definitions.titles
+        if not processed_parent and row.get('title') != 'Interpretation Act 1999' and 'Interpretation Act 1999' not in definitions.titles:
             interpretation = get_act_exact('Interpretation Act 1999', db=db)
             act_date = row.get('date_assent')
             interpret_date = safe_date(interpretation.attrib.get('date.assent'))
@@ -196,7 +198,7 @@ def add_parent_definitions(row, db=None, definitions=None, refresh=False):
     return definitions
 
 
-def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False):
+def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False, parents=None):
     print 'Processing: ', row.get('title')
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
@@ -211,9 +213,11 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False)
 
     title = unicode(row.get('title').decode('utf-8'))
     tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True)
-
+    if not parents:
+        parents = []
+    parents.append(row.get('title'))
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
-        refresh=refresh)
+        refresh=refresh, parents=parents)
 
     # now mark them
     tree, _ = process_definitions(tree, definitions)

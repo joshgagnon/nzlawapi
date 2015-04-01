@@ -4,11 +4,11 @@ import sys
 from psycopg2 import extras
 import importlib
 import os
-from lxml import etree
+
 
 def run(db, config):
 
-    tree, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
+    """tree, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
     tree, pre_defs = definitions.process_definitions(tree, pre_defs)
     interpret_date = util.safe_date(tree.attrib.get('date.assent'))
     interpretation = queries.get_act_exact('Interpretation Act 1999', db=db)
@@ -16,7 +16,7 @@ def run(db, config):
     node = traversal.nodes_from_path_string(interpretation, 's 30')[0]
     node.getparent().remove(node)
     tree, post_defs = definitions.populate_definitions(interpretation)
-    tree, post_defs = definitions.process_definitions(tree, post_defs)
+    tree, post_defs = definitions.process_definitions(tree, post_defs)"""
 
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
@@ -27,7 +27,7 @@ def run(db, config):
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
         query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
                 JOIN documents d on d.id = i.id
-                where processed_document is null limit 1 """
+                where processed_document is null and title='Arms Regulations 1992' limit 1 """
         while True:
             print '%d/%d' % (count, total)
             cur.execute(query)
