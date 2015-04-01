@@ -131,8 +131,8 @@ class Definitions(object):
             self.regex = self.combined_reg()
         return self.regex
 
-    def render(self):
-        return {v.id: {'html': v.render(), 'words': v.keys} for v in self.items()}
+    def render(self, title):
+        return {v.id: {'html': v.render(), 'words': v.keys} for v in self.items() if not title or v.source == title}
 
     def apply_definitions(self, tree):
         dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}

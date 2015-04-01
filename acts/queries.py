@@ -30,7 +30,7 @@ class Instrument(object):
         self.tree = tree
         self.definitions = definitions
         self.length = len(self.document)
-        ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents']
+        ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents', 'definitions']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
     def get_tree(self):
@@ -241,9 +241,12 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], list(x[1]['words']), json.dumps(x[1]['html']))) for x in definitions.render().items())
-        cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
-        cur.execute("INSERT INTO definitions (document_id, key, words, data) VALUES " + args_str)
+        defs = definitions.render(title).items()
+        if len(defs):
+            args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], list(x[1]['words']), json.dumps(x[1]['html'])))
+                for x in defs)
+            cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
+            cur.execute("INSERT INTO definitions (document_id, key, words, data) VALUES " + args_str)
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
