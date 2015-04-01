@@ -175,10 +175,10 @@ def infer_life_time(node):
             return get_id(parent.iterancestors('subpart').next())
         if text.startswith('in the formula'):
             return get_id(parent.iterancestors('prov').next())
-        if 'in subsection' in text or 'of subsection' in text:
+        if 'in subsection' in text or 'of subsection' in text or 'in subclause' in text:
             # prov on purpose
             return get_id(parent.iterancestors('prov').next())
-        if 'this section' in text:
+        if 'this section' in text or 'in this clause' in text:
             return get_id(parent.iterancestors('prov').next())
         if 'in schedule' in text or 'in this schedule' in text:
             return get_id(parent.iterancestors('schedule').next())
@@ -196,7 +196,7 @@ def infer_life_time(node):
 
 
 def find_all_definitions(tree, definitions, expire=True, title=None):
-    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::schedule.amendments)]")
+    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::schedule.amendments)][not(ancestor::amend)]")
 
     def get_parent(node):
         try:

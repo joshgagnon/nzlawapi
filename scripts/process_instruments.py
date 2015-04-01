@@ -7,17 +7,26 @@ import os
 
 
 def run(db, config):
-
-    """tree, pre_defs = definitions.populate_definitions(queries.get_act_exact('Interpretation Act 1999', db=db))
+    inter_title = 'Interpretation Act 1999'
+    tree, pre_defs = definitions.populate_definitions(queries.get_act_exact(inter_title, db=db), title=inter_title)
     tree, pre_defs = definitions.process_definitions(tree, pre_defs)
     interpret_date = util.safe_date(tree.attrib.get('date.assent'))
-    interpretation = queries.get_act_exact('Interpretation Act 1999', db=db)
+    interpretation = queries.get_act_exact(inter_title, db=db)
     interpretation_date = util.safe_date(interpretation.attrib.get('date.assent'))
     node = traversal.nodes_from_path_string(interpretation, 's 30')[0]
     node.getparent().remove(node)
-    tree, post_defs = definitions.populate_definitions(interpretation)
-    tree, post_defs = definitions.process_definitions(tree, post_defs)"""
+    tree, post_defs = definitions.populate_definitions(interpretation, title=inter_title)
+    tree, post_defs = definitions.process_definitions(tree, post_defs)
 
+    def get_interpretation_defs(instrument_date, definitions, db):
+        if not instrument_date or (instrument_date and interpretation_date < instrument_date):
+            existing_definitions = post_defs
+        else:
+            existing_definitions = pre_defs
+        for definition in existing_definitions.pool.values():
+            [definitions.add(d) for d in definition]
+        definitions.titles += existing_definitions.titles
+        return definitions
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """select count(*) as count from instruments i join documents d on i.id = d.id where processed_document is null """
@@ -25,9 +34,15 @@ def run(db, config):
         total = cur.fetchone()['count']
     count = 0
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
+        # Remove the and " exists(select 1 from latest_instruments where id=i.id)" line to do full processing
         query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
                 JOIN documents d on d.id = i.id
-                where processed_document is null and title='Arms Regulations 1992' limit 1 """
+                where title = 'Local Government Elected Members (2014/15) (Certain Local Authorities) Determination 2014 Amendment Determination 2014'
+                and  exists(select 1 from latest_instruments where id=i.id)
+                order by year desc
+                limit 1 """
+
+                #where processed_document is null
         while True:
             print '%d/%d' % (count, total)
             cur.execute(query)
@@ -36,9 +51,10 @@ def run(db, config):
                 break
 
             queries.process_instrument(
-                    row=result[0], db=db,
-                    refresh=False,
-                    latest=result[0].get('latest'))
+                row=result[0], db=db,
+                refresh=False,
+                latest=result[0].get('latest'),
+                leaf_defs=get_interpretation_defs)
             count += 1
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
 
