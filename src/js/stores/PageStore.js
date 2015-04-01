@@ -56,7 +56,7 @@ var PageStore = Reflux.createStore({
         page.contents = _.omit(page.contents || {}, 'fetching');
         return page;
     },
-    findDuplicate: function(page){
+    findDuplicate: function(page_data){
         // we will fine a duplicate as having the same set of query fields
         var fields = ['document_id', 'find', 'location', 'govt_location', 'govt', 'query'];
         // consider page_type,
@@ -64,9 +64,12 @@ var PageStore = Reflux.createStore({
         // consider just hashing that object above
         // or, could add NaN or some other hack to mark 'dirty' pages, maybe after user interaction
         return this.pages.find(function(p){
+            if(page_data.query_string && page_data.query_string===p.get('query_string')){
+                return true;
+            }
             var p_js = p.get('query').toJS();
             return _.all(_.map(fields, function(field){
-                return !p_js[field] && !page.query[field] || page.query[field]===p_js[field];
+                return !p_js[field] && !page_data.query[field] || page_data.query[field]===p_js[field];
             }));
         });
     },
@@ -112,9 +115,9 @@ var PageStore = Reflux.createStore({
         var page = this.getById(page_id);
         if(!page.get('fetching') && !page.get('fetched') && !page.get('error')){
             var get;
-            get = page.get('query_string') ?
-                request.get(page.get('query_string')) :
-                request.get('/query', page.get('query').toJS());
+            get = page.get('query') ?
+                request.get('/query', page.get('query').toJS()) :
+                request.get(page.get('query_string'));
             get
                 .promise()
                 .then(function(response){ Actions.requestPage.completed(page_id, response.body); })

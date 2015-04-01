@@ -118,12 +118,12 @@ module.exports = {
              Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
         },
         render: function() {
+            var measured = !!this.props.positionTop || !!this.props.positionLeft;
             var classes = 'popover cata-popover ' + this.state.placement;
             var style = {};
             style['left'] = this.props.positionLeft;
             style['top'] = this.props.positionTop + this.topOffset;
-            style['display'] = 'block';
-
+            style['display'] = measured ? 'block' : 'none';
             var arrowStyle = {};
             arrowStyle['left'] = this.props.arrowOffsetLeft;
             arrowStyle['top'] = this.props.arrowOffsetTop;
