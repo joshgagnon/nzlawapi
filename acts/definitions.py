@@ -87,6 +87,7 @@ class Definitions(object):
         raise KeyError
 
     def add(self, definition):
+        print definition,definition.expiry_tag, definition.full_word
         for d in self.pool[definition.expiry_tag]:
             if d.full_word == definition.full_word:
                 # same scope, must join together
@@ -169,7 +170,7 @@ def infer_life_time(node):
             pass
         text = etree.tostring(parent.xpath('.//text')[0], method="text", encoding='UTF-8').strip().lower()
         if text.startswith('in this act') or text.startswith('in these regulations'):
-            return get_id(parent.iterancestors('act', 'regulation', 'bill', 'sop').next())
+            return None
         if text.startswith('in this part'):
             return get_id(parent.iterancestors('part').next())
         if text.startswith('in this subpart'):
@@ -193,7 +194,7 @@ def infer_life_time(node):
     except StopIteration:
         # couldn't find safe parent
         pass
-    return get_id(parent.iterancestors('act', 'regulation', 'sop', 'bill').next())
+    return None
 
 
 def find_all_definitions(tree, definitions, expire=True, title=None):

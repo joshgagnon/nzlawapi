@@ -195,8 +195,6 @@ def add_parent_definitions(row, db=None, definitions=None, refresh=False, leaf_d
                 for defs in parent_definitions['values']:
                     # Add unseen defs
                     [definitions.add(Definition(**k)) for k in defs if k['source'] not in definitions.titles]
-                    # Enable non locally scoped defs
-                    definitions.enable_tag(result.get('govt_id'))
                 definitions.titles += parent_definitions['titles']
                 definitions.titles = list(set(definitions.titles))
 
