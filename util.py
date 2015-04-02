@@ -191,9 +191,6 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
                         if monitor:
                             monitor.match()
                         try:
-                            if 'vehicle recovery service vehicle' in line.lower():
-                                print match.group(2)
-                                print
                             result = store.get_active(match.group(2))
                             span = match.span(2)
                             lines[i:i + 1] = [line[:span[0]], create_wrapper(domxml, line[span[0]:span[1]], result, count), line[span[1]:]]
