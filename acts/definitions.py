@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp, safe_date
+from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp
 from lxml import etree
 from nltk.stem.wordnet import WordNetLemmatizer
 from pattern.en import pluralize, singularize
@@ -27,7 +27,7 @@ def key_set(full_word):
 
 class Definition(object):
 
-    def __init__(self, full_word,  id, document_id,  results=[], expiry_tag=None, priority=None, **kwargs):
+    def __init__(self, full_word, id, document_id, results=[], expiry_tag=None, priority=None, **kwargs):
         self.full_word = full_word
         self.keys = key_set(full_word)
         self.results = results
@@ -51,7 +51,7 @@ class Definition(object):
     def apply_definitions(self, dicttree):
         for result in self.results:
             if 'context_id' in result:
-                result['context'] = etree.tostring(dicttree[result['context_id']], encoding='UTF-8', method="html")
+                result['context'] = '<para><text>%s</text></para>' % etree.tostring(dicttree[result['context_id']], encoding='UTF-8', method="html")
                 del result['context_id']
 
             if 'temp_id' in result:

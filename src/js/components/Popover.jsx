@@ -7,6 +7,8 @@ var Actions = require('../actions/Actions');
 var ArticleSummary = require('./ArticleSummary.jsx');
 var ArticleHandlers= require('./ArticleHandlers.jsx');
 var Warnings = require('./Warnings.jsx');
+var PAGE_TYPES = require('../constants').PAGE_TYPES;
+var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
 var $ = require('jquery');
 var _ = require('lodash');
 
@@ -17,7 +19,7 @@ var PopoverBehaviour = {
         return !this.getLocalContent() && !this.props.popoverPage.get('fetched') && !this.props.popoverPage.get('error');
     },
     renderFooter: function(){
-        if((this.props.popoverPage.get('type') === 'link' || this.props.popoverPage.get('type') === 'location')){
+        if((this.props.popoverPage.get('type') === POPOVER_TYPES.LINK || this.props.popoverPage.get('type') === POPOVER_TYPES.LOCATION)){
             return <div className="popover-footer">
                     <div className="row">
                         { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
@@ -29,7 +31,7 @@ var PopoverBehaviour = {
                             null }
                     </div>
                 </div>
-        }else if(this.props.popoverPage.get('type') === 'definition'){
+        }else if(this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION){
             return <div className="popover-footer">
                     <div className="row">
                         <Button bsSize="small" bsStyle="primary" onClick={this.addToPrint}>Add To Print</Button >
@@ -69,7 +71,7 @@ var PopoverBehaviour = {
             return <div dangerouslySetInnerHTML={{__html: html}}  onClick={this.interceptLink}/>
         }
         else{
-            return <div className='csspinner traditional'  />
+            return <div className='csspinner traditional' />
         }
     },
     addToPrint: function(){
@@ -85,6 +87,7 @@ var PopoverBehaviour = {
          Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.popoverPage.get('id'));
     },
     open: function(){
+        var type = this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION ? PAGE_TYPES.DEFINITION : PAGE_TYPES.INSTRUMENT;
         var query = this.props.popoverPage.get('query')
         if(query && query.find === 'preview'){
             query = _.extend({}, query, {find: 'full'});
@@ -92,7 +95,8 @@ var PopoverBehaviour = {
         Actions.newPage({
             title: this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title'),
             query_string: this.props.popoverPage.get('query_string'),
-            query: query
+            query: query,
+            page_type: type
         }, this.props.viewer_id)
     }
 }

@@ -73,12 +73,12 @@ module.exports = Reflux.createStore({
             browser: this.browser.toJS(),
             print: _.map(this.print.toJS(), prepPrint)};
     },
-    saveCurrent: function() {
+    saveCurrent: function(){
         if(localStorage){
             localStorage['current_view'] = JSON.stringify(this.prepState());
         }
     },
-    onLoadPrevious: function(filter) {
+    onLoadPrevious: function(filter){
         if(localStorage && localStorage['current_view']){
             var data;
             try{

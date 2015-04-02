@@ -8,5 +8,11 @@ module.exports = {
 		DEFINITION_SEARCH: 'def_search',
 		DEFINITION: 'definition',
 		SECTION_REFS: 'seciton_refs'
+	},
+	POPOVER_TYPES: {
+		DEFINITION: 'definition',
+		LINK: 'link',
+		LOCATION: 'location',
+		SECTION_SUMMARY: 'section_summary'
 	}
 };

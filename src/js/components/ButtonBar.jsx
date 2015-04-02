@@ -25,8 +25,9 @@ module.exports = React.createClass({
     },
     handleAddToPrint: function(){
         Actions.addToPrint({
-            title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']),
-            query: this.props.page.getIn(['content', 'query']),
+            title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']) || this.props.page.get('title'),
+            query: this.props.page.getIn(['content', 'query']) || this.props.page.getIn(['query']),
+            query_string: this.props.page.getIn(['content', 'query_string']) || this.props.page.getIn(['query_string']),
             html: this.props.page.getIn(['content','html_content'])
         });
     },
@@ -39,7 +40,7 @@ module.exports = React.createClass({
         }
     },
     addToPrint: function(){
-        if(this.props.page && this.props.page.getIn(['content','format']) === 'fragment'){
+        if(this.props.page && (this.props.page.getIn(['content','format']) === 'fragment' ||  this.props.page.get('page_type') === constants.PAGE_TYPES.DEFINITION)){
             return <li className="suboption">
                         <a onClick={this.handleAddToPrint} ><span className="fa fa-copy" title="Full PDF"/><span className="sublabel">Add To Print</span>
                 </a></li>
@@ -124,7 +125,6 @@ module.exports = React.createClass({
                     <span className="sublabel">Side Bar</span>
                 </a>
             </li> : null }
-
             </ul>
         </li>
     },

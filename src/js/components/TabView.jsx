@@ -71,7 +71,7 @@ module.exports = React.createClass({
             case(PAGE_TYPES.CASE):
                 result = <Case {...props} />
                 break;
-            case(PAGE_TYPES.DEFINTION):
+            case(PAGE_TYPES.DEFINITION):
                 result = <Definition {...props} />
                 break;
             default:

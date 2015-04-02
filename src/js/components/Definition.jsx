@@ -28,6 +28,7 @@ module.exports = React.createClass({
         return $(this.getDOMNode()).parents('.tab-content, .results-container');
     },
     render: function(){
+
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html_content']) ?
