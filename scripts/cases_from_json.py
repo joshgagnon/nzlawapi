@@ -17,7 +17,16 @@ def run(db, config, json_file):
             with open(os.path.join(config.CASE_DIR, record['DocumentName'][:-4] + '.html')) as r:
                 cur.execute(""" INSERT INTO documents (document, type) VALUES (%(document)s, 'html') returning id""",
                     {'document': r.read()})
-            return
+            document_id = cur.fetchone()[0]
+            query = """ INSERT INTO cases (id, full_citation, neutral_citation,
+                file_number, judgment_date, location, appearences, source_id, jurisdiction) VALUES
+                ( %(document_id)s, %(full_citation)s, %(neutral_citation)s, %(file_number)s, %(judgment_date)s,
+                    %(location)s, %(appearences)s, %(source_id)s, %(jurisdiction)s ) """
+            values = {
+                'document_id': document_id,
+                'full_citation': record['CaseName'],
+                'file_number':
+            }
 
 
 if __name__ == "__main__":

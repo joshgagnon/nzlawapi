@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp
+from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp, safe_date
 from lxml import etree
 from nltk.stem.wordnet import WordNetLemmatizer
 from pattern.en import pluralize, singularize
@@ -27,25 +27,32 @@ def key_set(full_word):
 
 class Definition(object):
 
-    def __init__(self, full_word, results, id, source, doc_id, expiry_tag=None, **kwargs):
+    def __init__(self, full_word,  id, document_id,  results=[], expiry_tag=None, priority=None, **kwargs):
         self.full_word = full_word
         self.keys = key_set(full_word)
         self.results = results
+        self.priority = priority
         # id of first instance
         self.id = id
-        self.doc_id = doc_id
+        self.ids = [id]
+        self.document_id = document_id
         self.expiry_tag = expiry_tag
-        self.source = source
 
     def __eq__(self, other):
         return self.id == other.id
 
-    def combine(self, other):
-        # to do, prioritize
-        self.results += other.results
+    def combine(self, other, external):
+        if external or self.document_id != other.document_id:
+            self.ids += [other.id]
+        else:
+            self.results += other.results
 
     def apply_definitions(self, dicttree):
         for result in self.results:
+            if 'context_id' in result:
+                result['context'] = etree.tostring(dicttree[result['context_id']], encoding='UTF-8', method="html")
+                del result['context_id']
+
             if 'temp_id' in result:
                 result['xml'] = etree.tostring(dicttree[result['temp_id']], encoding='UTF-8', method="html")
                 del result['temp_id']
@@ -60,8 +67,12 @@ class Definition(object):
                 xml.append(etree.fromstring(result['src']))
         html = etree.tostring(tohtml(xml, os.path.join('xslt', 'transform_def.xslt')), encoding='UTF-8', method="html")
         return {
-            'title': self.full_word,
-            'html': html
+            'full_word': self.full_word,
+            'html': html,
+            'expiry_tag': self.expiry_tag,
+            'id': self.id,
+            'keys': list(self.keys),
+            'priority': self.priority
         }
 
 
@@ -72,7 +83,7 @@ class Definitions(object):
         self.pool = defaultdict(list)
         self.active = defaultdict(list)
         self.regex = None
-        self.titles= []
+        self.titles = []
 
     def get_active(self, key):
         keys = key_set(key)
@@ -88,11 +99,12 @@ class Definitions(object):
             return self.active[keys][-1]
         raise KeyError
 
-    def add(self, definition):
+    def add(self, definition, external=False):
         for d in self.pool[definition.expiry_tag]:
             if d.full_word == definition.full_word:
                 # same scope, must join together
-                d.combine(definition)
+                d.combine(definition, external)
+                # todo, consider equivalent plurals etc
                 return
         self.pool[definition.expiry_tag].append(definition)
         if not definition.expiry_tag:
@@ -133,8 +145,8 @@ class Definitions(object):
             self.regex = self.combined_reg()
         return self.regex
 
-    def render(self):
-        return {v.id: {'html': v.render(), 'words': v.keys} for v in self.items()}
+    def render(self, document_id):
+        return [d.render() for d in self.items() if d.document_id == document_id]
 
     def apply_definitions(self, tree):
         dicttree = {n.attrib['temp-def-id']: n for n in tree.xpath('.//*[@temp-def-id]')}
@@ -162,7 +174,6 @@ def infer_life_time(node):
         if not node.attrib.get('id'):
             node.attrib['id'] = str(uuid.uuid4())
         return node.attrib.get('id')
-
     try:
         parent = node
         try:
@@ -170,6 +181,8 @@ def infer_life_time(node):
         except StopIteration:
             pass
         text = etree.tostring(parent.xpath('.//text')[0], method="text", encoding='UTF-8').strip().lower()
+        if 'in an enactment passed or made before the commencement of this act' in text:
+            return 'maxdate:%s' % node.getroottree().getroot().attrib.get('date.assent', '')
         if text.startswith('in this act') or text.startswith('in these regulations'):
             return None
         if text.startswith('in this part'):
@@ -198,7 +211,7 @@ def infer_life_time(node):
     return None
 
 
-def find_all_definitions(tree, definitions, doc_id=0, expire=True, title=None):
+def find_all_definitions(tree, definitions, document_id, expire=True, title=None):
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::schedule.amendments)][not(ancestor::amend)]")
 
     def get_parent(node):
@@ -220,26 +233,30 @@ def find_all_definitions(tree, definitions, doc_id=0, expire=True, title=None):
                 else:
                     continue
                 parent = get_parent(node)
+                # used to flag for find later, when we insert def into db (must survive serializing)
                 temp_id = parent.attrib.get('temp-def-id', str(uuid.uuid4()))
                 parent.attrib['temp-def-id'] = temp_id
 
                 src = etree.Element('catalex-src')
-                # todo tricky rules
-                src.attrib['src'] = node.attrib.get('id') or str(uuid.uuid4())
+                node.attrib['id'] = node.attrib.get('id', str(uuid.uuid4()))
+                src.attrib['src'] = node.attrib.get('id')
                 src.text, src.attrib['href'], _ = generate_path_string(node, title=title)
                 src_id = src.attrib['src']
                 src = etree.tostring(src, method="html", encoding="UTF-8")
                 expiry_tag = infer_life_time(parent) if expire else None
+                priority = None
                 try:
                     context_parent = parent.iterancestors('para').next()
                     context = context_parent.xpath('./text')[0]
-                    context = etree.tostring(context, method="html", encoding="UTF-8")
-                    result = {'context': context, 'temp_id': temp_id, 'src': src}
+                    context_id = context.attrib.get('temp-def-id', str(uuid.uuid4()))
+                    context.attrib['temp-def-id'] = context_id
+                    result = {'context_id': context_id, 'temp_id': temp_id, 'src': src}
                 except (StopIteration, IndexError):
                     result = {'temp_id': temp_id, 'src': src}
 
                 definitions.add(Definition(full_word=text, results=[result],
-                                id='def-%s' % src_id, source=title, doc_id=doc_id, expiry_tag=expiry_tag))
+                                id='%d-%s' % (document_id, src_id),
+                                document_id=document_id, expiry_tag=expiry_tag, priority=priority))
         except StopIteration:
             pass
 
@@ -247,9 +264,8 @@ def find_all_definitions(tree, definitions, doc_id=0, expire=True, title=None):
 def process_definitions(tree, definitions):
     def create_def(doc, word, definition, index):
         match = doc.createElement('catalex-def')
-        match.setAttribute('def-id', definition.id)
-        match.setAttribute('def-doc-id', '%s' % definition.doc_id)
-        match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
+        match.setAttribute('def-ids', ';'.join(definition.ids))
+        match.setAttribute('def-idx', 'idx-%d-%d-%d' % (definition.document_id, monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
     monitor = Monitor(5000000)
@@ -260,10 +276,10 @@ def process_definitions(tree, definitions):
     return tree, definitions
 
 
-def populate_definitions(tree, definitions=None, expire=True, title=None, doc_id=0):
+def populate_definitions(tree, document_id, definitions=None, expire=True, title=None):
     if not definitions:
         definitions = Definitions()
     if title not in definitions.titles:
-        find_all_definitions(tree, definitions, expire=expire, title=title, doc_id=doc_id)
-    definitions.titles.append(title)
+        find_all_definitions(tree, definitions, expire=expire, title=title, document_id=document_id)
+        definitions.titles.append(title)
     return tree, definitions

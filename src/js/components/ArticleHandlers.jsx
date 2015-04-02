@@ -33,7 +33,8 @@ var $ = require('jquery');
                             url: '/link/'+url
                         });
                 }
-                else if(link.attr('data-def-id') || link.attr('def-id')){ //remove after finished redoing defs
+                else if(link.attr('data-def-id')){
+                    console.log('click')
                    Actions.popoverOpened(this.props.viewer_id, page.get('id'),
                         {
                         type: 'definition',
@@ -43,7 +44,7 @@ var $ = require('jquery');
                         positionTop:link.position().top + this.getScrollContainer().scrollTop(),
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
-                        url: '/definition/'+page.getIn(['content', 'document_id'])+'/'+link.attr('data-def-id')
+                        url: '/definition/'+link.attr('data-def-id')
                     });
                 }
                 else if(link.closest('[id]').length){

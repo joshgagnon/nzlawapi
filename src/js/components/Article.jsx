@@ -589,12 +589,15 @@ var ArticleContent = React.createClass({
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>
         }
+        if( this.props.page.getIn(['content', 'error'])){
+            return <div className="legislation-result">
+                { this.warningsAndErrors() }
+                </div>
+        }
         return <div className="legislation-result" onClick={this.interceptLink} >
            { this.warningsAndErrors() }
             <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
-
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
-
            <ArticleSkeletonContent ref="content"
                 content={this.props.page.get('content') }
                 parts={this.props.page.get('parts') }

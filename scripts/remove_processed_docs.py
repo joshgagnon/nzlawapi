@@ -3,11 +3,10 @@ import psycopg2
 import sys
 import importlib
 
-
 def process(db, config):
     with db.cursor() as cur:
-        cur.execute("""update documents set processed_document = null, skeleton = null, contents=null""")
         cur.execute("""delete from definitions""")
+        cur.execute("""update documents set processed_document = null, skeleton = null, contents=null""")
 
 
 if __name__ == "__main__":

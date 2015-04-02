@@ -141,6 +141,15 @@ def run(db, config, do_id_lookup=True, do_references=True):
                         print document.get('title')
             documents = cur.fetchmany(1)
     db.commit()
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+    # lets make the interpretation act the parent of everything
+
+        cur.execute("""
+            INSERT INTO subordinates (parent_id, child_id)
+            SELECT
+                (select id from instruments where title = 'Interpretation Act 1999' AND version = 19) as parent_id,
+                id as child_id  FROM instruments WHERE
+                title != 'Interpretation Act 1999""")
 
     # find and remove cycles
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
@@ -158,6 +167,7 @@ def run(db, config, do_id_lookup=True, do_references=True):
                 WHERE g.child_id = sg.parent_id AND NOT cycle )
 
             SELECT distinct child_id, parent_id, year FROM search_graph g join instruments on id = child_id where cycle = true order by year limit 1; """
+
         rm_query = """delete from subordinates where child_id = %(child_id)s and parent_id = %(parent_id)s"""
         while True:
             cur.execute(query)

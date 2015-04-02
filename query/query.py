@@ -39,13 +39,12 @@ def search_by_id(query):
     return jsonify(result), status
 
 
-@Query.route('/definition/<int:document_id>/<string:key>')
+@Query.route('/definition/<string:ids>')
 @require_auth
-def get_definition_route(document_id, key):
+def get_definition_route(ids):
     status = 200
     try:
-        result = get_definition(document_id, key)
-        result['document_id'] = document_id
+        result = get_definition(ids.split(';'))
     except Exception, e:
         result = {'error': 'Could not retrieve definition'}
         status = 500
@@ -116,13 +115,12 @@ def get_contents_route(document_id):
     return jsonify(result), status
 
 
-def get_definition(document_id, key):
-    with get_db().cursor() as cur:
-        cur.execute('SELECT data FROM definitions WHERE document_id=%(id)s and key=%(key)s', {
-            'id': document_id,
-            'key': key
+def get_definition(ids):
+    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute('SELECT html, priority FROM definitions WHERE  id=ANY(%(ids)s) order by priority', {
+            'ids': ids
         })
-        return cur.fetchone()[0]
+        return {'html_content': ''.join(map(lambda a: a['html'], cur.fetchall()))}
 
 
 def year_query(args):

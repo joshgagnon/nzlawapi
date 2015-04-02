@@ -30,8 +30,8 @@ module.exports = React.createClass({
     render: function(){
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
-                {this.props.page.getIn(['content','html']) ?
-                    <div ref="content" className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html'])}} /> :
+                {this.props.page.getIn(['content','html_content']) ?
+                    <div ref="content" className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} /> :
                     null }
              { this.renderFullPopovers() }
             { this.renderMobilePopovers() }

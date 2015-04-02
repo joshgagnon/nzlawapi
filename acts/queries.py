@@ -155,58 +155,57 @@ def process_contents(id, tree, db=None):
     (db or get_db()).commit()
     return contents
 
-def get_interpretation_defs(instrument_date, definitions, db=None):
-    interpretation, doc_id = get_act_exact('Interpretation Act 1999', db=db)
-    interpret_date = safe_date(interpretation.attrib.get('date.assent'))
-    if not instrument_date or (instrument_date and  interpret_date < instrument_date):
-        # remove s 30 from interpretation act
-        node = nodes_from_path_string(interpretation, 's 30')[0]
-        node.getparent().remove(node)
-    interpret_tree, existing_definitions = populate_definitions(interpretation, expire=False, title="Interpretation Act 1999", doc_id=doc_id)
-    interpret_tree, _ = process_definitions(interpret_tree, existing_definitions)
-    for definition in existing_definitions.pool.values():
-        [definitions.add(d) for d in definition if d.source not in definitions.titles]
-    definitions.titles += existing_definitions.titles
-    definitions.titles = list(set(definitions.titles))
-    return definitions
 
-
-def add_parent_definitions(row, db=None, definitions=None, refresh=False,
-    strategy={'leaf_defs': get_interpretation_defs, 'links': process_instrument_links}):
+def add_parent_definitions(row, db=None, definitions=None,
+    strategy={'links': process_instrument_links}):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        # first recurse through parent chain
         cur.execute(""" SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest
             FROM subordinates s
             JOIN instruments i ON parent_id = i.id
             JOIN documents d on i.id = d.id
-            WHERE child_id = %(id)s AND title != %(title)s """, row)
-        processed_parent = False
+            WHERE processed_document is null  and child_id = %(id)s AND title != %(title)s """,
+            row)
+
         for result in cur.fetchall():
             print 'Parent: ', result.get('title')
             processed_parent = True
             if result.get('title') not in definitions.titles:
-                if not result.get('definitions'):
+                if not result.get('processed_document'):
                     tree, parent_definitions = process_instrument(
                         row=result, db=db,
-                        refresh=refresh, latest=result.get('latest'),
+                        latest=result.get('latest'),
                         strategy=strategy)
-                    parent_definitions = json.loads(parent_definitions.to_json())
-                else:
-                    parent_definitions = result.get('definitions')
-                for defs in parent_definitions['values']:
-                    # Add unseen defs
-                    [definitions.add(Definition(**k)) for k in defs if k['source'] not in definitions.titles]
-                definitions.titles += parent_definitions['titles']
-                definitions.titles = list(set(definitions.titles))
 
-        if not processed_parent and row.get('title') != 'Interpretation Act 1999' and 'Interpretation Act 1999' not in definitions.titles:
-            strategy['leaf_defs'](row.get('date_assent'), definitions, db=db)
-        print definitions.titles
+        cur.execute(""" WITH RECURSIVE graph(parent_id, child_id )
+                    AS (
+                      SELECT parent_id, child_id
+                      FROM subordinates
+                      WHERE child_id = %(id)s
+                      UNION ALL
+                      SELECT t.parent_id, t.child_id
+                      FROM graph p
+                      JOIN subordinates t
+                      ON p.parent_id = t.child_id
+                    )
+                    SELECT * from definitions d join graph g on d.document_id = g.parent_id """, {'id': row.get('id')})
+        defs = cur.fetchall()
+        for d in defs:
+            def_dict = dict(d)
+            def_dict['keys'] = map(lambda x: unicode(x.decode('utf-8')), def_dict.pop('words'))
+            def_dict['full_word'] =unicode(def_dict['full_word'].decode('utf-8'))
+            # warning, this is not exclusive yet
+            if (def_dict.get('expiry_tag') or '').startswith('maxdate:'):
+                if row.get('date_assent') and row.get('date_assent') < safe_date(def_dict.get('expiry_tag')[len('maxdate:'):]):
+                    def_dict['expiry_tag'] = None
+
+            definitions.add(Definition(**def_dict), external=True)
 
     return definitions
 
 
-def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
-        strategy={'leaf_defs': get_interpretation_defs, 'links': process_instrument_links}):
+def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False,
+        strategy={'links': process_instrument_links}):
     print 'Processing: ', row.get('title')
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
@@ -220,17 +219,14 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
     tree = strategy['links'](tree, db)
 
     title = unicode(row.get('title').decode('utf-8'))
-    tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True, doc_id=row.get('id'))
+
+    tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True, document_id=row.get('id'))
+
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
-        refresh=refresh, strategy=strategy)
+        strategy=strategy)
 
     # now mark them
     tree, definitions = process_definitions(tree, definitions)
-
-    with (db or get_db()).cursor() as cur:
-        data = definitions.to_json()
-        cur.execute("""UPDATE documents SET definitions = %(defs)s where id = %(id)s""" ,
-            {'defs': data, 'id': row.get('id')})
 
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET processed_document =  %(doc)s
@@ -239,12 +235,13 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
             'id': row.get('id'),
             'doc': etree.tostring(tree, encoding='UTF-8', method="html"),
         })
-        defs = definitions.render().items()
+        defs = definitions.render(document_id=row.get('id'))
         if len(defs):
-            args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", (row.get('id'), x[0], list(x[1]['words']), json.dumps(x[1]['html'])))
+            print 'New Definitions: ', len(defs)
+            args_str = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s)", (row.get('id'), x['id'],  x['full_word'], x['keys'], x['html'], x['expiry_tag'], x['priority']))
                 for x in defs)
             cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
-            cur.execute("INSERT INTO definitions (document_id, key, words, data) VALUES " + args_str)
+            cur.execute("INSERT INTO definitions (document_id, id, full_word, words, html, expiry_tag, priority) VALUES " + args_str)
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
@@ -270,13 +267,11 @@ def prep_instrument(result, replace, db):
     definitions = None
     redo_skele = False
     if replace or not result.get('processed_document'):
-        tree, definitions = process_instrument(row=result, db=db, latest=result.get('latest'))
-        definitions = definitions.to_json()
+        tree, definitions = process_instrument(row=result, db=db, latest=result.get('latest'), refresh=True)
         document = etree.tostring(tree, encoding='UTF-8', method="html")
         redo_skele = True
     else:
         document = result.get('processed_document')
-        definitions = result.get('definitions')
     if redo_skele or not result.get('skeleton'):
         skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
@@ -288,7 +283,6 @@ def prep_instrument(result, replace, db):
         skeleton=skeleton,
         heights=heights,
         title=result.get('title'),
-        definitions=definitions,
         attributes=result)
 
 

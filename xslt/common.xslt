@@ -429,14 +429,12 @@
    <xsl:template match="catalex-def">
         <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">
             <xsl:attribute name="data-def-id">
-               <xsl:value-of select="@def-id"/>
+               <xsl:value-of select="@def-ids"/>
             </xsl:attribute>
              <xsl:attribute name="data-def-idx">
                <xsl:value-of select="@def-idx"/>
             </xsl:attribute>
-             <xsl:attribute name="data-doc-id">
-               <xsl:value-of select="@def-doc-id"/>
-            </xsl:attribute>
+             <xsl:attribute name="href">/open_definition/<xsl:value-of select="@def-ids"/></xsl:attribute>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>

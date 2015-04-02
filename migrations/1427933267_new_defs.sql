@@ -1,0 +1,11 @@
+delete from definitions;
+alter table documents drop column definitions;
+alter table definitions drop column data;
+alter table definitions add column html text;
+alter table definitions add column priority text;
+alter table definitions add column full_word text;
+alter table definitions add column expiry_tag text;
+ALTER TABLE definitions DROP CONSTRAINT definitions_pkey;
+alter table definitions drop column key;
+alter table definitions add column id text;
+ALTER TABLE definitions ADD CONSTRAINT definitions_pkey PRIMARY KEY(id);
