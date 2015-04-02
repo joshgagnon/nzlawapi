@@ -27,11 +27,13 @@ def key_set(full_word):
 
 class Definition(object):
 
-    def __init__(self, full_word, results, id, source, expiry_tag=None, **kwargs):
+    def __init__(self, full_word, results, id, source, doc_id, expiry_tag=None, **kwargs):
         self.full_word = full_word
         self.keys = key_set(full_word)
         self.results = results
+        # id of first instance
         self.id = id
+        self.doc_id = doc_id
         self.expiry_tag = expiry_tag
         self.source = source
 
@@ -196,7 +198,7 @@ def infer_life_time(node):
     return None
 
 
-def find_all_definitions(tree, definitions, expire=True, title=None):
+def find_all_definitions(tree, definitions, doc_id=0, expire=True, title=None):
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::schedule.amendments)][not(ancestor::amend)]")
 
     def get_parent(node):
@@ -237,7 +239,7 @@ def find_all_definitions(tree, definitions, expire=True, title=None):
                     result = {'temp_id': temp_id, 'src': src}
 
                 definitions.add(Definition(full_word=text, results=[result],
-                                id='def-%s' % src_id, source=title, expiry_tag=expiry_tag))
+                                id='def-%s' % src_id, source=title, doc_id=doc_id, expiry_tag=expiry_tag))
         except StopIteration:
             pass
 
@@ -246,6 +248,7 @@ def process_definitions(tree, definitions):
     def create_def(doc, word, definition, index):
         match = doc.createElement('catalex-def')
         match.setAttribute('def-id', definition.id)
+        match.setAttribute('def-doc-id', '%s' % definition.doc_id)
         match.setAttribute('def-idx', 'idx-%d-%d' % (monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
@@ -257,10 +260,10 @@ def process_definitions(tree, definitions):
     return tree, definitions
 
 
-def populate_definitions(tree, definitions=None, expire=True, title=None):
+def populate_definitions(tree, definitions=None, expire=True, title=None, doc_id=0):
     if not definitions:
         definitions = Definitions()
     if title not in definitions.titles:
-        find_all_definitions(tree, definitions, expire=expire, title=title)
+        find_all_definitions(tree, definitions, expire=expire, title=title, doc_id=doc_id)
     definitions.titles.append(title)
     return tree, definitions

@@ -32,8 +32,6 @@
 
 
 
-
-
  <xsl:template match="*[@amend.level1='struckout-draft']">
         <del href="struckout-draft">
             <xsl:apply-imports/>

@@ -1,20 +1,18 @@
 "use strict";
 var React = require('react/addons');
-var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 var Reflux = require('reflux');
-var FormStore = require('../stores/FormStore');
 var Actions = require('../actions/Actions');
-var Popover = require('./Popover.jsx');
-var ArticleOverlay= require('./ArticleOverlay.jsx');
-var MQ = require('./Responsive.jsx');
+var Popovers = require('./Popovers.jsx');
+var ArticleHandlers = require('./ArticleHandlers.jsx');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var ArticleError = require('./Warnings.jsx').ArticleError;
 var Utils = require('../utils');
 var Immutable = require('immutable');
 var DefinitionError = require('./Warnings.jsx').DefinitionError;
-
+var $ = require('jquery');
 
 module.exports = React.createClass({
+    mixins: [ArticleHandlers, Popovers],
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
             return <DefinitionError error={this.props.page.getIn(['content', 'error'])}/>
@@ -26,12 +24,17 @@ module.exports = React.createClass({
             Actions.requestPage(this.props.page.get('id'));
        }
     },
+    getScrollContainer: function(){
+        return $(this.getDOMNode()).parents('.tab-content, .results-container');
+    },
     render: function(){
-        return <div className="case-container">
+        return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html']) ?
-                    <div className="case-scaler" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html'])}} /> :
+                    <div ref="content" className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html'])}} /> :
                     null }
+             { this.renderFullPopovers() }
+            { this.renderMobilePopovers() }
             </div>
     }
  });

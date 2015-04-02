@@ -45,6 +45,7 @@ def get_definition_route(document_id, key):
     status = 200
     try:
         result = get_definition(document_id, key)
+        result['document_id'] = document_id
     except Exception, e:
         result = {'error': 'Could not retrieve definition'}
         status = 500

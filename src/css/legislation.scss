@@ -2,6 +2,9 @@
 .legislation-result{
     font-size: 16px;
     line-height: 1.5em;
+.legislation{
+        font-family: "Times New Roman", serif;
+}
 .legislation *,
 .definition * {
     margin: 0;
@@ -12,7 +15,7 @@
     font: inherit;
     vertical-align: baseline;
     box-sizing: initial;
-    font-family: "Times New Roman", serif;
+
 
 }
 .legislation article, .legislation aside, .legislation details, .legislation figcaption, .legislation figure, .legislation footer, .legislation header, .legislation hgroup, .legislation menu, .legislation nav, .legislation section {

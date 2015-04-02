@@ -5,27 +5,31 @@ var BootstrapMixin = require('react-bootstrap/lib/BootstrapMixin');
 var Button = require('react-bootstrap/lib/Button');
 var Actions = require('../actions/Actions');
 var ArticleSummary = require('./ArticleSummary.jsx');
+var ArticleHandlers= require('./ArticleHandlers.jsx');
+var Warnings = require('./Warnings.jsx');
 var $ = require('jquery');
 var _ = require('lodash');
 
+
+
 var PopoverBehaviour = {
     needFetch: function(){
-        return !this.getLocalContent() && !this.props.fetched;
+        return !this.getLocalContent() && !this.props.popoverPage.get('fetched') && !this.props.popoverPage.get('error');
     },
     renderFooter: function(){
-        if((this.props.type === 'link' || this.props.type === 'location')){
+        if((this.props.popoverPage.get('type') === 'link' || this.props.popoverPage.get('type') === 'location')){
             return <div className="popover-footer">
                     <div className="row">
                         { this.getLocalContent()?<Button bsSize="small" onClick={this.scrollTo}>Scroll To</Button >:null}
-                        { this.props.format === 'preview' ?
+                        { this.props.popoverPage.get('format') === 'preview' ?
                             <Button bsSize="small" bsStyle="primary"  onClick={this.open}>Open Full Article New Tab</Button > :
                             <Button bsSize="small" bsStyle="primary"  onClick={this.open}>Open In New Tab</Button > }
-                        { this.props.format === 'fragment' ?
+                        { this.props.popoverPage.get('format') === 'fragment' ?
                             <Button bsSize="small" bsStyle="primary"  onClick={this.addToPrint}>Add To Print</Button > :
                             null }
                     </div>
                 </div>
-        }else if(this.props.type === 'definition'){
+        }else if(this.props.popoverPage.get('type') === 'definition'){
             return <div className="popover-footer">
                     <div className="row">
                         <Button bsSize="small" bsStyle="primary" onClick={this.addToPrint}>Add To Print</Button >
@@ -37,26 +41,29 @@ var PopoverBehaviour = {
     getLocalContent: function(){
         return false;
         // can't work in skeleton, fragment mode
-        /*if (this.props.target && $('#' + this.props.target)[0]) {
+        /*if (this.props.popoverPage.get('target && $('#' + this.props.popoverPage.get('target)[0]) {
             return true;
         }*/
     },
     renderBody: function(){
         var html;
-        if(this.props.summary){
-            return <ArticleSummary summary={this.props.attributes} />
+        if(this.props.popoverPage.get('error')){
+            return <div ><Warnings.DefinitionError error={this.popoverPage.get('error')}/></div>
+        }
+        if(this.props.popoverPage.get('summary')){
+            return <ArticleSummary summary={this.props.popoverPage.get('attributes')} />
         }
         if (this.getLocalContent()) {
-            html = $('#' + this.props.target)[0].outerHTML;
+            html = $('#' + this.props.popoverPage.get('target'))[0].outerHTML;
         }
-        else if(this.props.html){
-            html = this.props.html;
+        else if(this.props.popoverPage.get('html')){
+            html = this.props.popoverPage.get('html');
         }
-        else if(this.props.html_content){
-            html = this.props.html_content;
+        else if(this.props.popoverPage.get('html_content')){
+            html = this.props.popoverPage.get('html_content');
         }
         if(html){
-            return <div className='legislation' dangerouslySetInnerHTML={{__html: html}} />
+            return <div dangerouslySetInnerHTML={{__html: html}}  onClick={this.interceptLink}/>
         }
         else{
             return <div className='csspinner traditional'  />
@@ -64,33 +71,33 @@ var PopoverBehaviour = {
     },
     addToPrint: function(){
         Actions.addToPrint({
-            title: this.props.title,
-            full_title: this.props.full_title,
-            query_string: this.props.url,
-            query: this.props.query,
-            html: this.props.html
+            title: this.props.popoverPage.get('title'),
+            full_title: this.props.popoverPage.get('full_title'),
+            query_string: this.props.popoverPage.get('url'),
+            query: this.props.popoverPage.get('query'),
+            html: this.props.popoverPage.get('html')
         });
     },
     scrollTo: function() {
-         Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
+         Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.popoverPage.get('id'));
     },
     open: function(){
-        var query = this.props.query
+        var query = this.props.popoverPage.get('query')
         if(query && query.find === 'preview'){
             query = _.extend({}, query, {find: 'full'});
         }
         Actions.newPage({
-            title: this.props.full_title || this.props.title,
-            query_string: this.props.url,
+            title: this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title'),
+            query_string: this.props.popoverPage.get('url'),
             query: query
-        }, this.props.viewer_id)
+        }, this.props.popoverPage.get('viewer_id'))
     }
 }
 
 // USING PLAIN JS
 module.exports = {
     Popover: React.createClass({
-        mixins: [BootstrapMixin, PopoverBehaviour],
+        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers],
         topOffset: 20,
         getInitialState: function() {
             return {
@@ -98,8 +105,8 @@ module.exports = {
             };
         },
         componentDidMount: function(){
-            if(!this.getLocalContent() && !this.props.fetched){
-                Actions.requestPopoverData(this.props.page_id, this.props.id);
+            if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
+                Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
             }
             this.reposition();  
         },
@@ -109,29 +116,29 @@ module.exports = {
         reposition: function(){
             var self = this;
             var $el = $(this.getDOMNode());
-            var $target = $(this.props.source_sel);
+            var $target = $(this.props.popoverPage.get('source_sel'));
             //TODO use bootstrap layout algorithm
-            var left = this.props.positionLeft - ($el.outerWidth() / 2);
+            var left = this.props.popoverPage.get('positionLeft') - ($el.outerWidth() / 2);
             $el.css({left:  Math.max(0, left)});
 
         },
         close: function() {
-             Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.id);
+             Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.popoverPage.get('id'));
         },
         render: function() {
-            var measured = !!this.props.positionTop || !!this.props.positionLeft;
+            var measured = !!this.props.popoverPage.get('positionTop') || !!this.props.popoverPage.get('positionLeft');
             var classes = 'popover cata-popover ' + this.state.placement;
             var style = {};
-            style['left'] = this.props.positionLeft;
-            style['top'] = this.props.positionTop + this.topOffset;
+            style['left'] = this.props.popoverPage.get('positionLeft');
+            style['top'] = this.props.popoverPage.get('positionTop') + this.topOffset;
             style['display'] = measured ? 'block' : 'none';
             var arrowStyle = {};
-            arrowStyle['left'] = this.props.arrowOffsetLeft;
-            arrowStyle['top'] = this.props.arrowOffsetTop;
+            arrowStyle['left'] = this.props.popoverPage.get('arrowOffsetLeft');
+            arrowStyle['top'] = this.props.popoverPage.get('arrowOffsetTop');
             return (
                 <div className={classes} role="tooltip" style={style}>
                     <div className="arrow"  style={arrowStyle}></div>
-                    <h3 className="popover-title">{this.props.full_title || this.props.title}</h3>
+                    <h3 className="popover-title">{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
                     <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
                         {this.renderBody() }
@@ -142,10 +149,10 @@ module.exports = {
           }
     }),
     MobilePopover:  React.createClass({
-        mixins: [PopoverBehaviour],
+        mixins: [PopoverBehaviour, ArticleHandlers],
         componentDidMount: function(){
-            if(!this.getLocalContent() && !this.props.fetched){
-                Actions.requestPopoverData(this.props.page_id, this.props.id);
+            if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
+                Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
             }
         },
         close: function() {
@@ -154,7 +161,7 @@ module.exports = {
         render: function(){
             var classes = 'cata-popover';
             return <div className={classes}>
-                    <h3 className="popover-title">{this.props.title}</h3>
+                    <h3 className="popover-title">{this.props.popoverPage.get('title')}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
                     <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
                         {this.renderBody() }

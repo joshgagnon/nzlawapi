@@ -6,8 +6,8 @@ import importlib
 
 def process(db, config):
     with db.cursor() as cur:
-        cur.execute("""update documents set processed_document = null, skeleton = null, contents=null, definitions=null ;
-""")
+        cur.execute("""update documents set processed_document = null, skeleton = null, contents=null""")
+        cur.execute("""delete from definitions""")
 
 
 if __name__ == "__main__":

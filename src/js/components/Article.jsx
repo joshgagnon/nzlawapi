@@ -1,14 +1,13 @@
 "use strict";
 var React = require('react/addons');
-var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
 var Actions = require('../actions/Actions');
-var Popover = require('./Popover.jsx');
+var Popovers = require('./Popovers.jsx');
 var ArticleOverlay= require('./ArticleOverlay.jsx');
-var MQ = require('./Responsive.jsx');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var ArticleError = require('./Warnings.jsx').ArticleError;
+var ArticleHandlers = require('./ArticleHandlers.jsx')
 var Utils = require('../utils');
 var Immutable = require('immutable');
 
@@ -540,124 +539,9 @@ var ArticleContent = React.createClass({
     }
 });
 
- var Popovers = React.createClass({
-    shouldComponentUpdate: function(newProps){
-        return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
-    },
-    render: function(){
-        return <div>{ this.props.popoverView.map(function(key){
-                var data = this.props.popoverData.get(key);
-                return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id} {...data.toJS()} page_id={this.props.page_id} id={key} key={key} />)
-            }, this).toJS()}</div>
-    }
- });
-
-
-
-var MobilePopovers = React.createClass({
-    shouldComponentUpdate: function(newProps){
-        return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
-    },
-    closeAll: function(){
-        this.props.popoverView.map(function(key){
-            Actions.popoverClosed(this.props.viewer_id, this.props.page_id, key);
-        }, this),toJS();
-    },
-    render: function(){
-        var last = this.props.popoverView.last();
-        if(last !== undefined){
-            var pop = this.props.popoverData.get(last);
-            return <div className="mobile-popovers">
-                    <Popover.MobilePopover {...pop.toJS()} page_id={this.props.page_id} closeAll={this.closeAll}/>
-                </div>
-        }
-        return <div/>
-    }
-});
-
 
  module.exports = React.createClass({
-    interceptLink: function(e){
-        var link = $(e.target).closest('a:not([target])');
-
-        if(link.length){
-            e.preventDefault();
-            if(link.attr('data-link-id')){
-                var url = link.attr('data-href');
-                if(url.indexOf('/') === -1){
-                    url = 'instrument/'+url;
-                }
-                var location = Utils.getLocation(link);
-                Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
-                    {
-                        type: 'link',
-                        title: link.text() +' '+location.repr,
-                        id: link.attr('data-link-id'),
-                        target: link.attr('data-target-id'),
-                        source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                        positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                        positionTop:link.position().top+ this.refs.articleContent.getScrollContainer().scrollTop(),
-                        fetched: false,
-                        query: {
-                            id: link.attr('data-href'),
-                            doc_type: 'instrument'
-                        },
-                        url: '/link/'+url
-                    });
-                }
-            else if(link.attr('data-def-id')){
-               Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
-                    {
-                    type: 'definition',
-                    title: link.text(),
-                    id: link.attr('data-def-idx'),
-                    positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                    positionTop:link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
-                    source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
-                    fetched: false,
-                    url: '/definition/'+this.props.page.getIn(['content', 'document_id'])+'/'+link.attr('data-def-id')
-                });
-            }
-            else if(link.closest('[id]').length){
-                var $target = link.closest('[id]');
-                var title = this.props.page.getIn(['content', 'title']) + ' ' + $target.attr('data-location') ;
-                var ids = $target.find('[id]').map(function(){
-                    return this.attributes.id.textContent;
-                }).toArray();
-                ids.push($target.attr('id'));
-                Actions.sectionSummaryOpened(
-                    this.props.viewer_id,
-                    this.props.page.get('id'),
-                    {id: $target.attr('id'),
-                    document_id: this.props.page.getIn(['content', 'document_id']),
-                    title: this.props.page.getIn(['content', 'title']) +' '+ Utils.getLocation($target).repr,
-                    govt_ids: ids
-                });
-            }
-        }
-        else if($(e.target).is('span.label') && $(e.target).closest('[data-location]').length){
-            var $target = $(e.target).closest('[data-location]')
-            var location = Utils.getLocation($target);
-            var title = this.props.page.getIn(['content', 'title']) +' '+ location.repr;
-            Actions.popoverOpened(this.props.viewer_id, this.props.page.get('id'),
-                    {
-                    type: 'location',
-                    title: title + ' '+ location.repr,
-                    id: location.repr,
-                    positionLeft: $target.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                    positionTop:$target.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
-                    source_sel: Utils.locationsToSelector(location.locs),
-                    fetched: false,
-                    format: 'fragment',
-                    url: Utils.queryUrlJSON({
-                        document_id: this.props.page.getIn(['content', 'document_id']),
-                        find: 'location',
-                        location: location.repr,
-                        doc_type: this.props.page.getIn(['content', 'doc_type'])
-                    }),
-                });
-        }
-    },
+    mixins: [ArticleHandlers, Popovers],
     componentDidMount: function(){
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
@@ -679,14 +563,17 @@ var MobilePopovers = React.createClass({
                         if(link.length){
                             Actions.popoverUpdate(this.props.viewer_id, this.props.page.get('id'), {
                                 id: pop.get('id'),
-                                positionLeft: link.position().left + this.refs.articleContent.getScrollContainer().scrollLeft(),
-                                positionTop: link.position().top + this.refs.articleContent.getScrollContainer().scrollTop(),
+                                positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
+                                positionTop: link.position().top + this.getScrollContainer().scrollTop(),
                             });
                         }
                     }
                }, this);
             }
         }
+    },
+    getScrollContainer: function(){
+        return this.refs.content.getScrollContainer();
     },
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
@@ -708,36 +595,20 @@ var MobilePopovers = React.createClass({
 
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
 
-           <ArticleSkeletonContent ref="articleContent"
+           <ArticleSkeletonContent ref="content"
                 content={this.props.page.get('content') }
                 parts={this.props.page.get('parts') }
                 viewer_id={this.props.viewer_id}
                 view={this.props.view}
                 page_id={this.props.page.get('id')} />    :
-          <ArticleContent ref="articleContent"
+          <ArticleContent ref="content"
                 content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
                 view={this.props.view}
                 page_id={this.props.page.get('id')} /> }
 
-            <MQ minWidth={480}>
-                { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
-                <Popovers
-                    popoverData={this.props.page.get('popovers')}
-                    popoverView={this.props.view.getIn(['popovers', this.props.page.get('id')])}
-                    viewer_id={this.props.viewer_id}
-                    page_id={this.props.page.get('id')} />
-                : null }
-            </MQ>
-            <MQ maxWidth={480}>
-                { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
-                <MobilePopovers
-                    popoverData={this.props.page.get('popovers')}
-                    popoverView={this.props.view.getIn(['popovers', this.props.page.get('id')])}
-                    viewer_id={this.props.viewer_id}
-                    page_id={this.props.page.get('id')} />
-                : null }
-            </MQ>
+            { this.renderFullPopovers() }
+            { this.renderMobilePopovers() }
         </div>
     }
  });

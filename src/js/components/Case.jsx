@@ -1,12 +1,8 @@
 "use strict";
 var React = require('react/addons');
-var Glyphicon= require('react-bootstrap/lib/Glyphicon');
 var Reflux = require('reflux');
 var FormStore = require('../stores/FormStore');
 var Actions = require('../actions/Actions');
-var Popover = require('./Popover.jsx');
-var ArticleOverlay= require('./ArticleOverlay.jsx');
-var MQ = require('./Responsive.jsx');
 var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var ArticleError = require('./Warnings.jsx').ArticleError;
 var Utils = require('../utils');

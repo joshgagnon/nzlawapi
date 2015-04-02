@@ -164,7 +164,7 @@ module.exports = React.createClass({
     render: function(){
         var print_button = window && window.print && this.props.view.size;
         return  <div className="print-container legislation-result">
-                <div className="row"><div className="col-md-10">
+                <div className=""><div className="col-md-10">
                     <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
                     </div>
                     <div className="col-md-2">

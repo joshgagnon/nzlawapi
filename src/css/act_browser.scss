@@ -61,7 +61,7 @@ body{
                     padding-right: $sidebar-outer-width;
                 }
                 .article-overlay{
-                    right: $sidebar-outer-width;
+
                 }
             }
         }
@@ -243,11 +243,10 @@ body{
 
     .split .article-overlay,
     .print .article-overlay{
-        right: calc(50% + 10px) !important;
-    }
 
+    }
     .split .results-container:nth-child(2) .article-overlay{
-        right: 10px !important;
+
         left:calc(50% + #{$buttonbar-outer-width} ) !important;
     }
 
@@ -342,13 +341,8 @@ body{
     .definition-result .catalex-src{
       margin-bottom: 10px;
       font-style: italic;
-      font-size: 12px;
-      display: inline-block;
-
-      .def-para + a{
-        margin-bottom:10px;
-        font-style:italic;
-      }
+      font-size: 14px;
+      display: block;
     }
 
     // bootstrap

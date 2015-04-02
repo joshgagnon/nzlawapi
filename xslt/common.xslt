@@ -434,6 +434,9 @@
              <xsl:attribute name="data-def-idx">
                <xsl:value-of select="@def-idx"/>
             </xsl:attribute>
+             <xsl:attribute name="data-doc-id">
+               <xsl:value-of select="@def-doc-id"/>
+            </xsl:attribute>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>

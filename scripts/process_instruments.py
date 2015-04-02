@@ -8,14 +8,15 @@ import os
 
 def run(db, config):
     inter_title = 'Interpretation Act 1999'
-    tree, pre_defs = definitions.populate_definitions(queries.get_act_exact(inter_title, db=db), title=inter_title)
+    tree, doc_id = queries.get_act_exact(inter_title, db=db);
+    tree, pre_defs = definitions.populate_definitions(tree, doc_id=doc_id, title=inter_title)
     tree, pre_defs = definitions.process_definitions(tree, pre_defs)
     interpret_date = util.safe_date(tree.attrib.get('date.assent'))
-    interpretation = queries.get_act_exact(inter_title, db=db)
+    interpretation, doc_id = queries.get_act_exact(inter_title, db=db)
     interpretation_date = util.safe_date(interpretation.attrib.get('date.assent'))
     node = traversal.nodes_from_path_string(interpretation, 's 30')[0]
     node.getparent().remove(node)
-    tree, post_defs = definitions.populate_definitions(interpretation, title=inter_title)
+    tree, post_defs = definitions.populate_definitions(interpretation, doc_id=doc_id, title=inter_title)
     tree, post_defs = definitions.process_definitions(tree, post_defs)
 
     link_store = links.get_links(db)

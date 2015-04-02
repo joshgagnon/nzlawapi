@@ -156,13 +156,13 @@ def process_contents(id, tree, db=None):
     return contents
 
 def get_interpretation_defs(instrument_date, definitions, db=None):
-    interpretation = get_act_exact('Interpretation Act 1999', db=db)
+    interpretation, doc_id = get_act_exact('Interpretation Act 1999', db=db)
     interpret_date = safe_date(interpretation.attrib.get('date.assent'))
     if not instrument_date or (instrument_date and  interpret_date < instrument_date):
         # remove s 30 from interpretation act
         node = nodes_from_path_string(interpretation, 's 30')[0]
         node.getparent().remove(node)
-    interpret_tree, existing_definitions = populate_definitions(interpretation, expire=False, title="Interpretation Act 1999")
+    interpret_tree, existing_definitions = populate_definitions(interpretation, expire=False, title="Interpretation Act 1999", doc_id=doc_id)
     interpret_tree, _ = process_definitions(interpret_tree, existing_definitions)
     for definition in existing_definitions.pool.values():
         [definitions.add(d) for d in definition if d.source not in definitions.titles]
@@ -220,7 +220,7 @@ def process_instrument(row=None, db=None, refresh=True, tree=None, latest=False,
     tree = strategy['links'](tree, db)
 
     title = unicode(row.get('title').decode('utf-8'))
-    tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True)
+    tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True, doc_id=row.get('id'))
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
         refresh=refresh, strategy=strategy)
 
@@ -319,13 +319,13 @@ def get_act_summary_govt_id(govt_id, db=None):
 def get_act_exact(title=None, doc_id=None, db=None):
     with (db or get_db()).cursor() as cur:
         query = """
-            select document from latest_instruments
+            select document, id from latest_instruments
             where (%(title)s is  null or title = %(title)s) and (%(id)s is null or id =  %(id)s)
              """
         cur.execute(query, {'title': title, 'id': doc_id})
         try:
             result = cur.fetchone()
-            return etree.fromstring(result[0], parser=large_parser)
+            return etree.fromstring(result[0], parser=large_parser), result[1]
         except:
             raise CustomException("Instrument not found")
 
