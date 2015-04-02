@@ -38,6 +38,9 @@ var PopoverBehaviour = {
                 </div>
         }
     },
+    getScrollContainer: function(){
+        return $(this.getDOMNode())
+    },
     getLocalContent: function(){
         return false;
         // can't work in skeleton, fragment mode
@@ -48,7 +51,7 @@ var PopoverBehaviour = {
     renderBody: function(){
         var html;
         if(this.props.popoverPage.get('error')){
-            return <div ><Warnings.DefinitionError error={this.popoverPage.get('error')}/></div>
+            return <div ><Warnings.DefinitionError error={this.props.popoverPage.get('error')}/></div>
         }
         if(this.props.popoverPage.get('summary')){
             return <ArticleSummary summary={this.props.popoverPage.get('attributes')} />
@@ -73,7 +76,7 @@ var PopoverBehaviour = {
         Actions.addToPrint({
             title: this.props.popoverPage.get('title'),
             full_title: this.props.popoverPage.get('full_title'),
-            query_string: this.props.popoverPage.get('url'),
+            query_string: this.props.popoverPage.get('query_string'),
             query: this.props.popoverPage.get('query'),
             html: this.props.popoverPage.get('html')
         });
@@ -88,9 +91,9 @@ var PopoverBehaviour = {
         }
         Actions.newPage({
             title: this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title'),
-            query_string: this.props.popoverPage.get('url'),
+            query_string: this.props.popoverPage.get('query_string'),
             query: query
-        }, this.props.popoverPage.get('viewer_id'))
+        }, this.props.viewer_id)
     }
 }
 
@@ -99,6 +102,7 @@ module.exports = {
     Popover: React.createClass({
         mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers],
         topOffset: 20,
+        openLinksInTabs: true,
         getInitialState: function() {
             return {
                 placement: 'bottom'
@@ -140,7 +144,7 @@ module.exports = {
                     <div className="arrow"  style={arrowStyle}></div>
                     <h3 className="popover-title">{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
-                    <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
+                    <div className='popover-content'>
                         {this.renderBody() }
                     </div>
                     {this.renderFooter() }

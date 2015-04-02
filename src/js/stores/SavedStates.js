@@ -57,7 +57,7 @@ module.exports = Reflux.createStore({
             var obj = _.pick(page, 'title', 'query', 'id', 'page_type', 'query_string');
             obj.popovers = {}
            _.each(page.popovers || [] ,function(v, k){
-                return obj.popovers[k] = _.pick(v, 'type', 'title', 'url', 'source_sel', 'id');
+                return obj.popovers[k] = _.pick(v, 'type', 'title', 'query', 'query_string', 'source_sel', 'id');
             });
             return obj;
         }

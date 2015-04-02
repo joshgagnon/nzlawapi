@@ -47,13 +47,12 @@
     <xsl:template match="catalex-src[@href]">
         <span class="catalex-src">
         Source: <a >
-        <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/>
-        </xsl:attribute>
+        <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/></xsl:attribute>
+        <xsl:attribute name="data-link-id"><xsl:value-of select="@link-id"/></xsl:attribute>
+
             <xsl:value-of select="."/>
         </a>
         </span>
     </xsl:template>
-
-
 
 </xsl:stylesheet>

@@ -15,7 +15,7 @@ module.exports = React.createClass({
     mixins: [ArticleHandlers, Popovers],
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
-            return <DefinitionError error={this.props.page.getIn(['content', 'error'])}/>
+            return <div className="legislation-result"><DefinitionError error={this.props.page.getIn(['content', 'error'])}/></div>
         }
         return null;
     },
@@ -31,10 +31,13 @@ module.exports = React.createClass({
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html_content']) ?
-                    <div ref="content" className="legislation-result" dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} /> :
+                    <div ref="content" className="legislation-result" >
+                        <div dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
+                                     { this.renderFullPopovers() }
+                                    { this.renderMobilePopovers() }
+                    </div> :
                     null }
-             { this.renderFullPopovers() }
-            { this.renderMobilePopovers() }
+
             </div>
     }
  });

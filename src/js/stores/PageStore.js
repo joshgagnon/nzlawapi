@@ -78,8 +78,13 @@ var PageStore = Reflux.createStore({
     },
     onNewPage: function(page_data, viewer_id, settings){
         var existing_page = this.findDuplicate(page_data);
-        if(existing_page && viewer_id !== undefined){
-            Actions.showPage(viewer_id, existing_page.get('id'));
+        if(existing_page){
+            if(viewer_id !== undefined){
+                Actions.showPage(viewer_id, existing_page.get('id'));
+            }
+            else{
+                console.log(viewer_id)
+            }
         }
         else{
             var page = this.generatePage(page_data);
@@ -138,9 +143,11 @@ var PageStore = Reflux.createStore({
                 fetching: false,
                 fetched: true,
                 fragment: data.fragment,
-                content: data,
-                title: data.title
+                content: data
             };
+            if(data.title){
+                result.title = data.title;
+            }
             if(page.get('page_type') === PAGE_TYPES.SEARCH){
                 if(result.content.search_results.hits.length >= result.content.search_results.total){
                     result.finished = true;
@@ -282,7 +289,10 @@ var PageStore = Reflux.createStore({
             if(popover && !popover.get('fetching') && !popover.get('fetched')){
                 this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover_id],
                     {fetching: true});
-                request.get(popover.get('url'))
+                var get = popover.get('query') ?
+                    request.get('/query', popover.get('query').toJS()) :
+                    request.get(popover.get('query_string'));
+                get
                     .promise()
                     .then(function(response) { Actions.requestPopoverData.completed(page_id, popover_id, response.body)})
                     .catch(function(response) { Actions.requestPopoverData.failed(page_id, popover_id, response.body)});

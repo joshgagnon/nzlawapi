@@ -8,15 +8,16 @@ var $ = require('jquery');
         interceptLink: function(e){
             var link = $(e.target).closest('a:not([target])');
             var page = this.props.page;
+            var page_id = page ? page.get('id') : this.props.page_id;
             if(link.length){
                 e.preventDefault();
-                if(link.attr('data-link-id')){
+                if(link.attr('data-link-id') && link.attr('data-href')){
                     var url = link.attr('data-href');
                     if(url.indexOf('/') === -1){
                         url = 'instrument/'+url;
                     }
                     var location = Utils.getLocation(link);
-                    Actions.popoverOpened(this.props.viewer_id, page.get('id'),
+                    Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                             type: 'link',
                             title: link.text() +' '+location.repr,
@@ -30,12 +31,11 @@ var $ = require('jquery');
                                 id: link.attr('data-href'),
                                 doc_type: 'instrument'
                             },
-                            url: '/link/'+url
+                            query_string: '/link/'+url
                         });
                 }
                 else if(link.attr('data-def-id')){
-                    console.log('click')
-                   Actions.popoverOpened(this.props.viewer_id, page.get('id'),
+                   Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                         type: 'definition',
                         title: link.text(),
@@ -44,8 +44,31 @@ var $ = require('jquery');
                         positionTop:link.position().top + this.getScrollContainer().scrollTop(),
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
-                        url: '/definition/'+link.attr('data-def-id')
+                        query_string: '/definition/'+link.attr('data-def-id')
                     });
+                }
+                // TODO refactor this crazy behaviour
+                else if(link.parent().hasClass('catalex-src')){
+                    if(this.openLinksInTabs){
+                        Actions.newPage({
+                            title: link.text(),
+                            query_string: link.attr('href').replace('/open_article', ''),
+                        }, this.props.viewer_id)
+                    }
+                    else{
+                        Actions.popoverOpened(this.props.viewer_id, page_id,
+                            {
+                                type: 'link',
+                                title: link.text(),
+                                id: link.attr('data-link-id'),
+                                target: link.attr('data-target-id'),
+                                source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
+                                positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
+                                positionTop:link.position().top+ this.getScrollContainer().scrollTop(),
+                                fetched: false,
+                                query_string: link.attr('href').replace('/open_article', '')
+                            });
+                        }
                 }
                 else if(link.closest('[id]').length){
                     var $target = link.closest('[id]');
@@ -63,12 +86,14 @@ var $ = require('jquery');
                         govt_ids: ids
                     });
                 }
+
+
             }
             else if($(e.target).is('span.label') && $(e.target).closest('[data-location]').length){
                 var $target = $(e.target).closest('[data-location]')
                 var location = Utils.getLocation($target);
                 var title = page.getIn(['content', 'title']) +' '+ location.repr;
-                Actions.popoverOpened(this.props.viewer_id, page.get('id'),
+                Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                         type: 'location',
                         title: title + ' '+ location.repr,
@@ -78,7 +103,7 @@ var $ = require('jquery');
                         source_sel: Utils.locationsToSelector(location.locs),
                         fetched: false,
                         format: 'fragment',
-                        url: Utils.queryUrlJSON({
+                        query_string: Utils.queryUrlJSON({
                             document_id: page.getIn(['content', 'document_id']),
                             find: 'location',
                             location: location.repr,

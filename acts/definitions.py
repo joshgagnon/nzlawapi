@@ -44,6 +44,7 @@ class Definition(object):
     def combine(self, other, external):
         if external or self.document_id != other.document_id:
             self.ids += [other.id]
+            self.ids = list(set(self.ids))
         else:
             self.results += other.results
 
@@ -219,7 +220,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
             return node.iterancestors('def-para').next()
         except StopIteration:
             return node.iterancestors('para').next()
-
+    count = 0
     for node in nodes:
         # super ugly hack to prevent placeholders likept 'A'
         try:
@@ -240,6 +241,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
                 src = etree.Element('catalex-src')
                 node.attrib['id'] = node.attrib.get('id', str(uuid.uuid4()))
                 src.attrib['src'] = node.attrib.get('id')
+                src.attrib['link-id'] = '%d-%d' % (document_id, count)
                 src.text, src.attrib['href'], _ = generate_path_string(node, title=title)
                 src_id = src.attrib['src']
                 src = etree.tostring(src, method="html", encoding="UTF-8")
@@ -257,6 +259,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
                 definitions.add(Definition(full_word=text, results=[result],
                                 id='%d-%s' % (document_id, src_id),
                                 document_id=document_id, expiry_tag=expiry_tag, priority=priority))
+                count += 1
         except StopIteration:
             pass
 
