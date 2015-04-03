@@ -266,14 +266,14 @@ module.exports = React.createClass({
         var active = this.getActive();
         if(this.state.browser.get('print_mode') ){
             return <div className="split print">
-                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
-                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'}/>
+                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
+                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true}/>
                 </div>
         }
         else if(this.state.browser.get('split_mode')){
             return <div className="split">
-                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
-                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'}/>
+                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'} showCloseView={true}/>
                 </div>
         }
         else if (this.showSidebar(active)){

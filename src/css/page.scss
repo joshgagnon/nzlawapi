@@ -1,4 +1,16 @@
+          .view-control {
+          position: absolute;
+          right: 4px;
+          top: 4px;
+            button{
+                font-size: 22px;
+              padding: 2px 10px 3px 10px;
+              line-height: 22px;
+            }
+        }
+
     .results-container{
+        $nav-font-size: 14px;
         .nav{
             z-index: $z-toolbars;
             position: absolute;
@@ -15,6 +27,7 @@
         }
         .nav-tabs{
             padding-top:5px;
+            font-size: $nav-font-size;
             @media print{
                 display:none;
             }
@@ -45,6 +58,14 @@
                     overflow: hidden;
                     white-space: nowrap;
                 }
+            }
+            .close-all{
+                // sucks
+                a{
+                 font-size: 23px;
+                  padding: 3px 15px;
+                  height: 41px;
+              }
             }
             .dropdown-menu{
                 right:0;
@@ -159,4 +180,5 @@
         .article-error{
             text-align:center;
         }
+
     }

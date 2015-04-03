@@ -33,6 +33,11 @@ module.exports = Reflux.createStore({
         this.browser = this.browser.set('notes', !this.browser.get('notes'));
         this.update();
     },
+    onDeactivateSplitMode: function(){
+        if(this.browser.get('split_mode')){
+            this.onToggleSplitMode();
+        }
+    },
     onToggleSplitMode: function(){
         this.browser = this.browser.set('split_mode', !this.browser.get('split_mode'));
         if(this.browser.get('split_mode')){
@@ -42,6 +47,11 @@ module.exports = Reflux.createStore({
     },
     onActivatePrintMode: function(){
         if(!this.browser.get('print_mode')){
+            this.onTogglePrintMode();
+        }
+    },
+    onDeactivatePrintMode: function(){
+        if(this.browser.get('print_mode')){
             this.onTogglePrintMode();
         }
     },

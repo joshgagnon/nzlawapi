@@ -81,6 +81,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   },
   setTabVisibility: function(){
     if(this.isMounted()){
+      // something is not quite right
         this.width = this.refs.tabs.getDOMNode().clientWidth;
 
         var visible;
@@ -131,9 +132,10 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
       return <DropdownButton  className={"btn-group drops "+(classes||'')} title={label} key="drops">
                   {_.map(children, renderDropIfSet, this)}
                 </DropdownButton>
-
     },
-
+    renderCloseView: function(){
+      return <li role="button" href="#" className='pull-right close-all'><a onClick={this.props.closeView}>&times;</a></li>
+    },
   renderNav: function(){
     var visible_tabs = this.state.visible_tabs || this.props.children.length;
     var activeKey = this.getActiveKey();
@@ -150,10 +152,14 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
     }
     if(tabs.length){
       return  (React.createElement(Nav, React.__spread({},  this.props, {activeKey: activeKey, onSelect: this.handleSelect, ref: "tabs"}),
-          this.renderTabs(tabs), drops.length ? this.renderDrops(drops, 'More Tabs...', 'pull-right') : null))
+          this.renderTabs(tabs),
+          this.props.showCloseView ? this.renderCloseView() : null,
+          drops.length ? this.renderDrops(drops, 'More Tabs...', 'pull-right') : null
+          ))
     }
     else{
       return (<ul className="nav nav-tabs nav-dropdown" ref="tabs">
+            { this.props.showCloseView ? this.renderCloseView() : null }
             { this.renderDrops(drops, this.getActiveLabel()) }
           </ul>)
     }

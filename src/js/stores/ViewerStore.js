@@ -54,6 +54,23 @@ module.exports =  Reflux.createStore({
             this.views = this.views.deleteIn([i, 'positions', page_id]);
         }
     },
+    onCloseView: function(viewer_id){
+        if(viewer_id === 'print'){
+            Actions.deactivatePrintMode();
+        }
+        if(viewer_id === 'tab-1'){
+            Actions.deactivateSplit();
+        }
+        if(viewer_id === 'tab-0'){
+            // swap tabs over
+            var t0 = this.views.get('tab-0');
+            var t1 = this.views.get('tab-1');
+            this.views = this.views.set('tab-0', t1);
+            this.views = this.views.set('tab-1', t0);
+            this.update();
+            Actions.deactivateSplitMode();
+        }
+    },
     printUpdate: function(state){
         var ids = state.print.map(function(p){ return p.get('id');}).toJS();
         var new_ids = Immutable.List(_.difference(ids, this.views.get('print').toJS()));

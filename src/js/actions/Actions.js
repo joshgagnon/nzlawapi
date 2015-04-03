@@ -53,14 +53,16 @@ module.exports = Reflux.createActions({
 	'removeSaveFolder': {},
 	'renameSavedState': {},
 
-
+	'closeView': {},
 	'toggleUnderlines': {},
 	'toggleNotes': {},
 	'toggleSplitMode': {},
+	'deactivateSplitMode': {},
 	'togglePrintMode': {},
 	'toggleSidebar': {},
 	'toggleAdvanced': {},
 	'activatePrintMode': {},
+	'deactivatePrintMode': {},
 
 	'setState': {},
 	'saveState': {},

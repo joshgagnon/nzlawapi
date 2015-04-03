@@ -28,7 +28,7 @@ var $ = require('jquery');
                             top:link.position().top+ this.getScrollContainer().scrollTop(),
                             fetched: false,
                             query: {
-                                id: link.attr('data-href'),
+                                id: link.attr('data-target-id') || link.attr('data-href'),
                                 doc_type: 'instrument'
                             },
                             query_string: '/link/'+url

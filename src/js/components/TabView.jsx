@@ -75,12 +75,13 @@ module.exports = React.createClass({
         var active = this.props.view.get('active_page_id');
         return !!this.props.view.getIn(['section_summaries', active]);
     },
-    renderPage: function(page){
+    renderPage: function(page, extra_props){
         var props = {
             key: page.get('id'),
             page: page,
             viewer_id: this.props.viewer_id,
-            view: this.props.view
+            view: this.props.view,
+            closeView: this.closeView
         };
         var result;
         switch(page.get('page_type')){
@@ -101,11 +102,17 @@ module.exports = React.createClass({
         }
         return result;
     },
+    closeView: function(){
+        Actions.closeView(this.props.viewer_id);
+    },
     renderTabs: function(){
         var self = this;
         return  <TabbedArea activeKey={this.props.view.get('active_page_id')}
                 onSelect={this.handleTab}
-                onClose={this.closeTab} viewer_id={this.props.viewer_id} >
+                onClose={this.closeTab}
+                viewer_id={this.props.viewer_id}
+                showCloseView={this.props.showCloseView }
+                closeView={this.closeView } >
                 { this.props.pages.map(function(page){
                         return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
@@ -133,18 +140,23 @@ module.exports = React.createClass({
         if(this.modalVisible()){
             classes += 'showing-modal ';
         }
-        if(this.props.pages.size){
+        if(this.props.pages.size >= 2){
             return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
                 { this.modalVisible() ? this.renderModals() : null }
-                {
-                this.props.pages.count() >= 2 ? this.renderTabs() :
-                <div className="results-scroll">
+                { this.renderTabs() }
+            </div>
+
+        }
+        else if(this.props.pages.size ==1){
+            return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
+                { this.modalVisible() ? this.renderModals() : null }
+                 { this.props.showCloseView ? <div className="view-control"><button onClick={Actions.closeView.bind(null, this.props.viewer_id)} className="btn btn-default">&times;</button></div> : null }
+                 <div className="results-scroll">
                     { this.props.view.getIn(['settings', this.props.pages.get(0).get('id'), 'advanced_search']) ?
                             <AdvancedSearch page_id={this.props.pages.get(0).get('id')} /> : null }
                     {  this.renderPage(this.props.pages.get(0)) }
                 </div>
-            }</div>
-
+                </div>
         }
         else{
             return <div className="results-empty"/>

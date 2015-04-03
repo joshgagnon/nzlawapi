@@ -167,8 +167,11 @@ module.exports = React.createClass({
                 <div className="row"><div className="col-md-10">
                     <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
                     </div>
-                    <div className="col-md-2">
+                    <div className="col-md-1">
                     <button onClick={window.print} className="btn btn btn-info">Print</button>
+                    </div>
+                    <div className="col-md-1">
+                    <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">&times;</button>
                     </div>
                 </div>
                 <PrintOverview {...this.props} />
