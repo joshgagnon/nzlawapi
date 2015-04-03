@@ -142,9 +142,10 @@ var AutoComplete = React.createClass({
     },
     getResultListItem: function(groupIndex, result, index) {
         var title = result.name;
-        var value = this.props.search_query ||'';
+        var value = (this.props.search_value.search_query ||'').trim();
 
         // Calcuate letter offsets for bolding search query
+
         var startIndex = title.toLowerCase().indexOf(value.toLowerCase());
         var endIndex = startIndex + value.length;
 
@@ -154,7 +155,7 @@ var AutoComplete = React.createClass({
             index += groups[i].entries.length;
         }
 
-        if (startIndex > -1)
+        if (startIndex > -1){
             return <li className={index === this.state.activeIndex ? 'active' : ''} onMouseDown={ this.clickResult.bind(this, result) }
                 key={result.id}>
                     <a href="#" data-doc-id={result.id} >
@@ -164,6 +165,7 @@ var AutoComplete = React.createClass({
                     </strong>
                     {title.substring(endIndex)}</a>
                 </li>;
+        }
 
         return <li key = {result.id || undefined}><a href="#">{title}</a></li>;
     },
