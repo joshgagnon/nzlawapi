@@ -306,7 +306,6 @@ module.exports = React.createClass({
     },
     render: function(){
         var active = this.getActive();
-        var resultsClass = 'results-container ';
         var parentClass ="act_browser ";
 
         if(this.state.browser.get('underlines') ){

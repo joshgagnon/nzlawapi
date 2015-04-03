@@ -31,12 +31,13 @@ module.exports = Reflux.createActions({
 	'requestVersions': {asyncResult: true},
 	'requestContents': {asyncResult: true},
 
-	'popoverOpened': {},
 	'sectionSummaryOpened': {},
 	'sectionSummaryClosed': {},
 	'requestPopoverData': {asyncResult: true},
+	'popoverOpened': {},
 	'popoverClosed': {},
 	'popoverUpdate': {},
+	'popoverMove': {},
 
 	'openSaveDialog': {},
 	'closeSaveDialog': {},

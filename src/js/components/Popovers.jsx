@@ -9,10 +9,12 @@ var Popovers = React.createClass({
         return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
     },
     render: function(){
-        return <div>{ this.props.popoverView.map(function(key){
+        return <div>{ this.props.popoverView.map(function(view, key){
                 var data = this.props.popoverData.get(key);
-                return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id} popoverPage={data} page_id={this.props.page_id} id={key} key={key} />)
-            }, this).toJS()}</div>
+                return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id}
+                    popoverPage={data} popoverView={view} page_id={this.props.page_id} id={key} key={key}
+                    getContentContainer={this.props.getContentContainer}/>)
+            }, this).toList()}</div>
     }
  });
 
@@ -28,7 +30,7 @@ var MobilePopovers = React.createClass({
         }, this),toJS();
     },
     render: function(){
-        var last = this.props.popoverView.last();
+        var last = this.props.popoverView.keys().last();
         if(last !== undefined){
             var pop = this.props.popoverData.get(last);
             return <div className="mobile-popovers">
@@ -41,10 +43,11 @@ var MobilePopovers = React.createClass({
 
 
 module.exports = {
-    renderFullPopovers: function(){
+    renderFullPopovers: function(props){
         return <MQ minWidth={480}>
             { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
             <Popovers
+                {...props}
                 popoverData={this.props.page.get('popovers')}
                 popoverView={this.props.view.getIn(['popovers', this.props.page.get('id')])}
                 viewer_id={this.props.viewer_id}

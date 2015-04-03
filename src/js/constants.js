@@ -14,5 +14,6 @@ module.exports = {
 		LINK: 'link',
 		LOCATION: 'location',
 		SECTION_SUMMARY: 'section_summary'
-	}
+	},
+	DRAG_TYPES: {POPOVER: 'popover'}
 };

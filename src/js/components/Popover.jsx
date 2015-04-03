@@ -9,8 +9,12 @@ var ArticleHandlers= require('./ArticleHandlers.jsx');
 var Warnings = require('./Warnings.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
+var DRAG_TYPES = require('../constants').DRAG_TYPES;
 var $ = require('jquery');
 var _ = require('lodash');
+
+var DragDropMixin = require('react-dnd').DragDropMixin;
+var DropEffects= require('react-dnd').DropEffects;
 
 
 
@@ -104,9 +108,24 @@ var PopoverBehaviour = {
 // USING PLAIN JS
 module.exports = {
     Popover: React.createClass({
-        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers],
+        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin],
         topOffset: 20,
         openLinksInTabs: true,
+        statics: {
+        configureDragDrop: function(register) {
+
+          register(DRAG_TYPES.POPOVER, {
+            dragSource: {
+              beginDrag: function(component) {
+                return {
+                  effectAllowed: DropEffects.MOVE,
+                  item: component.props
+                };
+              }
+            }
+          });
+        }
+      },
         getInitialState: function() {
             return {
                 placement: 'bottom'
@@ -122,31 +141,40 @@ module.exports = {
             this.reposition();
         },
         reposition: function(){
-            var self = this;
-            var $el = $(this.getDOMNode());
-            var $target = $(this.props.popoverPage.get('source_sel'));
-            //TODO use bootstrap layout algorithm
-            var left = this.props.popoverPage.get('positionLeft') - ($el.outerWidth() / 2);
-            $el.css({left:  Math.max(0, left)});
-
+            var self = this, left=this.props.popoverView.get('left') , top=this.props.popoverView.get('top') ;
+            /*if(!this.props.popoverView.get('dragged') && !this.props.popoverView.get('auto')){
+                    var $el = $(this.getDOMNode());
+                    var $target = $(this.props.popoverPage.get('source_sel'));
+                    //TODO use bootstrap layout algorithm
+                    left = left - ($el.outerWidth() / 2);
+                var scroll_width = this.props.getContentContainer().clientWidth;
+                var width = this.getDOMNode().clientWidth;
+                console.log(scroll_width, width)
+                if(width + left > scroll_width){
+                    left = left - (width + left - scroll_width);
+                }
+                left = Math.max(0, left);
+                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {auto: true, left: left, id: this.props.popoverPage.get('id')});
+            }*/
         },
+
         close: function() {
              Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.popoverPage.get('id'));
         },
         render: function() {
-            var measured = !!this.props.popoverPage.get('positionTop') || !!this.props.popoverPage.get('positionLeft');
+            var measured = !!this.props.popoverView.get('top') || !!this.props.popoverView.get('left');
             var classes = 'popover cata-popover ' + this.state.placement;
             var style = {};
-            style['left'] = this.props.popoverPage.get('positionLeft');
-            style['top'] = this.props.popoverPage.get('positionTop') + this.topOffset;
+            style['left'] = this.props.popoverView.get('left');
+            style['top'] = this.props.popoverView.get('top') + this.topOffset;
             style['display'] = measured ? 'block' : 'none';
             var arrowStyle = {};
             arrowStyle['left'] = this.props.popoverPage.get('arrowOffsetLeft');
             arrowStyle['top'] = this.props.popoverPage.get('arrowOffsetTop');
             return (
-                <div className={classes} role="tooltip" style={style}>
-                    <div className="arrow"  style={arrowStyle}></div>
-                    <h3 className="popover-title">{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>
+                <div className={classes} role="tooltip" style={style} >
+                    { !this.props.popoverView.get('dragged') ? <div className="arrow"  style={arrowStyle} /> : null }
+                    <h3 className="popover-title" {...this.dragSourceFor(DRAG_TYPES.POPOVER)}>{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
                     <div className='popover-content'>
                         {this.renderBody() }

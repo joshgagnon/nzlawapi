@@ -114,7 +114,9 @@ var ArticleSkeletonContent = React.createClass({
             if(this.props.view.getIn(['positions', this.props.page_id])){
                 this.setupSkeletonScroll();
                 this.updateSkeletonScroll();
-                this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS());
+                if(!this.onJumpTo(this.props.viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS())){
+                    this.setSubVisibility();
+                }
             }
             else{
                 this.setupSkeletonScroll();
@@ -130,7 +132,7 @@ var ArticleSkeletonContent = React.createClass({
         this.setSubVisibility();
     },
     getScrollContainer: function(){
-        return $(this.getDOMNode()).parents('.tab-content, .results-container');
+        return this.props.getScrollContainer();
     },
     setupSkeletonScroll: function(){
         var $parent = this.getScrollContainer();
@@ -406,7 +408,7 @@ var ArticleSkeletonContent = React.createClass({
             this.getScrollContainer().scrollTop(jump.pixel);
         }
         else{
-            return 'Not Found';
+            return false;
         }
     },
     componentWillUnmount: function(){
@@ -434,7 +436,7 @@ var ArticleContent = React.createClass({
         }
     },
     getScrollContainer: function(){
-        return $(this.getDOMNode()).parents('.tab-content, .results-container');
+        return this.props.getScrollContainer();
     },
     setupScroll: function(){
         var self = this;
@@ -523,10 +525,12 @@ var ArticleContent = React.createClass({
             // GO TO FULL
             Actions.newPage({
                 title: this.props.content.get('title'),
-                query: {doc_type:
-                this.props.content.get('doc_type'),
-                find: 'full',
-                id: this.props.content.get('document_id')}},
+                query: {
+                    doc_type:
+                    this.props.content.get('doc_type'),
+                    find: 'full',
+                    document_id: this.props.content.get('document_id')}
+                },
                 this.props.viewer_id,
                 {position: {id: jump.id, location: jump.location}
             });
@@ -551,29 +555,6 @@ var ArticleContent = React.createClass({
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
        }
-       // if loading position popovers
-       // TODO, minimize running this
-       if(this.props.page.get('content')){
-           var popovers = this.props.view.getIn(['popovers', this.props.page.get('id')]);
-           if(popovers){
-               popovers.forEach(function(p){
-                    var pop = this.props.page.getIn(['popovers', p]);
-                    if(pop && !pop.get('positionLeft') && !pop.get('positionTop')){
-                        var link = $(pop.get('source_sel'), this.getDOMNode());
-                        if(link.length){
-                            Actions.popoverUpdate(this.props.viewer_id, this.props.page.get('id'), {
-                                id: pop.get('id'),
-                                positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
-                                positionTop: link.position().top + this.getScrollContainer().scrollTop(),
-                            });
-                        }
-                    }
-               }, this);
-            }
-        }
-    },
-    getScrollContainer: function(){
-        return this.refs.content.getScrollContainer();
     },
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
@@ -584,8 +565,14 @@ var ArticleContent = React.createClass({
         }
         return null;
     },
+    getScrollContainer: function(){
+            // to do, remove $
+        return $(this.getDOMNode()).closest('.tab-content, .results-container')
+    },
     render: function(){
-        // perhaps swap popovers for different view on mobile
+        var getContentContainer = function(){
+            return this.refs.content.getDOMNode();
+        }.bind(this);
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>
         }
@@ -594,23 +581,25 @@ var ArticleContent = React.createClass({
                 { this.warningsAndErrors() }
                 </div>
         }
-        return <div className="legislation-result" onClick={this.interceptLink} >
+        return <div className="legislation-result" onClick={this.interceptLink}>
            { this.warningsAndErrors() }
             <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
            <ArticleSkeletonContent ref="content"
+                getScrollContainer={this.getScrollContainer}
                 content={this.props.page.get('content') }
                 parts={this.props.page.get('parts') }
                 viewer_id={this.props.viewer_id}
                 view={this.props.view}
                 page_id={this.props.page.get('id')} />    :
           <ArticleContent ref="content"
+                getScrollContainer={this.getScrollContainer}
                 content={this.props.page.get('content') }
                 viewer_id={this.props.viewer_id}
                 view={this.props.view}
                 page_id={this.props.page.get('id')} /> }
 
-            { this.renderFullPopovers() }
+            { this.renderFullPopovers({getContentContainer: getContentContainer}) }
             { this.renderMobilePopovers() }
         </div>
     }

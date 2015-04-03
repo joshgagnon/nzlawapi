@@ -110,18 +110,26 @@ module.exports =  Reflux.createStore({
         this.onShowPage.apply(this, arguments);
     },
     onPopoverOpened: function(viewer_id, page_id, link_data){
-        var self = this;
         this.prepPage(viewer_id, page_id);
-        var open = this.views.getIn([viewer_id, 'popovers', page_id], Immutable.List())
-        if(!open.contains(link_data.id)){
-            this.views = this.views.setIn([viewer_id, 'popovers', page_id], open.push(link_data.id))
+        var open = this.views.getIn([viewer_id, 'popovers', page_id], Immutable.Map())
+        if(!open.get(link_data.id)){
+            var obj = {};
+            obj[link_data.id] = _.pick(link_data, 'left', 'top');
+            this.views = this.views.mergeDeepIn([viewer_id, 'popovers', page_id], obj)
+            this.update();
         }
-        this.update();
     },
     onPopoverClosed: function(viewer_id, page_id, link_id){
         var open = this.views.getIn([viewer_id, 'popovers', page_id]);
-        this.views = this.views.setIn([viewer_id, 'popovers', page_id], open.remove(open.indexOf(link_id)));
+        this.views = this.views.setIn([viewer_id, 'popovers', page_id], open.remove(link_id));
         this.update();
+    },
+     onPopoverMove: function(viewer_id, page_id, position){
+        var open = this.views.getIn([viewer_id, 'popovers', page_id], Immutable.Map())
+        if(open.get(position.id)){
+            this.views = this.views.mergeDeepIn([viewer_id, 'popovers', page_id, position.id], position)
+            this.update();
+        }
     },
     onSectionSummaryOpened: function(viewer_id, page_id, section_data){
         var self = this;
@@ -129,8 +137,8 @@ module.exports =  Reflux.createStore({
         var open = this.views.getIn([viewer_id, 'section_summaries', page_id], Immutable.List())
         if(!open.contains(section_data.id)){
             this.views = this.views.setIn([viewer_id, 'section_summaries', page_id], open.push(section_data.id))
+            this.update();
         }
-        this.update();
     },
     onSectionSummaryClosed: function(viewer_id, page_id, section_id){
         var open = this.views.getIn([viewer_id, 'section_summaries', page_id]);

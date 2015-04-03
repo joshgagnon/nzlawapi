@@ -24,8 +24,8 @@ var $ = require('jquery');
                             id: link.attr('data-link-id'),
                             target: link.attr('data-target-id'),
                             source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                            positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
-                            positionTop:link.position().top+ this.getScrollContainer().scrollTop(),
+                            left: link.position().left + this.getScrollContainer().scrollLeft()-250,
+                            top:link.position().top+ this.getScrollContainer().scrollTop(),
                             fetched: false,
                             query: {
                                 id: link.attr('data-href'),
@@ -40,8 +40,8 @@ var $ = require('jquery');
                         type: 'definition',
                         title: link.text(),
                         id: link.attr('data-def-idx'),
-                        positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
-                        positionTop:link.position().top + this.getScrollContainer().scrollTop(),
+                        left: link.position().left + this.getScrollContainer().scrollLeft()-250,
+                        top:link.position().top + this.getScrollContainer().scrollTop(),
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
                         query_string: '/definition/'+link.attr('data-def-id')
@@ -63,8 +63,8 @@ var $ = require('jquery');
                                 id: link.attr('data-link-id'),
                                 target: link.attr('data-target-id'),
                                 source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                                positionLeft: link.position().left + this.getScrollContainer().scrollLeft(),
-                                positionTop:link.position().top+ this.getScrollContainer().scrollTop(),
+                                left: link.position().left + this.getScrollContainer().scrollLeft() -250,
+                                top:link.position().top+ this.getScrollContainer().scrollTop(),
                                 fetched: false,
                                 query_string: link.attr('href').replace('/open_article', '')
                             });
@@ -98,8 +98,8 @@ var $ = require('jquery');
                         type: 'location',
                         title: title + ' '+ location.repr,
                         id: location.repr,
-                        positionLeft: $target.position().left + this.getScrollContainer().scrollLeft(),
-                        positionTop:$target.position().top + this.getScrollContainer().scrollTop(),
+                        left: $target.position().left + this.getScrollContainer().scrollLeft()-250,
+                        top: $target.position().top + this.getScrollContainer().scrollTop(),
                         source_sel: Utils.locationsToSelector(location.locs),
                         fetched: false,
                         format: 'fragment',

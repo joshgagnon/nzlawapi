@@ -13,6 +13,20 @@ var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var UnknownError = require('./Warnings.jsx').UnknownError;
+var DRAG_TYPES = require('../constants').DRAG_TYPES;
+var DragDropMixin = require('react-dnd').DragDropMixin;
+
+function makeDropTarget(context) {
+  return {
+    acceptDrop: function(component, item) {
+      var delta = context.getCurrentOffsetDelta();
+      var left = Math.round(item.popoverView.get('left')+ delta.x);
+      var top = Math.round(item.popoverView.get('top') + delta.y);
+      Actions.popoverMove(item.viewer_id, item.page_id, {dragged: true, left: left, top: top, id: item.popoverPage.get('id')});
+    }
+  };
+}
+
 
 var LoadUnknown = React.createClass({
     request: function(){
@@ -36,6 +50,14 @@ var LoadUnknown = React.createClass({
 })
 
 module.exports = React.createClass({
+        mixins: [DragDropMixin],
+    statics: {
+    configureDragDrop: function(register, context) {
+        register(DRAG_TYPES.POPOVER, {
+            dropTarget: makeDropTarget(context)
+          });
+        }
+    },
     handleTab: function(active){
         Actions.showPage(this.props.viewer_id, active);
     },
@@ -112,7 +134,7 @@ module.exports = React.createClass({
             classes += 'showing-modal ';
         }
         if(this.props.pages.size){
-            return <div className={classes}>
+            return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
                 { this.modalVisible() ? this.renderModals() : null }
                 {
                 this.props.pages.count() >= 2 ? this.renderTabs() :

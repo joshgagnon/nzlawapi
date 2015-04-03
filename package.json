@@ -33,6 +33,7 @@
     "promise": "^6.1.0",
     "react": "0.13.x",
     "react-bootstrap": "^0.18.0",
+    "react-dnd": "^0.9.8",
     "react-responsive": "git://github.com/motiz88/react-responsive.git",
     "react-router": "^0.13.x",
     "reactify": "^1.1.0",
