@@ -199,9 +199,9 @@ def infer_life_time(node):
             return get_id(parent.iterancestors('prov').next())
         if 'in schedule' in text or 'in this schedule' in text:
             return get_id(parent.iterancestors('schedule').next())
-        if 'in this subpart' in text:
+        if 'in this subpart' in text or 'purposes of this subpart' in text:
             return get_id(parent.iterancestors('subpart').next())
-        if 'in this part' in text:
+        if 'in this part' in text or 'purposes of this part' in text:
             return get_id(parent.iterancestors('part').next())
 
     except (AttributeError, IndexError), e:
