@@ -2,15 +2,16 @@ var Actions = require('../actions/Actions');
 var Utils = require('../utils');
 var $ = require('jquery');
 
-
  module.exports =
     {
         interceptLink: function(e){
             var link = $(e.target).closest('a:not([target])');
             var page = this.props.page;
             var page_id = page ? page.get('id') : this.props.page_id;
+            var popover_offset = 250;
             if(link.length){
                 e.preventDefault();
+                e.stopPropagation();
                 if(link.attr('data-link-id') && link.attr('data-href')){
                     var url = link.attr('data-href');
                     if(url.indexOf('/') === -1){
@@ -24,8 +25,8 @@ var $ = require('jquery');
                             id: link.attr('data-link-id'),
                             target: link.attr('data-target-id'),
                             source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                            left: link.position().left + this.getScrollContainer().scrollLeft()-250,
-                            top:link.position().top+ this.getScrollContainer().scrollTop(),
+                            left: link.position().left + this.overlayOffset().left - popover_offset,
+                            top:link.position().top+ this.overlayOffset().top,
                             fetched: false,
                             query: {
                                 id: link.attr('data-target-id') || link.attr('data-href'),
@@ -40,8 +41,8 @@ var $ = require('jquery');
                         type: 'definition',
                         title: link.text(),
                         id: link.attr('data-def-idx'),
-                        left: link.position().left + this.getScrollContainer().scrollLeft()-250,
-                        top:link.position().top + this.getScrollContainer().scrollTop(),
+                        left: link.position().left + this.overlayOffset().left - popover_offset,
+                        top:link.position().top + this.overlayOffset().top,
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
                         query_string: '/definition/'+link.attr('data-def-id')
@@ -63,8 +64,8 @@ var $ = require('jquery');
                                 id: link.attr('data-link-id'),
                                 target: link.attr('data-target-id'),
                                 source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                                left: link.position().left + this.getScrollContainer().scrollLeft() -250,
-                                top:link.position().top+ this.getScrollContainer().scrollTop(),
+                                left: link.position().left + this.overlayOffset().left - popover_offset,
+                                top:link.position().top+ this.overlayOffset().top,
                                 fetched: false,
                                 query_string: link.attr('href').replace('/open_article', '')
                             });
@@ -86,10 +87,10 @@ var $ = require('jquery');
                         govt_ids: ids
                     });
                 }
-
-
             }
             else if($(e.target).is('span.label') && $(e.target).closest('[data-location]').length){
+                e.preventDefault();
+                e.stopPropagation();
                 var $target = $(e.target).closest('[data-location]')
                 var location = Utils.getLocation($target);
                 var title = page.getIn(['content', 'title']) +' '+ location.repr;
@@ -98,8 +99,8 @@ var $ = require('jquery');
                         type: 'location',
                         title: title + ' '+ location.repr,
                         id: location.repr,
-                        left: $target.position().left + this.getScrollContainer().scrollLeft()-250,
-                        top: $target.position().top + this.getScrollContainer().scrollTop(),
+                        left: $target.position().left + this.overlayOffset().left - popover_offset,
+                        top: $target.position().top + this.overlayOffset().top,
                         source_sel: Utils.locationsToSelector(location.locs),
                         fetched: false,
                         format: 'fragment',

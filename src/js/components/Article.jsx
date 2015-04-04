@@ -566,13 +566,13 @@ var ArticleContent = React.createClass({
         return null;
     },
     getScrollContainer: function(){
-            // to do, remove $
+        // to do, remove $
         return $(this.getDOMNode()).closest('.tab-content, .results-container')
     },
+    overlayOffset: function(){
+        return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
+    },
     render: function(){
-        var getContentContainer = function(){
-            return this.refs.content.getDOMNode();
-        }.bind(this);
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>
         }
@@ -599,7 +599,7 @@ var ArticleContent = React.createClass({
                 view={this.props.view}
                 page_id={this.props.page.get('id')} /> }
 
-            { this.renderFullPopovers({getContentContainer: getContentContainer}) }
+            { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
             { this.renderMobilePopovers() }
         </div>
     }

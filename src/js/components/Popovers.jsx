@@ -13,7 +13,7 @@ var Popovers = React.createClass({
                 var data = this.props.popoverData.get(key);
                 return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id}
                     popoverPage={data} popoverView={view} page_id={this.props.page_id} id={key} key={key}
-                    getContentContainer={this.props.getContentContainer}/>)
+                    getScrollContainer={this.props.getScrollContainer}/>)
             }, this).toList()}</div>
     }
  });

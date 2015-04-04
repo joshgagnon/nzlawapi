@@ -45,7 +45,10 @@ var PopoverBehaviour = {
         }
     },
     getScrollContainer: function(){
-        return $(this.getDOMNode())
+        return this.props.getScrollContainer();
+    },
+    overlayOffset: function(){
+        return {left: this.props.popoverView.get('left'), top: this.props.popoverView.get('top') + 25}
     },
     getLocalContent: function(){
         return false;
@@ -141,21 +144,21 @@ module.exports = {
             this.reposition();
         },
         reposition: function(){
-            var self = this, left=this.props.popoverView.get('left') , top=this.props.popoverView.get('top') ;
-            /*if(!this.props.popoverView.get('dragged') && !this.props.popoverView.get('auto')){
-                    var $el = $(this.getDOMNode());
-                    var $target = $(this.props.popoverPage.get('source_sel'));
-                    //TODO use bootstrap layout algorithm
-                    left = left - ($el.outerWidth() / 2);
-                var scroll_width = this.props.getContentContainer().clientWidth;
-                var width = this.getDOMNode().clientWidth;
-                console.log(scroll_width, width)
-                if(width + left > scroll_width){
-                    left = left - (width + left - scroll_width);
-                }
-                left = Math.max(0, left);
-                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {auto: true, left: left, id: this.props.popoverPage.get('id')});
-            }*/
+            var self = this, left=this.props.popoverView.get('left') , top=this.props.popoverView.get('top');
+            var width = this.getDOMNode().clientWidth,
+                container_width = this.props.getScrollContainer()[0].clientWidth;
+            var change = false;
+            if(left < 0){
+                change = true;
+                left = 0;
+            }
+            if(left + width > container_width){
+                left = (left + width) - container_width;
+                change = true;
+            }
+            if(change){
+                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {left: left, id: this.props.popoverPage.get('id')});
+            }
         },
 
         close: function() {
