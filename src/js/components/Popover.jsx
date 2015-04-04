@@ -10,6 +10,7 @@ var Warnings = require('./Warnings.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
 var DRAG_TYPES = require('../constants').DRAG_TYPES;
+var utils = require('../utils');
 var $ = require('jquery');
 var _ = require('lodash');
 
@@ -111,9 +112,10 @@ var PopoverBehaviour = {
 // USING PLAIN JS
 module.exports = {
     Popover: React.createClass({
-        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin],
+        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin, {stopScrollPropagation: utils.stopScrollPropagation}],
         topOffset: 20,
         openLinksInTabs: true,
+        scrollable_selector: '.popover-content > *',
         statics: {
         configureDragDrop: function(register) {
 
@@ -179,7 +181,7 @@ module.exports = {
                     { !this.props.popoverView.get('dragged') ? <div className="arrow"  style={arrowStyle} /> : null }
                     <h3 className="popover-title" {...this.dragSourceFor(DRAG_TYPES.POPOVER)}>{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
-                    <div className='popover-content'>
+                    <div className='popover-content' onWheel={this.stopScrollPropagation} >
                         {this.renderBody() }
                     </div>
                     {this.renderFooter() }

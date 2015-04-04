@@ -30,7 +30,8 @@ var $ = require('jquery');
                             fetched: false,
                             query: {
                                 id: link.attr('data-target-id') || link.attr('data-href'),
-                                doc_type: 'instrument'
+                                doc_type: 'instrument',
+                                find: 'preview'
                             },
                             query_string: '/link/'+url
                         });
