@@ -14,17 +14,20 @@ var $ = require('jquery');
             if($(e.target).closest('.focus-link').length){
                 e.preventDefault();
                 e.stopPropagation();
-                var $target = $(e.target);
+                var $target = $(e.target).closest('[id]');
                 var location = Utils.getLocation($target);
                 var govt_ids = $target.parent().find('[id]').map(function(){
                     return this.attributes.id.textContent;
                 }).toArray();
-                Actions.contextMenuOpened(this.props.viewer_id, {
+                Actions.contextMenuOpened(this.props.viewer_id, page_id, {
                         location: location,
                         govt_ids: govt_ids,
+                        id: $target.attr('id'),
                         query:{
                             document_id: this.getDocumentId(e.target),
                             location: location.repr,
+                            doc_type: 'instrument',
+                            find: 'location'
                         },
                     },
                     {left: e.pageX, top: e.pageY});

@@ -9,9 +9,10 @@ module.exports = Reflux.createStore({
 	listenables: Actions,
 	init: function(){
 	},
-	onContextMenuOpened: function(viewer_id, data, position){
+	onContextMenuOpened: function(viewer_id, page_id, data, position){
 		this.context_menu = Immutable.fromJS({
 			viewer_id: viewer_id,
+			page_id: page_id,
 			data: data,
 			position: position
 		});

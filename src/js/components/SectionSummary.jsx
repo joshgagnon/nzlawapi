@@ -85,18 +85,18 @@ module.exports = React.createClass({
         var last = this.props.sectionView.last();
         var data = last && this.getLast();
         if(data){
-                return <div className="static-modal section-summary">
-                          <Modal title={data.get('title')} onRequestHide={this.close}>
-                            <div className="modal-body">
-                                {this.renderBody(data)}
-                            </div>
-                            <div className="modal-footer">
-                                <Button bsStyle={'info'} onClick={this.focusSection}>Focus In New Tab</Button>
-                                <Button bsStyle={'info'} onClick={this.addToPrint}>Add To Print</Button>
-                            </div>
-                        </Modal>
-                      </div>
-        }
+            return <div className="static-modal section-summary">
+                      <Modal title={data.get('title')} onRequestHide={this.close}>
+                        <div className="modal-body">
+                            {this.renderBody(data)}
+                        </div>
+                        <div className="modal-footer">
+                            <Button bsStyle={'info'} onClick={this.focusSection}>Focus In New Tab</Button>
+                            <Button bsStyle={'info'} onClick={this.addToPrint}>Add To Print</Button>
+                        </div>
+                    </Modal>
+                  </div>
+            }
         return <div/>
     }
 })

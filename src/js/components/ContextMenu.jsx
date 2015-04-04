@@ -42,25 +42,47 @@ var ContextMenu = React.createClass({
     componentWillUnmount: function(){
         this.unbindRootCloseHandlers();
     },
+    newTab: function(){
+        Actions.newPage({
+            title: this.props.context_menu.getIn(['data', 'location', 'repr']),
+            query: this.props.context_menu.getIn(['data', 'query']).toJS()
+        },this.props.context_menu.get('viewer_id'));
+    },
+    addPrint: function(){
+        Actions.addToPrint({
+            title: this.props.context_menu.getIn(['data', 'location', 'repr']),
+            query: this.props.context_menu.getIn(['data', 'query']).toJS()
+        });
+    },
+    findReferences: function(){
+        Actions.sectionSummaryOpened(
+            this.props.context_menu.get('viewer_id'),
+            this.props.context_menu.get('page_id'),{
+                id: this.props.context_menu.getIn(['data', 'id']),
+                document_id: this.props.context_menu.getIn(['data', 'query', 'document_id']),
+                title: this.props.context_menu.getIn(['data', 'location', 'repr']),
+                govt_ids: this.props.context_menu.getIn(['data', 'govt_ids']).toJS()
+        });
+    },
     render: function(){
         return <div className="context-menu fade" style={this.props.context_menu.get('position').toJS()} >
             <ul><li><ul className="children">
             <li className="title"><span >{this.props.context_menu.getIn(['data', 'location', 'repr'])}</span></li>
             <li className="suboption">
-                <a onClick={Actions.toggleUnderlines} >
-                    <span className="fa fa-underline" title="Open In New Tab"/>
+                <a onClick={this.newTab} >
+                    <span className="fa fa-file-o" title="Open In New Tab"/>
                     <span className="sublabel">Open In New Tab</span>
                 </a>
             </li>
             <li className="suboption">
-                <a onClick={Actions.toggleNotes} >
-                    <span className="fa fa-file-text-o" title="Add To Print"/>
+                <a onClick={this.addPrint} >
+                    <span className="fa fa-copy" title="Add To Print"/>
                     <span className="sublabel">Add To Print</span>
                 </a>
             </li>
             <li className="suboption">
-                <a onClick={Actions.toggleNotes} >
-                    <span className="fa fa-file-text-o" title="Find References"/>
+                <a onClick={this.findReferences} >
+                    <span className="fa fa-search" title="Find References"/>
                     <span className="sublabel">Find References</span>
                 </a>
             </li>
