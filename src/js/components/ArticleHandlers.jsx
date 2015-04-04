@@ -1,7 +1,9 @@
 var Actions = require('../actions/Actions');
 var Utils = require('../utils');
 var $ = require('jquery');
+var _ = require('lodash');
 
+// must implement getDocumentId, overlayOffset
 
  module.exports =
     {
@@ -15,7 +17,7 @@ var $ = require('jquery');
                 e.preventDefault();
                 e.stopPropagation();
                 var $target = $(e.target).closest('[id]');
-                var location = Utils.getLocation($target);
+                var location = Utils.getLocation($(e.target));
                 var govt_ids = $target.parent().find('[id]').map(function(){
                     return this.attributes.id.textContent;
                 }).toArray();
@@ -31,29 +33,6 @@ var $ = require('jquery');
                         },
                     },
                     {left: e.pageX, top: e.pageY});
-                return;
-
-
-               /* var $target = $(e.target).closest('[data-location]')
-                var location = Utils.getLocation($target);
-                var title = page.getIn(['content', 'title']) +' '+ location.repr;
-                Actions.popoverOpened(this.props.viewer_id, page_id,
-                        {
-                        type: 'location',
-                        title: title + ' '+ location.repr,
-                        id: location.repr,
-                        left: $target.position().left + this.overlayOffset().left - popover_offset,
-                        top: $target.position().top + this.overlayOffset().top,
-                        source_sel: Utils.locationsToSelector(location.locs),
-                        fetched: false,
-                        format: 'fragment',
-                        query_string: Utils.queryUrlJSON({
-                            document_id: page.getIn(['content', 'document_id']),
-                            find: 'location',
-                            location: location.repr,
-                            doc_type: page.getIn(['content', 'doc_type'])
-                        }),
-                    });*/
             }
             else if(link.length){
                 e.preventDefault();
@@ -64,6 +43,7 @@ var $ = require('jquery');
                         url = 'instrument/'+url;
                     }
                     var location = Utils.getLocation(link);
+                    var location_string = link.attr('data-location')
                     Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                             type: 'link',
@@ -77,7 +57,8 @@ var $ = require('jquery');
                             query: {
                                 id: link.attr('data-target-id') || link.attr('data-href'),
                                 doc_type: 'instrument',
-                                find: 'preview'
+                                find: location_string ? 'location' : 'preview',
+                                location: location_string
                             },
                             query_string: '/link/'+url
                         });
@@ -93,45 +74,6 @@ var $ = require('jquery');
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
                         query_string: '/definition/'+link.attr('data-def-id')
-                    });
-                }
-                // TODO refactor this crazy behaviour
-                else if(link.parent().hasClass('catalex-src')){
-                    if(this.openLinksInTabs){
-                        Actions.newPage({
-                            title: link.text(),
-                            query_string: link.attr('href').replace('/open_article', ''),
-                        }, this.props.viewer_id)
-                    }
-                    else{
-                        Actions.popoverOpened(this.props.viewer_id, page_id,
-                            {
-                                type: 'link',
-                                title: link.text(),
-                                id: link.attr('data-link-id'),
-                                target: link.attr('data-target-id'),
-                                source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
-                                left: link.position().left + this.overlayOffset().left - popover_offset,
-                                top:link.position().top+ this.overlayOffset().top,
-                                fetched: false,
-                                query_string: link.attr('href').replace('/open_article', '')
-                            });
-                        }
-                }
-                else if(link.closest('[id]').length){
-                    var $target = link.closest('[id]');
-                    var title = page.getIn(['content', 'title']) + ' ' + $target.attr('data-location') ;
-                    var ids = $target.find('[id]').map(function(){
-                        return this.attributes.id.textContent;
-                    }).toArray();
-                    ids.push($target.attr('id'));
-                    Actions.sectionSummaryOpened(
-                        this.props.viewer_id,
-                        page.get('id'),
-                        {id: $target.attr('id'),
-                        document_id: page.getIn(['content', 'document_id']),
-                        title: page.getIn(['content', 'title']) +' '+ Utils.getLocation($target).repr,
-                        govt_ids: ids
                     });
                 }
             }

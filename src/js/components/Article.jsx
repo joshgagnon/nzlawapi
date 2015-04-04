@@ -10,6 +10,7 @@ var ArticleError = require('./Warnings.jsx').ArticleError;
 var ArticleHandlers = require('./ArticleHandlers.jsx')
 var Utils = require('../utils');
 var Immutable = require('immutable');
+var ArticleLocation= require('./BreadCrumbs.jsx').ArticleLocation;
 
 var _ = require('lodash');
 var $ = require('jquery');
@@ -44,47 +45,10 @@ $.fn.isOnScreen = function(tolerance){
 
 
 
-var articleLocation = {
-    _findCurrent: function(){
-        var target = $('.current', this.getDOMNode()).last();
-        var locs = Utils.getLocation(target).locs;
-        var doc_type = this.props.content.getIn(['query', 'doc_type']);
-        var document_id = this.props.content.getIn(['query', 'document_id'])
-        var links = [{
-            repr: this.props.content.get('title'),
-            title: this.props.content.get('title'),
-            query:{
-                doc_type: doc_type,
-                document_id: document_id
-            }
-        }]
-        for(var i=0;i<locs.length;i++){
-            var loc = locs.slice(0, i+1).join('');
-            links.push({
-                repr: locs[i],
-                title: this.props.content.get('title') + ' '+ loc,
-                query:{
-                    doc_type: doc_type,
-                    document_id: document_id,
-                    find: 'location',
-                    location: loc
-                }
-            });
-        }
-        Actions.articleFocusLocation(links);
-    },
-    componentDidMount: function(){
-        this._findCurrent();
-    },
-    componentDidUpdate: function(){
-       this._findCurrent();
-    }
-}
-
 var ArticleSkeletonContent = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
-        articleLocation
+        ArticleLocation
     ],
     scroll_threshold: 4000,
     fetch_threshold: 10000,
@@ -366,6 +330,9 @@ var ArticleSkeletonContent = React.createClass({
         if(this.props.content.getIn(['attributes', 'latest'])){
             classes += 'latest-version ';
         }
+        if(this.props.content.get('format') === 'fragment'){
+            classes += 'fragment '
+        }
         return <div className={classes} dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
     handleDelayedJump: function(ref){
@@ -422,7 +389,7 @@ var ArticleSkeletonContent = React.createClass({
 var ArticleContent = React.createClass({
     mixins: [
         Reflux.listenTo(ArticleJumpStore, "onJumpTo"),
-        articleLocation
+        ArticleLocation
     ],
     propTypes: {
        content: React.PropTypes.object.isRequired,
@@ -479,6 +446,9 @@ var ArticleContent = React.createClass({
         var classes = '';
         if(this.props.content.getIn(['attributes', 'latest'])){
             classes += 'latest-version ';
+        }
+        if(this.props.content.get('format') === 'fragment'){
+            classes += 'fragment '
         }
         return <div className={classes} dangerouslySetInnerHTML={{__html:this.props.content.get('html_content')}} />
     },
@@ -586,7 +556,7 @@ var ArticleContent = React.createClass({
         }
         return <div className="legislation-result" onClick={this.interceptLink}>
            { this.warningsAndErrors() }
-            <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} />
+            <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} container={this} content={this.props.page.get('content') }/>
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
            <ArticleSkeletonContent ref="content"
                 getScrollContainer={this.getScrollContainer}

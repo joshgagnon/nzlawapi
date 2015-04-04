@@ -10,13 +10,13 @@ var Warnings = require('./Warnings.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
 var DRAG_TYPES = require('../constants').DRAG_TYPES;
+var DynamicArticleBreadCrumbs = require('./BreadCrumbs.jsx');
 var utils = require('../utils');
 var $ = require('jquery');
 var _ = require('lodash');
 
 var DragDropMixin = require('react-dnd').DragDropMixin;
 var DropEffects= require('react-dnd').DropEffects;
-
 
 
 var PopoverBehaviour = {
@@ -60,6 +60,7 @@ var PopoverBehaviour = {
     },
     renderBody: function(){
         var html;
+        var fragment = this.props.popoverPage.get('format') === 'fragment';
         if(this.props.popoverPage.get('error')){
             return <div ><Warnings.DefinitionError error={this.props.popoverPage.get('error')}/></div>
         }
@@ -76,7 +77,14 @@ var PopoverBehaviour = {
             html = this.props.popoverPage.get('html_content');
         }
         if(html){
-            return <div dangerouslySetInnerHTML={{__html: html}}  onClick={this.interceptLink}/>
+            var classes = '';
+            if(fragment){
+                classes = 'fragment ';
+            }
+            return <div className={classes}>
+                    {fragment ? <DynamicArticleBreadCrumbs {...this.props} content={this.props.popoverPage} /> : null }
+                    <div dangerouslySetInnerHTML={{__html: html}}  onClick={this.interceptLink}/>
+                </div>
         }
         else{
             return <div className='csspinner traditional' />

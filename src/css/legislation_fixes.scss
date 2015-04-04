@@ -1,3 +1,16 @@
+// visibility for fragments
+
+.fragment .legislation{
+    h1,h2,h3,h4,h5, .cover{
+        display:none;
+    }
+    .current{
+    h1,h2,h3,h4,h5, .cover{
+        display:block;
+    }
+    }
+}
+
 
 .legislation .label{
     display:initial;

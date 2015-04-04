@@ -45,8 +45,6 @@ def get_links(db=None):
     return links
 
 
-
-
 def process_instrument_links(tree, db=None, links=None):
     links = links or get_links(db)
     mon = Monitor()

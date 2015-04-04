@@ -48,8 +48,10 @@
         <span class="catalex-src">
         Source: <a >
         <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/></xsl:attribute>
+        <xsl:attribute name="data-href"><xsl:value-of select="@href"/></xsl:attribute>
         <xsl:attribute name="data-link-id"><xsl:value-of select="@link-id"/></xsl:attribute>
-
+        <xsl:attribute name="data-target-id"><xsl:value-of select="@target-id"/></xsl:attribute>
+        <xsl:attribute name="data-location"><xsl:value-of select="@location"/></xsl:attribute>
             <xsl:value-of select="."/>
         </a>
         </span>

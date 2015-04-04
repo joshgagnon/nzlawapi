@@ -274,8 +274,7 @@ var PageStore = Reflux.createStore({
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data'], result);
         this.update();
     },
-
-    //TODO position, should be in view
+    // todo, remove
     onPopoverUpdate: function(viewer_id, page_id, popover){
         var page = this.getById(page_id);
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover.id], popover);

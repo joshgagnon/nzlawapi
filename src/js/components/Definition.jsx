@@ -27,6 +27,9 @@ module.exports = React.createClass({
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container');
     },
+    overlayOffset: function(){
+        return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
+    },
     render: function(){
 
         return <div className="result-container" onClick={this.interceptLink}>
@@ -34,7 +37,7 @@ module.exports = React.createClass({
                 {this.props.page.getIn(['content','html_content']) ?
                     <div ref="content" className="legislation-result" >
                         <div dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
-                                     { this.renderFullPopovers() }
+                                     { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
                                     { this.renderMobilePopovers() }
                     </div> :
                     null }

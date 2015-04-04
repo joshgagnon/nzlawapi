@@ -170,7 +170,8 @@ def add_parent_definitions(row, db=None, definitions=None,
         for result in cur.fetchall():
             print 'Parent: ', result.get('title')
             processed_parent = True
-            if result.get('title') not in definitions.titles:
+            title = unicode(result.get('title').decode('utf-8'))
+            if title not in definitions.titles:
                 if not result.get('processed_document'):
                     tree, parent_definitions = process_instrument(
                         row=result, db=db,

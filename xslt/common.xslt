@@ -110,6 +110,10 @@
                 <xsl:apply-templates select="long-title/para/text"/>
 
                 <xsl:apply-templates select="long-title/para/label-para"/>
+                <xsl:if test="long-title[@deletion-status='repealed']">
+                    <p class="deleted para-deleted">[Repealed]</p>
+                </xsl:if>
+                <xsl:apply-templates select="long-title/notes/history/history-note"/>
              </div>
         </div>
     </xsl:template>
@@ -462,6 +466,9 @@
             <xsl:otherwise>
                   <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/></xsl:attribute>
                  <xsl:attribute name="data-target-id"><xsl:value-of select="@target-id"/></xsl:attribute>
+                 <xsl:if test="@location != ''">
+                    <xsl:attribute name="data-location"><xsl:value-of select="@location"/></xsl:attribute>
+                </xsl:if>
             </xsl:otherwise>
         </xsl:choose>
             <xsl:value-of select="."/>

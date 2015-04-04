@@ -44,7 +44,6 @@ module.exports = {
         return '/query?' + $.param(query);
     },
     getLocation: function($el){
-
         var repr = ''
         function traverse($el){
             var locs = [];
