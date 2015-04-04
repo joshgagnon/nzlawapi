@@ -46,6 +46,8 @@ def run(db, config):
                 strategy={
                 'links': get_links})
             count += 1
+            if count % 500 == 0:
+                cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
         cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
 
 if __name__ == "__main__":
