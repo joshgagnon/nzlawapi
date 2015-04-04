@@ -315,6 +315,9 @@
                 <xsl:call-template name="quote"/>
                 <xsl:apply-templates select="para/text|para/label-para|example|text" />
             </p>
+            <xsl:if test="@deletion-status='repealed'">
+                <p class="deleted para-deleted">[Repealed]</p>
+            </xsl:if>
         </div>
     </xsl:template>
 
