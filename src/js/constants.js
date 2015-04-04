@@ -15,5 +15,10 @@ module.exports = {
 		LOCATION: 'location',
 		SECTION_SUMMARY: 'section_summary'
 	},
-	DRAG_TYPES: {POPOVER: 'popover'}
+	CONTEXT_MENU_TYPES: {
+		LOCATION: 'location'
+	},
+	DRAG_TYPES: {
+		POPOVER: 'popover'
+	}
 };

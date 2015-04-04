@@ -29,6 +29,7 @@ var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
 var UserControls = require('./UserControls.jsx');
 var Notifications = require('./Notifications.jsx');
+var ContextMenu = require('./ContextMenu.jsx');
 var ButtonBar = require('./ButtonBar.jsx');
 var MQ = require('./Responsive.jsx');
 var constants = require('../constants');
@@ -45,7 +46,6 @@ $.fn.focusNextInputField = function() {
         return false;
     });
 };
-
 
 var DialogStore = Reflux.createStore({
     listenables: Actions,
@@ -340,6 +340,7 @@ module.exports = React.createClass({
             </MQ>
             { this.state.pages.count() ? this.renderBody() : null}
             <Notifications />
+            <ContextMenu />
         </div>);
     }
 });

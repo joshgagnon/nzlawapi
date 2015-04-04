@@ -39,6 +39,9 @@ module.exports = Reflux.createActions({
 	'popoverUpdate': {},
 	'popoverMove': {},
 
+	'contextMenuOpened': {},
+	'contextMenuClosed': {},
+
 	'openSaveDialog': {},
 	'closeSaveDialog': {},
 	'openLoadDialog': {},

@@ -1,0 +1,43 @@
+.context-menu{
+	@extend .buttonbar-wrapper;
+	position: absolute;
+	  height: auto;
+	  padding-top: 0;
+	  text-align: center;
+	  z-index: 1500;
+	li {
+	 .children{
+		display:block;
+		left:0;
+		ul > li{
+
+			}
+		}
+	     .suboption{
+             font-size:24px;
+           background-color:#eee;
+           transition: all 0.2s ease;
+            a, .fa{
+                color:$deep-red;
+            }
+           }
+	}
+    li:hover {
+	    .button{
+	        background-color:$deep-red;
+	        padding-right:100px;
+	    }
+	    .title a, .fa{
+	       color:#fff;
+	       cursor:pointer;
+	    }
+	    & .children{
+	        left:0px;
+	        top: 0px;
+	    }
+	   .suboption{
+             font-size:24px;
+        }
+	}
+
+}

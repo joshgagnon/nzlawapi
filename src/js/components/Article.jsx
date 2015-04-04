@@ -572,6 +572,9 @@ var ArticleContent = React.createClass({
     overlayOffset: function(){
         return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
     },
+    getDocumentId: function(target){
+        return this.props.page.getIn(['content', 'document_id'])
+    },
     render: function(){
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>

@@ -2,6 +2,7 @@ var Actions = require('../actions/Actions');
 var Utils = require('../utils');
 var $ = require('jquery');
 
+
  module.exports =
     {
         interceptLink: function(e){
@@ -9,7 +10,49 @@ var $ = require('jquery');
             var page = this.props.page;
             var page_id = page ? page.get('id') : this.props.page_id;
             var popover_offset = 250;
-            if(link.length){
+
+            if($(e.target).closest('.focus-link').length){
+                e.preventDefault();
+                e.stopPropagation();
+                var $target = $(e.target);
+                var location = Utils.getLocation($target);
+                var govt_ids = $target.parent().find('[id]').map(function(){
+                    return this.attributes.id.textContent;
+                }).toArray();
+                Actions.contextMenuOpened(this.props.viewer_id, {
+                        location: location,
+                        govt_ids: govt_ids,
+                        query:{
+                            document_id: this.getDocumentId(e.target),
+                            location: location.repr,
+                        },
+                    },
+                    {left: e.pageX, top: e.pageY});
+                return;
+
+
+               /* var $target = $(e.target).closest('[data-location]')
+                var location = Utils.getLocation($target);
+                var title = page.getIn(['content', 'title']) +' '+ location.repr;
+                Actions.popoverOpened(this.props.viewer_id, page_id,
+                        {
+                        type: 'location',
+                        title: title + ' '+ location.repr,
+                        id: location.repr,
+                        left: $target.position().left + this.overlayOffset().left - popover_offset,
+                        top: $target.position().top + this.overlayOffset().top,
+                        source_sel: Utils.locationsToSelector(location.locs),
+                        fetched: false,
+                        format: 'fragment',
+                        query_string: Utils.queryUrlJSON({
+                            document_id: page.getIn(['content', 'document_id']),
+                            find: 'location',
+                            location: location.repr,
+                            doc_type: page.getIn(['content', 'doc_type'])
+                        }),
+                    });*/
+            }
+            else if(link.length){
                 e.preventDefault();
                 e.stopPropagation();
                 if(link.attr('data-link-id') && link.attr('data-href')){
@@ -88,30 +131,6 @@ var $ = require('jquery');
                         govt_ids: ids
                     });
                 }
-            }
-            else if($(e.target).is('span.label') && $(e.target).closest('[data-location]').length){
-                e.preventDefault();
-                e.stopPropagation();
-                var $target = $(e.target).closest('[data-location]')
-                var location = Utils.getLocation($target);
-                var title = page.getIn(['content', 'title']) +' '+ location.repr;
-                Actions.popoverOpened(this.props.viewer_id, page_id,
-                        {
-                        type: 'location',
-                        title: title + ' '+ location.repr,
-                        id: location.repr,
-                        left: $target.position().left + this.overlayOffset().left - popover_offset,
-                        top: $target.position().top + this.overlayOffset().top,
-                        source_sel: Utils.locationsToSelector(location.locs),
-                        fetched: false,
-                        format: 'fragment',
-                        query_string: Utils.queryUrlJSON({
-                            document_id: page.getIn(['content', 'document_id']),
-                            find: 'location',
-                            location: location.repr,
-                            doc_type: page.getIn(['content', 'doc_type'])
-                        }),
-                    });
             }
         }
 };

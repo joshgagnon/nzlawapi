@@ -224,7 +224,7 @@
               <xsl:choose>
                 <xsl:when test="heading != ''">
                     <h5 class="prov labelled">
-                        <a>
+                        <a class="focus-link">
                         <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@id"/></xsl:attribute>
                         <span class="label">
                             <xsl:call-template name="parentquote"/>
@@ -354,7 +354,7 @@
             <xsl:call-template name="current"/>
 
             <xsl:if test="text() != ''">
-                <span class="label">
+                <span class="label focus-link">
                      <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
                 </span>
             </xsl:if>
