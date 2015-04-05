@@ -9,7 +9,7 @@ var ArticleError = require('./Warnings.jsx').ArticleError;
 var Utils = require('../utils');
 var Immutable = require('immutable');
 var DefinitionError = require('./Warnings.jsx').DefinitionError;
-var PageMixins = require('../mixins/page');
+var PageMixins = require('../mixins/Page');
 var $ = require('jquery');
 
 module.exports = React.createClass({

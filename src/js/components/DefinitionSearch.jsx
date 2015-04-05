@@ -6,7 +6,7 @@ var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 var Actions = require('../actions/Actions');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var ArticleHandlers = require('./ArticleHandlers.jsx');
-var PageMixins = require('../mixins/page');
+var PageMixins = require('../mixins/Page');
 var Popovers = require('./Popovers.jsx');
 
 var DefinitionResult = React.createClass({
