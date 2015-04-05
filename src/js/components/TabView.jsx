@@ -10,6 +10,7 @@ var Article = require('./Article.jsx');
 var Case = require('./Case.jsx');
 var Definition = require('./Definition.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
+var DefinitionSearch = require('./DefinitionSearch.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var UnknownError = require('./Warnings.jsx').UnknownError;
@@ -88,6 +89,9 @@ module.exports = React.createClass({
             case(PAGE_TYPES.SEARCH):
                 result = <SearchResults {...props}/>
                 break;
+            case(PAGE_TYPES.DEFINITION_SEARCH):
+                result = <DefinitionSearch {...props}/>
+                break;
             case(PAGE_TYPES.INSTRUMENT):
                 result = <Article {...props} />
                 break;
@@ -114,6 +118,8 @@ module.exports = React.createClass({
                 showCloseView={this.props.showCloseView }
                 closeView={this.closeView } >
                 { this.props.pages.map(function(page){
+                        // Append definition search here
+                        // Clean up generally, also in fn render() below
                         return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
                                 { this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?

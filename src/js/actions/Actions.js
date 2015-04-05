@@ -6,7 +6,6 @@ module.exports = Reflux.createActions({
 	'queryChange': {},
 
 	'newPage': {},
-	'newAdvancedPage': {},
 	'requestPage': {asyncResult: true},
 	'replacePage': {},
 

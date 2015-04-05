@@ -251,10 +251,10 @@ module.exports = React.createClass({
             }
         }
         else{
-             Actions.newAdvancedPage(
+             Actions.newPage(
                 {title: 'Advanced Search',
                 page_type: constants.PAGE_TYPES.SEARCH
-            }, 'tab-0')
+            }, 'tab-0', {advanced_search: true})
         }
     },
     sidebar: function(active){
