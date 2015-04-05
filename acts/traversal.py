@@ -2,7 +2,7 @@ from util import CustomException, levenshtein
 from db import get_db
 from operator import itemgetter
 import re
-
+from lxml import etree
 
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
@@ -55,7 +55,9 @@ def get_number(string):
 
 def nodes_from_path_string(tree, path):
     #todo, rule
-    parts = re.compile('(s|sch|section|schedule|part) +([\.\da-z ]+)\W*(cl )?(.*)?').match(path.lower())
+    pattern = re.compile('(s|sch|section|schedule|part) +([\.\da-z ]+)\W*(cl )?(.*)?')
+    path = path.lower()
+    parts = pattern.match(path)
     # actually, maybe easier just to get it in canonical form
     keys = []
     try:
@@ -73,17 +75,19 @@ def nodes_from_path_string(tree, path):
                         keys += [get_number(parts[1])]
 
             elif parts[0].startswith('part'):
-                tree = tree.xpath(".//part[label='%s']" % parts[1].strip())[0]
-
+                part_match = re.compile('part (\w)+\W*').match(path)
+                tree = tree.xpath(".//part[label='%s']" % part_match.group(1))[0]
+                return nodes_from_path_string(tree, path.replace(part_match.group(0), ''))
             else:
-                tree = tree.xpath(".//body")[0]
+                if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
+                    tree = tree.xpath(".//body")[0]
                 keys.append(parts[1].strip())
-            if parts[3]:
+            if parts and parts[3]:
                 keys += filter(lambda x: len(x), re.split('[^.a-zA-Z\d]+', parts[3]))
         else:
             pattern = re.compile('[\W_]+')
             keys = pattern.sub(' ', path).split()
-            if keys[0].startswith('sch'):
+            if len(keys) and keys[0].startswith('sch'):
                 tree = tree.xpath(".//schedule")[0]
                 keys = []
     except IndexError, e:

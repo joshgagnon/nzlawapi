@@ -424,7 +424,7 @@ var ArticleContent = React.createClass({
                         {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id});
                 }
             }
-        }, 0);
+        }, 300);
         var $parent = this.getScrollContainer();
         $parent.on('scroll', this.debounce_scroll);
     },

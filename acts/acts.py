@@ -68,7 +68,7 @@ def instrument_preview(instrument):
 
 def instrument_location(instrument, location):
     tree = find_node_by_location(instrument.get_tree(), location)
-    full_location, _, location = generate_path_string(tree[0])
+    full_location, _, __ = generate_path_string(tree[0])
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),

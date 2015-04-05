@@ -244,7 +244,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
                 src.attrib['target-id'] = '%d' % document_id
                 src.attrib['link-id'] = '%d-%d' % (document_id, count)
                 src.text, src.attrib['href'], location = generate_path_string(node, title=title)
-                src.attrib['location'] = location.encode('utf-8')
+                src.attrib['location'] = location
                 src_id = src.attrib['src']
                 src = etree.tostring(src, method="html", encoding="UTF-8")
                 expiry_tag = infer_life_time(parent) if expire else None

@@ -90,10 +90,10 @@ module.exports = React.createClass({
                         <div className="modal-body">
                             {this.renderBody(data)}
                         </div>
-                        <div className="modal-footer">
+                        /*<div className="modal-footer">
                             <Button bsStyle={'info'} onClick={this.focusSection}>Focus In New Tab</Button>
                             <Button bsStyle={'info'} onClick={this.addToPrint}>Add To Print</Button>
-                        </div>
+                        </div>*/
                     </Modal>
                   </div>
             }
