@@ -104,8 +104,9 @@ var PopoverBehaviour = {
     },
     open: function(){
         var type = this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION ? PAGE_TYPES.DEFINITION : PAGE_TYPES.INSTRUMENT;
-        var query = this.props.popoverPage.get('query')
-        if(query && query.find === 'preview'){
+        var query = this.props.popoverPage.get('query');
+        if(query && query.get('find') === 'preview'){
+            query = query.toJS();
             query = _.extend({}, query, {find: 'full'});
         }
         Actions.newPage({
