@@ -82,7 +82,7 @@ class TestDefinitions(unittest.TestCase):
     def test_definition_extraction(self):
         tree = etree.parse('tests/3_definitions.xml', parser=self.parser)
         definitions = Definitions()
-        find_all_definitions(tree, definitions, expire=False)
+        find_all_definitions(tree, definitions, document_id=0, expire=False)
         self.assertEqual(len(definitions.items()), 3)
         self.assertTrue(('accounting period', 'accounting periods') in definitions.active)
         self.assertTrue(('address for service', 'addresses for service') in definitions.active)
@@ -90,24 +90,24 @@ class TestDefinitions(unittest.TestCase):
 
     def test_definition_transience_simple(self):
         tree = etree.parse('tests/transient_defs.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree)
+        tree, definitions = populate_definitions(tree, document_id = 0)
         tree = process_definitions(tree, definitions)
-        self.assertEqual(len(definitions.active), 0)
+        self.assertEqual(len(definitions.active), 1) # one global
         self.assertEqual(len(definitions.items()), 4)
 
     def test_definition_redefinitions(self):
         tree = etree.parse('tests/redefinitions.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree)
+        tree, definitions = populate_definitions(tree, document_id=0)
         tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
-        self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-id'], 'def-xxx')
-        self.assertEqual(tree.xpath('.//catalex-def')[1].attrib['def-id'], 'def-yyy')
-        self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-id'], 'def-xxx')
-        self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-id'], 'def-zzz')
+        self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-ids'], '0-xxx')
+        self.assertEqual(tree.xpath('.//catalex-def')[1].attrib['def-ids'], '0-yyy')
+        self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-ids'], '0-xxx')
+        self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-ids'], '0-zzz')
 
     def test_case_and_plurals(self):
         tree = etree.parse('tests/plural_charcase_defs.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree)
+        tree, definitions = populate_definitions(tree, document_id=0)
         tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(definitions.items()), 6)
         self.assertEqual(len(tree.xpath('.//catalex-def')), 11)
