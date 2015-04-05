@@ -55,7 +55,7 @@ def get_number(string):
 
 def nodes_from_path_string(tree, path):
     #todo, rule
-    pattern = re.compile('(s|sch|section|schedule|part) +([\.\da-z ]+)\W*(cl )?(.*)?')
+    pattern = re.compile('(s|sch|section|schedule|part|subpart) +([\.\da-z ]+)\W*(cl )?(.*)?')
     path = path.lower()
     parts = pattern.match(path)
     # actually, maybe easier just to get it in canonical form
@@ -78,6 +78,11 @@ def nodes_from_path_string(tree, path):
                 part_match = re.compile('part (\w)+\W*').match(path)
                 tree = tree.xpath(".//part[label='%s']" % part_match.group(1))[0]
                 return nodes_from_path_string(tree, path.replace(part_match.group(0), ''))
+            elif parts[0].startswith('subpart'):
+                part_match = re.compile('subpart (\w)+\W*').match(path)
+                tree = tree.xpath(".//subpart[label='%s']" % part_match.group(1))[0]
+                return nodes_from_path_string(tree, path.replace(part_match.group(0), ''))
+
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.xpath(".//body")[0]

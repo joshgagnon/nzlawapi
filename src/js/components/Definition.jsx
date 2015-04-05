@@ -9,26 +9,16 @@ var ArticleError = require('./Warnings.jsx').ArticleError;
 var Utils = require('../utils');
 var Immutable = require('immutable');
 var DefinitionError = require('./Warnings.jsx').DefinitionError;
+var PageMixins = require('../mixins/page');
 var $ = require('jquery');
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers],
+    mixins: [ArticleHandlers, Popovers, PageMixins],
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
             return <div className="legislation-result"><DefinitionError error={this.props.page.getIn(['content', 'error'])}/></div>
         }
         return null;
-    },
-    componentDidMount: function(){
-       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
-            Actions.requestPage(this.props.page.get('id'));
-       }
-    },
-    getScrollContainer: function(){
-        return $(this.getDOMNode()).parents('.tab-content, .results-container');
-    },
-    overlayOffset: function(){
-        return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
     },
     render: function(){
 

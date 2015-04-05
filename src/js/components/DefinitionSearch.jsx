@@ -5,9 +5,11 @@ var Button = require('react-bootstrap/lib/Button');
 var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 var Actions = require('../actions/Actions');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
+var ArticleHandlers = require('./ArticleHandlers.jsx');
+var PageMixins = require('../mixins/page');
+var Popovers = require('./Popovers.jsx');
 
 var DefinitionResult = React.createClass({
-    // TODO: Need click handlers for source/links in internal html
     render: function() {
          return (
             <div className="search-result">
@@ -18,9 +20,10 @@ var DefinitionResult = React.createClass({
 });
 
 module.exports = React.createClass({
+    mixins: [ArticleHandlers, Popovers, PageMixins],
     search: function() {
         Actions.replacePage(this.props.page.get('id'), {
-            query_string: 'definitions/' + this.refs.term.getValue(),
+            query_string: '/definitions/' + this.refs.term.getValue(),
             page_type: PAGE_TYPES.DEFINITION_SEARCH
         });
     },
@@ -29,7 +32,7 @@ module.exports = React.createClass({
         if(this.props.page.getIn(['content', 'results'])) {
             if(this.props.page.getIn(['content', 'results']).count()) {
                 resultContent = this.props.page.getIn(['content', 'results']).map(function(r, i) {
-                    return <DefinitionResult data={r} />;
+                    return <DefinitionResult data={r} key={i}/>;
                 }).toJS();
             }
             else {
@@ -53,8 +56,10 @@ module.exports = React.createClass({
                         <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                     </ButtonToolbar>
                 </div>
-                <div className="search-results">
+                <div className="search-results" onClick={this.interceptLink}>
                     {resultContent}
+                    { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
+                    { this.renderMobilePopovers() }
                 </div>
             </div>
         );

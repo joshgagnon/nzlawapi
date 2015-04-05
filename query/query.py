@@ -26,18 +26,6 @@ def article_auto_complete():
         return jsonify(error=str(e))
 
 
-@Query.route('/act_search_id/<string:query>')
-@require_auth
-def search_by_id(query):
-    status = 200
-    try:
-        result = get_act_node_by_id(query)
-    except Exception, e:
-        result = {'error': str(e)}
-        status = 500
-    return jsonify(result), status
-
-
 @Query.route('/definition/<string:ids>')
 @require_auth
 def get_definition_route(ids):
@@ -128,10 +116,11 @@ def query_definitions(term):
     offset = request.args.get('offset', '0')  # TODO: Use this
     status = 200
     try:
-        # TODO: Actually search by word field when doc processing is finalised
         with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT data->>'title' as title, data->>'html' as html FROM definitions WHERE data->>'title' = %(term)s LIMIT 25", {
-                'term': term
+            cur.execute("""SELECT full_word, html, id, document_id FROM definitions
+                WHERE full_word  ilike %(term)s order by length(full_word) LIMIT 25 OFFSET %(offset)s """, {
+                'term': '%s%%' % term,
+                'offset': offset
             })
             result = {'title': 'Define: %s' % term, 'results': cur.fetchall()}
     except Exception, e:
