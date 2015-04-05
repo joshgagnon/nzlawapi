@@ -9,14 +9,14 @@ var ArticleVersions = require('./ArticleVersions.jsx');
 
 var strings = {
     'location': 'Location',
-    'summary': 'Summary',
+    'summary': 'Info',
     'references': 'References',
     'versions': 'Versions',
 };
 
 module.exports = React.createClass({
     getInitialState: function(){
-        return {active: 'location', options: ['location',  'references', 'versions']};
+        return {active: 'location', options: ['location',  'references', 'versions', 'summary']};
     },
     setVisible: function(active){
         this.setState({active: active})
