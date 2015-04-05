@@ -17,11 +17,18 @@ module.exports = React.createClass({
             }
         }
         else{
-             Actions.newAdvancedPage(
+             Actions.newPage(
                 {title: 'Advanced Search',
                 page_type: constants.PAGE_TYPES.SEARCH
-            }, this.props.viewer_id)
+            }, this.props.viewer_id, {advanced_search: true});
         }
+    },
+    toggleDefinitionSearch: function(){
+        // TODO: Move along with toggleAdvanced, maybe refactor into single function
+        Actions.newPage({
+            title: 'Definition Search',
+            page_type: constants.PAGE_TYPES.DEFINITION_SEARCH
+        }, this.props.viewer_id);
     },
     handleAddToPrint: function(){
         Actions.addToPrint({
@@ -128,20 +135,34 @@ module.exports = React.createClass({
             </ul>
         </li>
     },
+    renderSearch: function(){
+        return <li>
+            <div className="button">
+                <a><span className="fa fa-search" title="Search" /></a>
+            </div>
+            <ul className="children">
+                <li className="title"><span>Search</span></li>
+                <li className="suboption">
+                    <a onClick={this.toggleAdvanced}>
+                        <span className="fa fa-search-plus" title="Advanced Search"/>
+                        <span className="sublabel">Advanced Search</span>
+                    </a>
+                </li>
+                <li className="suboption">
+                    <a onClick={this.toggleDefinitionSearch}>
+                        <span className="fa fa-search" title="Definition Search"/>
+                        <span className="sublabel">Definition Search</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    },
     render: function(){
         return <div className="buttonbar-wrapper">
             <ul>
             { this.renderPageControls() }
             { this.renderUserControls() }
-
-
-            <li onClick={this.toggleAdvanced}><div className="button"><a ><span className="fa fa-search-plus" title="Advanced Search"/></a>
-                </div>
-                 <ul className="children">
-                    <li className="title"><a>Advanced Search</a></li>
-                </ul>
-            </li>
-
+            { this.renderSearch() }
             { this.renderViewSettings() }
             { this.renderPrint() }
 

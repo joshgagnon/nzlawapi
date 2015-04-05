@@ -6,6 +6,7 @@ var $ = require('jquery');
 var Actions = require('../actions/Actions');
 
 
+// New definition result based on this
 var SearchResult = React.createClass({
     getTitle: function(){
         return (this.props.data.getIn(['fields','title', 0]) || this.props.data.getIn(['fields','full_citation', 0])) || 'Unknown'
@@ -29,7 +30,7 @@ var SearchResult = React.createClass({
 });
 
 module.exports = React.createClass({
-    componentDidMount: function(){
+    componentDidMount: function(){ // Move to mixin
         var self = this;
         var offset = 100; //calculate
         var threshold = 500;

@@ -204,7 +204,6 @@ module.exports = Reflux.createStore({
 var UserActions = Reflux.createStore({
     actions: [
         Actions.newPage,
-        Actions.newAdvancedPage,
         Actions.showPage,
         Actions.removePage,
         Actions.addToPrint,

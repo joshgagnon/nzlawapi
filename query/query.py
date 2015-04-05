@@ -6,7 +6,6 @@ from util import CustomException
 from security.auth import require_auth
 from db import get_db
 import psycopg2
-import re
 
 
 Query = Blueprint('query', __name__, template_folder='templates')
@@ -121,6 +120,24 @@ def get_definition(ids):
             'ids': ids
         })
         return {'html_content': ''.join(map(lambda a: a['html'], cur.fetchall()))}
+
+
+@Query.route('/definitions/<string:term>')
+@require_auth
+def query_definitions(term):
+    offset = request.args.get('offset', '0')  # TODO: Use this
+    status = 200
+    try:
+        # TODO: Actually search by word field when doc processing is finalised
+        with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT data->>'title' as title, data->>'html' as html FROM definitions WHERE data->>'title' = %(term)s LIMIT 25", {
+                'term': term
+            })
+            result = {'title': 'Define: %s' % term, 'results': cur.fetchall()}
+    except Exception, e:
+        result = {'error': str(e)}
+        status = 500
+    return jsonify(result), status
 
 
 def year_query(args):

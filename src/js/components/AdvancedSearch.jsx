@@ -332,7 +332,7 @@ module.exports = React.createClass({
             { this.state.doc_type === 'instruments' ? <InstrumentSearch ref="sub" /> : <CaseSearch ref="sub"/> }
                 <ButtonToolbar>
                   <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
-                  <Button bsStyle={'info'}>Filter Current Results</Button>
+                  {/*<Button bsStyle={'info'}>Filter Current Results</Button> TODO: Implement */}
                 </ButtonToolbar>
         </div>
     }
