@@ -32,13 +32,13 @@ module.exports = React.createClass({
                 <ul>
                     {external.map(function(ref, i){
                         return <li key={i} onClick={this.openLink.bind(this, '/'+ref.get('url'), ref.get('repr'))}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
-                    }, this).toJS()}
+                    }, this)}
                 </ul>
                 <span>This section has been referenced internally by </span>
                 <ul>
                     {internal.map(function(ref, i){
                         return <li key={i} onClick={this.openLink.bind(this, '/'+ref.get('url'), ref.get('repr'))}><a href={'/open_article/'+ref.get('url')}>{ref.get('repr')}</a></li>
-                    }, this).toJS()}
+                    }, this)}
                 </ul>
                 </div>
         }else if(data.get('fetching')){
