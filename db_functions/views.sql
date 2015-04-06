@@ -1,3 +1,5 @@
+
+
 CREATE OR REPLACE FUNCTION subordinate_depth()
     RETURNS TABLE (child_id integer, count integer)
     AS $$
@@ -38,15 +40,19 @@ CREATE MATERIALIZED VIEW latest_instruments AS
     SELECT title, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
     i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
     i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
-    i.instructing_office, i.number, document, processed_document, skeleton, heights, contents, coalesce(g.count, 0)+1 as  generation, coalesce(c.children, 0) as children FROM instruments  i
+    i.instructing_office, i.number, document, processed_document, skeleton, heights, contents, coalesce(g.count, 0)+1 as  generation, coalesce(c.children, 0) as children, coalesce(r.count, 0) as refs
+    FROM instruments  i
     JOIN  (SELECT govt_id, max(version) as version FROM instruments GROUP BY govt_id) s ON s.govt_id = i.govt_id and i.version = s.version
     JOIN documents d on d.id = i.id
     LEFT OUTER JOIN subordinate_depth() g on g.child_id = i.id
-    LEFT OUTER JOIN child_count() c  on c.parent_id = i.id;
+    LEFT OUTER JOIN child_count() c  on c.parent_id = i.id
+    LEFT OUTER JOIN ( select count(*), target_id from document_references group by target_id) r on r.target_id = i.id
+    WHERE (i.terminated is null or i.terminated = '');
+
 
 CREATE OR REPLACE VIEW titles AS
-    SELECT title as name, id, type, 'full' as find, null as query, year, generation, children from latest_instruments
+    SELECT title as name, id, type, 'full' as find, null as query, year, generation, children, refs from latest_instruments
     UNION
-    SELECT full_citation as name, id, 'case' as type, 'full' as find, null as query, null as year, 1 as generation, 0 as children from cases
+    SELECT full_citation as name, id, 'case' as type, 'full' as find, null as query, null as year, 1 as generation, 0 as children, 0 as refs  from cases
     UNION
-    SELECT title as name, document_id, type, find, query, 10000 as year, 1 as generation, 100 as children  from shortcuts;
+    SELECT title as name, document_id, type, find, query, 10000 as year, 1 as generation, 10000 as children,  10000 as refs  from shortcuts;
