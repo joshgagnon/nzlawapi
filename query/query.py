@@ -117,7 +117,8 @@ def query_definitions(term):
     status = 200
     try:
         with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("""SELECT full_word, html, id, document_id FROM definitions
+            cur.execute("""SELECT full_word, html, d.id, d.document_id FROM definitions d
+                JOIN latest_instruments l on l.id = d.document_id
                 WHERE full_word  ilike %(term)s order by length(full_word) LIMIT 25 OFFSET %(offset)s """, {
                 'term': '%s%%' % term,
                 'offset': offset
