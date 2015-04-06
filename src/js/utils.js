@@ -19,7 +19,7 @@ module.exports = {
         if(e.deltaY < 0 && elem.scrollTop() == 0) {
                 e.preventDefault();
            }
-        if(e.deltaY > 0 && elem[0].scrollHeight - elem.scrollTop() < elem.outerHeight()) {
+        if(e.deltaY > 0 && elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
             e.preventDefault();
         }
     },

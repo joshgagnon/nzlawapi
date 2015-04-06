@@ -62,7 +62,7 @@ module.exports = React.createClass({
                         <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                     </ButtonToolbar>
                 </div>
-                <div className="search-results" onClick={this.interceptLink}>
+                <div className="search-results legislation-result" onClick={this.interceptLink}>
                     {resultContent}
                     { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
                     { this.renderMobilePopovers() }

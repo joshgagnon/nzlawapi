@@ -185,7 +185,7 @@ def query_all(args):
                 "_score",
             ],
             "query": {
-                "bool":{
+                "bool": {
                     "should": [
                         {
                             "span_first": {
