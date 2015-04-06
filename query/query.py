@@ -182,7 +182,10 @@ def query_all(args):
             "from": offset, "size": 25,
             "fields": ["id", "title", "full_citation"],
             "sort": [
+
                 "_score",
+                {"base_score": "asc"},
+                {"refs": "desc"},
             ],
             "query": {
                 "bool": {
@@ -202,12 +205,11 @@ def query_all(args):
                                     }
                                 }
                             }
-                        },
-                        {
-                        "multi_match": {
-                            "query": query,
-                            "fields": ["title^5", "full_citation^5", "document"]
-                                }
+                        }, {
+                            "multi_match": {
+                                "query": query,
+                                "fields": ["title^5", "full_citation^5", "document"]
+                            }
                         },
                     ]
                 }
