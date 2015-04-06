@@ -32,11 +32,12 @@ var DynamicArticleBreadCrumbs = React.createClass({
         }
         for(var i=0;i<locs.length;i++){
             var loc = locs.slice(0, i+1).join('');
-            if(!this.state.breadcrumbs[i+1] ||  this.state.breadcrumbs[i+1].repr !== locs[i]){
+            var repr = locs[i].replace(',', '').trim();
+            if(!this.state.breadcrumbs[i+1] ||  this.state.breadcrumbs[i+1].repr !== repr){
                 change = true;
             }
             links.push({
-                repr: locs[i],
+                repr: repr,
                 title: this.props.content.get('title') + ' '+ loc,
                 query:{
                     doc_type: doc_type,

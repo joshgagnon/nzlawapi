@@ -63,10 +63,18 @@ class TestQueries(unittest.TestCase):
         self.assertEqual(len(find_schedule_node(self.tree, '2')), 1)
 
     def test_find_by_string(self):
-        self.assertTrue(nodes_from_path_string(self.tree, 's 2')[0].tag, 'prov')
-        self.assertTrue(nodes_from_path_string(self.tree, 'Part 1 s 2')[0].tag, 'prov')
-        self.assertTrue(nodes_from_path_string(self.tree, 'Part 3')[0].tag, 'part')
+        prov = nodes_from_path_string(self.tree, 's 2')[0]
+        self.assertTrue(prov.tag, 'prov')
+        self.assertEqual(nodes_from_path_string(self.tree, 'Part 1 s 2')[0], prov)
+        prov = nodes_from_path_string(self.tree, 's 216(2)(b)')[0]
+        self.assertTrue(prov.tag, 'label-para')
+        self.assertEqual(nodes_from_path_string(self.tree, 'Part 12 s 216(2)(b)')[0], prov)
         self.assertRaises(CustomException, nodes_from_path_string, self.tree, 'Part 2 s 666')
+        sched = nodes_from_path_string(self.tree, 'sch')[0]
+        self.assertTrue(sched.tag, 'schedule')
+        self.assertEqual(nodes_from_path_string(self.tree, 'schedule 1')[0], sched)
+        self.assertEqual(nodes_from_path_string(self.tree, 'sch 3 cl 1')[0].tag, 'prov')
+        self.assertEqual(nodes_from_path_string(self.tree, 'sch 3 cl 1(2)')[0].tag, 'subprov')
 
     def test_path_query_failures(self):
         self.assertRaises(CustomException, find_sub_node, self.tree, ['666'])

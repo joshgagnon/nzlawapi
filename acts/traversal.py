@@ -6,7 +6,6 @@ from lxml import etree
 
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
-
     [n.attrib.update({'current': 'true'}) for n in nodes_to_keep]
     all_parents = set()
     [all_parents.update(list(x.iterancestors()) + [x]) for x in nodes_to_keep]
@@ -48,53 +47,43 @@ def generate_range(string):
 
 def get_number(string):
     print string
-    match = re.compile('.*(\d+)/*$').match(string)
+    match = re.compile('[^\d]*(\d+)/*$').match(string)
     if match:
-        return match.groups()[0]
+        return match.groups(1)
 
+tag_names = {
+    'sch': 'schedule',
+    'schedule': 'schedule',
+    'part': 'part',
+    'subpart': 'part'
+}
 
 def nodes_from_path_string(tree, path):
-    #todo, rule
-    pattern = re.compile('(s|sch|section|schedule|part|subpart) +([\.\da-z ]+)\W*(cl )?(.*)?')
-    path = path.lower()
+    path = path.lower().strip()
+    pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|s|r|cl)[, ]{,2}(.*)')
+    part_pattern = re.compile('([a-z\d]+),? ?(s|sch|cl|clause|r|rule)?')
+    section_pattern = re.compile('(s|sch|cl|clause|r|rule) (.*)')
     parts = pattern.match(path)
-    # actually, maybe easier just to get it in canonical form
     keys = []
     try:
         if parts:
             parts = parts.groups()
-            if parts[0].startswith('sch'):
-                if parts[1] == '1' or not parts[1] or not parts[1][0].isdigit():
-                    tree = tree.xpath(".//schedule")[0]
-                    if parts[1].startswith('cl'):
-                        keys += [get_number(parts[1])]
-                else:
-                    key = parts[1].split()[0].strip()
-                    tree = tree.xpath(".//schedule[label='%s']" % key)[0]
-                    if len(parts[1].split()) > 1 and get_number(parts[1]):
-                        keys += [get_number(parts[1])]
-
-            elif parts[0].startswith('part'):
-                part_match = re.compile('part (\w)+\W*').match(path)
-                tree = tree.xpath(".//part[label='%s']" % part_match.group(1))[0]
-                return nodes_from_path_string(tree, path.replace(part_match.group(0), ''))
-            elif parts[0].startswith('subpart'):
-                part_match = re.compile('subpart (\w)+\W*').match(path)
-                tree = tree.xpath(".//subpart[label='%s']" % part_match.group(1))[0]
-                return nodes_from_path_string(tree, path.replace(part_match.group(0), ''))
-
+            if any([parts[0].startswith(k) for k in tag_names.keys()]):
+                # match up 'cl ' or 's ', 'section ' or 'clause ' then until '('
+                label = '1'
+                remainder = parts[1].strip()
+                if remainder and not re.compile('(s|sch|cl|clause)').match(remainder):
+                    sub = part_pattern.match(remainder).groups()
+                    # sub[0] is the sch/part label
+                    label = sub[0]
+                    remainder = remainder[len(label):].strip()
+                tree = tree.xpath(".//%s[label='%s']" % (tag_names[parts[0]], label))[0]
+                return nodes_from_path_string(tree, remainder)
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.xpath(".//body")[0]
-                keys.append(parts[1].strip())
-            if parts and parts[3]:
-                keys += filter(lambda x: len(x), re.split('[^.a-zA-Z\d]+', parts[3]))
-        else:
-            pattern = re.compile('[\W_]+')
-            keys = pattern.sub(' ', path).split()
-            if len(keys) and keys[0].startswith('sch'):
-                tree = tree.xpath(".//schedule")[0]
-                keys = []
+            if parts[1]:
+                keys = filter(lambda x: len(x), re.split('[^.a-zA-Z\d ]+', parts[1]))
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
