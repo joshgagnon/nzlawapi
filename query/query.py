@@ -19,8 +19,9 @@ def article_auto_complete():
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
                 select name, id, type, find, query  from titles
-                   where name ilike '%%'||%(query)s||'%%' order by year desc limit 50;
-                """, {'query': request.args.get('query')})
+                   where name ilike '%%'||%(query)s||'%%' order by position(%(query)s in lower(name)), year desc
+                limit 50;
+                """, {'query': request.args.get('query').lower()})
             return jsonify({'results': cur.fetchall()})
     except Exception, e:
         return jsonify(error=str(e))
@@ -184,11 +185,34 @@ def query_all(args):
                 "_score",
             ],
             "query": {
-                "multi_match": {
-                    "query": query,
-                    "fields": ["title^3", "full_citation^3", "document"]
+                "bool":{
+                    "should": [
+                        {
+                            "span_first": {
+                                "end": 1,
+                                "match": {
+                                    "span_multi": {
+                                        "match": {
+                                            "prefix": {
+                                                "title": {
+                                                    "prefix": query
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                        "multi_match": {
+                            "query": query,
+                            "fields": ["title^5", "full_citation^5", "document"]
+                                }
+                        },
+                    ]
                 }
             },
+
             "highlight": {
                 "pre_tags": ["<span class='search_match'>"],
                 "post_tags": ["</span>"],
