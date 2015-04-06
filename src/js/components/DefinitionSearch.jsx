@@ -27,6 +27,12 @@ module.exports = React.createClass({
             page_type: PAGE_TYPES.DEFINITION_SEARCH
         });
     },
+    handleEnter: function(e){
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.search();
+        }
+    },
     render: function() {
         var resultContent;
         if(this.props.page.getIn(['content', 'results'])) {
@@ -50,7 +56,7 @@ module.exports = React.createClass({
             <div>
                 <div className="advanced-search">
                     <form className="form-horizontal">
-                        <Input type="text" label="Term" ref="term" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
+                        <Input type="text" label="Term" ref="term" labelClassName="col-xs-2" wrapperClassName="col-xs-10" onKeyPress={this.handleEnter} />
                     </form>
                     <ButtonToolbar>
                         <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
