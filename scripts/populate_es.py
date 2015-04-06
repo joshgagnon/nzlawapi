@@ -61,7 +61,8 @@ def run(db, config):
     es.create('legislation', body={'settings': {},  'mappings': entry_mapping})
     """
 
-
+    with db.cursor() as cur:
+        cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
@@ -69,7 +70,7 @@ def run(db, config):
         cur.execute("""SELECT id, title, document, type, subtype, number, date_terminated,
             date_imprint, date_signed, raised_by, stage, imperial,
             official, instructing_office, date_first_valid, date_as_at, date_assent,
-            date_gazetted, date_imprint, year, repealed, base_score
+            date_gazetted, date_imprint, year, repealed, base_score,
             refs, children FROM latest_instruments""")
         results = cur.fetchmany(10)
         count = 0

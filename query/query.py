@@ -180,7 +180,7 @@ def query_all(args):
         index="legislation",
         body={
             "from": offset, "size": 25,
-            "fields": ["id", "title", "full_citation"],
+            "fields": ["id", "title", "full_citation", 'base_score', 'refs'],
             "sort": [
 
                 "_score",
