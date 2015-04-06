@@ -13,7 +13,7 @@ var _ = require('lodash');
             var page_id = page ? page.get('id') : this.props.page_id;
             var popover_offset = 250;
 
-            if($(e.target).closest('.focus-link').length){
+            if(this.getDocumentId && $(e.target).closest('.focus-link').length){
                 e.preventDefault();
                 e.stopPropagation();
                 var $target = $(e.target).closest('[id]');
@@ -22,6 +22,7 @@ var _ = require('lodash');
                     return this.attributes.id.textContent;
                 }).toArray();
                 Actions.contextMenuOpened(this.props.viewer_id, page_id, {
+                        title: page.get('title'),
                         location: location,
                         govt_ids: govt_ids,
                         id: $target.attr('id'),
