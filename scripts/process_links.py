@@ -117,6 +117,28 @@ def run(db, config, do_id_lookup=True, do_references=True):
                     if not len(principal):
                         principal = tree.xpath('//text[contains(%s, "these regulations amend the")]%s' % rules)
                     if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this part amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "these parts amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this section amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "these sections amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this clause amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this clauses amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this schedule amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "these schedules amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this regulation amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "this rule amends ")]%s' % rules)
+                    if not len(principal):
+                        principal = tree.xpath('//text[contains(%s, "these rules amends ")]%s' % rules)
+                    if not len(principal):
                         principal = tree.xpath('//def-term[contains(%s, "principal act")]%s' % rules)
                     if not len(principal):
                         principal = tree.xpath('//def-term[contains(%s, "principal regulations")]%s' % rules)
