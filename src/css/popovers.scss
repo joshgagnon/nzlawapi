@@ -2,6 +2,7 @@
       z-index:1020;
      max-width: 500px;
      min-width:300px;
+
      .popover-content{
       padding: 0;
           .csspinner{
@@ -27,9 +28,9 @@
           color: white;
           cursor:move;
      }
-     .show-more{
-          cursor: pointer;
-          text-decoration: none;
+
+     .definition-result{
+           font-size:14px;
      }
     .popover-footer{
         margin-top: 0px;
