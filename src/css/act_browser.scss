@@ -68,6 +68,8 @@ body{
     }
 
     @media print{
+        overflow:auto;
+        position: static;
         .sidebar-visible{
             padding-right: 0 !important;
         }

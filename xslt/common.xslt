@@ -271,7 +271,8 @@
                             </span>
                         </xsl:otherwise>
                     </xsl:choose>
-                    <xsl:apply-templates select="notes/history/history-note"/>
+                    <xsl:apply-templates select="def-para" />
+                    <xsl:apply-templates select="notes/history/history-note" />
                 </li>
             </ul>
         </div>
