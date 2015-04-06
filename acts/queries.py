@@ -328,10 +328,10 @@ def get_act_exact(title=None, doc_id=None, db=None):
 def get_references(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            #LEFT OUTER JOIN cases c on c.id = d.source_id
         cur.execute("""
             SELECT d.source_id as id, title, count, type FROM document_references d
-            LEFT OUTER JOIN instruments i on i.id = d.source_id
-            LEFT OUTER JOIN cases c on c.id = d.source_id
+            JOIN latest_instruments i on i.id = d.source_id
             WHERE target_id = %(id)s
             ORDER BY count DESC
             """, {'id': document_id})

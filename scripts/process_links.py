@@ -199,7 +199,7 @@ def run(db, config, do_id_lookup=True, do_references=True):
             cur.execute(query)
             results = cur.fetchall()
             if len(results):
-                print 'removing'
+                print 'removing cycle', dict(results[0])
                 cur.execute(rm_query, results[0])
             else:
                 break

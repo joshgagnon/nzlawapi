@@ -82,7 +82,7 @@ def nodes_from_path_string(tree, path):
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.xpath(".//body")[0]
             if parts[1]:
-                keys = filter(lambda x: len(x), re.split('[^.a-zA-Z\d ]+', parts[1]))
+                keys = map(lambda x: x.strip(), filter(lambda x: len(x), re.split('[^.a-zA-Z\d ]+', parts[1])))
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
