@@ -151,7 +151,10 @@ def run(db, config, do_id_lookup=True, do_references=True):
                 id as child_id  FROM instruments WHERE
                 title != 'Interpretation Act 1999'
                 """)
-
+        cur.execute("""
+            INSERT INTO subordinates (parent_id, child_id)
+                (select null as parent_id, id as child_id from instruments where title = 'Interpretation Act 1999' AND version = 19)
+                """)
     # find and remove cycles
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """

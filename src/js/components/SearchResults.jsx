@@ -20,7 +20,7 @@ var SearchResult = React.createClass({
         var html = '',
             id = this.props.data.getIn(['fields', 'id', 0]);
         if( this.props.data.getIn(['highlight'])){
-            html = this.props.data.getIn(['highlight','document']).join('');
+            html = (this.props.data.getIn(['highlight','document']) ||[]).join('');
         }
         return <div className="search-result">
                 <h4><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
