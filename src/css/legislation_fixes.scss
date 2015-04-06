@@ -63,7 +63,7 @@
 .legislation {
     // fixed margin collapse, for height calculations
     *[data-location], *[data-hook]{
-        overflow:auto;
+        overflow: hidden;
         -webkit-overflow-scrolling: auto;
     }
     .prov *, .label-para *{
