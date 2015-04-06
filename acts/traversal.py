@@ -61,8 +61,7 @@ tag_names = {
 def nodes_from_path_string(tree, path):
     path = path.lower().strip()
     pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|s|r|cl)[, ]{,2}(.*)')
-    part_pattern = re.compile('([a-z\d]+),? ?(s|sch|cl|clause|r|rule)?')
-    section_pattern = re.compile('(s|sch|cl|clause|r|rule) (.*)')
+    part_pattern = re.compile('([a-z\d]+),? ?(clause|rule|section|s|cl|r)?')
     parts = pattern.match(path)
     keys = []
     try:
@@ -78,7 +77,7 @@ def nodes_from_path_string(tree, path):
                     label = sub[0]
                     remainder = remainder[len(label):].strip()
                 tree = tree.xpath(".//%s[label='%s']" % (tag_names[parts[0]], label))[0]
-                return nodes_from_path_string(tree, remainder)
+                return nodes_from_path_string(tree, remainder.replace(',', '').strip())
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.xpath(".//body")[0]
