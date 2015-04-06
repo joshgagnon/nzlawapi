@@ -69,7 +69,7 @@ def run(db, config):
         cur.execute("""SELECT id, title, document, type, subtype, number, date_terminated,
             date_imprint, date_signed, raised_by, stage, imperial,
             official, instructing_office, date_first_valid, date_as_at, date_assent,
-            date_gazetted, date_imprint, year, repealed FROM latest_instruments""")
+            date_gazetted, date_imprint, year, repealed, generation FROM latest_instruments""")
         results = cur.fetchmany(10)
         count = 0
         while len(results):
@@ -88,7 +88,7 @@ def run(db, config):
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute("""SELECT i.id, neutral_citation, court, full_citation, parties::text, counsel,
-            judgment, waistband, hearing, received, matter::text, charge, plea, bench, document, appeal_result::text FROM cases i
+            judgment, waistband, hearing, received, matter::text, charge, plea, bench, document, appeal_result::text, 1 as generation FROM cases i
             JOIN documents d ON  d.id = i.id""")
         results = cur.fetchmany(10)
         count = 0
