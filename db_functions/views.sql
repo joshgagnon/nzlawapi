@@ -48,7 +48,16 @@ CREATE MATERIALIZED VIEW latest_instruments AS
     i.instructing_office, i.number, document, processed_document, skeleton, heights, contents, coalesce(g.count, 0)+1 as  generation,
     coalesce(c.children, 0) as children,
     coalesce(r.count, 0) as refs,
-    ((case when (i.title like '%Amendment%' or i.title like '%Order%') and g.count = 1 then 1 else 0 END) + coalesce(g.count, 0)) as base_score -- total hack while we fixed missing links
+
+    ((case when (i.title like '%Amendment%' or i.title like '%Order%') and g.count = 1 then 1 else 0 END) +
+    (case when i.type = 'sop' then 1 else 0 END) +
+
+
+    coalesce(g.count, 0))
+
+    as base_score -- total hack while we fixed missing links
+
+
     FROM instruments i
     JOIN newest n on n.id = i.id
     JOIN documents d on d.id = i.id

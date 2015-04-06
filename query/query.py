@@ -208,7 +208,7 @@ def query_all(args):
                         }, {
                             "multi_match": {
                                 "query": query,
-                                "fields": ["title^5", "full_citation^5", "document"]
+                                "fields": ["title^5", "full_citation^5"]
                             }
                         },
                     ]
