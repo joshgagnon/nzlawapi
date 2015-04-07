@@ -35,13 +35,13 @@ CREATE OR REPLACE FUNCTION child_count()
 
 $$ LANGUAGE SQL;
 
-CREATE MATERIALIZED VIEW latest_instruments AS
 
+
+CREATE MATERIALIZED VIEW latest_instruments AS
     WITH newest AS (
             SELECT id FROM instruments i
             JOIN  (SELECT govt_id, max(version) as version FROM instruments GROUP BY govt_id) s ON s.govt_id = i.govt_id and i.version = s.version
     )
-
     SELECT title, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
     i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
     i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
@@ -57,7 +57,6 @@ CREATE MATERIALIZED VIEW latest_instruments AS
 
     as base_score -- total hack while we fixed missing links
 
-
     FROM instruments i
     JOIN newest n on n.id = i.id
     JOIN documents d on d.id = i.id
@@ -65,6 +64,45 @@ CREATE MATERIALIZED VIEW latest_instruments AS
     LEFT OUTER JOIN child_count() c  on c.parent_id = i.id
     LEFT OUTER JOIN ( select count(*), target_id from document_references join newest i on i.id = source_id group by target_id) r on r.target_id = i.id
     WHERE (i.terminated is null or i.terminated = '');
+
+
+CREATE OR REPLACE FUNCTION get_processed_instrument(id integer)
+    RETURNS TABLE(title text, latest boolean, id integer, govt_id text, version integer, type text, date_first_valid date, date_as_at date, stage text,
+                date_assent date, date_gazetted date, date_terminated date, date_imprint date, year integer, repealed boolean, attributes json, in_amend boolean,
+                pco_suffix text, raised_by text, sub_type text, terminated text, date_signed date, imperial boolean, official text, path text, instructing_office text, number text,
+                processed_document text,
+                skeleton text,
+                heights json
+                )
+    AS $$
+    SELECT title, exists(select 1 from latest_instruments i where i.id=$1), i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+    i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
+    i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
+    i.instructing_office, i.number,
+    processed_document, skeleton, heights
+    FROM instruments i
+    JOIN documents d on i.id = d.id
+    WHERE i.id = $1
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_unprocessed_instrument(id integer)
+    RETURNS TABLE(title text, latest boolean, id integer, govt_id text, version integer, type text, date_first_valid date, date_as_at date, stage text,
+                date_assent date, date_gazetted date, date_terminated date, date_imprint date, year integer, repealed boolean, attributes json, in_amend boolean,
+                pco_suffix text, raised_by text, sub_type text,terminated text,  date_signed date, imperial boolean, official text, path text, instructing_office text, number text,
+                document text
+                )
+    AS $$
+    SELECT title, exists(select 1 from latest_instruments i where i.id=$1), i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+    i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
+    i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
+    i.instructing_office, i.number,
+    document
+    FROM instruments i
+    JOIN documents d on i.id = d.id
+    WHERE i.id = $1
+$$ LANGUAGE SQL;
+
 
 
 CREATE OR REPLACE VIEW titles AS

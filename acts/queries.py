@@ -389,6 +389,7 @@ def get_instrument_object(id=None, db=None, replace=False):
 
 def get_latest_instrument_object(instrument_name=None, id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        # why the join
         query = """SELECT *, true as latest FROM latest_instruments i
                 JOIN documents d on d.id = i.id
                 where (%(instrument_name)s is null or title= %(instrument_name)s) and (%(id)s is null or i.id =  %(id)s)
