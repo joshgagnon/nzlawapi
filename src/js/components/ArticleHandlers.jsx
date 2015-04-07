@@ -54,6 +54,7 @@ var _ = require('lodash');
                             source_sel: '[data-link-id="'+link.attr('data-link-id')+'"]',
                             left: link.position().left + this.overlayOffset().left - popover_offset,
                             top:link.position().top+ this.overlayOffset().top,
+                            time: (new Date()).getTime(),
                             fetched: false,
                             query: {
                                 id: link.attr('data-target-id') || link.attr('data-href'),
@@ -72,6 +73,7 @@ var _ = require('lodash');
                         id: link.attr('data-def-idx'),
                         left: link.position().left + this.overlayOffset().left - popover_offset,
                         top:link.position().top + this.overlayOffset().top,
+                        time: (new Date()).getTime(),
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
                         query_string: '/definition/'+link.attr('data-def-id')

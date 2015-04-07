@@ -211,6 +211,11 @@ module.exports = {
                 Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
             }
         },
+        componentDidUpdate: function(){
+            if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
+                Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
+            }
+        },
         close: function() {
              this.props.closeAll();
         },

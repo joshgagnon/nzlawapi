@@ -11,7 +11,7 @@ var Popovers = React.createClass({
     },
     render: function(){
         return <div>{ this.props.popoverView
-                    .sort(function(a, b){ return a.get('time') - b.get('time')})
+                    .sort(function(a, b){ return (a.get('time')||0) - (b.get('time')||0)})
                     .map(function(view, key){
                 var data = this.props.popoverData.get(key);
                 return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id}
@@ -33,9 +33,11 @@ var MobilePopovers = React.createClass({
         }, this);
     },
     render: function(){
-        var last = _.last(_.keys(this.props.popoverView.toJS()));
+        var last = this.props.popoverView
+                    .sort(function(a, b){ return (a.get('time')||0) - (b.get('time')||0)})
+                    .keySeq().last();
         if(last !== undefined){
-            var pop = this.props.popoverData.get(last);
+            var pop = this.props.popoverData.get(last)
             return <div className="mobile-popovers">
                     <Popover.MobilePopover popoverPage={pop} popoverView={this.props.popoverView.get(last)}  page_id={this.props.page_id}
                     getScrollContainer={this.props.getScrollContainer} closeAll={this.closeAll}/>

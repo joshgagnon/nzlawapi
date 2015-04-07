@@ -129,15 +129,13 @@ module.exports =  Reflux.createStore({
     onPopoverOpened: function(viewer_id, page_id, link_data){
         this.prepPage(viewer_id, page_id);
         var open = this.views.getIn([viewer_id, 'popovers', page_id], Immutable.Map())
-        if(!open.get(link_data.id)){
-            var obj = {};
-            obj[link_data.id] = _.pick(link_data, 'left', 'top', 'time');
-            if(!obj[link_data.id].time){
-                obj[link_data.id].time = (new Date()).getTime();
-            }
-            this.views = this.views.mergeDeepIn([viewer_id, 'popovers', page_id], obj)
-            this.update();
+        var obj = {};
+        obj[link_data.id] = _.pick(link_data, 'left', 'top', 'time');
+        if(!obj[link_data.id].time){
+            obj[link_data.id].time = (new Date()).getTime();
         }
+        this.views = this.views.mergeDeepIn([viewer_id, 'popovers', page_id], obj)
+        this.update();
     },
     onPopoverClosed: function(viewer_id, page_id, link_id){
         var open = this.views.getIn([viewer_id, 'popovers', page_id]);
