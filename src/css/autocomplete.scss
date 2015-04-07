@@ -1,7 +1,9 @@
 .autocomplete {
-
+    width:100%;
     position: relative;
-
+    .input-group{
+        width:100%;
+    }
     ul.results {
         @extend .dropdown-menu;
         display:block;

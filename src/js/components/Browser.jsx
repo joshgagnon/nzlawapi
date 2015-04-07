@@ -296,11 +296,14 @@ module.exports = React.createClass({
                     { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location}
                         onChange={this.handleLocation} onKeyPress={this.handleEnter}
                         ref="location"  /> : null }
-                    <SplitButton bsStyle={'primary'} title={'Search'} onClick={this.submit} >
+                        <span className="input-group-btn">
+                        <Button bsStyle={'primary'} onClick={this.submit} >Search</Button>
+                        </span>
+                   {/* <SplitButton bsStyle={'primary'} title={'Search'} onClick={this.submit} >
                             <MenuItem eventKey={'search_all'}>Search All</MenuItem>
                             <MenuItem divider />
                             <MenuItem eventKey={'search_advanced'} onClick={this.toggleAdvanced}>Advanced Search</MenuItem>
-                    </SplitButton>
+                    </SplitButton>*/ }
                      </AutoComplete>
                 </form>
     },

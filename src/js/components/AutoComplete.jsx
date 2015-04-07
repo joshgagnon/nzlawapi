@@ -43,6 +43,9 @@ var AutoComplete = React.createClass({
                 id: null,
                 type: null
             });
+            if(!this.state.show){
+                this.setState({show: true});
+            }
             if (!value.length) {
                 this.setState({
                     results: []
@@ -188,9 +191,11 @@ var AutoComplete = React.createClass({
         var but_children = _.omit(this.props, 'children', 'className');
         return (
             <div className="autocomplete input-group">
-
+                <div className="input-group">
                 <input className={"form-control "+(this.props.className||'')} type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
                     onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...but_children}/>
+                       { this.props.children }
+                    </div>
                 { this.state.show && this.state.results.length ?
                 <ul className="results" ref="dropdown">
                     {
@@ -204,7 +209,7 @@ var AutoComplete = React.createClass({
                         }.bind(this))
                     }
                 </ul> : null }
-                { this.props.children }
+
             </div>
         );
     },
