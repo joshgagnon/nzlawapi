@@ -178,18 +178,7 @@ def add_parent_definitions(row, db=None, definitions=None,
                         latest=result.get('latest'),
                         strategy=strategy)
 
-        cur.execute(""" WITH RECURSIVE graph(parent_id, child_id )
-                    AS (
-                      SELECT parent_id, child_id
-                      FROM subordinates
-                      WHERE child_id = %(id)s
-                      UNION ALL
-                      SELECT t.parent_id, t.child_id
-                      FROM graph p
-                      JOIN subordinates t
-                      ON p.parent_id = t.child_id
-                    )
-                    SELECT * from definitions d join graph g on d.document_id = g.parent_id """, {'id': row.get('id')})
+        cur.execute(""" select * from parent_definitions(%(id)s) """, {'id': row.get('id')})
         defs = cur.fetchall()
         for d in defs:
             def_dict = dict(d)
@@ -302,37 +291,21 @@ def get_act_exact(title=None, doc_id=None, db=None):
 def get_references(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            #LEFT OUTER JOIN cases c on c.id = d.source_id
-        cur.execute("""
-            SELECT d.source_id as id, title, count, type FROM document_references d
-            JOIN latest_instruments i on i.id = d.source_id
-            WHERE target_id = %(id)s
-            ORDER BY count DESC
-            """, {'id': document_id})
+        cur.execute("""select * from get_references(%(id)s)""", {'id': document_id})
         return {'references': map(lambda x: dict(x), cur.fetchall())}
 
 
 def get_section_references(govt_ids):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute("""
-            SELECT source_document_id, repr, url
-            FROM section_references  d
-            JOIN latest_instruments i on d.source_document_id = i.id
-            WHERE target_govt_id = ANY(%(govt_ids)s) ORDER by repr
-            """, {'govt_ids': govt_ids})
+        cur.execute("""select * from get_section_references(%(govt_ids)s)""", {'govt_ids': govt_ids})
         return {'section_references': map(lambda x: dict(x), cur.fetchall())}
 
 
 def get_versions(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute("""
-                select i.title, i.id, i.date_as_at, i.type from
-                    (select id, govt_id from instruments) as s
-                    join instruments i on i.govt_id = s.govt_id
-                    where s.id = %(id)s order by i.date_as_at desc
-            """, {'id': document_id})
+        cur.execute("""select * from get_versions(%(id)s)""", {'id': document_id})
         return {'versions': map(lambda x: dict(x), cur.fetchall())}
 
 
@@ -352,7 +325,6 @@ def get_contents(document_id):
 
 
 def prep_instrument(result, replace, db):
-    # TODO, delete all these steps: assume everything is processed
     if not result:
         raise CustomException('Instrument not found')
     tree = None

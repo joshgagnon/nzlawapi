@@ -36,7 +36,6 @@ CREATE OR REPLACE FUNCTION child_count()
 $$ LANGUAGE SQL;
 
 
-
 CREATE MATERIALIZED VIEW latest_instruments AS
     WITH newest AS (
             SELECT id FROM instruments i
@@ -104,6 +103,53 @@ CREATE OR REPLACE FUNCTION get_unprocessed_instrument(id integer)
 $$ LANGUAGE SQL;
 
 
+CREATE OR REPLACE FUNCTION parent_definitions(id integer)
+    RETURNS definitions
+    AS $$
+    WITH RECURSIVE graph(parent_id, child_id )
+        AS (
+          SELECT parent_id, child_id
+          FROM subordinates
+          WHERE child_id = $1
+          UNION ALL
+          SELECT t.parent_id, t.child_id
+          FROM graph p
+          JOIN subordinates t
+          ON p.parent_id = t.child_id
+        )
+        SELECT document_id, words, html, priority, full_word, expiry_tag, id
+            FROM definitions d join graph g ON d.document_id = g.parent_id
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_references(id integer)
+    RETURNS TABLE (id integer, title text, count integer, type text)
+    AS $$
+    SELECT d.source_id as id, title, count, type FROM document_references d
+    JOIN latest_instruments i on i.id = d.source_id
+    WHERE target_id = $1
+    ORDER BY count DESC
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION section_references(govt_ids text[])
+    RETURNS TABLE (source_document_id integer, repr text, url text)
+    AS $$
+          SELECT source_document_id, repr, url
+            FROM section_references  d
+            JOIN latest_instruments i on d.source_document_id = i.id
+            WHERE target_govt_id = ANY($1) ORDER by repr
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_versions(id integer)
+    RETURNS TABLE (id integer, title text, date_as_at date, version integer, number text )
+    AS $$
+    select i.id, i.title, i.date_as_at, i.version, i.number from
+        (select id, govt_id from instruments) as s
+        join instruments i on i.govt_id = s.govt_id
+        where s.id = $1 order by i.date_as_at desc
+$$ LANGUAGE SQL;
 
 CREATE OR REPLACE VIEW titles AS
     SELECT title as name, id, type, 'full' as find, null as query, year, generation, children, refs, base_score from latest_instruments
