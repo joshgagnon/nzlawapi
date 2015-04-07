@@ -55,13 +55,13 @@ tag_names = {
     'sch': 'schedule',
     'schedule': 'schedule',
     'part': 'part',
-    'subpart': 'part'
+    'subpart': 'subpart'
 }
 
 def nodes_from_path_string(tree, path):
     path = path.lower().strip()
     pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|s|r|cl)[, ]{,2}(.*)')
-    part_pattern = re.compile('([a-z\d]+),? ?(clause|rule|section|s|cl|r)?')
+    part_pattern = re.compile('([a-z\d]+),? ?(subpart|clause|rule|section|s|cl|r)?')
     parts = pattern.match(path)
     keys = []
     try:
@@ -71,12 +71,12 @@ def nodes_from_path_string(tree, path):
                 # match up 'cl ' or 's ', 'section ' or 'clause ' then until '('
                 label = '1'
                 remainder = parts[1].strip()
-                if remainder and not re.compile('(s|sch|cl|clause)').match(remainder):
+                if remainder: # and not re.compile('(s|sch|cl|clause)').match(remainder):
                     sub = part_pattern.match(remainder).groups()
                     # sub[0] is the sch/part label
                     label = sub[0]
                     remainder = remainder[len(label):].strip()
-                tree = tree.xpath(".//%s[label='%s']" % (tag_names[parts[0]], label))[0]
+                tree = tree.xpath(".//%s[label='%s' or label='%s']" % (tag_names[parts[0]], label, label.upper()))[0]
                 return nodes_from_path_string(tree, remainder.replace(',', '').strip())
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:

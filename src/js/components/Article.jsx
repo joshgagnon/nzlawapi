@@ -268,7 +268,7 @@ var ArticleSkeletonContent = React.createClass({
 
 
             var top = this._refs[k].offsetTop;
-            var pairs = _.map(this._refs[k].querySelectorAll('[data-location]'),
+            var pairs = _.map(this._refs[k].querySelectorAll('[data-location]:not([data-link-id])'),
                 function(el){ return [el, el.offsetTop - top];
             });
             var children =  _.zipObject(pairs.map(function(p){
@@ -357,7 +357,7 @@ var ArticleSkeletonContent = React.createClass({
         else if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length && node.length;i++){
-                var new_node = node.find('[data-location^="'+jump.location[i]+'"]');
+                var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id])');
                 if(!new_node.length){
                     new_node = $(this._refs[this._child_locations[jump.location[i]]]);
                     this._delayed_jump = {ref: this._child_locations[jump.location[i]], jump: jump};
@@ -415,8 +415,9 @@ var ArticleContent = React.createClass({
         };
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
-                var offset = self.getScrollContainer().offset().top;
+                var offset = self.getScrollContainer().offset().top +  self.getScrollContainer().position().top;
                 var $el = $(find_current(self.locations));
+                console.log($el)
                 var result = Utils.getLocation($el).repr;
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
                 if(result){
@@ -459,7 +460,7 @@ var ArticleContent = React.createClass({
         var offset = this.getScrollContainer().offset().top;
         this.scrollHeight = $(self.getDOMNode()).height();
         this.locations = self.locations.concat($(self.getDOMNode())
-            .find('[data-location]')
+            .find('[data-location]:not([data-link-id])')
             .map(function() {
                 var $el = $(this);
                 return ( $el.is(':visible') && [
@@ -480,7 +481,7 @@ var ArticleContent = React.createClass({
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length;i++){
-                node = node.find('[data-location^="'+jump.location[i]+'"]');
+                node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id])');
             }
             target = node;
         }

@@ -151,7 +151,7 @@
             <xsl:call-template name="current"/>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
-                     <xsl:when test="ancestor::*[@quote]">
+                     <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
                      </xsl:when>
                     <xsl:when test="ancestor::schedule">
                         <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
@@ -160,7 +160,9 @@
                         <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
+                <xsl:if test="not(ancestor::amend)">
                 <xsl:attribute name="data-location-breadcrumb">Part <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
+                </xsl:if>
             <h2 class="part">
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
@@ -187,6 +189,8 @@
             <xsl:call-template name="current"/>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
+                     <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
+                     </xsl:when>
                     <xsl:when test="ancestor::schedule">
                         <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:when>
@@ -194,7 +198,9 @@
                         <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
+                 <xsl:if test="not(ancestor::amend)">
                 <xsl:attribute name="data-location-breadcrumb">Subpart <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
+                </xsl:if>
             <h3 class="subpart">
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
                 <xsl:value-of select="heading"/>
@@ -217,7 +223,7 @@
                     </xsl:attribute>
                 </xsl:if>
             <xsl:choose>
-                     <xsl:when test="ancestor::*[@quote]">
+                     <xsl:when test="ancestor::*[@quote] or ancestor::amend">
                      </xsl:when>
                 <xsl:when test="ancestor::schedule">
                     <xsl:attribute name="data-location">, cl <xsl:value-of select="label"/></xsl:attribute>
@@ -282,7 +288,7 @@
     <xsl:template match='subprov'>
         <div class="subprov">
             <xsl:call-template name="current"/>
-            <xsl:if test="label != '' and not(ancestor::*[@quote])">
+            <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                 <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="label"/>
@@ -302,7 +308,7 @@
             <xsl:call-template name="current"/>
             <li>
                 <xsl:call-template name="current"/>
-                <xsl:if test="label != '' and not(ancestor::*[@quote])">
+                <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                     <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
                 </xsl:if>
                 <xsl:apply-templates select="label"/>
@@ -347,7 +353,7 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <xsl:if test="ancestor::def-para/para/text">
+            <xsl:if test="ancestor::def-para/para/text  and not(ancestor::amend)" >
                 <xsl:attribute name="data-location">define: <xsl:value-of select="."/>
                 </xsl:attribute>
                 <xsl:attribute name="data-location-no-path">true</xsl:attribute>
