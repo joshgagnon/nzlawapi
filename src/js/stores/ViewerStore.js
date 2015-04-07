@@ -131,7 +131,10 @@ module.exports =  Reflux.createStore({
         var open = this.views.getIn([viewer_id, 'popovers', page_id], Immutable.Map())
         if(!open.get(link_data.id)){
             var obj = {};
-            obj[link_data.id] = _.pick(link_data, 'left', 'top');
+            obj[link_data.id] = _.pick(link_data, 'left', 'top', 'time');
+            if(!obj[link_data.id].time){
+                obj[link_data.id].time = (new Date()).getTime();
+            }
             this.views = this.views.mergeDeepIn([viewer_id, 'popovers', page_id], obj)
             this.update();
         }

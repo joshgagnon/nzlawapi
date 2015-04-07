@@ -127,7 +127,6 @@ module.exports = {
         scrollable_selector: '.popover-content > *',
         statics: {
         configureDragDrop: function(register) {
-
           register(DRAG_TYPES.POPOVER, {
             dragSource: {
               beginDrag: function(component) {
@@ -152,6 +151,9 @@ module.exports = {
             this.reposition();  
         },
         componentDidUpdate: function() {
+            if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
+                Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
+            }
             this.reposition();
         },
         reposition: function(){
@@ -167,8 +169,12 @@ module.exports = {
                 left = (left + width) - container_width;
                 change = true;
             }
+            if(top<0){
+                top =  0;
+                change = true;
+            }
             if(change){
-                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {left: left, id: this.props.popoverPage.get('id')});
+                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {left: left,top: top, id: this.props.popoverPage.get('id')});
             }
         },
 
@@ -213,10 +219,11 @@ module.exports = {
             return <div className={classes}>
                     <h3 className="popover-title">{this.props.popoverPage.get('title')}</h3>
                     <div className="popover-close" onClick={this.close}>&times;</div>
-                    <div className={this.needFetch() ? 'popover-content csspinner traditional loading' : 'popover-content'}>
+                    <div className='popover-content'>
                         {this.renderBody() }
-                        { this.renderFooter() }
                     </div>
+                    { this.renderFooter() }
+
                 </div>
         }
     })

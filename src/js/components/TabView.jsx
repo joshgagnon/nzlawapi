@@ -23,7 +23,7 @@ function makeDropTarget(context) {
       var delta = context.getCurrentOffsetDelta();
       var left = Math.round(item.popoverView.get('left')+ delta.x);
       var top = Math.round(item.popoverView.get('top') + delta.y);
-      Actions.popoverMove(item.viewer_id, item.page_id, {dragged: true, left: left, top: top, id: item.popoverPage.get('id')});
+      Actions.popoverMove(item.viewer_id, item.page_id, {dragged: true, left: left, top: top, id: item.popoverPage.get('id'), time: (new Date()).getTime()});
     }
   };
 }

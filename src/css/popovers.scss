@@ -57,29 +57,38 @@
       }
   }
 
+  $mobile-popover-height: 50%;
+  $popover-title-height: 30px;
+  $popover-footer-height: 40px;
   .mobile-popovers {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 33%;
+      height: $mobile-popover-height;
+
       background-color: white;
       border-top: 1px solid  #ebebeb;
       .popover-title {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
+            border-radius: 0;
           }
       .popover-content{
           position: absolute;
-          top: 30px;
-          bottom: 0;
+          top: $popover-title-height;
+          bottom: $popover-footer-height;
           left: 0;
           right: 0;
           overflow-y: auto;
           padding:4px;
       }
       .popover-footer{
+        position: absolute;
+        bottom:0;
+        left: 0;
+        right: 0;
           padding:4px 15px;
       }
   }

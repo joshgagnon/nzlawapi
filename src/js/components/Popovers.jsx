@@ -2,6 +2,7 @@ var React = require('react/addons');
 var MQ = require('./Responsive.jsx');
 var Actions = require('../actions/Actions');
 var Popover = require('./Popover.jsx')
+var _ = require('lodash');
 
 
 var Popovers = React.createClass({
@@ -9,7 +10,9 @@ var Popovers = React.createClass({
         return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
     },
     render: function(){
-        return <div>{ this.props.popoverView.map(function(view, key){
+        return <div>{ this.props.popoverView
+                    .sort(function(a, b){ return a.get('time') - b.get('time')})
+                    .map(function(view, key){
                 var data = this.props.popoverData.get(key);
                 return !data ? null : (<Popover.Popover placement="auto" viewer_id={this.props.viewer_id}
                     popoverPage={data} popoverView={view} page_id={this.props.page_id} id={key} key={key}
@@ -25,16 +28,17 @@ var MobilePopovers = React.createClass({
         return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
     },
     closeAll: function(){
-        this.props.popoverView.map(function(key){
+        this.props.popoverView.map(function(view, key){
             Actions.popoverClosed(this.props.viewer_id, this.props.page_id, key);
-        }, this),toJS();
+        }, this);
     },
     render: function(){
-        var last = this.props.popoverView.keys().last();
+        var last = _.last(_.keys(this.props.popoverView.toJS()));
         if(last !== undefined){
             var pop = this.props.popoverData.get(last);
             return <div className="mobile-popovers">
-                    <Popover.MobilePopover popoverPage={pop} page_id={this.props.page_id} closeAll={this.closeAll}/>
+                    <Popover.MobilePopover popoverPage={pop} popoverView={this.props.popoverView.get(last)}  page_id={this.props.page_id}
+                    getScrollContainer={this.props.getScrollContainer} closeAll={this.closeAll}/>
                 </div>
         }
         return <div/>
@@ -56,7 +60,7 @@ module.exports = {
         </MQ>
     },
     renderMobilePopovers: function(){
-        <MQ maxWidth={480}>
+        return <MQ maxWidth={480}>
             { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
             <MobilePopovers
                 popoverData={this.props.page.get('popovers')}
