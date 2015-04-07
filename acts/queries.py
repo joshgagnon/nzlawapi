@@ -260,32 +260,6 @@ def fetch_parts(doc_id, db=None, parts=None):
         return dict(map(lambda x: ('%s' % x[0], x[1]), cur.fetchall()))
 
 
-def prep_instrument(result, replace, db):
-    # TODO, delete all these steps: assume everything is processed
-    if not result.get('id'):
-        raise CustomException('Instrument not found')
-    tree = None
-    definitions = None
-    redo_skele = False
-    if replace or not result.get('processed_document'):
-        tree, definitions = process_instrument(row=result, db=db, latest=result.get('latest'), refresh=True)
-        document = etree.tostring(tree, encoding='UTF-8', method="html")
-        redo_skele = True
-    else:
-        document = result.get('processed_document')
-    if redo_skele or not result.get('skeleton'):
-        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
-    else:
-        skeleton = result.get('skeleton')
-        heights = result.get('heights')
-    return Instrument(
-        id=result.get('id'),
-        document=document,
-        skeleton=skeleton,
-        heights=heights,
-        title=result.get('title'),
-        attributes=result)
-
 
 def get_act_summary(doc_id, db=None):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
@@ -377,14 +351,45 @@ def get_contents(document_id):
         return {'html': contents}
 
 
+def prep_instrument(result, replace, db):
+    # TODO, delete all these steps: assume everything is processed
+    if not result:
+        raise CustomException('Instrument not found')
+    tree = None
+    definitions = None
+    redo_skele = False
+    if replace or not result.get('processed_document'):
+        tree, definitions = process_instrument(row=get_unprocessed_instrument(result.get('id')), db=db, latest=result.get('latest'), refresh=True)
+        document = etree.tostring(tree, encoding='UTF-8', method="html")
+        redo_skele = True
+    else:
+        document = result.get('processed_document')
+    if redo_skele or not result.get('skeleton'):
+        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
+    else:
+        skeleton = result.get('skeleton')
+        heights = result.get('heights')
+    return Instrument(
+        id=result.get('id'),
+        document=document,
+        skeleton=skeleton,
+        heights=heights,
+        title=result.get('title'),
+        attributes=result)
+
+
 def get_instrument_object(id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest FROM instruments i
-                JOIN documents d on d.id = i.id
-                where i.id =  %(id)s
-            """
+        query = """SELECT * from get_processed_instrument(%(id)s) """
         cur.execute(query, {'id': id})
         return prep_instrument(cur.fetchone(), replace, db)
+
+
+def get_unprocessed_instrument(id=None, db=None):
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """SELECT * from get_unprocessed_instrument(%(id)s) """
+        cur.execute(query, {'id': id})
+        return cur.fetchone()
 
 
 def get_latest_instrument_object(instrument_name=None, id=None, db=None, replace=False):
