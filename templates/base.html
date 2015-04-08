@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="shortcut icon"   type="image/png" href="/build/images/favicon.png" />
-    <link rel="stylesheet" type="text/css" href="/build/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/build/css/{{ config['manifest']['style.css'] }}" />
     <!--[if lt IE 9]>
       <script build="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -24,7 +24,7 @@
 	{% block content %}
 		{{ content|safe }}
 	{% endblock %}
-    <script type="text/javascript" src="/build/js/app.js" ></script>
+    <script type="text/javascript" src="/build/js/{{ config['manifest']['app.js'] }}" ></script>
 </div>
 </body>
 
