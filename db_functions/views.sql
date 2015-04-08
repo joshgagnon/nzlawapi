@@ -132,7 +132,7 @@ CREATE OR REPLACE FUNCTION get_references(id integer)
 $$ LANGUAGE SQL;
 
 
-CREATE OR REPLACE FUNCTION section_references(govt_ids text[])
+CREATE OR REPLACE FUNCTION get_section_references(govt_ids text[])
     RETURNS TABLE (source_document_id integer, repr text, url text)
     AS $$
           SELECT source_document_id, repr, url
