@@ -40,7 +40,7 @@ app.register_blueprint(Query)
 app.register_blueprint(Users)
 app.json_encoder = CustomJSONEncoder
 app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
-
+app.secret_key = app.config['SESSION_SECRET']
 
 with open('build/manifest.json') as m:
     app.config['manifest'] =json.loads(m.read())
