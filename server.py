@@ -5,6 +5,7 @@ from users.users import Users
 from query.query import Query
 import graph
 import sys
+import os
 from util import CustomException
 from flask import jsonify, g, request, Flask
 from flask.json import JSONEncoder
@@ -12,6 +13,7 @@ import datetime
 import time
 import elasticsearch
 import json
+
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -27,7 +29,8 @@ class CustomJSONEncoder(JSONEncoder):
 
 if len(sys.argv) <= 1:
     raise Exception('need a config file')
-
+if not os.path.isfile('build/manifest.json'):
+    raise Exception('need a build manifest.  Run gulp')
 
 app = Flask(__name__, static_folder='build')
 app.config.from_pyfile(sys.argv[1])
@@ -37,7 +40,8 @@ app.register_blueprint(Query)
 app.register_blueprint(Users)
 app.json_encoder = CustomJSONEncoder
 app.extensions['elasticsearch'] = elasticsearch.Elasticsearch([app.config['ES_SERVER']])
-app.secret_key = app.config['SESSION_SECRET']
+
+
 with open('build/manifest.json') as m:
     app.config['manifest'] =json.loads(m.read())
 
