@@ -4,7 +4,6 @@ var Actions = require('../actions/Actions');
 var Popover = require('./Popover.jsx')
 var _ = require('lodash');
 
-
 var Popovers = React.createClass({
     shouldComponentUpdate: function(newProps){
         return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)

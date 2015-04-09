@@ -10,6 +10,12 @@ Reflux.setPromise(require('bluebird'));
 
 React.initializeTouchEvents(true);
 
+// temporary, will set up proper logger later
+if(!window.console || !window.console.log){
+  window.console = {
+    log:function(){}
+  }
+}
 
 var App = React.createClass({
   render: function(){
