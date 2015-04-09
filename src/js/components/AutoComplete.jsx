@@ -98,7 +98,7 @@ var AutoComplete = React.createClass({
             });
         }
         // Handle enter key
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' || event.key === 'Tab') {
             if (newIndex > -1) {
                 // Choosing an active item from the list
                 var a = $(this.getDOMNode()).find('li.active a');
