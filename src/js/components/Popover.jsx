@@ -17,7 +17,7 @@ var _ = require('lodash');
 
 var DragDropMixin = require('react-dnd').DragDropMixin;
 var DropEffects= require('react-dnd').DropEffects;
-
+var PopoverFix = require('../mixins/PopoverFix');
 
 var PopoverBehaviour = {
     needFetch: function(){
@@ -121,7 +121,7 @@ var PopoverBehaviour = {
 // USING PLAIN JS
 module.exports = {
     Popover: React.createClass({
-        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin, {stopScrollPropagation: utils.stopScrollPropagation}],
+        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin, {stopScrollPropagation: utils.stopScrollPropagation}, PopoverFix],
         topOffset: 20,
         openLinksInTabs: true,
         scrollable_selector: '.popover-content > *',
