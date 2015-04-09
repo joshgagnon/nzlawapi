@@ -18,6 +18,7 @@ var streamify = require('gulp-streamify');
 var rev = require('gulp-rev');
 var buffer = require('gulp-buffer');
 var gutil = require('gulp-util');
+var dereserve = require('gulp-dereserve');
 
 console.timeEnd('Loading plugins');
 
@@ -52,6 +53,7 @@ gulp.task('js-prod', function() {
     .pipe(streamify(uglify()))
     .pipe(buffer())
     .pipe(rev())
+    .pipe(dereserve())
     .pipe(gulp.dest('./build/js'))
     .pipe(rev.manifest(MANIFEST,{
         merge: true
@@ -76,6 +78,7 @@ gulp.task('js', function() {
           notify.onError("Error: <%= error.message %>").apply(this, arguments);
       })
         .pipe(source('app.js'))
+        .pipe(dereserve())
         .pipe(gulp.dest('./build/js/'));
         console.log('Updated!', (Date.now() - updateStart) + 'ms');
   })
@@ -84,6 +87,7 @@ gulp.task('js', function() {
         notify.onError("Error: <%= error.message %>").apply(this, arguments);
     })
     .pipe(source('app.js'))
+    .pipe(dereserve())
     .pipe(gulp.dest('./build/js/'));
 });
 
