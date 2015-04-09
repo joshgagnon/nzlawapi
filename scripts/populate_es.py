@@ -17,7 +17,37 @@ def run(db, config):
     except exceptions.NotFoundError:
         pass
     print 'create new'
-    print es.indices.create('legislation')
+    print es.indices.create('legislation', body={
+        "settings": {
+            "analysis": {
+                "analyzer": {
+                    "html_analyzer": {
+                        "type": "custom",
+                        "char_filter": "html_strip",
+                        "tokenizer":"standard"
+                    }
+                }
+            }
+        },
+        "mappings":{
+            "instrument": {
+                "properties": {
+                    "document": {
+                        "type":      "string",
+                        "analyzer":  "html_analyzer"
+                    }
+                }
+            },
+            "case": {
+                "properties": {
+                    "document": {
+                        "type":      "string",
+                        "analyzer":  "html_analyzer"
+                    }
+                }
+            }
+        }
+    })
 
     """
     entry_mapping = {
@@ -58,8 +88,18 @@ def run(db, config):
             }
         }
     }
-    es.create('legislation', body={'settings': {},  'mappings': entry_mapping})
+
+
+
+    "properties": {
+        "document": {
+            "type":      "string",
+            "analyzer":  "html_analyzer"
+        }
+    }
+}
     """
+
 
     with db.cursor() as cur:
         cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
@@ -67,6 +107,7 @@ def run(db, config):
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        # to do, add all docs
         cur.execute("""SELECT id, title, document, type, subtype, number, date_terminated,
             date_imprint, date_signed, raised_by, stage, imperial,
             official, instructing_office, date_first_valid, date_as_at, date_assent,
@@ -80,7 +121,6 @@ def run(db, config):
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)
                 count += 1
-                result['document'] = etree.tostring(etree.fromstring(result['document']), method="text",encoding='UTF-8')
                 es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
 
             results = cur.fetchmany(10)
@@ -125,6 +165,6 @@ if __name__ == "__main__":
     except exceptions.ConnectionError:
         print 'Please start Elasticsearch'
     except Exception, e:
+        print e
         print psycopg2.errorcodes.lookup(e.pgcode[:2])
         print psycopg2.errorcodes.lookup(e.pgcode)
-        print e
