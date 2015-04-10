@@ -47,7 +47,7 @@ def init_database(filename):
 
     return conn
 
-
+#@unittest.skip("demonstrating skipping")
 class TestQueries(unittest.TestCase):
 
     def setUp(self):
@@ -87,7 +87,7 @@ class TestQueries(unittest.TestCase):
         self.assertEqual(len(find_node_by_query(self.tree, 'constitution')), 910)
         self.assertEqual(len(find_node_by_query(self.tree, 'fistycuffs')), 0)
 
-
+#@unittest.skip("demonstrating skipping")
 class TestDefinitions(unittest.TestCase):
 
     def setUp(self):
@@ -147,8 +147,7 @@ def transform_eqn(filename, parser):
 def print_error(msg):
     print msg
 
-
-
+#@unittest.skip("demonstrating skipping")
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -160,7 +159,7 @@ class TestEquations(unittest.TestCase):
             expected = etree.parse(os.path.join('tests/equations', f.replace('.xml', '.html')), parser=self.parser)
             self.assertTrue(xml_compare(result, expected.getroot(), print_error))
 
-
+#@unittest.skip("demonstrating skipping")
 class TestPathExtraction(unittest.TestCase):
     def setUp(self):
         self.parser = etree.XMLParser(remove_blank_text=True)
@@ -201,16 +200,16 @@ class AutocompleteTest(unittest.TestCase):
 
     def test_exact_results(self):
         results = self.get_auto_complete('Companies Act')
-        self.assertEqual(20, len(results))
-        self.assertEqual('Companies Act 1993 Amendment Regulations (No 2) 2014', results[0]['name'])
+        self.assertEqual(19, len(results))
+        self.assertEqual('Companies Act 1993', results[0]['name'])
 
     def test_case_insensitive(self):
-        self.assertEqual(20, len(self.get_auto_complete('cOmpAnIEs act')))
+        self.assertEqual(19, len(self.get_auto_complete('cOmpAnIEs act')))
 
 
 # TODO, assumes data in db, but in a hurry
 # TODO, replace companies act with much much smaller act, everywhere
-
+#@unittest.skip("demonstrating skipping")
 class InstrumentTest(unittest.TestCase):
 
     def setUp(self):
