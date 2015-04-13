@@ -104,7 +104,7 @@ $$ LANGUAGE SQL;
 
 
 CREATE OR REPLACE FUNCTION parent_definitions(id integer)
-    RETURNS definitions
+    RETURNS setof definitions
     AS $$
     WITH RECURSIVE graph(parent_id, child_id )
         AS (
@@ -118,7 +118,7 @@ CREATE OR REPLACE FUNCTION parent_definitions(id integer)
           ON p.parent_id = t.child_id
         )
         SELECT document_id, words, html, priority, full_word, expiry_tag, id
-            FROM definitions d join graph g ON d.document_id = g.parent_id
+            FROM definitions d join graph g ON d.document_id = g.parent_id where document_id is not null
 $$ LANGUAGE SQL;
 
 

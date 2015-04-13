@@ -24,7 +24,14 @@ def run(db, config):
                     "html_analyzer": {
                         "type": "custom",
                         "char_filter": "html_strip",
-                        "tokenizer":"standard"
+                        "tokenizer":"standard",
+                        "filter": ["custom_stemmer", "lowercase"]
+                    }
+                },
+                "filter":{
+                    "custom_stemmer": {
+                        "type" : "stemmer",
+                        "name" : "english"
                     }
                 }
             }
@@ -32,6 +39,10 @@ def run(db, config):
         "mappings":{
             "instrument": {
                 "properties": {
+                    "title":{
+                        "type":      "string",
+                        "analyzer":  "html_analyzer"
+                    },
                     "document": {
                         "type":      "string",
                         "analyzer":  "html_analyzer"
@@ -40,6 +51,10 @@ def run(db, config):
             },
             "case": {
                 "properties": {
+                    "full_citation":{
+                        "type":      "string",
+                        "analyzer":  "html_analyzer"
+                    },
                     "document": {
                         "type":      "string",
                         "analyzer":  "html_analyzer"
@@ -89,15 +104,6 @@ def run(db, config):
         }
     }
 
-
-
-    "properties": {
-        "document": {
-            "type":      "string",
-            "analyzer":  "html_analyzer"
-        }
-    }
-}
     """
 
 
@@ -112,7 +118,7 @@ def run(db, config):
             date_imprint, date_signed, raised_by, stage, imperial,
             official, instructing_office, date_first_valid, date_as_at, date_assent,
             date_gazetted, date_imprint, year, repealed, base_score,
-            refs, children FROM latest_instruments""")
+            refs, children FROM latest_instruments """)
         results = cur.fetchmany(10)
         count = 0
         while len(results):

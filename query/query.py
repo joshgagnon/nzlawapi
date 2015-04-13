@@ -173,6 +173,7 @@ def contains_query(args):
 
 
 def query_all(args):
+    """ this is the basic search """
     query = args.get('query')
     es = current_app.extensions['elasticsearch']
     offset = args.get('offset')
@@ -180,7 +181,7 @@ def query_all(args):
         index="legislation",
         body={
             "from": offset, "size": 25,
-            "fields": ["id", "title", "full_citation", 'base_score', 'refs'],
+            "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype', 'base_score', 'refs'],
             "sort": [
 
                 "_score",
@@ -189,41 +190,19 @@ def query_all(args):
             ],
             "query": {
                 "bool": {
-                    "should": [
-                        {
-                            "span_first": {
-                                "end": 1,
-                                "match": {
-                                    "span_multi": {
-                                        "match": {
-                                            "prefix": {
-                                                "title": {
-                                                    "prefix": query
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                    "must": [{
+                        "multi_match": {
+                            "query": query,
+                            "fields": ["title", "full_citation"]
+                        }},
+                        {"constant_score" : {
+                            "filter": {
+                                "missing": { "field" : "date_terminated" }
                             }
-                        }, {
-                            "multi_match": {
-                                "query": query,
-                                "fields": ["title^5", "full_citation^5"]
-                            }
-                        },
-                    ]
+                        }}]
                 }
             },
 
-            "highlight": {
-                "pre_tags": ["<span class='search_match'>"],
-                "post_tags": ["</span>"],
-                "fields": {
-                    "document": {},
-                    "full_citation": {},
-                    "title": {}
-                }
-            }
         })
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
 

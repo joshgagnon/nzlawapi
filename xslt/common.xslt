@@ -71,6 +71,7 @@
             <xsl:if test="../@act.no">
 
             </xsl:if>
+            <xsl:apply-templates select="notes"/>
             <!--<xsl:apply-templates select="cover.reprint-note"/> -->
         </div>
     </xsl:template>
