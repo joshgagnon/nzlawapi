@@ -53,7 +53,7 @@
         <xsl:attribute name="id">
               <xsl:value-of select="@id"/>
           </xsl:attribute>
-        <h5 class="schedule-amendments-group2"><xsl:value-of select="heading"/></h5>
+        <h5 class="schedule-amendments-group2"><xsl:apply-templates select="heading/*"/></h5>
         <xsl:apply-templates select="para"/>
       </div>
     </xsl:template>

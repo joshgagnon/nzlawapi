@@ -6,66 +6,8 @@ var Button = require('react-bootstrap/lib/Button');
 var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
+var strings = require('../strings');
 
-var strings ={
-    'title': 'Title',
-    'contains': 'Contains',
-    'full_citation': 'Full Citation',
-    'all_words': 'All Words',
-    'any_words': 'Any Words',
-    'exact': 'Exact',
-    'bench': 'Bench',
-    'neutral_citation': 'Neutral Citation',
-    'courtfile': 'Court File Number',
-    'court': 'Court',
-    'parties': 'Parties',
-    'matter': 'Matter',
-    'charge': 'Charge',
-    'year': 'Year',
-    'location': 'Location',
-    'public': 'Public',
-    'local': 'Local',
-    'private': 'Private',
-    'provincial': 'Provincial',
-    'imperial': 'Imperial',
-
-    'courts': 'Courts',
-    'supreme_court': 'Supreme Court',
-    'high_court': 'High Court',
-    'appeal_court': 'Appeal Court',
-
-    'all': 'All',
-    'types': 'Type',
-    'status': 'Status',
-
-
-    'act_principal': 'Principal Acts in force',
-    'act_not_in_force': 'Acts not yet in force',
-    'act_amendment_in_force': 'Amendment Acts in force',
-    'act_as_enacted': 'As-enacted Acts',
-    'act_repealed': 'Repealed Acts',
-
-    'current_bills': 'Current Bills',
-    'enacted_bills': 'Enacted Bills',
-    'terminated_bills': 'Terminated Bills',
-
-    'bill_government': 'Government',
-    'bill_local': 'Local',
-    'bill_private': 'Private',
-    'bill_members': 'Member\'s',
-
-    'act_public': 'Public',
-    'act_local': 'Local',
-    'act_private': 'Private',
-    'act_provincial': 'Provincial',
-    'act_imperial': 'Imperial',
-
-    'other_principal': 'Principal Legislative Instruments in force',
-    'other_not_in_force': 'Legislative Instruments not yet in force',
-    'other_amendment_force': 'Amendment Legislative Instruments in force',
-    'other_as_made': 'As-made Legislative Instruments',
-    'other_revoked': 'Revoked Legislative Instruments'
-}
 
 var FormHelper = {
     getValue: function(){
@@ -264,7 +206,7 @@ var InstrumentSearch = React.createClass({
               <Input type="text" label={strings.year} ref="year" labelClassName="col-xs-2" wrapperClassName="col-xs-10" help="For example: '1993', or '1991-2001'" />
                  <hr/>
                 <div className="form-group">
-                    <label className="control-label col-xs-2"><span>Acts</span></label>
+                    <label className="control-label col-xs-2"><span>{ strings.acts }</span></label>
                     <div className="col-xs-4">
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('acts')} />
                     </div>
@@ -273,7 +215,7 @@ var InstrumentSearch = React.createClass({
 
                    <hr/>
                 <div className="form-group">
-                    <label className="control-label col-xs-2"><span>Bills</span></label>
+                    <label className="control-label col-xs-2"><span>{ strings.bills }</span></label>
                     <div className="col-xs-4">
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('bills')} />
                     </div>
@@ -282,7 +224,7 @@ var InstrumentSearch = React.createClass({
 
                    <hr/>
                 <div className="form-group">
-                    <label className="control-label col-xs-2"><span>Legislative Instruments</span></label>
+                    <label className="control-label col-xs-2"><span>{ strings.legislative_instruments }</span></label>
                     <div className="col-xs-4">
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('other')} />
                     </div>
