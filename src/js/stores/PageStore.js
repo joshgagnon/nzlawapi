@@ -228,7 +228,7 @@ var PageStore = Reflux.createStore({
                     },
                     fetching: false
                 };
-                if(result.content.search_results.hits.length >= result.content.search_results.total){
+                if(result.content.search_results.hits.length >= data.search_results.total){
                     result.finished = true;
                 }
             }
