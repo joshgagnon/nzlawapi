@@ -74,11 +74,17 @@ module.exports = React.createClass({
         return this.props.page.get('content') !== newProps.page.get('content');
     },
     render: function(){
+        var total = this.props.page.getIn(['content', 'search_results', 'total']);
         if(!this.props.page.getIn(['content', 'search_results']) && this.props.page.get('fetching')){
             return <div className="search-results"><div className="csspinner" /></div>
         }
+        else if(!total){
+            return <div className="search-results">
+                <div className="search-count">No Results Found</div>
+                </div>
+        }
         else if(this.props.page.getIn(['content', 'search_results'])){
-            var total = this.props.page.getIn(['content', 'search_results', 'total']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var total_str = total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
                 <table className="table table-striped table-hover">

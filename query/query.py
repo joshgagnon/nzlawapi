@@ -174,7 +174,7 @@ def contains_query(args):
 
 def query_all(args):
     """ this is the basic search """
-    query = args.get('query')
+    query = args.get('query').lower()
     es = current_app.extensions['elasticsearch']
     offset = args.get('offset')
     results = es.search(
@@ -190,19 +190,18 @@ def query_all(args):
             ],
             "query": {
                 "bool": {
-                    "should": {
-                            "match_phrase_prefix":  {"title" :  { "query" : query} }
-                        },
+                    "should": [
+                        {"multi_match": {
+                            "query": query,
+                            "fields": ["title.std", "full_citation"],
+                            "boost": 3
+                        }},
+                    ],
                     "must": [
                         {"multi_match": {
                             "query": query,
                             "fields": ["title", "full_citation"]
-                        }},
-                        {"constant_score": {
-                            "filter": {
-                                "missing": {"field" : "date_terminated" }
-                            }
-                        }}]
+                        }}],
                 }
             },
 

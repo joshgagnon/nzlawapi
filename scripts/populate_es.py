@@ -25,7 +25,15 @@ def run(db, config):
                         "type": "custom",
                         "char_filter": "html_strip",
                         "tokenizer":"standard",
-                        "filter": ["custom_stemmer", "lowercase"]
+                        "filter": ["standard", "lowercase", "stop", "custom_stemmer"]
+                    },
+                    "text_analyzer": {
+                        "tokenizer":"standard",
+                        "filter":[ "standard", "lowercase", "stop", "custom_stemmer"],
+                    },
+                    "nontoken_analyzer": {
+                        "tokenizer":"keyword",
+                         "filter":["lowercase", "asciifolding"],
                     }
                 },
                 "filter":{
@@ -41,7 +49,17 @@ def run(db, config):
                 "properties": {
                     "title":{
                         "type":      "string",
-                        "analyzer":  "html_analyzer"
+                        "analyzer": "english",
+                        "fields": {
+                            "simple":   {
+                                "type":     "string",
+                                "analyzer": "nontoken_analyzer"
+                            },
+                            "std":   {
+                                "type":     "string",
+                                "analyzer": "standard"
+                            }
+                        }
                     },
                     "document": {
                         "type":      "string",
@@ -53,7 +71,7 @@ def run(db, config):
                 "properties": {
                     "full_citation":{
                         "type":      "string",
-                        "analyzer":  "html_analyzer"
+                        "analyzer":  "text_analyzer"
                     },
                     "document": {
                         "type":      "string",
