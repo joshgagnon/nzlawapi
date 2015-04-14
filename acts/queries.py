@@ -114,6 +114,7 @@ def process_skeleton(id, tree, db=None):
             results += wrap('div', to_join)
         node[:] = results
         return node
+
     depth(html.getroot())
     """ super expensive """
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))

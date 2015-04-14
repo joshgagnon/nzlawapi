@@ -235,7 +235,7 @@
             </xsl:choose>
             <xsl:call-template name="current"/>
               <xsl:choose>
-                <xsl:when test="heading != ''">
+                <xsl:when test="label != ''">
                     <h5 class="prov labelled">
                         <a class="focus-link">
                         <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@id"/></xsl:attribute>
@@ -266,6 +266,7 @@
                              </xsl:if>
                         </xsl:when>
                         <xsl:otherwise>
+
                             <span class="deleted label-deleted">
                                 <xsl:choose>
                                 <xsl:when test="ancestor::act">

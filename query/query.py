@@ -328,9 +328,10 @@ def query_instrument_fields(args):
         results = es.search(
             index="legislation",
             doc_type="instrument",
+            explain=True,
             body={
                 "from": offset, "size": 25,
-                "fields": ["id", "title"],
+                "fields": ["id", "title",'year', 'number', 'type', 'subtype'],
                 "sort": [
                     "_score",
                 ],
@@ -346,11 +347,17 @@ def query_instrument_fields(args):
                 },
                 "filter": {
                     "bool": {
-                        "should": type_filters
+                        "must": type_filters
                     }
-                }
+                },
             })
-        return {'type': 'search', 'search_results': results['hits'], 'title': 'Advanced Search'}
+        def get_totals(hit):
+            result = {}
+            for detail in hit['_explanation']['details']:
+                pass
+            return result
+        clean_results = results['hits'] #map(get_totals, results['hits'])
+        return {'type': 'search', 'search_results': clean_results, 'title': 'Advanced Search'}
     except Exception, e:
         print e
         raise CustomException('There was a problem with your query')

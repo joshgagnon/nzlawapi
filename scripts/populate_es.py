@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from elasticsearch import Elasticsearch, exceptions
 import psycopg2
 from psycopg2 import extras, errorcodes
@@ -121,8 +122,32 @@ def run(db, config):
             }
         }
     }
-
     """
+    def tohtml(tree, transform=os.path.join('xslt', 'transform.xslt')):
+        xslt = etree.parse(transform)
+        transform = etree.XSLT(xslt)
+        return transform(tree)
+
+    def safe_text(node_list):
+        try:
+            return etree.tostring(node_list[0], method="text",encoding='UTF-8')
+        except IndexError:
+            return ''
+
+    def partition_instrument(row):
+        tree = etree.fromstring(row['document'], parser=HTMLParser())
+        results = []
+        for node in tree.xpath('.//prov[not(ancestor::schedule)][not(ancestor::amend)]|schedule[not(ancestor::amend)]'):
+            title = ''
+            if node.tag == 'schedule':
+                title = 'Schedule '
+            title += safe_text(node.xpath('./label')).strip()
+            title = '%s %s' % (title, safe_text(node.xpath('./heading')).strip())
+            results.append({
+                "title": title,
+                "document": etree.tostring(tohtml(node), encoding='UTF-8', method="html")
+            })
+        return results
 
 
     with db.cursor() as cur:
@@ -140,12 +165,17 @@ def run(db, config):
         results = cur.fetchmany(10)
         count = 0
         while len(results):
-
             for result in results:
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)
                 count += 1
                 es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
+                for i, part in enumerate(partition_instrument(result)):
+                    es.index(index='legislation', doc_type='instrument_part', body={
+                        "title": part['title'],
+                        "document": part['document'],
+                        "document_id": result['id']
+                    }, id='%d-%d' % (result['id'], i))
 
             results = cur.fetchmany(10)
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
@@ -188,7 +218,7 @@ if __name__ == "__main__":
         run(db, config)
     except exceptions.ConnectionError:
         print 'Please start Elasticsearch'
-    except Exception, e:
+    except IndexError, e:
         print e
         print psycopg2.errorcodes.lookup(e.pgcode[:2])
         print psycopg2.errorcodes.lookup(e.pgcode)
