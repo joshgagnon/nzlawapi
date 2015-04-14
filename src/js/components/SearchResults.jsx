@@ -4,12 +4,18 @@ var Reflux = require('reflux');
 var _ = require('lodash');
 var $ = require('jquery');
 var Actions = require('../actions/Actions');
-
+var strings = require('../strings');
 
 // New definition result based on this
 var SearchResult = React.createClass({
     getTitle: function(){
         return (this.props.data.getIn(['fields','title', 0]) || this.props.data.getIn(['fields','full_citation', 0])) || 'Unknown'
+    },
+    getType: function(){
+        return strings.document_types[this.props.data.getIn(['fields','type', 0])];
+    },
+    getYear: function(){
+        return this.props.data.getIn(['fields','year', 0]);
     },
     handleLinkClick: function(e){
         e.preventDefault();
@@ -19,13 +25,15 @@ var SearchResult = React.createClass({
     render: function(){
         var html = '',
             id = this.props.data.getIn(['fields', 'id', 0]);
-        if( this.props.data.getIn(['highlight'])){
+        /*if( this.props.data.getIn(['highlight'])){
             html = (this.props.data.getIn(['highlight','document']) ||[]).join('');
-        }
-        return <div className="search-result">
-                <h4><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></h4>
-                <div dangerouslySetInnerHTML={{__html: html}}/>
-            </div>
+        }*/
+
+        return <tr className="search-result">
+        <td><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></td>
+        <td> { this.getType() } </td>
+        <td> { this.getYear() }</td>
+        </tr>
     }
 });
 
@@ -73,10 +81,15 @@ module.exports = React.createClass({
             var total = this.props.page.getIn(['content', 'search_results', 'total']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
+                <table className="table table-striped">
+                <thead><tr><th>Title</th><th>Type</th><th>Year</th></tr></thead>
+                    <tbody>
                     { this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i){
                             return <SearchResult key={r.getIn(['fields', 'id', 0])+''+i} data={r} viewer_id={this.props.viewer_id}/>
                         }, this).toJS()
                     }
+                    </tbody>
+                    </table>
                     {this.props.page.get('fetching') ?  <div className="csspinner" /> : null }
                 </div>
         }

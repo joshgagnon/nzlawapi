@@ -5,7 +5,13 @@ module.exports = {
     'acts': 'Acts',
     'bill': 'Bill',
     'bills': 'Bills',
-
+    'document_types': {
+    	'regulation': 'Legislative Instrument',
+    	'act': 'Act',
+    	'sop': 'Other Instrument',
+    	'bill': 'Bill',
+    	'case': 'Case'
+    },
     'title': 'Title',
     'contains': 'Contains',
     'full_citation': 'Full Citation',

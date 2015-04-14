@@ -190,14 +190,17 @@ def query_all(args):
             ],
             "query": {
                 "bool": {
-                    "must": [{
-                        "multi_match": {
+                    "should": {
+                            "match_phrase_prefix":  {"title" :  { "query" : query} }
+                        },
+                    "must": [
+                        {"multi_match": {
                             "query": query,
                             "fields": ["title", "full_citation"]
                         }},
-                        {"constant_score" : {
+                        {"constant_score": {
                             "filter": {
-                                "missing": { "field" : "date_terminated" }
+                                "missing": {"field" : "date_terminated" }
                             }
                         }}]
                 }
