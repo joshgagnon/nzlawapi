@@ -63,4 +63,5 @@ def process_instrument_links(tree, db=None, links=None):
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html", encoding="UTF-8")))
     domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
+    domxml.unlink()
     return tree

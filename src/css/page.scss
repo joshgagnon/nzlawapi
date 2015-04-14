@@ -184,6 +184,29 @@
                 min-height:60px;
             }
         }
+        .advanced-search{
+            background-color: $navbar-default-bg;
+            border-color: $gray;
+            border-bottom: 1px solid $navbar-default-border;
+            padding: 15px;
+            padding-left:10px;
+            transform: translateZ(0);
+            @media (min-width: $screen-sm-min) {
+                padding-left: $buttonbar-outer-width;
+            }
+            .btn-toolbar{
+                text-align:center;
+                padding-bottom:15px;
+            }
+
+            .form-group .form-group{
+                margin-bottom:0px;
+            }
+            .section-toggle .control-label{
+                  padding-top: 7px;
+                text-align: right;
+            }
+        }
 
         .article-error{
             text-align:center;

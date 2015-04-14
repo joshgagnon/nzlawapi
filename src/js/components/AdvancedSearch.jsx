@@ -4,16 +4,17 @@ var Input = require('react-bootstrap/lib/Input');
 var Col = require('react-bootstrap/lib/Col');
 var Button = require('react-bootstrap/lib/Button');
 var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
+var SplitButton = require('./SplitButton.jsx');
+var MenuItem = require('react-bootstrap/lib/MenuItem');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var strings = require('../strings');
-
 
 var FormHelper = {
     getValue: function(){
         var value = {}, nest=this.nestValues
         _.each(this.refs, function(r, k){
-            var gotValue = r.getValue();
+            var gotValue = r.getValue ? r.getValue() : React.findDOMNode(r).value;
             if(_.isObject(gotValue) && !nest){
                 _.extend(value, gotValue);
             }
@@ -41,9 +42,9 @@ var ToggleHelper =  {
         }
         return null;
     },
-    renderCategoryForm: function(category, toggleAll){
+    renderCategoryForm: function(category, className, toggleAll){
         if(this[category].length){
-            return <div className="col-xs-4">
+            return <div className={className}>
                 <Input type="checkbox" label={strings['all']} onChange={toggleAll} />
                   { this[category].map(function(field){
                     return <Input type="checkbox" label={strings[field]} key={field} ref={field} checkedLink={this.linkState(field)} />
@@ -52,21 +53,42 @@ var ToggleHelper =  {
         }
         return null;
     }
-}
+};
+
+var Contains = {
+    handleContentType: function(key){
+        this.setState({contains_type: key});
+    },
+    renderContains: function(){
+        return <div className="form-group">
+                <label className="control-label col-sm-2"><span>{strings.contains}</span></label>
+                <div className="col-sm-10">
+                    <span className="input-group">
+                        <input className="form-control" type="text" ref="contains"/>
+                        <SplitButton bsStyle={'primary'} title={strings[this.state.contains_type]}  onSelect={this.handleContentType}>
+                            <MenuItem eventKey={'all_words'}>{ strings.all_words }</MenuItem>
+                            <MenuItem eventKey={'any_words'}>{ strings.any_words }</MenuItem>
+                            <MenuItem eventKey={'exact'}>{ strings.exact }</MenuItem>
+                        </SplitButton>
+                    </span>
+                    <span className="help-block" >For example: 'justice -prison'</span>
+                 </div>
+            </div>
+        }
+};
 
 var CaseSearch = React.createClass({
     mixins: [
         React.addons.LinkedStateMixin,
         FormHelper,
-        ToggleHelper
+        ToggleHelper,
+        Contains
     ],
     fields: ['neutral_citation', 'courtfile', , 'year', 'court', 'bench', 'parties', 'matter', 'charge'],
     courts: ['supreme_court', 'appeal_court', 'high_court'],
+
     getInitialState: function(){
         return {contains_type: 'all_words', 'supreme_court': true, 'appeal_court': true, 'high_court': true}
-    },
-    handleContentType: function(event){
-        this.setState({contains_type: event.target.getAttribute('data-val')});
     },
     toggleAllCourt: function(event){
         this.setState(_.object(_.map(this.courts, function(s){
@@ -75,32 +97,17 @@ var CaseSearch = React.createClass({
     },
     render: function(){
         return <form className="form-horizontal">
-
-                    <Input type="text" label={strings.full_citation} ref="full_citation" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-                    <Input type="text" label={strings.contains} ref="contains" labelClassName="col-xs-2" wrapperClassName="col-xs-10"
-                        buttonAfter={
-                            <div className="btn-group">
-
-                             <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                               {strings[this.state.contains_type] } <span className="caret"></span>
-                              <span className="sr-only">Toggle Dropdown</span>
-                            </Button>
-                            <ul className="dropdown-menu" role="menu" onClick={this.handleContentType}>
-                                <li><a href="#" data-val={'all_words'}>{ strings.all_words }</a></li>
-                                <li><a href="#" data-val={'any_words'}>{ strings.any_words }</a></li>
-                                <li><a href="#" data-val={'exact'}>{ strings.exact }</a></li>
-                              </ul>
-                            </div>
-                       } />
-              { this.fields.map(function(field){
-                return <Input type="text" label={strings[field]} key={field} ref={field} labelClassName="col-xs-2" wrapperClassName="col-xs-10" help="" />
-              }) }
-              <div className='form-group'>
-                { this.renderCategoryLabel('courts') }
-                { this.renderCategoryForm('courts', this.toggleAllCourt) }
-            </div>
-        </form>
-    }
+                    <Input type="text" label={strings.full_citation} ref="full_citation" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+                    { this.renderContains() }
+                    { this.fields.map(function(field){
+                        return <Input type="text" label={strings[field]} key={field} ref={field} labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="" />
+                    }) }
+                    <div className='form-group'>
+                        { this.renderCategoryLabel('courts',"col-xs-4") }
+                        { this.renderCategoryForm('courts', "col-xs-4", this.toggleAllCourt) }
+                    </div>
+                </form>
+        }
 });
 
 var RenderSubInstrument = {
@@ -112,11 +119,11 @@ var RenderSubInstrument = {
         return out;
     },
     render: function(){
-         return  <div className="form-group">
+        return  <div className="form-group">
                 { this.renderCategoryLabel('types') }
-                { this.renderCategoryForm('types', this.toggleAllType) }
+                { this.renderCategoryForm('types', this.typesClass || "col-xs-4", this.toggleAllType) }
                 { this.renderCategoryLabel('status') }
-                { this.renderCategoryForm('status', this.toggleAllStatus) }
+                { this.renderCategoryForm('status', this.statusClass || "col-xs-4", this.toggleAllStatus) }
                 </div>
     }
 }
@@ -159,6 +166,7 @@ var BillSearch = React.createClass({
 var OtherSearch = React.createClass({
     types: [],
     status: ['other_principal', 'other_not_in_force', 'other_amendment_force','other_as_made', 'other_revoked'],
+    statusClass: "col-xs-10",
     mixins: [
         React.addons.LinkedStateMixin,
         ToggleHelper,
@@ -176,56 +184,42 @@ var OtherSearch = React.createClass({
 var InstrumentSearch = React.createClass({
     mixins:[
         FormHelper,
-        React.addons.LinkedStateMixin
+        React.addons.LinkedStateMixin,
+        Contains
     ],
     getInitialState: function(){
         return {contains_type: 'all_words', acts: true, bills: false, other: false};
     },
-    handleContentType: function(event){
-        this.setState({contains_type: event.target.getAttribute('data-val')});
-    },
+
     render: function(){
         return <div><form className="form-horizontal">
-              <Input type="text" label={strings.title} ref="title" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-              <Input type="text" label={strings.contains} ref="contains" labelClassName="col-xs-2" wrapperClassName="col-xs-10"
-                        buttonAfter={
-                            <div className="btn-group">
+              <Input type="text" label={strings.title} ref="title" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+              { this.renderContains() }
 
-                             <Button type="button" bsStyle="primary" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                               {strings[this.state.contains_type] } <span className="caret"></span>
-                              <span className="sr-only">Toggle Dropdown</span>
-                            </Button>
-                            <ul className="dropdown-menu" role="menu" onClick={this.handleContentType}>
-                                <li><a href="#" data-val={'all_words'}>{ strings.all_words }</a></li>
-                                <li><a href="#" data-val={'any_words'}>{ strings.any_words }</a></li>
-                                <li><a href="#" data-val={'exact'}>{ strings.exact }</a></li>
-                              </ul>
-                            </div>
-                       }  help="For example: 'justice -prison'" />
-
-              <Input type="text" label={strings.year} ref="year" labelClassName="col-xs-2" wrapperClassName="col-xs-10" help="For example: '1993', or '1991-2001'" />
+             <Input type="text" label={strings.definitions} ref="definition" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+              <Input type="text" label={strings.year} ref="year" labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="For example: '1993', or '1991-2001'" />
                  <hr/>
-                <div className="form-group">
-                    <label className="control-label col-xs-2"><span>{ strings.acts }</span></label>
-                    <div className="col-xs-4">
+                <div className="form-group section-toggle">
+                    <label className="control-label col-xs-6"><span>{ strings.acts }</span></label>
+                    <div className="col-xs-6">
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('acts')} />
                     </div>
                     </div>
                 { this.state.acts ? <ActSearch ref="actsearch" /> : null }
 
                    <hr/>
-                <div className="form-group">
-                    <label className="control-label col-xs-2"><span>{ strings.bills }</span></label>
-                    <div className="col-xs-4">
+                <div className="form-group section-toggle">
+                    <label className="control-label col-xs-6"><span>{ strings.bills }</span></label>
+                    <div className="col-xs-6">
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('bills')} />
                     </div>
                     </div>
                 { this.state.bills ? <BillSearch ref="billsearch" /> : null }
 
                    <hr/>
-                <div className="form-group">
-                    <label className="control-label col-xs-2"><span>{ strings.legislative_instruments }</span></label>
-                    <div className="col-xs-4">
+                <div className="form-group section-toggle">
+                    <label className="control-label col-xs-6"><span>{ strings.legislative_instruments }</span></label>
+                    <div className="col-xs-6">
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('other')} />
                     </div>
                     </div>
@@ -262,20 +256,28 @@ module.exports = React.createClass({
     },
     render: function(){
         return <div className="advanced-search">
+            <div className="container">
             <form className="form-horizontal">
                 <div className="form-group">
-                    <label className="control-label col-xs-2"><span>Query Type</span></label>
-                    <div className="col-xs-10">
-                        <Input type="radio" label="Legislation" name="type" value="instruments" checked={ this.state.doc_type === 'instruments'} onChange={this.handleType.bind(this, 'instruments')}/>
-                        <Input type="radio" label="Cases" name="type" value="cases" checked={ this.state.doc_type === 'cases'} onChange={this.handleType.bind(this, 'cases')}/>
+                    <label className="control-label col-sm-2"><span>Query Type</span></label>
+                    <div className="col-sm-10">
+                        <label className="radio-inline">
+                            <input type="radio" name="type" value="instruments" checked={ this.state.doc_type === 'instruments'} onChange={this.handleType.bind(this, 'instruments')}/>
+                            Legislation
+                        </label>
+                        <label className="radio-inline">
+                        <input type="radio" label="Cases" name="type" value="cases" checked={ this.state.doc_type === 'cases'} onChange={this.handleType.bind(this, 'cases')}/>
+                            Cases
+                        </label>
                     </div>
                 </div>
                 </form>
             { this.state.doc_type === 'instruments' ? <InstrumentSearch ref="sub" /> : <CaseSearch ref="sub"/> }
                 <ButtonToolbar>
-                  <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                   {/*<Button bsStyle={'info'}>Filter Current Results</Button> TODO: Implement */}
+                  <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                 </ButtonToolbar>
+            </div>
         </div>
     }
 })

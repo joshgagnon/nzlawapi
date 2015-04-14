@@ -14,6 +14,7 @@ module.exports = {
     },
     'title': 'Title',
     'contains': 'Contains',
+    'definitions': 'Definitions',
     'full_citation': 'Full Citation',
     'all_words': 'All Words',
     'any_words': 'Any Words',

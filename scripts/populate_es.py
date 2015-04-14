@@ -149,6 +149,11 @@ def run(db, config):
             })
         return results
 
+    def get_definitions(db, document_id):
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+            cur.execute(""" SELECT * FROM definitions where document_id = %(document_id)s""",
+                {"document_id": document_id})
+            return cur.fetchall()
 
     with db.cursor() as cur:
         cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
@@ -170,7 +175,8 @@ def run(db, config):
                     print '%d / %d' % (count, total)
                 count += 1
                 fields = dict(result)
-                fields['parts'] = enumerate(partition_instrument(result)
+                fields['parts'] = partition_instrument(result)
+                fields['definitions'] = get_definitions(db, result['id'])
                 es.index(index='legislation', doc_type='instrument', body=fields, id=result['id'])
 
             results = cur.fetchmany(10)

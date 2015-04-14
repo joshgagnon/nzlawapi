@@ -78,7 +78,7 @@ gulp.task('js', function() {
           notify.onError("Error: <%= error.message %>").apply(this, arguments);
       })
         .pipe(source('app.js'))
-        .pipe(dereserve())
+        //.pipe(dereserve()) //too damn slow
         .pipe(gulp.dest('./build/js/'));
         console.log('Updated!', (Date.now() - updateStart) + 'ms');
   })
@@ -87,7 +87,7 @@ gulp.task('js', function() {
         notify.onError("Error: <%= error.message %>").apply(this, arguments);
     })
     .pipe(source('app.js'))
-    .pipe(dereserve())
+    //.pipe(dereserve()) //too damn slow
     .pipe(gulp.dest('./build/js/'));
 });
 

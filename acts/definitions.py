@@ -277,6 +277,7 @@ def process_definitions(tree, definitions):
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html")))
     domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
+    domxml.unlink()
     definitions.apply_definitions(tree)
     return tree, definitions
 
