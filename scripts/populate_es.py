@@ -169,13 +169,9 @@ def run(db, config):
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)
                 count += 1
-                es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
-                for i, part in enumerate(partition_instrument(result)):
-                    es.index(index='legislation', doc_type='instrument_part', body={
-                        "title": part['title'],
-                        "document": part['document'],
-                        "document_id": result['id']
-                    }, id='%d-%d' % (result['id'], i))
+                fields = dict(result)
+                fields['parts'] = enumerate(partition_instrument(result)
+                es.index(index='legislation', doc_type='instrument', body=fields, id=result['id'])
 
             results = cur.fetchmany(10)
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
