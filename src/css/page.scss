@@ -164,12 +164,20 @@
             @media (min-width: $screen-sm-min) {
                 padding-left: $buttonbar-outer-width;
             }
-
+            .search-count {
+              color: #777;
+              text-align: center;
+              font-style: italic;
+            }
             .search-result{
                 margin-bottom: 20px;
-
-                .search_match{
-                    font-weight:bold;
+            }
+            table {
+                .title{
+                    width:66%;
+                }
+                tr{
+                    cursor:pointer;
                 }
             }
             .csspinner{

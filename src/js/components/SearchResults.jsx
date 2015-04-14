@@ -29,8 +29,8 @@ var SearchResult = React.createClass({
             html = (this.props.data.getIn(['highlight','document']) ||[]).join('');
         }*/
 
-        return <tr className="search-result">
-        <td><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} onClick={this.handleLinkClick}>{ this.getTitle() }</a></td>
+        return <tr className="search-result" onClick={this.handleLinkClick}>
+        <td><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} >{ this.getTitle() }</a></td>
         <td> { this.getType() } </td>
         <td> { this.getYear() }</td>
         </tr>
@@ -81,8 +81,8 @@ module.exports = React.createClass({
             var total = this.props.page.getIn(['content', 'search_results', 'total']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
-                <table className="table table-striped">
-                <thead><tr><th>Title</th><th>Type</th><th>Year</th></tr></thead>
+                <table className="table table-striped table-hover">
+                <thead><tr><th className="title">Title</th><th>Type</th><th>Year</th></tr></thead>
                     <tbody>
                     { this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i){
                             return <SearchResult key={r.getIn(['fields', 'id', 0])+''+i} data={r} viewer_id={this.props.viewer_id}/>

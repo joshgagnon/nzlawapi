@@ -132,7 +132,7 @@
                         <xsl:value-of select="@data-hook-length"/>
                     </xsl:attribute>
                 </xsl:if>
-             <xsl:apply-templates select="part|prov|amend/prov"/>
+             <xsl:apply-templates />
         </div>
     </xsl:template>
 
@@ -335,6 +335,7 @@
         </div>
     </xsl:template>
 
+    <!-- can't be right -->
     <xsl:template match="amend">
         <div class="def-para">
              <xsl:attribute name="class">
