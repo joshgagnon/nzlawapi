@@ -38,7 +38,7 @@ var ToggleHelper =  {
     },
     renderCategoryLabel: function(category){
         if(this[category].length){
-            return <label className="control-label col-xs-2"><span>{strings[category]}</span></label>
+            return <label className="control-label col-xs-4 col-sm-2"><span>{strings[category]}</span></label>
         }
         return null;
     },
@@ -121,9 +121,9 @@ var RenderSubInstrument = {
     render: function(){
         return  <div className="form-group">
                 { this.renderCategoryLabel('types') }
-                { this.renderCategoryForm('types', this.typesClass || "col-xs-4", this.toggleAllType) }
+                { this.renderCategoryForm('types', this.typesClass || "col-sm-4 col-xs-8", this.toggleAllType) }
                 { this.renderCategoryLabel('status') }
-                { this.renderCategoryForm('status', this.statusClass || "col-xs-4", this.toggleAllStatus) }
+                { this.renderCategoryForm('status', this.statusClass || "col-sm-4 col-xs-8", this.toggleAllStatus) }
                 </div>
     }
 }
@@ -166,7 +166,6 @@ var BillSearch = React.createClass({
 var OtherSearch = React.createClass({
     types: [],
     status: ['other_principal', 'other_not_in_force', 'other_amendment_force','other_as_made', 'other_revoked'],
-    statusClass: "col-xs-10",
     mixins: [
         React.addons.LinkedStateMixin,
         ToggleHelper,

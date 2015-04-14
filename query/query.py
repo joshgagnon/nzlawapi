@@ -292,13 +292,11 @@ def query_instrument_fields(args):
 
             # To be included type==act and at least one of each type and status filter must match
             type_filters.append({
-                "bool": {
-                    "must": [
+                "or": [
                         {"term": {"type": "act"}},
                         {"bool": {"should": act_type_filter}},
                         {"bool": {"should": act_status_filter}}
                     ]
-                }
             })
         if args.get('bills'):
             bill_type_filter = []
@@ -310,13 +308,12 @@ def query_instrument_fields(args):
             bill_status_filter = []
 
             type_filters.append({
-                "bool": {
-                    "must": [
+                "or": [
                         {"term": {"type": "bill"}},
                         {"bool": {"should": bill_type_filter}},
                         {"bool": {"should": bill_status_filter}}
                     ]
-                }
+
             })
         if args.get('other'):
             # TODO: status: 'other_principal', 'other_not_in_force', 'other_amendment_force','other_as_made', 'other_revoked'
@@ -351,6 +348,7 @@ def query_instrument_fields(args):
                     }
                 },
             })
+        print type_filters
         def get_totals(hit):
             result = {}
             for detail in hit['_explanation']['details']:
