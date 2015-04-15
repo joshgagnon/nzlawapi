@@ -186,7 +186,8 @@ var PageStore = Reflux.createStore({
             if(page.get('page_type') === PAGE_TYPES.SEARCH){
                 if(!page.get('finished') &&
                     !page.get('fetching') &&
-                    page.get('content') && page.getIn(['content', 'search_results', 'hits']).size){
+                    page.get('content') && page.getIn(['content', 'search_results', 'hits']) &&
+                    page.getIn(['content', 'search_results', 'hits']).size){
                     this.pages = this.pages.mergeDeepIn([this.getIndex(page_id)], {'fetching':  true});
                     get = request.get('/query', _.extend({
                         offset: page.getIn(['content', 'search_results', 'hits']).size},

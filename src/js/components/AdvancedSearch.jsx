@@ -22,7 +22,7 @@ var FormHelper = {
                 value[k] = gotValue;
             }
         });
-        return _.pick(_.extend(value, this.state), _.identity);
+        return _.pick(_.extend({}, this.state, value), _.identity);
     },
     componentWillReceiveProps: function(nextProps){
         if(nextProps.query){
@@ -78,7 +78,7 @@ var Contains = {
                 <label className="control-label col-sm-2"><span>{strings.contains}</span></label>
                 <div className="col-sm-10">
                     <span className="input-group">
-                        <input className="form-control" type="text" ref="contains"/>
+                        <input className="form-control" type="text" ref="contains" valueLink={this.linkState('contains')}/>
                         <SplitButton bsStyle={'primary'} title={strings[this.state.contains_type]}  onSelect={this.handleContentType}>
                             <MenuItem eventKey={'all_words'}>{ strings.all_words }</MenuItem>
                             <MenuItem eventKey={'any_words'}>{ strings.any_words }</MenuItem>
@@ -111,11 +111,11 @@ var CaseSearch = React.createClass({
     },
     render: function(){
         return <form className="form-horizontal">
-                    <Input type="text" label={strings.full_citation} ref="full_citation" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+                    <Input type="text" label={strings.full_citation} valueLink={this.linkState('full_citation')} ref="full_citation" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
                     { this.renderContains() }
                     { this.fields.map(function(field){
-                        return <Input type="text" label={strings[field]} key={field} ref={field} labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="" />
-                    }) }
+                        return <Input type="text" label={strings[field]} key={field} ref={field} valueLink={this.linkState(field)} labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="" />
+                    }, this) }
                     <div className='form-group'>
                         { this.renderCategoryLabel('courts',"col-xs-4") }
                         { this.renderCategoryForm('courts', "col-xs-4", this.toggleAllCourt) }
@@ -212,11 +212,11 @@ var InstrumentSearch = React.createClass({
 
     render: function(){
         return <div><form className="form-horizontal">
-              <Input type="text" label={strings.title} ref="title" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+              <Input type="text" label={strings.title} ref="title" valueLink={this.linkState('title')} labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
               { this.renderContains() }
 
-                <Input type="text" label={strings.definitions} ref="definition" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
-                <Input type="text" label={strings.year} ref="year" labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="For example: '1993', or '1991-2001'" />
+                <Input type="text" label={strings.definitions} ref="definition" valueLink={this.linkState('definition')} labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+                <Input type="text" label={strings.year} ref="year" valueLink={this.linkState('year')} labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="For example: '1993', or '1991-2001'" />
                  <hr/>
                 <div className="form-group section-toggle">
                     <label className="control-label col-xs-6"><span>{ strings.acts }</span></label>
@@ -265,7 +265,6 @@ module.exports = React.createClass({
     search: function(){
         var title = 'Advanced Search';
         var query = _.extend({search: 'advanced'}, _.pick(this.getValue(), _.identity));
-
         Actions.replacePage(this.props.page_id, {
             query: query,
             title: title,

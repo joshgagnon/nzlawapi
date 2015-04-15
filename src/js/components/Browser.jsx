@@ -100,7 +100,6 @@ module.exports = React.createClass({
         Reflux.listenTo(DialogStore, 'onState'),
         Reflux.listenTo(BrowserStore, 'onState'),
         Reflux.listenTo(PrintStore, 'onState'),
-        React.addons.LinkedStateMixin,
         ReactRouter.State,
         UndoMixin
     ],
