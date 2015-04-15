@@ -19,7 +19,8 @@ def article_auto_complete():
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
                 select name, id, type, find, query  from titles
-                   where name ilike '%%'||%(query)s||'%%' order by  base_score asc, position(%(query)s in lower(name)), char_length(name) asc, refs desc, children desc, year desc
+                   where name ilike '%%'||%(query)s||'%%'
+                   order by  base_score asc, position(%(query)s in lower(name)), char_length(name) asc, refs desc, children desc, year desc
                 limit 50;
                 """, {'query': request.args.get('query').lower()})
             return jsonify({'results': cur.fetchall()})
@@ -257,7 +258,8 @@ def query_case_fields(args):
 def query_instrument_fields(args):
     must = []
     fields = {}
-    type_filters = []
+    must_filters = []
+    not_filters = []
 
     try:
         if args.get('title'):
@@ -269,64 +271,126 @@ def query_instrument_fields(args):
         if args.get('contains'):
             fields['document'] = {}
             must.append(contains_query(args))
+            print must
         if args.get('year'):
             must.append(year_query(args))
         if args.get('acts'):
             act_type_filter = []
+            act_status_filter = []
+            act_filter = [{"term": {"type": "act"}}]
             for arg_name, act_type in [('act_public', 'public'), ('act_local', 'local'), ('act_private', 'private'), ('act_provincial', 'provincial'), ('act_imperial', 'imperial')]:
                 if args.get(arg_name):
                     act_type_filter.append({"term": {"subtype": act_type}})
 
-            # TODO: status: 'act_principal', 'act_not_in_force', 'act_amendment_in_force', 'act_as_enacted', 'act_repealed'
-            act_status_filter = []
-            # Example heuristic for when ES is populated
-            # if args.get('act_principal'):
-            #     act_status_filter.append({
-            #         "bool": {
-            #             "must": [
-            #                 {"term": {"amendment": false}}
-            #                 {"term": {"status": "in-force"}}  # TODO: status field must have "index" : "not_analyzed" for hyphen to work
-            #             ]
-            #         }
-            #     })
+            if args.get('act_principal'):
+                act_status_filter.append({"and":[
+                    # doesn't seem to gel with legislation.govt results
+                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    {"not": {"term": {"title.std": "amendment"}}},
+                    {"range": {"date_first_valid": {"lte": "now"}}}
+                    ]})
+            if args.get('act_not_in_force'):
+                act_status_filter.append({"range": {"date_first_valid": {"gt": "now"}}})
 
-            # To be included type==act and at least one of each type and status filter must match
-            type_filters.append({
-                "or": [
-                        {"term": {"type": "act"}},
-                        {"bool": {"should": act_type_filter}},
-                        {"bool": {"should": act_status_filter}}
-                    ]
+            if args.get('act_amendment_in_force'):
+                act_status_filter.append({"and":[
+                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    {"term": {"title.std": "amendment"}},
+                    {"range": {"date_first_valid": {"lte": "now"}}}
+                    ]})
+            if not args.get('act_repealed'):
+                act_filter.append({"term": {"repealed": False}})
+            else:
+                act_status_filter.append({"term": {"repealed": True}})
+
+            if args.get('act_as_enacted'):
+                act_filter.append({"term": {"in_amend": False}})
+
+            if len(act_type_filter):
+                act_type_filter.append({"not": {"exists": {"field": "subtype"}}})
+                act_filter.append({"or": act_type_filter})
+            if len(act_status_filter):
+                act_filter.append({"or": act_status_filter})
+
+            must_filters.append({
+                "and": act_filter
             })
+        else:
+            not_filters.append({"term": {"type": "act"}})
+
         if args.get('bills'):
+            bill_filter = [{"term": {"type": "bill"}}]
             bill_type_filter = []
+            bill_status_filter = []
             for arg_name, bill_type in [('bill_government', 'government'), ('bill_local', 'local'), ('bill_private', 'private'), ('bill_members', 'member')]:
                 if args.get(arg_name):
                     bill_type_filter.append({"term": {"subtype": bill_type}})
 
-            # TODO: status: 'current_bills', 'enacted_bills', 'terminated_bills'
-            bill_status_filter = []
 
-            type_filters.append({
-                "or": [
-                        {"term": {"type": "bill"}},
-                        {"bool": {"should": bill_type_filter}},
-                        {"bool": {"should": bill_status_filter}}
-                    ]
+            if args.get('current_bills'):
+                bill_status_filter.append({"term": {"bill_enacted": False}})
+                bill_status_filter.append({"not": {"exists": {"field": "terminated"}}})
 
+            if args.get('enacted_bills'):
+                bill_status_filter.append({"term": {"bill_enacted": True}})
+                bill_status_filter.append({"not": {"exists": {"field": "terminated"}}})
+
+            if args.get('terminated_bills'):
+                bill_status_filter.append({"exists": {"field": "terminated"}})
+
+            if len(bill_type_filter):
+                bill_type_filter.append({"not": {"exists": {"field": "subtype"}}})
+                bill_filter.append({"or": bill_type_filter})
+
+            if len(bill_status_filter):
+                bill_filter.append({"or": bill_status_filter})
+
+            must_filters.append({
+                "and": bill_filter
             })
+        else:
+            not_filters.append({"term": {"type": "bill"}})
+
         if args.get('other'):
             # TODO: status: 'other_principal', 'other_not_in_force', 'other_amendment_force','other_as_made', 'other_revoked'
-            type_filters.append({"term": {"type": "regulation"}})
-            type_filters.append({"term": {"type": "sop"}})
+            other_filter = [{"or": [{"term": {"type": "regulation"}}, {"term": {"type": "sop"}}]}]
+            other_status_filter = []
+            if args.get('other_principal'):
+                other_status_filter.append({"and":[
+                    # doesn't seem to gel with legislation.govt results
+                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    {"not": {"term": {"title.std": "amendment"}}},
+                    {"range": {"date_first_valid": {"lte": "now"}}}
+                    ]})
+
+            if args.get('other_not_in_force'):
+                other_status_filter.append({"range": {"date_first_valid": {"gt": "now"}}})
+
+            if args.get('other_amendment_force'):
+                other_status_filter.append({"and":[
+                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    {"term": {"title.std": "amendment"}},
+                    {"range": {"date_first_valid": {"lte": "now"}}}
+                    ]})
+
+            if not args.get('other_revoked'):
+                other_filter.append({"term": {"repealed": False}})
+
+            if args.get('other_as_made'):
+                other_status_filter.append({"term": {"in_amend": False}})
+
+            if len(other_status_filter):
+                other_filter.append({"or": other_status_filter})
+
+            must_filters.append({
+                "and": other_filter
+            })
+        else:
+            not_filters.append({"or": [{"term": {"type": "regulation"}}, {"term": {"type": "sop"}}]})
 
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset', 0)
-        results = es.search(
-            index="legislation",
-            doc_type="instrument",
-            explain=True,
-            body={
+        body = {
                 "from": offset, "size": 25,
                 "fields": ["id", "title",'year', 'number', 'type', 'subtype'],
                 "sort": [
@@ -342,13 +406,23 @@ def query_instrument_fields(args):
                     "post_tags": ["</span>"],
                     "fields": fields
                 },
-                "filter": {
-                    "bool": {
-                        "must": type_filters
-                    }
-                },
-            })
-        print type_filters
+
+            }
+
+        if len(must_filters) or len(not_filters):
+            body['filter'] = {"bool": {}}
+            if len(must_filters):
+                body['filter']["bool"]["must"] = {
+                    "or": must_filters
+                }
+            if len(not_filters):
+                body['filter']["bool"]["must_not"] = {
+                    "or": not_filters
+                }
+        results = es.search(
+            index="legislation",
+            doc_type="instrument",
+            body=body)
         def get_totals(hit):
             result = {}
             for detail in hit['_explanation']['details']:

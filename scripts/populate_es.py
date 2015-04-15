@@ -45,6 +45,7 @@ def run(db, config):
                 }
             }
         },
+
         "mappings":{
             "instrument": {
                 "properties": {
@@ -65,7 +66,15 @@ def run(db, config):
                     "document": {
                         "type":      "string",
                         "analyzer":  "html_analyzer"
-                    }
+                    },
+                    "stage": { "type": "string", "index": "not_analyzed" },
+                    "type": { "type": "string", "index": "not_analyzed" },
+                    "repealed": { "type": "string", "index": "not_analyzed" },
+                    "in_amend": { "type": "string", "index": "not_analyzed" },
+                    "pco_suffix": { "type": "string", "index": "not_analyzed" },
+                    "terminated": { "type": "string", "index": "not_analyzed" },
+                    "offical": { "type": "string", "index": "not_analyzed" },
+                    "path": { "type": "string", "index": "not_analyzed" },
                 }
             },
             "case": {
@@ -161,12 +170,12 @@ def run(db, config):
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        # to do, add all docs
-        cur.execute("""SELECT id, title, document, type, subtype, number, date_terminated,
-            date_imprint, date_signed, raised_by, stage, imperial,
-            official, instructing_office, date_first_valid, date_as_at, date_assent,
-            date_gazetted, date_imprint, year, repealed, base_score,
-            refs, children FROM latest_instruments """)
+
+        cur.execute("""SELECT title, true as latest, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+            i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
+            i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
+            i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
+            FROM latest_instruments i""")
         results = cur.fetchmany(10)
         count = 0
         while len(results):
