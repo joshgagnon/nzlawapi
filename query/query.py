@@ -256,48 +256,54 @@ def query_case_fields(args):
 
 
 def query_instrument_fields(args):
-    must = []
+    query = []
     fields = {}
     must_filters = []
     not_filters = []
 
-    try:
+    def common(args, query, fields):
         if args.get('title'):
-            must.append({"simple_query_string": {
+            query.append({"simple_query_string": {
                 "query": args.get('title'),
                 "fields": ['title'],
                 "default_operator": 'AND'}
             })
         if args.get('contains'):
             fields['document'] = {}
-            must.append(contains_query(args))
-            print must
+            query.append(contains_query(args))
         if args.get('year'):
-            must.append(year_query(args))
+            query.append(year_query(args))
+        return
+
+    def acts(args, must_filters, not_filters):
         if args.get('acts'):
             act_type_filter = []
             act_status_filter = []
             act_filter = [{"term": {"type": "act"}}]
-            for arg_name, act_type in [('act_public', 'public'), ('act_local', 'local'), ('act_private', 'private'), ('act_provincial', 'provincial'), ('act_imperial', 'imperial')]:
+            for arg_name, act_type in [
+                ('act_public', 'public'), ('act_local', 'local'),
+                ('act_private', 'private'), ('act_provincial', 'provincial'),
+                ('act_imperial', 'imperial')
+            ]:
                 if args.get(arg_name):
                     act_type_filter.append({"term": {"subtype": act_type}})
 
             if args.get('act_principal'):
-                act_status_filter.append({"and":[
+                act_status_filter.append({"and": [
                     # doesn't seem to gel with legislation.govt results
-                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    # {"not": {"term": {"stage": "not-in-force"}}},
                     {"not": {"term": {"title.std": "amendment"}}},
                     {"range": {"date_first_valid": {"lte": "now"}}}
-                    ]})
+                ]})
             if args.get('act_not_in_force'):
                 act_status_filter.append({"range": {"date_first_valid": {"gt": "now"}}})
 
             if args.get('act_amendment_in_force'):
                 act_status_filter.append({"and":[
-                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    # {"not": {"term": {"stage": "not-in-force"}}},
                     {"term": {"title.std": "amendment"}},
                     {"range": {"date_first_valid": {"lte": "now"}}}
-                    ]})
+                ]})
             if not args.get('act_repealed'):
                 act_filter.append({"term": {"repealed": False}})
             else:
@@ -318,14 +324,17 @@ def query_instrument_fields(args):
         else:
             not_filters.append({"term": {"type": "act"}})
 
+    def bills(args, must_filters, not_filters):
         if args.get('bills'):
             bill_filter = [{"term": {"type": "bill"}}]
             bill_type_filter = []
             bill_status_filter = []
-            for arg_name, bill_type in [('bill_government', 'government'), ('bill_local', 'local'), ('bill_private', 'private'), ('bill_members', 'member')]:
+            for arg_name, bill_type in [
+                ('bill_government', 'government'), ('bill_local', 'local'),
+                ('bill_private', 'private'), ('bill_members', 'member')
+            ]:
                 if args.get(arg_name):
                     bill_type_filter.append({"term": {"subtype": bill_type}})
-
 
             if args.get('current_bills'):
                 bill_status_filter.append({"term": {"bill_enacted": False}})
@@ -351,27 +360,27 @@ def query_instrument_fields(args):
         else:
             not_filters.append({"term": {"type": "bill"}})
 
+    def other(args, must_filters, not_filters):
         if args.get('other'):
-            # TODO: status: 'other_principal', 'other_not_in_force', 'other_amendment_force','other_as_made', 'other_revoked'
             other_filter = [{"or": [{"term": {"type": "regulation"}}, {"term": {"type": "sop"}}]}]
             other_status_filter = []
             if args.get('other_principal'):
                 other_status_filter.append({"and":[
                     # doesn't seem to gel with legislation.govt results
-                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    # {"not": {"term": {"stage": "not-in-force"}}},
                     {"not": {"term": {"title.std": "amendment"}}},
                     {"range": {"date_first_valid": {"lte": "now"}}}
-                    ]})
+                ]})
 
             if args.get('other_not_in_force'):
                 other_status_filter.append({"range": {"date_first_valid": {"gt": "now"}}})
 
             if args.get('other_amendment_force'):
                 other_status_filter.append({"and":[
-                    #{"not": {"term": {"stage": "not-in-force"}}},
+                    # {"not": {"term": {"stage": "not-in-force"}}},
                     {"term": {"title.std": "amendment"}},
                     {"range": {"date_first_valid": {"lte": "now"}}}
-                    ]})
+                ]})
 
             if not args.get('other_revoked'):
                 other_filter.append({"term": {"repealed": False}})
@@ -388,26 +397,31 @@ def query_instrument_fields(args):
         else:
             not_filters.append({"or": [{"term": {"type": "regulation"}}, {"term": {"type": "sop"}}]})
 
+    try:
+
+        common(args, query, fields)
+        acts(args, must_filters, not_filters)
+        bills(args, must_filters, not_filters)
+        other(args, must_filters, not_filters)
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset', 0)
         body = {
-                "from": offset, "size": 25,
-                "fields": ["id", "title",'year', 'number', 'type', 'subtype'],
-                "sort": [
-                    "_score",
-                ],
-                "query": {
-                    "bool": {
-                        "must": must
-                    }
-                },
-                "highlight": {
-                    "pre_tags": ["<span class='search_match'>"],
-                    "post_tags": ["</span>"],
-                    "fields": fields
-                },
-
-            }
+            "from": offset, "size": 25,
+            "fields": ["id", "title", 'year', 'number', 'type', 'subtype'],
+            "sort": [
+                "_score",
+            ],
+            "query": {
+                "bool": {
+                    "must": query
+                }
+            },
+            "highlight": {
+                "pre_tags": ["<span class='search_match'>"],
+                "post_tags": ["</span>"],
+                "fields": fields
+            },
+        }
 
         if len(must_filters) or len(not_filters):
             body['filter'] = {"bool": {}}
@@ -423,12 +437,14 @@ def query_instrument_fields(args):
             index="legislation",
             doc_type="instrument",
             body=body)
+
         def get_totals(hit):
             result = {}
             for detail in hit['_explanation']['details']:
                 pass
             return result
-        clean_results = results['hits'] #map(get_totals, results['hits'])
+
+        clean_results = results['hits']  # map(get_totals, results['hits'])
         return {'type': 'search', 'search_results': clean_results, 'title': 'Advanced Search'}
     except Exception, e:
         print e

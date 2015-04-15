@@ -21,10 +21,23 @@ var FormHelper = {
             else{
                 value[k] = gotValue;
             }
-        })
+        });
         return _.pick(_.extend(value, this.state), _.identity);
+    },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.query){
+            //this.setState(this.getStateFields())
+        }
+    },
+    getStateFields: function(){
+        // assumes this.props.query is a populated immutablejs object
+        var all_null = _.object(_.map(this.stateFields, function(f){
+            return [f, null];
+        }));
+        return _.extend(all_null, _.pick.apply(null, [this.props.query.toJS()].concat(this.stateFields)))
     }
 };
+
 var ToggleHelper =  {
     toggleAllStatus: function(event){
         this.setState(_.object(_.map(this.status, function(s){
@@ -44,8 +57,9 @@ var ToggleHelper =  {
     },
     renderCategoryForm: function(category, className, toggleAll){
         if(this[category].length){
+            var all = _.every(_.pick.apply(null, [this.state].concat(this[category])))
             return <div className={className}>
-                <Input type="checkbox" label={strings['all']} onChange={toggleAll} />
+                <Input type="checkbox" label={strings['all']} onChange={toggleAll} checked={all}/>
                   { this[category].map(function(field){
                     return <Input type="checkbox" label={strings[field]} key={field} ref={field} checkedLink={this.linkState(field)} />
                   }.bind(this)) }
@@ -82,13 +96,13 @@ var CaseSearch = React.createClass({
         React.addons.LinkedStateMixin,
         FormHelper,
         ToggleHelper,
-        Contains
+        Contains,
     ],
     fields: ['neutral_citation', 'courtfile', , 'year', 'court', 'bench', 'parties', 'matter', 'charge'],
     courts: ['supreme_court', 'appeal_court', 'high_court'],
-
     getInitialState: function(){
-        return {contains_type: 'all_words', 'supreme_court': true, 'appeal_court': true, 'high_court': true}
+        this.stateFields = this.fields.concat(this.courts);
+        return this.props.query ? this.getStateFields() : {contains_type: 'all_words', 'supreme_court': true, 'appeal_court': true, 'high_court': true};
     },
     toggleAllCourt: function(event){
         this.setState(_.object(_.map(this.courts, function(s){
@@ -138,7 +152,8 @@ var ActSearch = React.createClass({
         FormHelper
     ],
     getInitialState: function(){
-        return this.initialCheckboxState(
+        this.stateFields = this.types.concat(this.status);
+        return this.props.query ? this.getStateFields() : this.initialCheckboxState(
             ['act_public', 'act_local', 'act_private', 'act_provincial', 'act_imperial', 'act_principal', 'act_amendment_in_force'],
             [].concat(this.types, this.status)
         );
@@ -155,8 +170,10 @@ var BillSearch = React.createClass({
         RenderSubInstrument,
         FormHelper
     ],
+    x: true,
     getInitialState: function(){
-        return this.initialCheckboxState(
+        this.stateFields = this.types.concat(this.status);
+        return this.props.query ? this.getStateFields() : this.initialCheckboxState(
             ['bill_government', 'bill_local', 'bill_private', 'bill_members', 'current_bills', 'enacted_bills'],
             [].concat(this.types, this.status)
         );
@@ -173,7 +190,8 @@ var OtherSearch = React.createClass({
         FormHelper
     ],
     getInitialState: function(){
-        return this.initialCheckboxState(
+        this.stateFields = this.types.concat(this.status);
+        return  this.props.query ? this.getStateFields() : this.initialCheckboxState(
             ['other_principal', 'other_not_in_force', 'other_amendment_force'],
             [].concat(this.types, this.status)
         );
@@ -186,8 +204,10 @@ var InstrumentSearch = React.createClass({
         React.addons.LinkedStateMixin,
         Contains
     ],
+    stateFields: ['contains_type', 'acts', 'bills', 'other', 'contains', 'title', 'year', 'definition'],
     getInitialState: function(){
-        return {contains_type: 'all_words', acts: true, bills: false, other: false};
+        return this.props.query ?
+            this.getStateFields() : {contains_type: 'all_words', acts: true, bills: false, other: false};
     },
 
     render: function(){
@@ -195,8 +215,8 @@ var InstrumentSearch = React.createClass({
               <Input type="text" label={strings.title} ref="title" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
               { this.renderContains() }
 
-             <Input type="text" label={strings.definitions} ref="definition" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
-              <Input type="text" label={strings.year} ref="year" labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="For example: '1993', or '1991-2001'" />
+                <Input type="text" label={strings.definitions} ref="definition" labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
+                <Input type="text" label={strings.year} ref="year" labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="For example: '1993', or '1991-2001'" />
                  <hr/>
                 <div className="form-group section-toggle">
                     <label className="control-label col-xs-6"><span>{ strings.acts }</span></label>
@@ -204,7 +224,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('acts')} />
                     </div>
                     </div>
-                { this.state.acts ? <ActSearch ref="actsearch" /> : null }
+                { this.state.acts ? <ActSearch ref="actsearch" query={this.props.query && this.props.query.get('acts') ? this.props.query : null } /> : null }
 
                    <hr/>
                 <div className="form-group section-toggle">
@@ -213,7 +233,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('bills')} />
                     </div>
                     </div>
-                { this.state.bills ? <BillSearch ref="billsearch" /> : null }
+                { this.state.bills ? <BillSearch ref="billsearch" query={this.props.query && this.props.query.get('bills') ? this.props.query : null } /> : null }
 
                    <hr/>
                 <div className="form-group section-toggle">
@@ -222,7 +242,7 @@ var InstrumentSearch = React.createClass({
                         <Input type="checkbox" label=' '  checkedLink={this.linkState('other')} />
                     </div>
                     </div>
-                { this.state.other ? <OtherSearch ref="othersearch" /> : null }
+                { this.state.other ? <OtherSearch ref="othersearch" query={this.props.query && this.props.query.get('other') ? this.props.query : null } /> : null }
 
             </form>
             </div>
@@ -235,10 +255,9 @@ module.exports = React.createClass({
     mixins:[
         FormHelper
     ],
+    stateFields: ['doc_type'],
     getInitialState: function(){
-        return {
-            doc_type: 'instruments',
-        }
+        return this.props.query ? this.getStateFields() : { doc_type: 'instruments'};
     },
     handleType: function(doc_type){
         this.setState({doc_type: doc_type});
@@ -246,12 +265,15 @@ module.exports = React.createClass({
     search: function(){
         var title = 'Advanced Search';
         var query = _.extend({search: 'advanced'}, _.pick(this.getValue(), _.identity));
-        //SHOULD UPDATEA PAGE
+
         Actions.replacePage(this.props.page_id, {
             query: query,
             title: title,
             page_type: 'search'
         });
+    },
+    shouldComponentUpdate: function(nextProps, nextState){
+        return this.state.doc_type !== nextState.doc_type || this.props.query !== nextProps.query;
     },
     render: function(){
         return <div className="advanced-search">
@@ -271,7 +293,9 @@ module.exports = React.createClass({
                     </div>
                 </div>
                 </form>
-            { this.state.doc_type === 'instruments' ? <InstrumentSearch ref="sub" /> : <CaseSearch ref="sub"/> }
+            { this.state.doc_type === 'instruments' ?
+                    <InstrumentSearch ref="sub" query={this.props.query && this.props.query.get('doc_type') === 'instruments' ? this.props.query : null}/> :
+                    <CaseSearch ref="sub" query={this.props.query && this.props.query.get('doc_type') === 'cases' ? this.props.query : null} /> }
                 <ButtonToolbar>
                   {/*<Button bsStyle={'info'}>Filter Current Results</Button> TODO: Implement */}
                   <Button bsStyle={'primary'} onClick={this.search}>Search</Button>

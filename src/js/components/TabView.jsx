@@ -122,8 +122,8 @@ module.exports = React.createClass({
                         // Clean up generally, also in fn render() below
                         return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
-                                { this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?
-                                    <AdvancedSearch  page_id={page.get('id')} /> : null }
+                                { page.get('page_type') == PAGE_TYPES.SEARCH && this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?
+                                    <AdvancedSearch  page_id={page.get('id')} query={page.get('query')} /> : null }
                                 { this.renderPage(page) }
                             </TabPane> : null
                       }, this).toJS() //can remove in react 0.13
@@ -154,13 +154,14 @@ module.exports = React.createClass({
 
         }
         else if(this.props.pages.size ==1){
+            var page = this.props.pages.get(0);
             return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
                 { this.modalVisible() ? this.renderModals() : null }
                  { this.props.showCloseView ? <div className="view-control"><button onClick={Actions.closeView.bind(null, this.props.viewer_id)} className="btn btn-default">&times;</button></div> : null }
                  <div className="results-scroll">
-                    { this.props.view.getIn(['settings', this.props.pages.get(0).get('id'), 'advanced_search']) ?
-                            <AdvancedSearch page_id={this.props.pages.get(0).get('id')} /> : null }
-                    {  this.renderPage(this.props.pages.get(0)) }
+                    {  page.get('page_type') == PAGE_TYPES.SEARCH && this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?
+                            <AdvancedSearch page_id={page.get('id')} query={page.get('query')} /> : null }
+                    {  this.renderPage(page) }
                 </div>
                 </div>
         }
