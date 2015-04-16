@@ -83,28 +83,7 @@ def run(db, config):
                     "document": {
                         "type":      "string",
                         "analyzer":  "html_analyzer"
-                    },
-                    'definitions': {
-                        "type": "nested",
-                        #"include_in_parent": True,
-                        "properties": {
-                            "full_word" : {"type": "string"},
-                            "html": {
-                                "type":     "string",
-                                "analyzer": "html_analyzer"
-                            }
-                        }
-                    },
-                    'parts': {
-                        "type": "nested",
-                        #"include_in_parent": True,
-                        "properties": {
-                            "document": {
-                                "type":      "string",
-                                "analyzer":  "html_analyzer"
-                            },
-                        }
-                    },                   
+                    },                  
                     "stage": { "type": "string", "index": "not_analyzed" },
                     "type": { "type": "string", "index": "not_analyzed" },
                     "repealed": { "type": "string", "index": "not_analyzed" },
@@ -115,6 +94,29 @@ def run(db, config):
                     "path": { "type": "string", "index": "not_analyzed" },
                 }
             },
+            'definition': {
+                "_parent": {
+                    "type": "instrument"
+                },
+                "properties": {
+                    "full_word" : {"type": "string"},
+                    "html": {
+                        "type":     "string",
+                        "analyzer": "html_analyzer"
+                    }
+                }
+            },
+            'part': {
+                "_parent": {
+                    "type": "instrument"
+                },
+                "properties": {
+                    "document": {
+                        "type":      "string",
+                        "analyzer":  "html_analyzer"
+                    },
+                }
+            }, 
             "case": {
                 "properties": {
                     "full_citation":{
@@ -184,13 +186,15 @@ def run(db, config):
     def partition_instrument(row):
         tree = etree.fromstring(row['document'], parser=HTMLParser())
         results = []
-        for node in tree.xpath('.//prov[not(ancestor::schedule)][not(ancestor::amend)]|schedule[not(ancestor::amend)]'):
+        # to do, keep context
+        for i, node in enumerate(tree.xpath('.//prov[not(ancestor::schedule)][not(ancestor::amend)]|schedule[not(ancestor::amend)]')):
             title = ''
             if node.tag == 'schedule':
                 title = 'Schedule '
             title += safe_text(node.xpath('./label')).strip()
             title = '%s %s' % (title, safe_text(node.xpath('./heading')).strip())
             results.append({
+                "id": "%d-%d" % (row['id'], i),
                 "title": title,
                 "document": etree.tostring(tohtml(node), encoding='UTF-8', method="html")
             })
@@ -213,7 +217,7 @@ def run(db, config):
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
             i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
-            FROM latest_instruments i """)
+            FROM latest_instruments i  """)
         results = cur.fetchmany(10)
         count = 0
         while len(results):
@@ -221,10 +225,14 @@ def run(db, config):
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)
                 count += 1
-                fields = dict(result)
-                fields['parts'] = partition_instrument(result)
-                fields['definitions'] = get_definitions(db, result['id'])
-                es.index(index='legislation', doc_type='instrument', body=fields, id=result['id'])
+                #fields = dict(result)
+                #fields['parts'] = partition_instrument(result)
+                #fields['definitions'] = get_definitions(db, result['id'])
+                es.index(index='legislation', doc_type='instrument', body=dict(result), id=result['id'])
+                for definition in get_definitions(db, result['id']):
+                    es.index(index='legislation', doc_type='definition', body=dict(definition), parent=result['id'], id=definition['id'])
+                for part in partition_instrument(result):
+                    es.index(index='legislation', doc_type='part', body=part, parent=result['id'], id=part['id'])
 
             results = cur.fetchmany(10)
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:

@@ -27,8 +27,8 @@ module.exports = React.createClass({
             if(this.props.page.getIn(['content', 'search_results', 'hits'])) {
                 resultContent = this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i) {
 
-                    return r.getIn(['inner_hits', 'definitions', 'hits', 'hits']).map(function(def, j){
-                        return <DefinitionResult html={def.getIn(['_source', 'html'])} key={i+'-'+j}/>
+                    return r.getIn(['fields', 'html']).map(function(html, j){
+                        return <DefinitionResult html={html} key={i+'-'+j}/>
                     })
 
                 });

@@ -59,7 +59,7 @@ module.exports =  Reflux.createStore({
             Actions.deactivatePrintMode();
         }
         if(viewer_id === 'tab-1'){
-            Actions.deactivateSplit();
+            Actions.deactivateSplitMode();
         }
         if(viewer_id === 'tab-0'){
             // swap tabs over

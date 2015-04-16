@@ -1,48 +1,52 @@
 "use strict";
 var React = require('react/addons');
-var Input = require('react-bootstrap/lib/Input');
-var Button = require('react-bootstrap/lib/Button');
-var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
+var Reflux = require('reflux');
+var _ = require('lodash');
+var $ = require('jquery');
 var Actions = require('../actions/Actions');
-var PAGE_TYPES = require('../constants').PAGE_TYPES;
-var ArticleHandlers = require('./ArticleHandlers.jsx');
-var PageMixins = require('../mixins/Page');
-var Popovers = require('./Popovers.jsx');
+var strings = require('../strings');
+var SearchTable = require('../mixins/SearchTable.jsx');
 
-var ContainsResult = React.createClass({
-    render: function() {
-         return (
-            <div className="search-result">
-                <div dangerouslySetInnerHTML={{__html: this.props.data.get('html')}}/>
-            </div>
-        );
+// New definition result based on this
+var SearchResult = React.createClass({
+    getTitle: function(){
+        return (this.props.data.getIn(['fields','title', 0]) || this.props.data.getIn(['fields','full_citation', 0])) || 'Unknown'
+    },
+    getType: function(){
+        return strings.document_types[this.props.data.getIn(['fields','type', 0])];
+    },
+    getYear: function(){
+        return this.props.data.getIn(['fields','year', 0]);
+    },
+    handleLinkClick: function(e){
+        e.preventDefault();
+        var query = {find: 'full', doc_type: this.props.data.getIn(['_type']), id: this.props.data.getIn(['fields','id', 0])};
+        Actions.newPage({query: query, title: this.getTitle()}, this.props.viewer_id);
+    },
+    render: function(){
+        var html = '',
+            id = this.props.data.getIn(['fields', 'id', 0]);
+        /*if( this.props.data.getIn(['highlight'])){
+            html = (this.props.data.getIn(['highlight','document']) ||[]).join('');
+        }*/
+
+        return <tr className="search-result" onClick={this.handleLinkClick}>
+        <td>{ this.props.index + 1}</td>
+        <td><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} >{ this.getTitle() }</a></td>
+        <td> { this.getType() } </td>
+        <td> { this.getYear() }</td>
+        </tr>
     }
 });
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers, PageMixins],
-    render: function() {
-        var resultContent;
-        if(this.props.page.getIn(['content', 'search_results'])) {
-            if(this.props.page.getIn(['content', 'search_results', 'hits'])) {
-                resultContent = this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i) {
-                    return <ContainsResult data={r} key={i}/>;
-                }).toJS();
-            }
-            else {
-                resultContent = <div className="search-count">No Results Found</div>;
-            }
-        }
-        else if(this.props.page.get('fetching')) {
-            resultContent = <div className="csspinner" />;
-        }
-        else {
-            resultContent = <div className="article-error"><p className="text-danger">{this.props.page.getIn(['content', 'error'])}</p></div>;
-        }
-        return (
-            <div className="search-results legislation-result" onClick={this.interceptLink}>
-                {resultContent}
-            </div>
-    );
+    mixins: [
+        SearchTable
+    ],
+    renderRow: function(data, index){
+        return <SearchResult index={index} key={data.getIn(['fields', 'id', 0])+''+index} data={data} viewer_id={this.props.viewer_id}/>;
+    },
+    render: function(){
+        return this.renderTable();
     }
 });

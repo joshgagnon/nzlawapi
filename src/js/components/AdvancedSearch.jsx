@@ -279,6 +279,11 @@ module.exports = React.createClass({
     shouldComponentUpdate: function(nextProps, nextState){
         return this.state.doc_type !== nextState.doc_type || this.props.query !== nextProps.query || this.props.view !== nextProps.view;
     },
+    onKeyDown: function(event){
+        if (event.key === 'Enter'){
+            this.search();
+        }
+    },
     renderStub: function(){
         return <div className="container">
                 <div className="toggle-row">
@@ -287,7 +292,7 @@ module.exports = React.createClass({
             </div>
     },
     renderForm: function(){
-        return <div className="container">
+        return <div className="container" onKeyDown={this.onKeyDown}>
             <form className="form-horizontal">
                 <div className="form-group">
                     <label className="control-label col-sm-2"><span>Query Type</span></label>
