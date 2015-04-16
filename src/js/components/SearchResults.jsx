@@ -30,6 +30,7 @@ var SearchResult = React.createClass({
         }*/
 
         return <tr className="search-result" onClick={this.handleLinkClick}>
+        <td>{ this.props.index + 1}</td>
         <td><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} >{ this.getTitle() }</a></td>
         <td> { this.getType() } </td>
         <td> { this.getYear() }</td>
@@ -73,7 +74,39 @@ module.exports = React.createClass({
     shouldComponentUpdate: function(newProps){
         return this.props.page.get('content') !== newProps.page.get('content');
     },
+
+    getSort: function(key){
+        var dir = 'fa fa-chevron-'+(this.props.page.getIn(['query', 'sort_dir']) === 'asc' ? 'up': 'down');
+        if((!this.props.page.getIn(['query', 'sort_col']) && key === '_score')  || this.props.page.getIn(['query', 'sort_col'])===key){
+            return <span className={dir}/>
+        }
+    },
+    toggleSort: function(key){
+        var dir = 'desc';
+        if(this.props.page.getIn(['query', 'sort_col']) === key){
+            dir = this.props.page.getIn(['query', 'sort_dir']) === 'asc' ? 'desc' : 'asc'
+        }
+        var query = this.props.page.get('query').toJS();
+        query['sort_dir'] = dir;
+        query['sort_col'] = key;
+        Actions.replacePage(this.props.page.get('id'), {
+            query: query,
+            title: this.props.page.get('title'),
+            page_type: this.props.page.get('page_type')
+        });
+    },
+    renderTableHead: function(){
+        return <thead>
+                <tr>
+                    <th onClick={this.toggleSort.bind(this, '_score')}># {this.getSort('_score')}</th>
+                    <th onClick={this.toggleSort.bind(this, 'title.simple')} className="title">Title {this.getSort('title.simple')}</th>
+                    <th onClick={this.toggleSort.bind(this, 'type')}>Type {this.getSort('type')}</th>
+                    <th onClick={this.toggleSort.bind(this, 'year')}>Year {this.getSort('year')}</th>
+                </tr>
+            </thead>
+    },
     render: function(){
+
         var total = this.props.page.getIn(['content', 'search_results', 'total']);
         if(!this.props.page.getIn(['content', 'search_results']) && this.props.page.get('fetching')){
             return <div className="search-results"><div className="csspinner" /></div>
@@ -88,10 +121,10 @@ module.exports = React.createClass({
             return <div className="search-results">
                 <div className="search-count">{total} Results Found</div>
                 <table className="table table-striped table-hover">
-                <thead><tr><th className="title">Title</th><th>Type</th><th>Year</th></tr></thead>
+                    { this.renderTableHead() }
                     <tbody>
                     { this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i){
-                            return <SearchResult key={r.getIn(['fields', 'id', 0])+''+i} data={r} viewer_id={this.props.viewer_id}/>
+                            return <SearchResult index={i} key={r.getIn(['fields', 'id', 0])+''+i} data={r} viewer_id={this.props.viewer_id}/>
                         }, this).toJS()
                     }
                     </tbody>

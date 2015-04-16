@@ -87,13 +87,13 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
         var visible;
 
         if(this.width < this.props.min_width){
-          visible = 0;
+            visible = 0;
         }
         else{
           var width = this.width - this.props.dropdown_width_requirement;
           var tab_widths = _.filter(_.map(this.props.children, function(n){
-              if(this.refs.tabs && this.refs.tabs.refs && this.refs.tabs.refs['tab'+n.props.eventKey]){
-                return this.refs.tabs.refs['tab'+n.props.eventKey].getDOMNode().clientWidth + 6;
+          if(this.refs.tabs && this.refs['tab'+n.props.eventKey]){
+                return React.findDOMNode(this.refs['tab'+n.props.eventKey]).clientWidth + 6;
               }
               else{
                 return this.props.max_tab_width;
@@ -102,6 +102,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
           var total_width = _.reduce(tab_widths, function(s, t){ return s+t}, 0);
           var tab_count = this.props.children.length;
           visible = tab_count;
+
           while(visible > 0 && total_width > width){
               visible--;
               total_width -= tab_widths[visible];
@@ -216,7 +217,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
 
   renderDrop: function (child) {
     var key = child.props.eventKey;
-    return <MenuItem ref={'tab' + key} eventKey={key} key={key} onSelect={this.handleSelect.bind(this, key)}>
+    return <MenuItem ref={'drop' + key} eventKey={key} key={key} onSelect={this.handleSelect.bind(this, key)}>
             <span className="tab-title">
               {child.props.tab}
             </span>

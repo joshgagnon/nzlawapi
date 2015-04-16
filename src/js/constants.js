@@ -5,9 +5,13 @@ module.exports = {
 		INSTRUMENT: 'instrument',
 		CASE: 'case',
 		SEARCH: 'search',
-		DEFINITION_SEARCH: 'def_search',
 		DEFINITION: 'definition',
-		SECTION_REFS: 'seciton_refs'
+		SECTION_REFS: 'section_refs'
+	},
+	SEARCH_TYPES: {
+		LIST: 'list',
+		DEFINITION: 'definition',
+		CONTAINS: 'contains'
 	},
 	POPOVER_TYPES: {
 		DEFINITION: 'definition',

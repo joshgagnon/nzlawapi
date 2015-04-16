@@ -23,13 +23,6 @@ module.exports = React.createClass({
             }, this.props.viewer_id, {advanced_search: true});
         }
     },
-    toggleDefinitionSearch: function(){
-        // TODO: Move along with toggleAdvanced, maybe refactor into single function
-        Actions.newPage({
-            title: 'Definition Search',
-            page_type: constants.PAGE_TYPES.DEFINITION_SEARCH
-        }, this.props.viewer_id);
-    },
     handleAddToPrint: function(){
         Actions.addToPrint({
             title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']) || this.props.page.get('title'),
@@ -136,24 +129,12 @@ module.exports = React.createClass({
         </li>
     },
     renderSearch: function(){
-        return <li>
+        return <li onClick={this.toggleAdvanced}>
             <div className="button">
                 <a><span className="fa fa-search" title="Search" /></a>
             </div>
             <ul className="children">
-                <li className="title"><span>Search</span></li>
-                <li className="suboption">
-                    <a onClick={this.toggleAdvanced}>
-                        <span className="fa fa-search-plus" title="Advanced Search"/>
-                        <span className="sublabel">Advanced Search</span>
-                    </a>
-                </li>
-                <li className="suboption">
-                    <a onClick={this.toggleDefinitionSearch}>
-                        <span className="fa fa-search" title="Definition Search"/>
-                        <span className="sublabel">Definition Search</span>
-                    </a>
-                </li>
+                <li className="title"><a>Advanced Search</a></li>
             </ul>
         </li>
     },

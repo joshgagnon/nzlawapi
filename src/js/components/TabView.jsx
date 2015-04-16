@@ -3,17 +3,15 @@
 var $ = require('jquery');
 var React = require('react/addons');
 var Actions = require('../actions/Actions');
-var SearchResults = require('./SearchResults.jsx');
+var Search = require('./Search.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var Case = require('./Case.jsx');
 var Definition = require('./Definition.jsx');
-var AdvancedSearch = require('./AdvancedSearch.jsx');
-var DefinitionSearch = require('./DefinitionSearch.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
-var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var UnknownError = require('./Warnings.jsx').UnknownError;
+var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var DRAG_TYPES = require('../constants').DRAG_TYPES;
 var DragDropMixin = require('react-dnd').DragDropMixin;
 
@@ -87,19 +85,13 @@ module.exports = React.createClass({
         var result;
         switch(page.get('page_type')){
             case(PAGE_TYPES.SEARCH):
-                result = <SearchResults {...props}/>
-                break;
-            case(PAGE_TYPES.DEFINITION_SEARCH):
-                result = <DefinitionSearch {...props}/>
+                result = <Search {...props}/>
                 break;
             case(PAGE_TYPES.INSTRUMENT):
                 result = <Article {...props} />
                 break;
             case(PAGE_TYPES.CASE):
                 result = <Case {...props} />
-                break;
-            case(PAGE_TYPES.DEFINITION):
-                result = <Definition {...props} />
                 break;
             default:
                 result = <LoadUnknown {...props} />;
@@ -118,12 +110,8 @@ module.exports = React.createClass({
                 showCloseView={this.props.showCloseView }
                 closeView={this.closeView } >
                 { this.props.pages.map(function(page){
-                        // Append definition search here
-                        // Clean up generally, also in fn render() below
                         return !page.get('print_only') ?
                              <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
-                                { page.get('page_type') == PAGE_TYPES.SEARCH && this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?
-                                    <AdvancedSearch  page_id={page.get('id')} query={page.get('query')} /> : null }
                                 { this.renderPage(page) }
                             </TabPane> : null
                       }, this).toJS() //can remove in react 0.13
@@ -157,10 +145,11 @@ module.exports = React.createClass({
             var page = this.props.pages.get(0);
             return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
                 { this.modalVisible() ? this.renderModals() : null }
-                 { this.props.showCloseView ? <div className="view-control"><button onClick={Actions.closeView.bind(null, this.props.viewer_id)} className="btn btn-default">&times;</button></div> : null }
+                 { this.props.showCloseView ?
+                    <div className="view-control">
+                        <button onClick={Actions.closeView.bind(null, this.props.viewer_id)} className="btn btn-default">&times;</button>
+                    </div> : null }
                  <div className="results-scroll">
-                    {  page.get('page_type') == PAGE_TYPES.SEARCH && this.props.view.getIn(['settings', page.get('id'), 'advanced_search']) ?
-                            <AdvancedSearch page_id={page.get('id')} query={page.get('query')} /> : null }
                     {  this.renderPage(page) }
                 </div>
                 </div>

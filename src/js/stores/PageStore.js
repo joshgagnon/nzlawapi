@@ -156,8 +156,11 @@ var PageStore = Reflux.createStore({
                     result.title += ' '+ data.query.location;
                 }
             }
-            if(data.doc_type){
+            if(data.doc_type){ //danger?
                 result.page_type = data.doc_type;
+            }
+            if(data.search_type){
+                result.search_type = data.search_type;
             }
             if(data.parts){
                 result.parts = {};

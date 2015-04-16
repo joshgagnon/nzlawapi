@@ -257,7 +257,12 @@ module.exports = React.createClass({
     ],
     stateFields: ['doc_type'],
     getInitialState: function(){
-        return this.props.query ? this.getStateFields() : { doc_type: 'instruments'};
+        // if coming from basic search, doc_type might be 'all'.
+        var state = this.props.query ? this.getStateFields() : { doc_type: 'instruments'};
+        if(state.doc_type !== 'instruments' && state.doc_type !== 'cases'){
+            state.doc_type = 'instruments';
+        }
+        return state;
     },
     handleType: function(doc_type){
         this.setState({doc_type: doc_type});
@@ -299,6 +304,9 @@ module.exports = React.createClass({
                   {/*<Button bsStyle={'info'}>Filter Current Results</Button> TODO: Implement */}
                   <Button bsStyle={'primary'} onClick={this.search}>Search</Button>
                 </ButtonToolbar>
+                <div className="toggle-row">
+                <a role="button" onClick={Actions.toggleAdvanced.bind(null, this.props.viewer_id, this.props.page_id)}>Hide Advanced Search</a>
+                </div>
             </div>
         </div>
     }

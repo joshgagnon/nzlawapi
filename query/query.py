@@ -173,6 +173,13 @@ def contains_query(args):
             }}
 
 
+def get_sort(args):
+    sort_order = [{"_score": "desc"}]
+    if args.get('sort_col') and args.get('sort_dir'):
+        sort_order = [{args.get('sort_col'): args.get('sort_dir')}]
+    return sort_order
+
+
 def query_all(args):
     """ this is the basic search """
     query = args.get('query').lower()
@@ -180,31 +187,25 @@ def query_all(args):
     offset = args.get('offset')
     results = es.search(
         index="legislation",
+        explain=True,
         body={
             "from": offset, "size": 25,
             "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype', 'base_score', 'refs'],
-            "sort": [
-
-                "_score",
-                {"base_score": "asc"},
-                {"refs": "desc"},
-            ],
+            "sort": get_sort(args),
             "query": {
-                "bool": {
-                    "should": [
-                        {"multi_match": {
+                "function_score" : {
+                    "query": {
+                        "multi_match": {
                             "query": query,
-                            "fields": ["title.std", "full_citation"],
-                            "boost": 3
-                        }},
-                    ],
-                    "must": [
-                        {"multi_match": {
-                            "query": query,
-                            "fields": ["title", "full_citation"]
-                        }}],
+                            "fields": ["title.english", "title.ngram", "full_citation"]
+                        },
+                    },
+                    "script_score": {
+                        "script": "_score * (1.0/sqrt(doc['title.simple'].value.length()))"
+                    }
                 }
-            },
+                }
+                ,
 
         })
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
@@ -257,11 +258,12 @@ def query_case_fields(args):
 
 def query_instrument_fields(args):
     query = []
-    fields = {}
+    fields = ["id", "title", 'year', 'number', 'type', 'subtype']
     must_filters = []
     not_filters = []
 
     def common(args, query, fields):
+        search_type = 'list'
         if args.get('title'):
             query.append({"simple_query_string": {
                 "query": args.get('title'),
@@ -269,11 +271,30 @@ def query_instrument_fields(args):
                 "default_operator": 'AND'}
             })
         if args.get('contains'):
-            fields['document'] = {}
             query.append(contains_query(args))
+            search_type = 'contains'
+            search_type = 'definition'
         if args.get('year'):
             query.append(year_query(args))
-        return
+        if args.get('definition'):
+            fields[:] = ['html', 'full_word']
+            query[:] = [{
+                "bool": {
+                    "must": [{"simple_query_string": {
+                        "query": args.get('definition'),
+                        "fields": ['full_word']
+                            }},
+                    {"has_parent": {
+                          "type": "instrument",
+                          "query": {"bool": {
+                                "must": query[:]
+                            }}
+                    }}]
+                }
+
+            }]
+
+        return search_type
 
     def acts(args, must_filters, not_filters):
         if args.get('acts'):
@@ -399,18 +420,16 @@ def query_instrument_fields(args):
 
     try:
 
-        common(args, query, fields)
         acts(args, must_filters, not_filters)
         bills(args, must_filters, not_filters)
         other(args, must_filters, not_filters)
+        search_type = common(args, query, fields)
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset', 0)
         body = {
             "from": offset, "size": 25,
-            "fields": ["id", "title", 'year', 'number', 'type', 'subtype'],
-            "sort": [
-                "_score",
-            ],
+            "fields": fields,
+            "sort": get_sort(args),
             "query": {
                 "bool": {
                     "must": query
@@ -419,11 +438,11 @@ def query_instrument_fields(args):
             "highlight": {
                 "pre_tags": ["<span class='search_match'>"],
                 "post_tags": ["</span>"],
-                "fields": fields
+                #"fields": fields
             },
         }
 
-        if len(must_filters) or len(not_filters):
+        if False and (len(must_filters) or len(not_filters)):
             body['filter'] = {"bool": {}}
             if len(must_filters):
                 body['filter']["bool"]["must"] = {
@@ -433,6 +452,9 @@ def query_instrument_fields(args):
                 body['filter']["bool"]["must_not"] = {
                     "or": not_filters
                 }
+        import pprint
+
+        pprint.pprint(body)
         results = es.search(
             index="legislation",
             doc_type="instrument",
@@ -443,9 +465,8 @@ def query_instrument_fields(args):
             for detail in hit['_explanation']['details']:
                 pass
             return result
-
         clean_results = results['hits']  # map(get_totals, results['hits'])
-        return {'type': 'search', 'search_results': clean_results, 'title': 'Advanced Search'}
+        return {'type': 'search', 'search_type': search_type, 'search_results': clean_results, 'title': 'Advanced Search'}
     except Exception, e:
         print e
         raise CustomException('There was a problem with your query')

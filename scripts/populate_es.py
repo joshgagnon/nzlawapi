@@ -35,9 +35,23 @@ def run(db, config):
                     "nontoken_analyzer": {
                         "tokenizer":"keyword",
                          "filter":["lowercase", "asciifolding"],
-                    }
+                    },
+                    "partial_analyzer": {
+                        "type":      "custom",
+                        "tokenizer": "standard",
+                        "filter": [
+                            "lowercase",
+                            "asciifolding",
+                            "ngram_filter" 
+                        ]
+                    }                    
                 },
                 "filter":{
+                    "ngram_filter": { 
+                        "type":"edge_ngram",
+                        "min_gram": 1,
+                        "max_gram": 20
+                    },
                     "custom_stemmer": {
                         "type" : "stemmer",
                         "name" : "english"
@@ -50,16 +64,19 @@ def run(db, config):
             "instrument": {
                 "properties": {
                     "title":{
-                        "type":      "string",
-                        "analyzer": "english",
+                        "type": "string",
                         "fields": {
                             "simple":   {
                                 "type":     "string",
                                 "analyzer": "nontoken_analyzer"
                             },
-                            "std":   {
+                            "english":   {
                                 "type":     "string",
-                                "analyzer": "standard"
+                                "analyzer": "english"
+                            },
+                            "ngram": {
+                                "type": "string",
+                                "analyzer": "partial_analyzer"
                             }
                         }
                     },
@@ -67,6 +84,27 @@ def run(db, config):
                         "type":      "string",
                         "analyzer":  "html_analyzer"
                     },
+                    'definitions': {
+                        "type": "nested",
+                        "include_in_parent": True,
+                        "properties": {
+                            "full_word" : {"type": "string"},
+                            "html": {
+                                "type":     "string",
+                                "analyzer": "html_analyzer"
+                            }
+                        }
+                    },
+                    'parts': {
+                        "type": "nested",
+                        "include_in_parent": True,
+                        "properties": {
+                            "document": {
+                                "type":      "string",
+                                "analyzer":  "html_analyzer"
+                            },
+                        }
+                    },                   
                     "stage": { "type": "string", "index": "not_analyzed" },
                     "type": { "type": "string", "index": "not_analyzed" },
                     "repealed": { "type": "string", "index": "not_analyzed" },

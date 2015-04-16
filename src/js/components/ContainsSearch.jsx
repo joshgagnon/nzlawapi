@@ -9,11 +9,11 @@ var ArticleHandlers = require('./ArticleHandlers.jsx');
 var PageMixins = require('../mixins/Page');
 var Popovers = require('./Popovers.jsx');
 
-var DefinitionResult = React.createClass({
+var ContainsResult = React.createClass({
     render: function() {
          return (
             <div className="search-result">
-                <div dangerouslySetInnerHTML={{__html: this.props.html}}/>
+                <div dangerouslySetInnerHTML={{__html: this.props.data.get('html')}}/>
             </div>
         );
     }
@@ -26,11 +26,8 @@ module.exports = React.createClass({
         if(this.props.page.getIn(['content', 'search_results'])) {
             if(this.props.page.getIn(['content', 'search_results', 'hits'])) {
                 resultContent = this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i) {
-                    return r.getIn(['fields', 'definitions.html']).map(function(html, j){
-                        return <DefinitionResult html={html} key={i+'-'+j}/>
-                    })
-
-                });
+                    return <ContainsResult data={r} key={i}/>;
+                }).toJS();
             }
             else {
                 resultContent = <div className="search-count">No Results Found</div>;
@@ -42,13 +39,9 @@ module.exports = React.createClass({
         else {
             resultContent = <div className="article-error"><p className="text-danger">{this.props.page.getIn(['content', 'error'])}</p></div>;
         }
-        var total = this.props.page.getIn(['content', 'search_results', 'total']);
         return (
             <div className="search-results legislation-result" onClick={this.interceptLink}>
-                <div className="search-count">{total} Results Found</div>
                 {resultContent}
-                { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
-                { this.renderMobilePopovers() }
             </div>
     );
     }
