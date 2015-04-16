@@ -86,7 +86,7 @@ def run(db, config):
                     },
                     'definitions': {
                         "type": "nested",
-                        "include_in_parent": True,
+                        #"include_in_parent": True,
                         "properties": {
                             "full_word" : {"type": "string"},
                             "html": {
@@ -97,7 +97,7 @@ def run(db, config):
                     },
                     'parts': {
                         "type": "nested",
-                        "include_in_parent": True,
+                        #"include_in_parent": True,
                         "properties": {
                             "document": {
                                 "type":      "string",
@@ -213,7 +213,7 @@ def run(db, config):
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
             i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
-            FROM latest_instruments i""")
+            FROM latest_instruments i """)
         results = cur.fetchmany(10)
         count = 0
         while len(results):

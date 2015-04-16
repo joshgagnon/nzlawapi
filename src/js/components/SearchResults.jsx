@@ -93,7 +93,8 @@ module.exports = React.createClass({
             query: query,
             title: this.props.page.get('title'),
             page_type: this.props.page.get('page_type')
-        });
+            }, {skip_update: true}
+            );
     },
     renderTableHead: function(){
         return <thead>

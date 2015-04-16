@@ -177,6 +177,9 @@ def get_sort(args):
     sort_order = [{"_score": "desc"}]
     if args.get('sort_col') and args.get('sort_dir'):
         sort_order = [{args.get('sort_col'): args.get('sort_dir')}]
+    # refactor
+    if args.get('definition'):
+        sort_order = [{"_score": "desc"}, {"refs": "desc"}]
     return sort_order
 
 
@@ -190,19 +193,19 @@ def query_all(args):
         explain=True,
         body={
             "from": offset, "size": 25,
-            "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype', 'base_score', 'refs'],
+            "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype'],
             "sort": get_sort(args),
             "query": {
                 "function_score" : {
                     "query": {
                         "multi_match": {
                             "query": query,
-                            "fields": ["title.english", "title.ngram", "full_citation"]
+                            "fields": ["title", "title.english", "title.ngram", "full_citation"]
                         },
                     },
-                    "script_score": {
-                        "script": "_score * (1.0/sqrt(doc['title.simple'].value.length()))"
-                    }
+                   # "script_score": {
+                   #     "script": "_score * (1.0/sqrt(doc['title.simple'].value.length()))"
+                   # }
                 }
                 }
                 ,
@@ -267,7 +270,7 @@ def query_instrument_fields(args):
         if args.get('title'):
             query.append({"simple_query_string": {
                 "query": args.get('title'),
-                "fields": ['title'],
+                "fields": ['title'], #,'title.english'],
                 "default_operator": 'AND'}
             })
         if args.get('contains'):
@@ -277,22 +280,20 @@ def query_instrument_fields(args):
         if args.get('year'):
             query.append(year_query(args))
         if args.get('definition'):
-            fields[:] = ['html', 'full_word']
-            query[:] = [{
-                "bool": {
-                    "must": [{"simple_query_string": {
+            #fields[:] = []
+            fields += ['refs']
+            search_type = 'definition'
+            query.append({
+                "nested": {
+                "path": "definitions",
+                "query": {"simple_query_string": {
                         "query": args.get('definition'),
                         "fields": ['full_word']
-                            }},
-                    {"has_parent": {
-                          "type": "instrument",
-                          "query": {"bool": {
-                                "must": query[:]
-                            }}
-                    }}]
-                }
+                            }
+                },
+                "inner_hits" : {},
 
-            }]
+                }})
 
         return search_type
 
@@ -313,7 +314,7 @@ def query_instrument_fields(args):
                 act_status_filter.append({"and": [
                     # doesn't seem to gel with legislation.govt results
                     # {"not": {"term": {"stage": "not-in-force"}}},
-                    {"not": {"term": {"title.std": "amendment"}}},
+                    {"not": {"term": {"title": "amendment"}}},
                     {"range": {"date_first_valid": {"lte": "now"}}}
                 ]})
             if args.get('act_not_in_force'):
@@ -322,7 +323,7 @@ def query_instrument_fields(args):
             if args.get('act_amendment_in_force'):
                 act_status_filter.append({"and":[
                     # {"not": {"term": {"stage": "not-in-force"}}},
-                    {"term": {"title.std": "amendment"}},
+                    {"term": {"title": "amendment"}},
                     {"range": {"date_first_valid": {"lte": "now"}}}
                 ]})
             if not args.get('act_repealed'):
@@ -331,7 +332,7 @@ def query_instrument_fields(args):
                 act_status_filter.append({"term": {"repealed": True}})
 
             if args.get('act_as_enacted'):
-                act_filter.append({"term": {"in_amend": False}})
+                act_status_filter.append({"term": {"in_amend": False}})
 
             if len(act_type_filter):
                 act_type_filter.append({"not": {"exists": {"field": "subtype"}}})
@@ -441,8 +442,11 @@ def query_instrument_fields(args):
                 #"fields": fields
             },
         }
+        import pprint
+        pprint.pprint(must_filters)
+        pprint.pprint(not_filters)
+        if len(must_filters) or len(not_filters):
 
-        if False and (len(must_filters) or len(not_filters)):
             body['filter'] = {"bool": {}}
             if len(must_filters):
                 body['filter']["bool"]["must"] = {
@@ -452,11 +456,9 @@ def query_instrument_fields(args):
                 body['filter']["bool"]["must_not"] = {
                     "or": not_filters
                 }
-        import pprint
-
-        pprint.pprint(body)
         results = es.search(
             index="legislation",
+            #explain="true",
             doc_type="instrument",
             body=body)
 

@@ -26,22 +26,14 @@ module.exports = React.createClass({
         }
         return result;
     },
-    advancedStub: function(){
-        return <div className="advanced-search stub">
-            <div className="container">
-                <div className="toggle-row">
-                    <a role="button"  onClick={Actions.toggleAdvanced.bind(null, this.props.viewer_id, this.props.page.get('id'))}>Advanced Search</a>
-                </div>
-            </div>
-        </div>
-    },
+
     render: function(){
         return <div>
-            { this.props.view.getIn(['settings', this.props.page.get('id'), 'advanced_search']) ?
-                <AdvancedSearch viewer_id={this.props.viewer_id} page_id={this.props.page.get('id')} query={this.props.page.get('query')} />
-            : this.advancedStub() }
+                <AdvancedSearch viewer_id={this.props.viewer_id} view={this.props.view} page_id={this.props.page.get('id')} query={this.props.page.get('query')} />
             { this.renderPage() }
         </div>
     }
+         //   : this.advancedStub() }
+          //  { this.props.view.getIn(['settings', this.props.page.get('id'), 'advanced_search']) ?
 
 });

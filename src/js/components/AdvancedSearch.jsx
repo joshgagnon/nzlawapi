@@ -277,11 +277,17 @@ module.exports = React.createClass({
         });
     },
     shouldComponentUpdate: function(nextProps, nextState){
-        return this.state.doc_type !== nextState.doc_type || this.props.query !== nextProps.query;
+        return this.state.doc_type !== nextState.doc_type || this.props.query !== nextProps.query || this.props.view !== nextProps.view;
     },
-    render: function(){
-        return <div className="advanced-search">
-            <div className="container">
+    renderStub: function(){
+        return <div className="container">
+                <div className="toggle-row">
+                    <a role="button"  onClick={Actions.toggleAdvanced.bind(null, this.props.viewer_id, this.props.page_id)}>Advanced Search</a>
+                </div>
+            </div>
+    },
+    renderForm: function(){
+        return <div className="container">
             <form className="form-horizontal">
                 <div className="form-group">
                     <label className="control-label col-sm-2"><span>Query Type</span></label>
@@ -308,6 +314,10 @@ module.exports = React.createClass({
                 <a role="button" onClick={Actions.toggleAdvanced.bind(null, this.props.viewer_id, this.props.page_id)}>Hide Advanced Search</a>
                 </div>
             </div>
+    },
+    render: function(){
+        return <div className="advanced-search">
+            { this.props.view.getIn(['settings', this.props.page_id, 'advanced_search']) ? this.renderForm() : this.renderStub() }
         </div>
     }
 })
