@@ -184,7 +184,7 @@ def run(db, config):
             return ''
 
     def partition_instrument(row):
-        tree = etree.fromstring(row['document'], parser=HTMLParser())
+        tree = etree.fromstring(row['document'], parser=etree.XMLParser(huge_tree=True))
         results = []
         # to do, keep context
         for i, node in enumerate(tree.xpath('.//prov[not(ancestor::schedule)][not(ancestor::amend)]|schedule[not(ancestor::amend)]')):
@@ -197,7 +197,7 @@ def run(db, config):
                 "id": "%d-%d" % (row['id'], i),
                 "index": i,
                 "title": title,
-                "document": unicode(etree.tostring(tohtml(node), encoding='UTF-8', method="html").decode('utf-8'))
+                "document": etree.tostring(tohtml(node), encoding='UTF-8', method="html")
             })
         return results
 
@@ -218,7 +218,7 @@ def run(db, config):
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
             i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
-            FROM latest_instruments i where title ilike '%interp%' or title ilike '%compan%' """)
+            FROM latest_instruments i """)
         results = cur.fetchmany(10)
         count = 0
         while len(results):
