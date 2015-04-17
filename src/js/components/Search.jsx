@@ -8,7 +8,8 @@ var strings = require('../strings');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var SearchResults = require('./SearchResults.jsx');
 var DefinitionSearch = require('./DefinitionSearch.jsx');
-var ContainsSearch = require('./ContainsSearch.jsx');
+var ContainsList= require('./ContainsList.jsx');
+var ContainsResult = require('./ContainsResult.jsx');
 var SEARCH_TYPES = require('../constants').SEARCH_TYPES;
 
 module.exports = React.createClass({
@@ -18,8 +19,11 @@ module.exports = React.createClass({
             case(SEARCH_TYPES.DEFINITION):
                 result = <DefinitionSearch {...this.props} />
                 break;
-            case(SEARCH_TYPES.CONTAINS):
-                result  = <ContainsSearch {...this.props}/>
+            case(SEARCH_TYPES.CONTAINS_LIST):
+                result  = <ContainsList {...this.props}/>
+                break;
+            case(SEARCH_TYPES.CONTAINS_RESULT):
+                result  = <ContainsResult {...this.props}/>
                 break;
             default:
                 result = <SearchResults {...this.props}/>

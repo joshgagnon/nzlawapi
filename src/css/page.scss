@@ -194,6 +194,8 @@
             @media (min-width: $screen-sm-min) {
                 padding-left: $buttonbar-outer-width;
             }
+
+
             .btn-toolbar{
                 text-align:center;
                 padding-bottom:15px;
@@ -205,6 +207,13 @@
             .section-toggle .control-label{
                   padding-top: 7px;
                 text-align: right;
+            }
+            .container{
+                max-height: 9999px;
+                 transition: all 1s ease;
+            }
+            &.stub .container{
+                max-height:50px;
             }
            .toggle-row{
                 text-align: center;

@@ -195,8 +195,9 @@ def run(db, config):
             title = '%s %s' % (title, safe_text(node.xpath('./heading')).strip())
             results.append({
                 "id": "%d-%d" % (row['id'], i),
+                "index": i,
                 "title": title,
-                "document": etree.tostring(tohtml(node), encoding='UTF-8', method="html")
+                "document": unicode(etree.tostring(tohtml(node), encoding='UTF-8', method="html").decode('utf-8'))
             })
         return results
 
@@ -217,7 +218,7 @@ def run(db, config):
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
             i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
-            FROM latest_instruments i  """)
+            FROM latest_instruments i where title ilike '%interp%' or title ilike '%compan%' """)
         results = cur.fetchmany(10)
         count = 0
         while len(results):

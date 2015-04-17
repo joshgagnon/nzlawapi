@@ -157,6 +157,8 @@ def query():
             result = query_case(args)
         elif query_type == 'cases':
             result = query_case_fields(args)
+        elif query_type == 'contains':
+            result = query_contains(args)
         else:
             raise CustomException('Badly formed query')
     except CustomException, e:

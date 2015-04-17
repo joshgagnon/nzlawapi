@@ -76,7 +76,6 @@ def query_all(args):
                 }
                 }
                 ,
-
         })
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
 
@@ -172,11 +171,7 @@ def common(args):
         })
     if args.get('contains'):
         query.append(contains_query(args))
-        search_type = 'contains'
-        body['aggs'] = {"my_agg": {
-                "terms" : { "field" : "document" }
-            }
-        }
+        search_type = 'contains_list'
 
     if args.get('year'):
         query.append(year_query(args))
@@ -187,7 +182,6 @@ def common(args):
         search_type = 'definition'
         existing = query[:]
         query[:] = []
-        body.pop('aggregations', None)
         if len(existing):
             query.append({"has_parent": {
                 "parent_type": "instrument",
@@ -210,8 +204,7 @@ def common(args):
                 "filter": body['filter']
                 }
             }
-    import pprint
-    pprint.pprint(body)
+
     return doc_type, search_type, body
 
 
@@ -347,15 +340,45 @@ def query_instrument_fields(args):
             #explain="true",
             doc_type=doc_type,
             body=body)
-
+        """
         def get_totals(hit):
             result = {}
             for detail in hit['_explanation']['details']:
                 pass
             return result
+            """
         clean_results = results['hits']  # map(get_totals, results['hits'])
-        print results
-        return {'type': 'search', 'search_type': search_type, 'search_results': clean_results, 'aggs': results['aggregations'], 'title': 'Advanced Search'}
+
+        return {'type': 'search', 'search_type': search_type, 'search_results': clean_results}
+    except Exception, e:
+        print e
+        raise CustomException('There was a problem with your query')
+
+
+
+def query_contains(args):
+    try:
+        es = current_app.extensions['elasticsearch']
+
+        body = {
+                "size": 100,
+                "fields": ['title'],
+                "sort": ['index'],
+                "query": contains_query(args),
+                "filter":  {"term": {"_parent": args.get('id')}},
+                 "highlight": {
+                    "pre_tags": ["<span class='search_match'>"],
+                    "post_tags": ["</span>"],
+                    "fields": {'document': {"number_of_fragments": 0}}
+                    #{"fragment_size" : 200, "number_of_fragments" : 100}}
+                }
+            }
+        print body
+        results = es.search(
+            index="legislation",
+            doc_type='part',
+            body=body)
+        return {'type': 'search', 'search_type': 'contains_result', 'search_results': results['hits'], 'title': 'Advanced Search'}
     except Exception, e:
         print e
         raise CustomException('There was a problem with your query')

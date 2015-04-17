@@ -6,12 +6,13 @@ module.exports = {
 		CASE: 'case',
 		SEARCH: 'search',
 		DEFINITION: 'definition',
-		SECTION_REFS: 'section_refs'
+		SECTION_REFS: 'section_refs',
 	},
 	SEARCH_TYPES: {
 		LIST: 'list',
 		DEFINITION: 'definition',
-		CONTAINS: 'contains'
+		CONTAINS_LIST: 'contains_list',
+		CONTAINS_RESULT: 'contains_result'
 	},
 	POPOVER_TYPES: {
 		DEFINITION: 'definition',

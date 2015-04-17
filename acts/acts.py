@@ -7,7 +7,7 @@ from traversal import cull_tree, \
 from lxml import etree
 from flask import current_app
 from queries import get_instrument_object, get_latest_instrument_object, fetch_parts
-
+from query.elasticsearch import query_contains
 
 def instrument_skeleton_response(instrument):
     # maybe, bake in first couple of parts
@@ -116,6 +116,8 @@ def instrument_more(instrument, parts):
 
 def query_instrument(args):
     find = args.get('find')
+    if find == 'contains':
+        return query_contains(args)
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
         id = args.get('id', args.get('document_id'))

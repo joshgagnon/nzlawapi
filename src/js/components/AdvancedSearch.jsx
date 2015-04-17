@@ -321,8 +321,13 @@ module.exports = React.createClass({
             </div>
     },
     render: function(){
-        return <div className="advanced-search">
-            { this.props.view.getIn(['settings', this.props.page_id, 'advanced_search']) ? this.renderForm() : this.renderStub() }
+        var show = this.props.view.getIn(['settings', this.props.page_id, 'advanced_search']);
+        var className= "advanced-search";
+        if(!show){
+            className += " stub"
+        }
+        return <div className={className}>
+            { show ? this.renderForm() : this.renderStub() }
         </div>
     }
 })
