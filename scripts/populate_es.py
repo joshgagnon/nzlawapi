@@ -172,48 +172,18 @@ def run(db, config):
         }
     }
     """
-    def tohtml(tree, transform=os.path.join('xslt', 'transform.xslt')):
-        xslt = etree.parse(transform)
-        transform = etree.XSLT(xslt)
-        return transform(tree)
 
     def safe_text(node_list):
         try:
             return etree.tostring(node_list[0], method="text",encoding='UTF-8')
         except IndexError:
             return ''
-
-    def partition_instrument(row):
-        tree = etree.fromstring(row['document'], parser=etree.XMLParser(huge_tree=True))
-        results = []
-        # to do, keep context
-        for i, node in enumerate(tree.xpath('.//prov[not(ancestor::schedule)][not(ancestor::amend)]|schedule[not(ancestor::amend)]')):
-            title = ''
-            if node.tag == 'schedule':
-                title = 'Schedule '
-            title += safe_text(node.xpath('./label')).strip()
-            title = '%s %s' % (title, safe_text(node.xpath('./heading')).strip())
-            results.append({
-                "id": "%d-%d" % (row['id'], i),
-                "index": i,
-                "title": title,
-                "document": etree.tostring(tohtml(node), encoding='UTF-8', method="html")
-            })
-        return results
-
-    def get_definitions(db, document_id):
-        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-            cur.execute(""" SELECT * FROM definitions where document_id = %(document_id)s""",
-                {"document_id": document_id})
-            return cur.fetchall()
-
     with db.cursor() as cur:
         cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-
         cur.execute("""SELECT title, true as latest, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
@@ -226,16 +196,48 @@ def run(db, config):
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)
                 count += 1
-                #fields = dict(result)
-                #fields['parts'] = partition_instrument(result)
-                #fields['definitions'] = get_definitions(db, result['id'])
                 es.index(index='legislation', doc_type='instrument', body=dict(result), id=result['id'])
-                for definition in get_definitions(db, result['id']):
-                    es.index(index='legislation', doc_type='definition', body=dict(definition), parent=result['id'], id=definition['id'])
-                for part in partition_instrument(result):
-                    es.index(index='legislation', doc_type='part', body=part, parent=result['id'], id=part['id'])
 
             results = cur.fetchmany(10)
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute('select count(*) as count from definitions')
+        total = cur.fetchone()['count']
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute(""" SELECT * FROM definitions""")
+        results = cur.fetchmany(10)
+        count = 0
+        while len(results):
+            for result in results:
+                if count % 100 == 0:
+                    print '%d / %d' % (count, total)
+                count += 1
+                es.index(index='legislation', doc_type='definition', body=dict(result), id=result['id'], parent=result['document_id'])
+
+            results = cur.fetchmany(10)
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute('select count(*) as count from document_parts')
+        total = cur.fetchone()['count']
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute(""" SELECT * FROM document_parts""")
+        results = cur.fetchmany(10)
+        count = 0
+        while len(results):
+            for result in results:
+                if count % 100 == 0:
+                    print '%d / %d' % (count, total)
+                count += 1
+                part = dict(result)
+                tree = etree.fromstring(result['data'], parser=etree.XMLParser(huge_tree=True))
+                title = ''
+                if tree.attrib['class'] == 'schedule':
+                    title = 'Schedule '
+                title += safe_text(tree.xpath('./span[@class="label"]')).strip()
+                title = '%s %s' % (title, safe_text(tree.xpath('./heading')).strip()) 
+                part['id'] = '%d-%d' % (part['document_id'], part['num'])
+                es.index(index='legislation', doc_type='part', body=part, parent=result['document_id'], id=part['id'])
+
+
+
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from cases')
         total = cur.fetchone()['count']

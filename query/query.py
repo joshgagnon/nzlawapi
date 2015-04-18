@@ -1,7 +1,7 @@
 from acts.acts import query_instrument
 from acts.queries import get_references, get_versions, get_section_references, get_contents
 from cases.cases import query_case
-from elasticsearch import query_instrument_fields, query_case_fields
+from elasticsearch import query_instrument_fields, query_case_fields, query_all
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
 from security.auth import require_auth
@@ -157,8 +157,6 @@ def query():
             result = query_case(args)
         elif query_type == 'cases':
             result = query_case_fields(args)
-        elif query_type == 'contains':
-            result = query_contains(args)
         else:
             raise CustomException('Badly formed query')
     except CustomException, e:

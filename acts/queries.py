@@ -115,7 +115,10 @@ def process_skeleton(id, tree, db=None):
         node[:] = results
         return node
 
-    depth(html.getroot())
+    #depth(html.getroot())
+    for i, div in enumerate(html.xpath('.//div[@class="prov" or @class="schedule"][not(ancestor::div[@class="prov"] or ancestor::div[@class="schedule"] or ancestor::div[@class="amend"])]')):
+        div.attrib['data-hook'] = '%d' % i
+        parts.append(etree.tostring(div, encoding='UTF-8', method="html"))
     """ super expensive """
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
 

@@ -21,6 +21,7 @@ var SearchResult = React.createClass({
     },
     handleLinkClick: function(e){
         e.preventDefault();
+        debugger
         var query = {find: 'contains', doc_type: this.props.data.getIn(['_type']),
             id: this.props.data.getIn(['fields','id', 0]),
             contains: this.props.page.getIn(['query', 'contains']),
