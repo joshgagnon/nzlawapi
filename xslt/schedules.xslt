@@ -43,18 +43,27 @@
     </xsl:template>
 
     <xsl:template match="schedule.amendments">
-      <div class="schedule.amendments">
+      <div class="schedule-amendments">
         <xsl:apply-templates />
       </div>
     </xsl:template>
+
+    <xsl:template match="schedule.amendments.group1">
+      <div class="schedule-amendments-group1">
+        <xsl:attribute name="id">
+              <xsl:value-of select="@id"/>
+          </xsl:attribute>
+        <h2 class="schedule-amendments-group1"><xsl:apply-templates select="heading"/></h2>
+        <xsl:apply-templates select="schedule.amendments.group2"/>
+      </div>
+  </xsl:template>
 
     <xsl:template match="schedule.amendments.group2">
       <div class="schedule-amendments-group2">
         <xsl:attribute name="id">
               <xsl:value-of select="@id"/>
           </xsl:attribute>
-        <h5 class="schedule-amendments-group2"><xsl:apply-templates select="heading/*"/></h5>
-        <xsl:apply-templates select="para"/>
+        <h5 class="schedule-amendments-group2"><xsl:apply-templates select="heading"/></h5>
       </div>
     </xsl:template>
 
@@ -84,8 +93,8 @@
                             <xsl:value-of select="heading"/>
                         </h2>
                     </td>
-                    <td class="empowering-prov">
-                    </td>
+                    <!--<td class="empowering-prov">
+                    </td>-->
                     </tr>
                 </tbody>
             </table>

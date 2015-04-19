@@ -256,6 +256,7 @@ def acts(args, must_filters, not_filters):
     else:
         not_filters.append({"term": {"type": "act"}})
 
+
 def bills(args, must_filters, not_filters):
     if args.get('bills'):
         bill_filter = [{"term": {"type": "bill"}}]
@@ -291,6 +292,7 @@ def bills(args, must_filters, not_filters):
         })
     else:
         not_filters.append({"term": {"type": "bill"}})
+
 
 def other(args, must_filters, not_filters):
     if args.get('other'):
@@ -358,17 +360,19 @@ def query_instrument_fields(args):
 def query_contains(args):
     try:
         es = current_app.extensions['elasticsearch']
-
+        offset = args.get('offset')
         body = {
-                "size": 100,
-                "fields": ['title'],
+                "size": 25,
+                "from": offset,
+                "fields": ['title', 'document'],
                 "sort": ['num'],
-                "query": contains_query(args),
-                "filter":  {"term": {"_parent": args.get('id')}},
+                #"query": contains_query(args),
+                #"filter":  {"term": {"_parent": args.get('id')}},
                  "highlight": {
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
-                    "fields": {'document': {"number_of_fragments": 0}}
+                    "fields": {'document': {"number_of_fragments": 0}},
+                    #"phrase_limit" : 1024,
                     #{"fragment_size" : 200, "number_of_fragments" : 100}}
                 }
             }

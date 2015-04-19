@@ -35,6 +35,13 @@ def index(db, es):
                         "tokenizer":"standard",
                         "filter": ["standard", "lowercase", "stop", "custom_stemmer"]
                     },
+                    "html_analyzer_highlightable": {
+                        "type": "custom",
+                        "char_filter": "html_strip",
+                        "tokenizer":"standard",
+                        "filter": ["standard", "lowercase", "stop", "custom_stemmer"],
+                        "term_vector": "with_positions_offsets_payloads",
+                    },
                     "text_analyzer": {
                         "tokenizer":"standard",
                         "filter":[ "standard", "lowercase", "stop", "custom_stemmer"],
@@ -109,7 +116,7 @@ def index(db, es):
                     "full_word" : {"type": "string"},
                     "html": {
                         "type":     "string",
-                        "analyzer": "html_analyzer"
+                        "analyzer": "html_analyzer_highlightable",
                     }
                 }
             },
@@ -183,22 +190,11 @@ def parts(db, es):
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         print 'Parts'
-        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as data FROM document_parts""")
+        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as html, title FROM document_parts""")
         results = cur.fetchmany(1000)
         count = 0.0
         while len(results):
             parts = []
-            for result in results:
-                part = dict(result)         
-                tree = fromstring(result['data'])
-                title = ''
-                if tree.attrib.get('class') == 'schedule':
-                    title = 'Schedule '
-                # to do, move to processing stage
-                title += safe_text(tree.xpath('./span[@class="label"]')).strip()
-                title = '%s %s' % (title, safe_text(tree.xpath('./heading')).strip()) 
-                part['title'] = title
-                parts.append(part)
             helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],  "_source": dict(x), "_index":'legislation', "_type": 'part'}, results))
             count += len(results)
             sys.stdout.write("%d%%\r" % (count/total*100))
@@ -233,9 +229,9 @@ def cases(db, es):
 
 def run(db, config):
     es = Elasticsearch([config.ES_SERVER])
-    index(db, es)
-    instruments(db, es)
-    definitions(db, es)
+    #index(db, es)
+    #instruments(db, es)
+    #definitions(db, es)
     parts(db, es)
     #cases(db, es)
 

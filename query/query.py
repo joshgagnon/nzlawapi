@@ -26,7 +26,7 @@ def article_auto_complete():
                 """, {'query': request.args.get('query').lower()})
             return jsonify({'results': cur.fetchall()})
     except Exception, e:
-        return jsonify(error=str(e))
+        return jsonify(error=str(e)), 500
 
 
 @Query.route('/definition/<string:ids>')

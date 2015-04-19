@@ -46,7 +46,7 @@ module.exports = {
     getLocation: function($el){
         var breadcrumb=[], locs=[];
         function traverse($el){
-            $el.parents('[data-location]:not([data-link-id])').addBack().map(function(){
+            $el.parents('[data-location]:not([data-link-id]):not([data-hook])').addBack().map(function(){
                 var $this = $(this);
                 breadcrumb.push($this.attr('data-location-breadcrumb') || $this.attr('data-location'));
                 if(!$this.is('[data-location-no-path]')){
@@ -57,7 +57,7 @@ module.exports = {
         traverse($el);
         if(!locs.length){
             breadcrumb = [];
-            traverse($el.parent('[id]').find('[data-location]:not([data-link-id])').first())
+            traverse($el.parent('[id]').find('[data-location]:not([data-link-id]):not([data-hook])').first())
         }
         breadcrumb = _.filter(breadcrumb);
         locs = _.filter(locs);

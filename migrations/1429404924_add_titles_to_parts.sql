@@ -1,0 +1,1 @@
+alter table document_parts add column title text;

@@ -104,6 +104,9 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
           visible = tab_count;
 
           while(visible > 0 && total_width > width){
+              if(visible === tab_count){
+                  width -= 80; //width of dropdown
+              }
               visible--;
               total_width -= tab_widths[visible];
           }

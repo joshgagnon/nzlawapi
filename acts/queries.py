@@ -15,6 +15,7 @@ import os
 from subprocess import Popen, PIPE
 import shutil
 import codecs
+from copy import deepcopy
 
 large_parser = etree.XMLParser(huge_tree=True)
 
@@ -117,11 +118,27 @@ def process_skeleton(id, tree, db=None):
 
     #depth(html.getroot())
     for i, div in enumerate(html.xpath('.//div[@class="prov" or @class="schedule"][not(ancestor::div[@class="prov"] or ancestor::div[@class="schedule"] or ancestor::div[@class="amend"])]')):
+        # if too big, try to gut
+        title = ''
+        try:
+            for br in div.xpath('.//br'):
+                br.tail = ' '+(br.tail or '')
+            if div.attrib['class'] == 'prov':
+                label = div.xpath('.//h5[@class="prov labelled"]')[0]
+                for br in label.xpath('.//span[@class="label"]'):
+                    br.tail = ' '+(br.tail or '')
+                title = etree.tostring(label, encoding='UTF-8', method="text")
+            else:
+                label = deepcopy(div.xpath('.//td[@class="header"]')[0])
+                for br in label.xpath('.//br'):
+                    br.tail = ' '+(br.tail or '')
+                title  = etree.tostring(label, encoding='UTF-8', method="text")
+        except IndexError:
+            pass
+        parts.append((title, etree.tostring(div, encoding='UTF-8', method="html")))
         div.attrib['data-hook'] = '%d' % i
-        parts.append(etree.tostring(div, encoding='UTF-8', method="html"))
     """ super expensive """
     heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
-
     """ Now remove all the parts' children, saving things we may need to look up """
     for el in html.xpath('.//*[@data-hook]'):
         ids = ';'.join(map(lambda e: e.attrib['id'], el.xpath('.//*[@id]')))
@@ -131,21 +148,46 @@ def process_skeleton(id, tree, db=None):
         el[:] = []
 
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
+
+    db = db or get_db()
     if len(parts):
         with (db or get_db()).cursor() as cur:
-            query = """UPDATE documents d SET skeleton =  %(skeleton)s, heights = %(heights)s
+            query = """UPDATE documents d SET skeleton =  %(skeleton)s
                         WHERE d.id =  %(id)s """
             cur.execute(query, {
                 'id': id,
-                'skeleton': skeleton,
+                'skeleton': skeleton
+            })
+
+            cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
+            args_str = ','.join(cur.mogrify("(%s, %s, %s, %s)", (id, i, p[0], p[1])) for i, p in enumerate(parts))
+            cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
+
+    db.commit()
+    return skeleton
+
+
+def process_heights(id, tree, db=None, measure=True):
+    format_dates(tree)
+    html = tohtml(tree)
+    parts = False
+    skeleton = etree.tostring(html, encoding='UTF-8', method="html")
+    for i, div in enumerate(html.xpath('.//div[@class="prov" or @class="schedule"][not(ancestor::div[@class="prov"] or ancestor::div[@class="schedule"] or ancestor::div[@class="amend"])]')):
+        div.attrib['data-hook'] = '%d' % i
+        parts = True
+    """ super expensive """
+    heights = measure_heights(etree.tostring(html, encoding='UTF-8', method="html"))
+    db = db or get_db()
+    if parts:
+        with db.cursor() as cur:
+            query = """UPDATE documents d SET heights = %(heights)s
+                        WHERE d.id =  %(id)s """
+            cur.execute(query, {
+                'id': id,
                 'heights': json.dumps(heights)
             })
-            cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
-            args_str = ','.join(cur.mogrify("(%s,%s,%s)", (id, i, p)) for i, p in enumerate(parts))
-            cur.execute('INSERT INTO document_parts (document_id, num, data) VALUES ' + args_str)
-
-    (db or get_db()).commit()
-    return skeleton, heights
+    db.commit()
+    return heights
 
 
 def process_contents(id, tree, db=None):
@@ -341,9 +383,12 @@ def prep_instrument(result, replace, db):
     else:
         document = result.get('processed_document')
     if redo_skele or not result.get('skeleton'):
-        skeleton, heights = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
+        skeleton, process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         skeleton = result.get('skeleton')
+    if redo_skele or not result.get('heights'):
+        heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
+    else:
         heights = result.get('heights')
     return Instrument(
         id=result.get('id'),
