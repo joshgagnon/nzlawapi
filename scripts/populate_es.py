@@ -190,7 +190,7 @@ def parts(db, es):
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         print 'Parts'
-        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as document, title FROM document_parts""")
+        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as html, title FROM document_parts""")
         results = cur.fetchmany(1000)
         count = 0.0
         while len(results):
