@@ -4,7 +4,7 @@ var Utils = require('../utils');
 var $ = require('jquery');
 var _ = require('lodash');
 
-
+/* assumes there is a '.current' element of focus' */
 var DynamicArticleBreadCrumbs = React.createClass({
     propTypes: {
       content: React.PropTypes.object.isRequired,

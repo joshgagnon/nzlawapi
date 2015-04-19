@@ -116,7 +116,7 @@ def index(db, es):
                     "full_word" : {"type": "string"},
                     "html": {
                         "type":     "string",
-                        "analyzer": "html_analyzer_highlightable",
+                        "analyzer": "html_analyzer",
                     }
                 }
             },
@@ -125,9 +125,9 @@ def index(db, es):
                     "type": "instrument"
                 },
                 "properties": {
-                    "document": {
+                    "html": {
                         "type":      "string",
-                        "analyzer":  "html_analyzer"
+                        "analyzer": "html_analyzer_highlightable",
                     },
                 }
             }, 
@@ -173,7 +173,7 @@ def definitions(db, es):
         cur.execute('select count(*) as count from definitions')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        print 'Definitions'        
+        print 'Definitions'
         cur.execute(""" SELECT document_id, html, id, full_word FROM definitions""")
         results = cur.fetchmany(10000)
         count = 0.0
@@ -190,7 +190,7 @@ def parts(db, es):
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         print 'Parts'
-        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as html, title FROM document_parts""")
+        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as document, title FROM document_parts""")
         results = cur.fetchmany(1000)
         count = 0.0
         while len(results):
