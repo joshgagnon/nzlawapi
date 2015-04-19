@@ -60,7 +60,9 @@ class TestQueries(unittest.TestCase):
         self.assertEqual(len(find_sub_node(self.tree, ['223'])), 1)
         self.assertEqual(len(find_sub_node(self.tree, ['223', 'b'])), 1)
         self.assertEqual(len(find_sub_node(self.tree, ['223', 'a+c'])), 2)
-        self.assertEqual(len(find_schedule_node(self.tree, '2')), 1)
+        self.assertEqual(len(find_sub_node(self.tree, ['223', 'a-c'])), 3)
+        self.assertEqual(len(find_sub_node(self.tree, ['1-10'])), 10)
+
 
     def test_find_by_string(self):
         prov = nodes_from_path_string(self.tree, 's 2')[0]
