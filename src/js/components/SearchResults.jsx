@@ -1,11 +1,12 @@
 "use strict";
 var React = require('react/addons');
 var Reflux = require('reflux');
-var _ = require('lodash');
 var $ = require('jquery');
 var Actions = require('../actions/Actions');
 var strings = require('../strings');
 var SearchTable = require('../mixins/SearchTable.jsx');
+var GetMore= require('../mixins/GetMore');
+
 
 // New definition result based on this
 var SearchResult = React.createClass({
@@ -41,7 +42,7 @@ var SearchResult = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-        SearchTable
+        SearchTable, GetMore
     ],
     renderRow: function(data, index){
         return <SearchResult index={index} key={data.getIn(['fields', 'id', 0])+''+index} data={data} viewer_id={this.props.viewer_id}/>;

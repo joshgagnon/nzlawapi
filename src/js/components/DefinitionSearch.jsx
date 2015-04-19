@@ -7,6 +7,7 @@ var Actions = require('../actions/Actions');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var ArticleHandlers = require('./ArticleHandlers.jsx');
 var PageMixins = require('../mixins/Page');
+var GetMore = require('../mixins/GetMore');
 var Popovers = require('./Popovers.jsx');
 
 var DefinitionResult = React.createClass({
@@ -20,7 +21,7 @@ var DefinitionResult = React.createClass({
 });
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers, PageMixins],
+    mixins: [ArticleHandlers, Popovers, PageMixins, GetMore],
     render: function() {
         var resultContent;
         if(this.props.page.getIn(['content', 'search_results'])) {

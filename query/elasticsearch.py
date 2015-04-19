@@ -204,7 +204,6 @@ def common(args):
                 "filter": body['filter']
                 }
             }
-
     return doc_type, search_type, body
 
 
@@ -363,7 +362,7 @@ def query_contains(args):
         body = {
                 "size": 100,
                 "fields": ['title'],
-                "sort": ['index'],
+                "sort": ['num'],
                 "query": contains_query(args),
                 "filter":  {"term": {"_parent": args.get('id')}},
                  "highlight": {

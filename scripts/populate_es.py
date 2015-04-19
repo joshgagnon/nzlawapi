@@ -1,17 +1,24 @@
 # -*- coding: utf-8 -*-
-from elasticsearch import Elasticsearch, exceptions
+from elasticsearch import Elasticsearch, exceptions, helpers
 import psycopg2
 from psycopg2 import extras, errorcodes
 from lxml import etree
-from lxml.html import HTMLParser
+from lxml.html import HTMLParser, fromstring
 import importlib
 import sys
 import os
 import re
 import json
 
-def run(db, config):
-    es = Elasticsearch([config.ES_SERVER])
+
+def safe_text(node_list):
+    try:
+        return etree.tostring(node_list[0], method="text",encoding='UTF-8')
+    except IndexError:
+        return ''
+
+
+def index(db, es):
     try:
         print 'delete old'
         print es.indices.delete('legislation')
@@ -132,112 +139,73 @@ def run(db, config):
         }
     })
 
-    """
-    entry_mapping = {
-        'instrument': {
-            'properties': {
-                'id': {'type': 'integer'},
-                'title': {'type': 'string'},
-                'content': {'type': 'string'},
-                'date_first_valid': {'type': 'date'},
-                'date_as_at': {'type': 'date'},
-                'date_assent': {'type': 'date'},
-                'date_gazetted': {'type': 'date'},
-                'date_imprint': {'type': 'date'},
-                'year': {'type': 'integer'},
-                'repealed': {'type': 'boolean'} //many more now
-            }
-        },
-        'case': {
-            'properties': {
-                'id': {'type': 'integer'},
-                'content': {'type': 'string'},
-                'court': [{'type': 'string'}],
-                'neutral_citation': {'type': 'string'},
-                'full_citation': {'type': 'string'},
-                'parties': {},
-                'matter':{},
-                'appeal_result':{},
-                'waistband': {'type': 'string'},
-                'judgment': {'type': 'string'},
-                'hearing': {'type': 'string'},
-                'received': {'type': 'string'},
-                'plea': {'type': 'string'},
-                'bench': {'type': 'string'},
-                'counsel': [{'type': 'string'}],
-                'date_imprint': {'type': 'date'},
-                'year': {'type': 'integer'},
-                'repealed': {'type': 'boolean'}
-            }
-        }
-    }
-    """
-
-    def safe_text(node_list):
-        try:
-            return etree.tostring(node_list[0], method="text",encoding='UTF-8')
-        except IndexError:
-            return ''
-    with db.cursor() as cur:
-        cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
+def instruments(db, es):
+    #with db.cursor() as cur:
+    #    cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute("""SELECT title, true as latest, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+        print 'Instruments'
+        cur.execute("""SELECT title, true as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
             i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
             FROM latest_instruments i """)
-        results = cur.fetchmany(10)
-        count = 0
+        results = cur.fetchmany(100)
+        count = 0.0
         while len(results):
-            for result in results:
-                if count % 100 == 0:
-                    print '%d / %d' % (count, total)
-                count += 1
-                es.index(index='legislation', doc_type='instrument', body=dict(result), id=result['id'])
+            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_source": dict(x), "_index":'legislation', "_type": 'instrument'}, results))
+            count += len(results)
+            sys.stdout.write("%d%%\r" % (count/total*100))
+            sys.stdout.flush()
+            results = cur.fetchmany(100)
 
-            results = cur.fetchmany(10)
+def definitions(db, es):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from definitions')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute(""" SELECT * FROM definitions""")
-        results = cur.fetchmany(10)
-        count = 0
+        print 'Definitions'        
+        cur.execute(""" SELECT document_id, html, id, full_word FROM definitions""")
+        results = cur.fetchmany(10000)
+        count = 0.0
         while len(results):
-            for result in results:
-                if count % 100 == 0:
-                    print '%d / %d' % (count, total)
-                count += 1
-                es.index(index='legislation', doc_type='definition', body=dict(result), id=result['id'], parent=result['document_id'])
+            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'] ,"_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
+            count += len(results)
+            sys.stdout.write("%d%%\r" % (count/total*100))
+            sys.stdout.flush()        
+            results = cur.fetchmany(10000)
 
-            results = cur.fetchmany(10)
+def parts(db, es):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from document_parts')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute(""" SELECT * FROM document_parts""")
-        results = cur.fetchmany(10)
-        count = 0
+        print 'Parts'
+        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as data FROM document_parts""")
+        results = cur.fetchmany(1000)
+        count = 0.0
         while len(results):
+            parts = []
             for result in results:
-                if count % 100 == 0:
-                    print '%d / %d' % (count, total)
-                count += 1
-                part = dict(result)
-                tree = etree.fromstring(result['data'], parser=etree.XMLParser(huge_tree=True))
+                part = dict(result)         
+                tree = fromstring(result['data'])
                 title = ''
-                if tree.attrib['class'] == 'schedule':
+                if tree.attrib.get('class') == 'schedule':
                     title = 'Schedule '
+                # to do, move to processing stage
                 title += safe_text(tree.xpath('./span[@class="label"]')).strip()
                 title = '%s %s' % (title, safe_text(tree.xpath('./heading')).strip()) 
-                part['id'] = '%d-%d' % (part['document_id'], part['num'])
-                es.index(index='legislation', doc_type='part', body=part, parent=result['document_id'], id=part['id'])
+                part['title'] = title
+                parts.append(part)
+            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],  "_source": dict(x), "_index":'legislation', "_type": 'part'}, results))
+            count += len(results)
+            sys.stdout.write("%d%%\r" % (count/total*100))
+            sys.stdout.flush()       
+            results = cur.fetchmany(1000)
 
-
-
+def cases(db, es):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from cases')
         total = cur.fetchone()['count']
@@ -247,13 +215,13 @@ def run(db, config):
             judgment, waistband, hearing, received, matter::text, charge, plea, bench, document, appeal_result::text, 1 as base_score, 0 as refs, 0 as children FROM cases i
             JOIN documents d ON  d.id = i.id""")
         results = cur.fetchmany(10)
-        count = 0
+        count = 0.0
         while len(results):
             for result in results:
                 if count % 100 == 0:
                     print '%d / %d' % (count, total)
                 count += 1
-                tree = etree.fromstring(result['document'], parser=HTMLParser())
+                tree = fromstring(result['document'])
                 [r.getparent().remove(r) for r in list(tree.iter("style"))]
                 result['document'] = re.sub('\n', ' ', etree.tostring(tree, method="text", encoding='UTF-8'))
                 result['parties'] = [{'case': j[0], 'participants': j[1]} for j in json.loads(result['parties'] or '{}').items()]
@@ -261,6 +229,15 @@ def run(db, config):
                 result['appeal_result'] = json.loads(result['appeal_result'] or '{}')
                 es.index(index='legislation', doc_type='case', body=result, id=result['id'])
             results = cur.fetchmany(10)
+
+
+def run(db, config):
+    es = Elasticsearch([config.ES_SERVER])
+    index(db, es)
+    instruments(db, es)
+    definitions(db, es)
+    parts(db, es)
+    #cases(db, es)
 
     es.indices.refresh(index="legislation")
 

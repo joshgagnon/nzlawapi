@@ -4,36 +4,17 @@ var _ = require('lodash');
 var $ = require('jquery');
 var Actions = require('../actions/Actions');
 
-
 module.exports =  {
-    componentDidMount: function(){ // Move to mixin
-        var self = this;
-        var offset = 100; //calculate
-        var threshold = 500;
-        this.debounce_scroll = _.debounce(function(){
-            if(self.isMounted()){
-                var $scroll = $(self.getScrollContainer());
-                // TO DO, calculation returns true too early if advanced search is visible
-                if(self.isMounted() && !self.props.page.get('finished') &&
-                    !self.props.page.get('fetching') &&
-                    $scroll .scrollTop() + offset +$scroll .height() > $(self.getDOMNode()).height() - threshold){
-                    Actions.getMorePage(self.props.page.get('id'));
-                }
-            }
-        }, 100);
-        $(this.getScrollContainer()).on('scroll', this.debounce_scroll);
-        this.fetch();
-    },
     fetch: function(){
        if(this.props.page.get('query') && !this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
         }
     },
+    componentDidMount: function(){
+         this.fetch();
+    },
     componentDidUpdate: function(){
         this.fetch();
-    },
-    componentWillUnmount: function(){
-        $(this.getScrollContainer()).off('scroll', this.debounce_scroll);
     },
     getScrollContainer: function(){
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
