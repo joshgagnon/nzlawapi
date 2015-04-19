@@ -87,41 +87,41 @@ def find_sub_node(tree, keys):
     node = tree
     xpath_query = ".//*[not(self::part) and not(self::subpart) and not(ancestor::amend) and not(ancestor::end)][%s]"
     depth = lambda x: len(list(x.iterancestors('prov', 'subprov', 'schedule')))
+    shallowest = lambda nodes: sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
     def label(string):
         return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
-    print keys
     try:
         for i, a in enumerate(keys):
             if a:
-                if '-' in a:
-                    # we can't assume any reasonable lexicographical ordering of labels, so instead
-                    # find first match and continue until last
-                    labels = [label(x.strip()) for x in a.split('-')]
-                    # get first node
-                    start = node.xpath(xpath_query % labels[0])[0]
-                    last = node.xpath(xpath_query % labels[1])[0]
-                    start_depth = depth(start)
-                    tag = start.tag
-                    tree_iter = tree.iter(tag=tag)
-                    nodes = [start]
-                    current = None
-                    while True:
-                        current = next(tree_iter)
-                        if current == start:
-                            break
-                    while True:
-                        current = next(tree_iter)
-                        nodes.append(current)
-                        if current == last:
-                            break
-                    # find every tag that matches depth, until we match last
-                    node = nodes
-                else:
-                    if '+' in a:
-                        a = " or ".join([label(x.strip()) for x in a.split('+')])
+                adds = a.split('+')
+                nodes = []
+                for add in adds:
+                    if '-' in add:
+                        # we can't assume any reasonable lexicographical ordering of labels, so instead
+                        # find first match and continue until last
+                        labels = [label(x.strip()) for x in add.split('-')]
+                        # get first node
+                        start = shallowest(node.xpath(xpath_query % labels[0]))
+                        last = shallowest(node.xpath(xpath_query % labels[1]))
+                        start_depth = depth(start)
+                        tag = start.tag
+                        tree_iter = tree.iter(tag=tag)
+                        nodes.append(start)
+                        current = None
+                        while True:
+                            current = next(tree_iter)
+                            if current == start:
+                                break
+                        while True:
+                            current = next(tree_iter)
+                            nodes.append(current)
+                            if current == last:
+                                break
+                        # find every tag that matches depth, until we match last
                     else:
-                        a = label(a.strip())
-                    node = node.xpath(xpath_query % a)
+                        matches = node.xpath(xpath_query % label(add.strip()))
+                        nodes.append(shallowest(matches))
+                node = nodes
             if i < len(keys) - 1:
                 #get shallowist nodes
                 node = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))[0][0]
@@ -134,7 +134,7 @@ def find_sub_node(tree, keys):
         if not len(node):
             raise CustomException("Empty")
         return node
-    except Exception, e:
+    except (IndexError, StopIteration), e:
         print e
         raise CustomException("Path not found")
 
