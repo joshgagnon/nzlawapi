@@ -8,7 +8,8 @@ var strings = require('../strings');
 var SearchTable = require('../mixins/SearchTable.jsx');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var SEARCH_TYPES = require('../constants').SEARCH_TYPES;
-// New definition result based on this
+var GetMore = require('../mixins/GetMore')
+
 var SearchResult = React.createClass({
     getTitle: function(){
         return (this.props.data.getIn(['fields','title', 0]) || this.props.data.getIn(['fields','full_citation', 0])) || 'Unknown'
@@ -51,7 +52,7 @@ var SearchResult = React.createClass({
 
 module.exports = React.createClass({
     mixins: [
-        SearchTable
+        SearchTable, GetMore
     ],
     renderRow: function(data, index){
         return <SearchResult index={index} key={data.getIn(['fields', 'id', 0])+''+index} data={data} page={this.props.page} viewer_id={this.props.viewer_id}/>;

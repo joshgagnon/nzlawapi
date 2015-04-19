@@ -229,11 +229,11 @@ def cases(db, es):
 
 def run(db, config):
     es = Elasticsearch([config.ES_SERVER])
-    #index(db, es)
-    #instruments(db, es)
-    #definitions(db, es)
+    index(db, es)
+    instruments(db, es)
+    definitions(db, es)
     parts(db, es)
-    #cases(db, es)
+    cases(db, es)
 
     es.indices.refresh(index="legislation")
 

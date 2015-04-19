@@ -8,16 +8,16 @@ var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var ArticleHandlers = require('./ArticleHandlers.jsx');
 var PageMixins = require('../mixins/Page');
 var Popovers = require('./Popovers.jsx');
-
+var GetMore = require('../mixins/GetMore')
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers, PageMixins],
+    mixins: [ArticleHandlers, Popovers, PageMixins, GetMore],
     render: function() {
         var resultContent;
         if(this.props.page.getIn(['content', 'search_results'])) {
             if(this.props.page.getIn(['content', 'search_results', 'hits'])) {
                 resultContent = this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i) {
-                    return r.getIn(['highlight', 'document']).map(function(html, j){
+                    return r.getIn(['highlight', 'html']).map(function(html, j){
                         return <div className="legislation">
                             <div dangerouslySetInnerHTML={{__html: html}} key={i+'-'+j}/>
                             </div>

@@ -21,25 +21,26 @@ def year_query(args):
         }
 
 
-def contains_query(args):
+def contains_query(args, field='document'):
+    fields = [field]
     if args.get('contains_type') == 'all_words':
         return {
             "simple_query_string": {
                 "query": args.get('contains'),
-                "fields": ['document'],
+                "fields": fields,
                 "default_operator": 'AND'
             }}
     if args.get('contains_type') == 'any_words':
         return {
             "simple_query_string": {
                 "query": args.get('contains'),
-                "fields": ['document'],
+                "fields": fields,
                 "default_operator": 'OR'
             }}
     if args.get('contains_type') == 'exact':
         return {
             "match_phrase": {
-                "document": args.get('contains')
+                field: args.get('contains')
             }}
 
 
@@ -364,14 +365,14 @@ def query_contains(args):
         body = {
                 "size": 25,
                 "from": offset,
-                "fields": ['title', 'document'],
+                "fields": ['title'],
                 "sort": ['num'],
-                #"query": contains_query(args),
-                #"filter":  {"term": {"_parent": args.get('id')}},
+                "query": contains_query(args, 'html'),
+                "filter":  {"term": {"_parent": args.get('id')}},
                  "highlight": {
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
-                    "fields": {'document': {"number_of_fragments": 0}},
+                    "fields": {'html': {"number_of_fragments": 0}},
                     #"phrase_limit" : 1024,
                     #{"fragment_size" : 200, "number_of_fragments" : 100}}
                 }
