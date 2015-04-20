@@ -761,12 +761,12 @@ s EC 39(1)+(2)
 s RE 3
 s EA 4
 sch 1 cl 2(1)
-s CQ 1 (Attributed controlled foreign company income), or
+s CQ 1
 s BH 1
-IH 1,
-ss HM 21(1) and
+s IH 1
+s HM 21(1)
 s 41
-schedule 17
+sch 17
 s OB 49
 s CW 33(2)
 s DB 49(3)
@@ -774,72 +774,70 @@ s OA 6(6)
 s HL 25
 s OC 11
 s HM 58
-EI 3
+s EI 3
 s GC 5(5)
 s 173M
-MG 2(4), (5)
+s MG 2(4)+(5)
 s 89N
 s CW 28(2)
-s 225(d) of the Companies Act 1993
+s 225(d)
 s FM 3(5)
-s 49(2) or
-s 139B of the Tax Administration Act 1994
+s 49(2)
+s 139B
 s MC 2
-EZ 38
-CX 20B
-ss EC 39 and
-ss EI 5 (Amount paid to lessor for non-compliance with covenant for repair) and
-OP 64 to OP 68
+s EZ 38
+s CX 20B
+s EC 39
+s EI 5
+s OP 64-OP 68
 s DO 8
-EX 32,
-MJ 3(1)
-EK 12
-GC 14A
-s CD 26(3) or
-ss 6–14
-ME 9C
-MD 1(4)(b), (c),
+s EX 32
+s MJ 3(1)
+s EK 12
+s GC 14A
+s CD 26(3)
+s 6–14
+s ME 9C
+s MD 1(4)(b)+(c)
 s EZ 54(2)
 s EH 63(2)
-OJ 9,
+s OJ 9
 s DS 2
 s FA 10
-EE 3
-ss EJ 13 to EJ 16
-BC 6
-ME 9(1), (1A), (2)
-LQ 1 and LQ 2
-HL
-FF 13(1)
-DU 6(1)(a)(ii)
+s EE 3
+s EJ 13-EJ 16
+s BC 6
+s ME 9(1)+(1A)+(2)
+s LQ 1+LQ 2
+s HL
+s FF 13(1)
+s DU 6(1)(a)(ii)
 s MB 1(3)
-OD 5(7)
-140CB,
+s OD 5(7)
+s 140CB
 s CZ 9B
-ss CW 17,
-FDA 1
+s CW 17
+s FDA 1
 s EJ 2(6)
-CW 10
-CW 42
+s CW 10
+s CW 42
 s CW 31
 s RA 15
 s HM 44B(2)
-schedule 2
+sch 2
 subpart MF
-MF 3(1),
-ss EH 6(2) to (4) and
+s MF 3(1)
+s EH 6(2)-(4)
 s HF 10
-EW 9
-RM 4, and
+s EW 9
+s RM 4
 s HM 14(1)
-clause 4 or
+cl 4
 s CV 8(3)
-ss CX 6 to CX 16
+s CX 6-CX 16
 s RD 47
 s RC 18
 s EX 46(6)
 s EE 1(5)
-NE 4,
+s NE 4
 s OC 30
-
-

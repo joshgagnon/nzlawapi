@@ -7,9 +7,15 @@ import re
 
 #e.split('[^.a-zA-Z\d\+\- ]+', parts[1])
 def link_to_canonical(string):
-    # dont care about anythin after ' of '
+    # strip long brackets
     string = re.sub('\([^)]{5,}\).*$', '', string).strip()
     clean_tail = lambda s: re.sub(r'(,|and|to|or)$', r'', s, flags=re.I).strip()
+
+    swap = re.compile('of (schedule|section|part|subpart)(.*)', flags=re.I)
+    swap_match = swap.search(string)
+    if swap_match:
+        string = swap_match.group(1)+swap_match.group(2)+ ' '+string
+    # dont care about anythin after ' of '
     of_pattern = re.compile('[A-Z0-9 ](of) ')
     of_matches = of_pattern.search(string)
     if of_matches:
