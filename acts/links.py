@@ -64,4 +64,6 @@ def process_instrument_links(tree, db=None, links=None):
     domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     domxml.unlink()
+
+    # next find every link to this doc, replace links
     return tree

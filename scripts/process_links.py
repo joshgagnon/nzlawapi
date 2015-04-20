@@ -11,35 +11,84 @@ import re
 
 p = etree.XMLParser(huge_tree=True)
 
-def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True):
-    if do_id_lookup:
-        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-            cur.execute(""" delete from id_lookup""")
-        with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
-            cur.execute("""SELECT d.id, title, document FROM instruments i join documents d on i.id = d.id """)
+def id_lookup(db):
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute(""" delete from id_lookup""")
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
+        cur.execute("""SELECT d.id, title, document FROM instruments i join documents d on i.id = d.id """)
+        results = cur.fetchmany(1)
+        count = 0
+        id_results = []
+        while len(results):
+            for result in results:
+                if count % 10 == 0:
+                    print count, len(id_results)
+                count += 1
+                for el in etree.fromstring(result['document'], parser=p).xpath('//*[@id]'):
+                    new_id = el.attrib.get('id')
+                    id_results.append( (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0]))
             results = cur.fetchmany(1)
-            count = 0
-            id_results = []
-            while len(results):
-                for result in results:
-                    if count % 10 == 0:
-                        print count, len(id_results)
-                    count += 1
-                    for el in etree.fromstring(result['document'], parser=p).xpath('//*[@id]'):
-                        new_id = el.attrib.get('id')
-                        id_results.append( (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0]))
-                results = cur.fetchmany(1)
-                if len(id_results) > 100000:
-                    args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
-                    out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str)
-                    id_results[:] = []
-
-            if len(id_results):
+            if len(id_results) > 100000:
                 args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
                 out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str)
                 id_results[:] = []
 
-        db.commit()
+        if len(id_results):
+            args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
+            out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str)
+            id_results[:] = []
+    db.commit()
+
+
+def fix_cycles(db):
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        # lets make the interpretation act the parent of everything
+
+        cur.execute("""
+            INSERT INTO subordinates (parent_id, child_id)
+            SELECT
+                (select id from instruments where title = 'Interpretation Act 1999' AND version = 19) as parent_id,
+                id as child_id  FROM instruments WHERE
+                title != 'Interpretation Act 1999'
+                """)
+        cur.execute("""
+            INSERT INTO subordinates (parent_id, child_id)
+                (select null as parent_id, id as child_id from instruments where title = 'Interpretation Act 1999' AND version = 19)
+                """)
+    # find and remove cycles
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """
+            WITH RECURSIVE search_graph(child_id, parent_id, depth, path, cycle) AS (
+                SELECT g.child_id, g.parent_id, 1,
+                  ARRAY[g.child_id],
+                  false
+                FROM subordinates g
+              UNION ALL
+                SELECT g.child_id, g.parent_id, sg.depth + 1,
+                  path || g.child_id,
+                  g.child_id = ANY(path)
+                FROM subordinates g, search_graph sg
+                WHERE g.child_id = sg.parent_id AND NOT cycle )
+
+            SELECT distinct child_id, parent_id, year FROM search_graph g join instruments on id = child_id where cycle = true order by year limit 1; """
+
+        rm_query = """delete from subordinates where child_id = %(child_id)s and parent_id = %(parent_id)s"""
+        while True:
+            cur.execute(query)
+            results = cur.fetchall()
+            if len(results):
+
+                print 'removing cycle', dict(results[0])
+                cur.execute(rm_query, results[0])
+            else:
+                break
+    db.commit()
+
+
+def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True):
+    if do_id_lookup:
+        id_lookup(db)
+
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         if do_references:
             cur.execute(""" delete from document_references""")
@@ -62,6 +111,7 @@ def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True)
         keys = sorted(titles.keys(), key=lambda x: len(x), reverse=True)
         regex = re.compile(u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
 
+
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
         count = 0
         cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id""")
@@ -76,7 +126,7 @@ def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True)
 
                 # todo, break up processing steps
                 if do_references:
-                    links = map(lambda x: {'id': x.attrib['href'],
+                    links = map(lambda x: {'id': x.attrib['href'], 'text': etree.tostring(x, method="text", encoding="UTF-8"),
                         'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
                         tree.xpath('.//extref[@href][not(ancestor::history-note)]|.//intref[@href][not(ancestor::history-note)]'))
                     counters = defaultdict(int)
@@ -88,9 +138,10 @@ def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True)
                         args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in flattened)
                         out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
 
-                        flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1]), links)
-                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s)", x) for x in flattened)
-                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, repr, url) VALUES " + args_str)
+                        flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1], x['text']), links)
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s)", x) for x in flattened)
+                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text) VALUES " + args_str)
+
                 if do_subordinates:
                     ids = []
                     pursuant = tree.xpath('.//pursuant[not(ancestor::end)][not(ancestor::skeleton)]')
@@ -164,48 +215,7 @@ def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True)
                             print 'Could not find parent for: ', document.get('title')
             documents = cur.fetchmany(1)
     db.commit()
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-    # lets make the interpretation act the parent of everything
-
-        cur.execute("""
-            INSERT INTO subordinates (parent_id, child_id)
-            SELECT
-                (select id from instruments where title = 'Interpretation Act 1999' AND version = 19) as parent_id,
-                id as child_id  FROM instruments WHERE
-                title != 'Interpretation Act 1999'
-                """)
-        cur.execute("""
-            INSERT INTO subordinates (parent_id, child_id)
-                (select null as parent_id, id as child_id from instruments where title = 'Interpretation Act 1999' AND version = 19)
-                """)
-    # find and remove cycles
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """
-            WITH RECURSIVE search_graph(child_id, parent_id, depth, path, cycle) AS (
-                SELECT g.child_id, g.parent_id, 1,
-                  ARRAY[g.child_id],
-                  false
-                FROM subordinates g
-              UNION ALL
-                SELECT g.child_id, g.parent_id, sg.depth + 1,
-                  path || g.child_id,
-                  g.child_id = ANY(path)
-                FROM subordinates g, search_graph sg
-                WHERE g.child_id = sg.parent_id AND NOT cycle )
-
-            SELECT distinct child_id, parent_id, year FROM search_graph g join instruments on id = child_id where cycle = true order by year limit 1; """
-
-        rm_query = """delete from subordinates where child_id = %(child_id)s and parent_id = %(parent_id)s"""
-        while True:
-            cur.execute(query)
-            results = cur.fetchall()
-            if len(results):
-
-                print 'removing cycle', dict(results[0])
-                cur.execute(rm_query, results[0])
-            else:
-                break
-    db.commit()
+    fix_cycles(db)
 
 
 if __name__ == "__main__":

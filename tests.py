@@ -15,6 +15,7 @@ from db import connect_db_config
 from migration import run as run_migration
 from query.query import *
 
+from acts import tests
 
 def init_database(filename):
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')

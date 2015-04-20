@@ -76,7 +76,18 @@ def nodes_from_path_string(tree, path):
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.xpath(".//body")[0]
             if parts[1]:
-                keys = map(lambda x: x.strip(), filter(lambda x: len(x), re.split('[^.a-zA-Z\d\+\- ]+', parts[1])))
+                _keys = map(lambda x: x.strip(), filter(lambda x: len(x), re.split('[^.a-zA-Z\d\+\- ]+', parts[1])))
+                # join on + -
+                i = 0
+                keys = []
+                while i < len(_keys):
+                    if i and _keys[i] in ['+', '-']:
+                        keys[-1] += _keys[i] + _keys[i+1]
+                        i += 2
+                    else:
+                        keys.append(_keys[i])
+                        i += 1
+        print keys
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
@@ -88,6 +99,15 @@ def find_sub_node(tree, keys):
     xpath_query = ".//*[not(self::part) and not(self::subpart) and not(ancestor::amend) and not(ancestor::end)][%s]"
     depth = lambda x: len(list(x.iterancestors('prov', 'subprov', 'schedule')))
     shallowest = lambda nodes: sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
+    def get_closest(node, path):
+        while True:
+            try:
+                return shallowest(node.xpath(path))
+            except IndexError:
+                node = node.getparent()
+                if node is None or not len(node):
+                    raise StopIteration()
+
     def label(string):
         return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
     try:
@@ -101,8 +121,8 @@ def find_sub_node(tree, keys):
                         # find first match and continue until last
                         labels = [label(x.strip()) for x in add.split('-')]
                         # get first node
-                        start = shallowest(node.xpath(xpath_query % labels[0]))
-                        last = shallowest(node.xpath(xpath_query % labels[1]))
+                        start = get_closest(node, xpath_query % labels[0])
+                        last = get_closest(node, xpath_query % labels[1])
                         start_depth = depth(start)
                         tag = start.tag
                         tree_iter = tree.iter(tag=tag)
@@ -119,23 +139,22 @@ def find_sub_node(tree, keys):
                                 break
                         # find every tag that matches depth, until we match last
                     else:
-                        matches = node.xpath(xpath_query % label(add.strip()))
-                        nodes.append(shallowest(matches))
+                        matches = nodes.append(get_closest(node, xpath_query % label(add.strip())))
                 node = nodes
             if i < len(keys) - 1:
                 #get shallowist nodes
                 node = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))[0][0]
             else:
                 #if last part, get all equally shallow results (so far, good enough)
-                nodes = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))
-                node = [x[0] for x in nodes if x[1] == nodes[0][1] and x[0].tag == nodes[0][0].tag]
+                #nodes = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))
+                #node = [x[0] for x in nodes if x[1] == nodes[0][1] and x[0].tag == nodes[0][0].tag]
+                node = nodes
         if not len(keys):
             node = [node]
         if not len(node):
             raise CustomException("Empty")
         return node
-    except (IndexError, StopIteration), e:
-        print e
+    except (IndexError, StopIteration, AttributeError), e:
         raise CustomException("Path not found")
 
 

@@ -1,0 +1,1 @@
+CREATE INDEX id_lookup_govt_id_idx ON id_lookup(govt_id);
