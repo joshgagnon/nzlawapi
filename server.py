@@ -7,7 +7,7 @@ import graph
 import sys
 import os
 from util import CustomException
-from flask import jsonify, g, request, Flask
+from flask import jsonify, g, request, Flask, render_template
 from flask.json import JSONEncoder
 import datetime
 import time
@@ -72,6 +72,9 @@ def run():
     @app.before_request
     def before_request():
         g.start = time.time()
+        # Check that application is not down for maintenance
+        if os.path.isfile('down_lock') and not request.path.endswith(('.png', '.jpg', '.css')):
+            return render_template('down.html'), 503
 
 
     @app.teardown_request
