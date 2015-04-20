@@ -12,7 +12,6 @@ var _ = require('lodash');
             var page = this.props.page;
             var page_id = page ? page.get('id') : this.props.page_id;
             var popover_offset = 250;
-
             if(this.getDocumentId && $(e.target).closest('.focus-link').length && page){
                 e.preventDefault();
                 e.stopPropagation();

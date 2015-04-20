@@ -39,12 +39,6 @@ def limit_tree_size(tree, nodes=300):
     return tree
 
 
-def generate_range(string):
-    tokens = string.split('-')
-    # do stuff
-    return tokens
-
-
 def get_number(string):
     print string
     match = re.compile('[^\d]*(\d+)/*$').match(string)
@@ -82,7 +76,7 @@ def nodes_from_path_string(tree, path):
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.xpath(".//body")[0]
             if parts[1]:
-                keys = map(lambda x: x.strip(), filter(lambda x: len(x), re.split('[^.a-zA-Z\d ]+', parts[1])))
+                keys = map(lambda x: x.strip(), filter(lambda x: len(x), re.split('[^.a-zA-Z\d\+\- ]+', parts[1])))
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
@@ -91,60 +85,58 @@ def nodes_from_path_string(tree, path):
 def find_sub_node(tree, keys):
     """depth first down the tree matching labels in keys"""
     node = tree
+    xpath_query = ".//*[not(self::part) and not(self::subpart) and not(ancestor::amend) and not(ancestor::end)][%s]"
+    depth = lambda x: len(list(x.iterancestors('prov', 'subprov', 'schedule')))
+    shallowest = lambda nodes: sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
+    def label(string):
+        return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
     try:
         for i, a in enumerate(keys):
             if a:
-                # if '-' in :
-                #    a = " or ".join(["label = '%s'" % x for x in generate_range(a)])
-                if '+' in a:
-
-                    #a = "label = ('%s')" % "','".join(a.split('+'))
-                    a = " or ".join(["label = '%s'" % x for x in a.split('+')])
-                else:
-                    # fuck, starts with is busted
-                    a = "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (a, a.upper())
-                node = node.xpath(".//*[not(self::part) and not(self::subpart) and not(ancestor::amend)][%s]" % a)
+                adds = a.split('+')
+                nodes = []
+                for add in adds:
+                    if '-' in add:
+                        # we can't assume any reasonable lexicographical ordering of labels, so instead
+                        # find first match and continue until last
+                        labels = [label(x.strip()) for x in add.split('-')]
+                        # get first node
+                        start = shallowest(node.xpath(xpath_query % labels[0]))
+                        last = shallowest(node.xpath(xpath_query % labels[1]))
+                        start_depth = depth(start)
+                        tag = start.tag
+                        tree_iter = tree.iter(tag=tag)
+                        nodes.append(start)
+                        current = None
+                        while True:
+                            current = next(tree_iter)
+                            if current == start:
+                                break
+                        while True:
+                            current = next(tree_iter)
+                            nodes.append(current)
+                            if current == last:
+                                break
+                        # find every tag that matches depth, until we match last
+                    else:
+                        matches = node.xpath(xpath_query % label(add.strip()))
+                        nodes.append(shallowest(matches))
+                node = nodes
             if i < len(keys) - 1:
                 #get shallowist nodes
-                node = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))[0][0]
+                node = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))[0][0]
             else:
-                #if last part, get all equally shallow results
-                nodes = sorted(map(lambda x: (x, len(list(x.iterancestors()))), node), key=itemgetter(1))
-                node = [x[0] for x in nodes if x[1] == nodes[0][1]]
+                #if last part, get all equally shallow results (so far, good enough)
+                nodes = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))
+                node = [x[0] for x in nodes if x[1] == nodes[0][1] and x[0].tag == nodes[0][0].tag]
         if not len(keys):
             node = [node]
         if not len(node):
             raise CustomException("Empty")
         return node
-    except Exception, e:
+    except (IndexError, StopIteration), e:
         print e
         raise CustomException("Path not found")
-
-
-def find_part_node(tree, query):
-    #todo add path test
-    keys = query.split('/')
-    tree = tree.xpath(".//part[label='%s']" % keys[0])
-    keys = keys[1:]
-    if len(keys):
-        tree = tree[0]
-    return find_sub_node(tree, keys)
-
-
-def find_schedule_node(tree, query):
-    #todo add schedule test
-    keys = query.split('/')
-    tree = tree.xpath(".//schedule[label='%s']" % keys[0])
-    keys = keys[1:]
-    if len(keys):
-        tree = tree[0]
-    return find_sub_node(tree, keys)
-
-
-def find_section_node(tree, query):
-    keys = query.split('/')
-    tree = tree.xpath(".//body")[0]
-    return find_sub_node(tree, keys)
 
 
 def find_node_by_location(tree, query):

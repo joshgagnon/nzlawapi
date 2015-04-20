@@ -58,7 +58,7 @@ var PageStore = Reflux.createStore({
     },
     findDuplicate: function(page_data){
         // we will fine a duplicate as having the same set of query fields
-        var fields = ['document_id', 'find', 'location', 'govt_location', 'govt', 'query'];
+         //var fields = ['document_id', 'find', 'location', 'govt_location', 'govt', 'query', 'contains', 'contains_type', ];
         // consider page_type,
         // beware of necessary tranformsation
         // consider just hashing that object above
@@ -70,10 +70,7 @@ var PageStore = Reflux.createStore({
             if(!page_data.query || !p.get('query')){
                 return false;
             }
-            var p_js = p.get('query').toJS();
-            return _.all(_.map(fields, function(field){
-                return !p_js[field] && !page_data.query[field] || page_data.query[field]===p_js[field];
-            }));
+            return _.isEqual(_.omit(p.get('query').toJS(), 'offset'), page_data.query)
         });
     },
     onNewPage: function(page_data, viewer_id, settings){
@@ -352,7 +349,7 @@ var PageStore = Reflux.createStore({
     // functions below are all basically the sdame
     onRequestVersions: function(page_id){
         var page = this.getById(page_id);
-        if(!page.getIn(['versions', 'fetching']) && !page.getIn(['versions', 'fetched'])){
+        if(!page.getIn(['versions', 'fetching']) && !page.getIn(['versions', 'fetched']) && !page.get('error')){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetching: true});
             request.get('/versions/'+page.get('content').get('document_id'))
                 .promise()
@@ -379,7 +376,7 @@ var PageStore = Reflux.createStore({
     },
     onRequestReferences: function(page_id){
         var page = this.getById(page_id);
-        if(page && !page.getIn(['references', 'fetching']) && !page.getIn(['references', 'fetched'])){
+        if(page && !page.getIn(['references', 'fetching']) && !page.getIn(['references', 'fetched']) && !page.get('error')){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetching: true});
             request.get('/references/'+page.get('content').get('document_id'))
                 .promise()
@@ -406,7 +403,7 @@ var PageStore = Reflux.createStore({
     },
     onRequestContents: function(page_id){
         var page = this.getById(page_id);
-        if(!page.getIn(['contents', 'fetching']) && !page.getIn(['contents', 'fetched'])){
+        if(!page.getIn(['contents', 'fetching']) && !page.getIn(['contents', 'fetched']) && !page.get('error')){
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'], {fetching: true});
             request.get('/contents/'+page.get('content').get('document_id'))
                 .promise()

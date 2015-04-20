@@ -12,6 +12,9 @@ var GetMore = require('../mixins/GetMore')
 
 module.exports = React.createClass({
     mixins: [ArticleHandlers, Popovers, PageMixins, GetMore],
+    getDocumentId: function(){
+        return this.props.page.getIn(['query', 'id'])
+    },
     render: function() {
         var resultContent;
         if(this.props.page.getIn(['content', 'search_results'])) {

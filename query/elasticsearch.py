@@ -171,7 +171,10 @@ def common(args):
             "default_operator": 'AND'}
         })
     if args.get('contains'):
-        query.append(contains_query(args))
+        query.append({"has_child": {
+            "child_type": "part",
+            "query": contains_query(args, 'html')
+            }})
         search_type = 'contains_list'
 
     if args.get('year'):
@@ -357,7 +360,6 @@ def query_instrument_fields(args):
         raise CustomException('There was a problem with your query')
 
 
-
 def query_contains(args):
     try:
         es = current_app.extensions['elasticsearch']
@@ -377,7 +379,6 @@ def query_contains(args):
                     #{"fragment_size" : 200, "number_of_fragments" : 100}}
                 }
             }
-        print body
         results = es.search(
             index="legislation",
             doc_type='part',
