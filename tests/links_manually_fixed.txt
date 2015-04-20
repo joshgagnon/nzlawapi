@@ -64,7 +64,7 @@ s NC 6(1C)+(1D)
 s GB 32
 s EE 47(6)
 s KD 1(1)(e)(i)+(vi)
-parts B-F
+part B-F
 s EZ 32
 s DT 5
 s OB 35
@@ -107,7 +107,7 @@ s 143
 s BE 1(5B)
 s OB 7B
 s FE 2
-EC 19
+s EC 19
 s RF 12(1)
 s RD 3-RD 24
 s FA 3
@@ -122,724 +122,724 @@ s EH 10+EH 13+EH 15+EH 17+EH 19+EH 22(3)+EH 23+EH 25
 s OP 1-OP 50
 s OB 73-OB 75
 subpart FB
-section CW 53
-section BC 4
-section 91AAD of the Tax Administration Act 1994
-sections DG 12 to DG 14
-ID 1(1)
+s CW 53
+s BC 4
+s 91AAD
+s DG 12-DG 14
+s ID 1(1)
 subpart YB
-section FE 20(1)
-section 4
-section OZ 4
-section OP 76
-IE 1(1), (2),
-GB 32
-section HA 15
-MF 6,
-CW 32
-sections FA 16 and
-CE 7
-section GA 1
-DU 10
-section HC 36
-section CX 55(3)(a) and (b)
-BC 7
-EZ 22(1)
-section FO 11 or
-schedule 1, part A, clause 7
-sections CX 1 (Goods and services tax),
-DB 21
-section HG 2
-sections HA 14 to HA 18
-section CD 40
-OK 10 to OK 18
-CW 9 to CW 11
-section CX 63(2)
-section RH 3
-CX 42 and
-section HM 35(5)
-DA
-EK 16, or
-section FE 8
-section RA 9(1)(b)
-NC 1(2),
-YB 14
-FG 4(5), (6),
-section FE 5
-KD 2AAAB
-OB 80,
-CU 13
-ND 14,
-DO 12, or
-section EZ 16 or
-schedule 51
-Part L
-EX 8
-sections EX 8 to EX 16
-HA 28 to HA 39
-EK 8
-section DB 46
+s FE 20(1)
+s 4
+s OZ 4
+s OP 76
+s IE 1(1)+(2)
+s GB 32
+s HA 15
+s MF 6
+s CW 32
+s FA 16
+s CE 7
+s GA 1
+s DU 10
+s HC 36
+s CX 55(3)(a)+(b)
+s BC 7
+s EZ 22(1)
+s FO 11
+sch 1 part A cl 7
+s CX 1
+s DB 21
+s HG 2
+s HA 14-HA 18
+s CD 40
+s OK 10-OK 18
+s CW 9-CW 11
+s CX 63(2)
+s RH 3
+s CX 42
+s HM 35(5)
+s DA
+s EK 16
+s FE 8
+s RA 9(1)(b)
+s NC 1(2)
+s YB 14
+s FG 4(5)+(6)
+s FE 5
+s KD 2AAAB
+s OB 80
+s CU 13
+s ND 14
+s DO 12
+s EZ 16
+sch 51
+part L
+s EX 8
+s EX 8-EX 16
+s HA 28-HA 39
+s EK 8
+s DB 46
 subpart FE
-section YC 4
-IA 5, IC 2, and IC 5
-ND 1J
-CW 11B
+s YC 4
+s IA 5+IC 2+IC 5
+s ND 1J
+s CW 11B
 subpart OZ
-section HM 42 or
-section LH 2
-RC 18
-section FO 8
-section IC 5(1)(b)
-EX 24 to EX 27
-section EX 73
-sections EE 24 to EE 53
-EA 2
-CD 17
-section CB 28(8)
-schedule 2, part B, table 1
-NG 17(2),
-section OA 18
-section LB 5
-EE 20
-OA 3
-BC 4(4),
-sections HR 5 and
-section EW 15D
-LD 4
-Part I
-section EW 34
-section EC 41
-Part M
-EE 35 and
-section FC 1(1)(a)
-sections LC 3
-section CB 25(3)
-Section EZ 52C
-LJ
-Section EB 7(1) to (5)
-EX 2
-section HM 7
-section FE 21(3)
-ND 1I
-section EA 3
-section 363
-section EJ 15
-YB 4(1)(b) and (2) to (4),
-RD 65(3)
-EB 9
-section EZ 35(1)
-subparts IC and
-section IC 5,
-section HA 28
-section CR 3
-section EW 15D(3)
-LZ 7
-4
-HG 3(1),
-section RC 6
-section 100(3)
-EZ 7 (Buying patent rights before 1 April 1993), and
-section HL 13
-section LF 8
+s HM 42
+s LH 2
+s RC 18
+s FO 8
+s IC 5(1)(b)
+s EX 24-EX 27
+s EX 73
+s EE 24-EE 53
+s EA 2
+s CD 17
+s CB 28(8)
+sch 2 part B table 1
+s NG 17(2)
+s OA 18
+s LB 5
+s EE 20
+s OA 3
+s BC 4(4)
+s HR 5
+s EW 15D
+s LD 4
+part I
+s EW 34
+s EC 41
+part M
+s EE 35
+s FC 1(1)(a)
+s LC 3
+s CB 25(3)
+s EZ 52C
+s LJ
+s EB 7(1)-(5)
+s EX 2
+s HM 7
+s FE 21(3)
+s ND 1I
+s EA 3
+s 363
+s EJ 15
+s YB 4(1)(b)+(2)-(4)
+s RD 65(3)
+s EB 9
+s EZ 35(1)
+subpart IC
+s IC 5
+s HA 28
+s CR 3
+s EW 15D(3)
+s LZ 7
+s 4
+s HG 3(1)
+s RC 6
+s 100(3)
+s EZ 7
+s HL 13
+s LF 8
 s EW 15C
-section EY 4
-section EY 30
-section EZ 41
-EC 37
-section HB 11(12)
-EJ 7, and
-section 125(1) of the Companies Act 1993
-section CW 62B
-LB 1(1)(ab),
-ND 1U
-section EX 9(1)
-Section 101
-section FC 1(1)(a) or (b)
-DB 11 to DB 15 (which relate to financial arrangements adjustments),
-BH
-DB 6 to DB 8
-CE 3
-sections EH 10,
-sections 90AA to 90ADof the Tax Administration Act 1994
-section IC 5(1)(a)
-section RA 9
-NE 3
-section EK 15,
-section CS 18
-RF 12B
-section FE 4
-ME 5(1)(ab), (2)(ab)
-section RC 8
-section EH 23
-Section HM 19B(2)
-36(2),
-section OB 71(8)
-section 37 of the Tax Administration Act 1994
-EE 34
-section EM 1(1)(a) and (b)
-GC 23,
-section MD 1
-section CZ 6
-OJ 16,
-CB 10
-section HC 26
-section FA 15(2)
-section OZ 8
-CW 49C,
-Sections EE 21 to EE 24
-EJ 12 to EJ 17,
-Section 90AA
-section OB 65 or
-CD 15
-section HM 44
-s EW 15E(1), (3)
-Sections HM 21(1) and
-LC 16(1)
-section RC 5(5)
-section RD 12
-section DZ 15 of the Income Tax Act 2004
-sections HB 1 and
-section CB 34(5)(a)
-FF 11
-section 172
-MI 13
-sections HM 51 and
-section EY 21(1)
-sections RP 19 and
-section IC 6(1)
-CW 40
-LZ 11
-sections RC 11,
-section RP 17B(3)
-EX 67
-DO 5,
-section EX 20C
-EB 13
-section EK 14
-section LA 5(5)
-section 3
-section RC 28
-HI 5(2), (3),
-section FC 6
-Section EH 28
-NC 5
-DN 9
-Section 99
-section HD 3(2)
-NBA 5(1B)
-section ID 2(2)
-EC 24
-sections 5–14,
-MD 1(3), (3A)
-section 70(3) of the Social Security Act 1964
-section EH 32(c)
-section EE 67
-section DG 7
-section MK 6
-EH 23
-DO 6,
-section RC 18
-section HM 65(3)
-HG 13(1)(a)(i), (1A)
-section EX 21(32)
-sections IC 5 and
-EZ 5, or
-section BD 1(3)
-section HA 30(3)
-section CW 8B
-OB,
-section OZ 8
+s EY 4
+s EY 30
+s EZ 41
+s EC 37
+s HB 11(12)
+s EJ 7
+s 125(1)
+s CW 62B
+s LB 1(1)(ab)
+s ND 1U
+s EX 9(1)
+s 101
+s FC 1(1)(a)+(b)
+s DB 11-DB 15
+s BH
+s DB 6-DB 8
+s CE 3
+s EH 10
+s 90AA-90AD
+s IC 5(1)(a)
+s RA 9
+s NE 3
+s EK 15
+s CS 18
+s RF 12B
+s FE 4
+s ME 5(1)(ab)+(2)(ab)
+s RC 8
+s EH 23
+s HM 19B(2)
+s 36(2)
+s OB 71(8)
+s 37
+s EE 34
+s EM 1(1)(a)+(b)
+s GC 23
+s MD 1
+s CZ 6
+s OJ 16
+s CB 10
+s HC 26
+s FA 15(2)
+s OZ 8
+s CW 49C
+s EE 21-EE 24
+s EJ 12-EJ 17
+s 90AA
+s OB 65
+s CD 15
+s HM 44
+s EW 15E(1)+(3)
+s HM 21(1)
+s LC 16(1)
+s RC 5(5)
+s RD 12
+s DZ 15
+s HB 1
+s CB 34(5)(a)
+s FF 11
+s 172
+s MI 13
+s HM 51
+s EY 21(1)
+s RP 19
+s IC 6(1)
+s CW 40
+s LZ 11
+s RC 11
+s RP 17B(3)
+s EX 67
+s DO 5
+s EX 20C
+s EB 13
+s EK 14
+s LA 5(5)
+s 3
+s RC 28
+s HI 5(2)+(3)
+s FC 6
+s EH 28
+s NC 5
+s DN 9
+s 99
+s HD 3(2)
+s NBA 5(1B)
+s ID 2(2)
+s EC 24
+s 5–14
+s MD 1(3)+(3A)
+s 70(3)
+s EH 32(c)
+s EE 67
+s DG 7
+s MK 6
+s EH 23
+s DO 6
+s RC 18
+s HM 65(3)
+s HG 13(1)(a)(i)+(1A)
+s EX 21(32)
+s IC 5
+s EZ 5
+s BD 1(3)
+s HA 30(3)
+s CW 8B
+s OB
+s OZ 8
 subpart LH
-sections FE 14 to FE 16
+s FE 14-FE 16
 subpart EW
-HG 4(3)
-schedule 1
-section HM 45
-section DZ 2
-section CD 22(4)
+s HG 4(3)
+sch 1
+s HM 45
+s DZ 2
+s CD 22(4)
 subpart HE
 subpart YA
-EJ 4
-Sections EE 14 to EE 19
-section YC 11(3)
-section EY 47(2)(c)
-section EK 2
-EW 11
-section DS 3
-section 2(1)
-KD 3(2)
-EX 61
-Part 7A of the
-section MD 1
-section EE 47(5)
-FE 22
-FB 7
-section 51B of that Act
-section EE 21
-EX 44B(2), EX 44C
-section CB 27
-section IZ 1(12)
-section CR 1(4)
-HC 1, HC 4, HC 7, HC 8, HC 10, HC 15 to HC 26, HC 29, HC 31 to HC 37, HD 12, HD 13, HD 16, HD 17, HR 2 to HR 4, and HZ 2
-sections HM 11 to HM 13
-section CV 8
-NB 1
-section LP 2(1)(b)
-section CD 22(9)
-section CU 29
-section CX 4
-MB 33
-section EZ 68
-EY 12
-CD 29
-section OB 69
-section OB 63
-section CD 34B
-section GB 19
+s EJ 4
+s EE 14-EE 19
+s YC 11(3)
+s EY 47(2)(c)
+s EK 2
+s EW 11
+s DS 3
+s 2(1)
+s KD 3(2)
+s EX 61
+part 7A
+s MD 1
+s EE 47(5)
+s FE 22
+s FB 7
+s 51B
+s EE 21
+s EX 44B(2)+EX 44C
+s CB 27
+s IZ 1(12)
+s CR 1(4)
+s HC 1+HC 4+HC 7+HC 8+HC 10+HC 15-HC 26+HC 29+HC 31-HC 37+HD 12+HD 13+HD 16+HD 17+HR 2-HR 4+HZ 2
+s HM 11-HM 13
+s CV 8
+s NB 1
+s LP 2(1)(b)
+s CD 22(9)
+s CU 29
+s CX 4
+s MB 33
+s EZ 68
+s EY 12
+s CD 29
+s OB 69
+s OB 63
+s CD 34B
+s GB 19
 subpart EC
-sections 4–22,
-33(1C),
-ME 11(1)(j), (2)(c)
-CQ 6
-section 5(1) of the Canterbury Museum Trust Board Act 1993
-section MF 1(3)
-section EX 20B(3)(m)
-section IA 5(6)
-section CB 16
-section 3(1) of the Tax Administration Act 1994
-section 67Y of the Forests Act 1949
-section GB 27
-section RD 67(a)
-section CD 5(2)
-120KB to 120N,
-section DE 11
-subparts MB to MF and
-section GB 14
-Section 39B
-IG 6(1A)–(3)
-section 5 of the Racing Act 2003
-EH 42 (Refund of excess deposit), or
-EK 19
-LF 2
-LJ 5,
-Section 91AAB
-CZ
-section GB 48(3)
-Sections EZ 9 to EZ 28
-MI 1,
-section EH 19
-section EE 33
-52,
-section DQ 1
-section CW 17B (Relocation payments) or
-section MB 3(a) of the Income Tax Act 2004
-section DU 6(1)(a)(ii)
-DA 4
-ND 3(4)–(7),
-section HL 4
-section EY 16
-section HM 61
-DV 2
+s 4–22
+s 33(1C)
+s ME 11(1)(j)+(2)(c)
+s CQ 6
+s 5(1)
+s MF 1(3)
+s EX 20B(3)(m)
+s IA 5(6)
+s CB 16
+s 3(1)
+s 67Y
+s GB 27
+s RD 67(a)
+s CD 5(2)
+s 120KB-120N
+s DE 11
+subpart MB-MF
+s GB 14
+s 39B
+s IG 6(1A)–(3)
+s 5
+s EH 42
+s EK 19
+s LF 2
+s LJ 5
+s 91AAB
+s CZ
+s GB 48(3)
+s EZ 9-EZ 28
+s MI 1
+s EH 19
+s EE 33
+s 52
+s DQ 1
+s CW 17B
+s MB 3(a)
+s DU 6(1)(a)(ii)
+s DA 4
+s ND 3(4)–(7)
+s HL 4
+s EY 16
+s HM 61
+s DV 2
 subpart DA
-CW 17
-Part 14
-GC 8,
-CZ 16
-section EW 49(5)(b)
-section CD 22
-sections IA 3 to IA 6
-section HM 35(5) and (7)
-section EF 5
-ME 4(1)(ab), (2)(ab)
-section RC 8(2)
-section RD 45(2)(b)
-section CX 56
-section GB 29
-GB 31, and
-section 120F of the Tax Administration Act 1994
-schedule 28
-Part 2
-IH 1(1),
-HM 35C,
-EK 14
-section CW 27
-RD 50,
-section OK 23
-section 31B of the Tax Administration Act 1994
-section HM 71B
-section HM 43
-section FA 18
-section EW 57(1) to (3)
-ME 5(1A)(a), (2A)
-Section GC 1
-section 15M of the Tax Administration Act 1994
-OK 19, and
-section MD 13(3)(a)
-section HM 42
-section CD 34B
-171, and
-section MD 11
-section YD 1(3)
-section OA 7
-section GB 21
-CZ 8,
-YB 7,
-IZ 2,
-section DB 24
-DE 6
-EJ 12 to EJ 20
-section FE 6
-section HL 5(2)
-section OP 28
-section 2(1) of the Land Transport Act 1998
-sections CB 6 to CB 23
-FE 4(b)
+s CW 17
+part 14
+s GC 8
+s CZ 16
+s EW 49(5)(b)
+s CD 22
+s IA 3-IA 6
+s HM 35(5)+(7)
+s EF 5
+s ME 4(1)(ab)+(2)(ab)
+s RC 8(2)
+s RD 45(2)(b)
+s CX 56
+s GB 29
+s GB 31
+s 120F
+sch 28
+part 2
+s IH 1(1)
+s HM 35C
+s EK 14
+s CW 27
+s RD 50
+s OK 23
+s 31B
+s HM 71B
+s HM 43
+s FA 18
+s EW 57(1)-(3)
+s ME 5(1A)(a)+(2A)
+s GC 1
+s 15M
+s OK 19
+s MD 13(3)(a)
+s HM 42
+s CD 34B
+s 171
+s MD 11
+s YD 1(3)
+s OA 7
+s GB 21
+s CZ 8
+s YB 7
+s IZ 2
+s DB 24
+s DE 6
+s EJ 12-EJ 20
+s FE 6
+s HL 5(2)
+s OP 28
+s 2(1)
+s CB 6-CB 23
+s FE 4(b)
 subpart LJ
-section FE 12
-MK 5(1)(i), (2)(h)
+s FE 12
+s MK 5(1)(i)+(2)(h)
 subpart HM
-section FE 35
-Part R
-subparts IA and
-CW 43
-section EX 10
-section OB 24
-LH 8
-sections GB 35 and
-section CE 1
-section 19
-section OA 5(8)
-section 91AAS
-section LA 5(4)
-section YC 15(3)
-schedule 4
-section CD 43(26)
-sections IA 2 to IA 10
-LD 3A(1)
-NG 2(1)(a)
-schedule 1, part
-MG 10(1),
-sections YB 7 to YB 9
-MB 5
-section 173 of the
-Part 7 of the Tax Administration Act 1994
-section OB 64
-section CX 10
-section CX 56C(2)
-Sections HM 51 to HM 55
-section FE 5(1D)
-IG 5(4),
-sections OA 7,
-EW 52
-section CX 7
-section LA 5(5)
-sections RM 13 and
-sections EW 26 and
-section DG 12
-sections CB 6 to CB 16,
-EZ 38
-section OB 79
-section CW 9 (Dividend derived by company from overseas) or
-FD 10(3)
-EE 23
-section HB 11(5)(a)
-section CT 7(1)(b) or (c)
-section OP 42
-GC 2
-ME 5(1A)(c), (2A)
-GD 12B
-section HR 3(5)
-DO 6
-ED 2
-ND 1Q
-IZ 1,
-section GB 10
-section ID 2
-CD 9
-DV 5
-section IC 8
-section HM 2(2)
-section LA 2
-EY 14
-Section HM 19C(2)
-RD 29, and
-section HC 32
-DC 12
-EB 23
-section YB 10
-EC 20 (Herd livestock disposed of before values determined)
-section MC 8
-EZ 11
-EH 55
-LC 11,
-section EY 31(3)
-section CD 32
-section EX 73
-section FM 39
-section EX 21C(8)
-section CB 23
-CU 18
-IG 2(2)(e), (4)(c), (d), (5)(b), (c)
-A
-MBB 3
-CZ 9
-section OA 2(1)(a)
-section 32G of that Act
-section EH 71 or
-section GB 17
-ME 35
-NG 9
-DF 1
-39
-section EC 8
-FE 10(6)(a)
-EW 52B
-section HM 43(4)
-DB 27
-Section 32A
-section EX 37
-sections YC 10 to YC 13
-KD 2(1),
-section CW 38(6)
-section RF 2(3)
-section RC 18(5)
-section DZ 9
-section FB 19(3)
-section DV 5(4)(a)
-MC 3–MC 6
-section EY 25
-section DG 11(9)
-section IQ 7(1)
-Section CD 44(7)(c)
-section LK 6
-sections HG 11 and
-Sections HD 19 to HD 25
-EK 6
-sections HM 34 to HM 40
-EY 29
-section CW 33(2)
-sections EE 20 to EE 24
-CW 35
-section EW 29
-KJ 3,
-section EE 47(4)
-HM 71B
-sections CX 6 to CX 38
-BC 9(1),
-23,
-section EH 40
-section IA 5
-section FM 10
-schedule 6, table 1, row 3, 5, or 7
-OP 58, and
-section MK 1(3)
-section DG 9(2)
-140D(1) and (2), and
-RD 36(2)
-sections IA 3 and
-EJ 5,
-section CB 20
-MG 15(1)(e), (2)(d)
-section IA 2(1)
-sections 5–8,
-section HL 3(7)
-section OP 44
-section LE 1
-ME 12(1)
-ME 13(1)
-section 90AF of the Tax Administration Act 1994
-schedule 4, part I
-CB 25
-sections HZ 3,
-FD 10(4), (4C)
-section MF 7
-section GB 27(2)(b)
-NF 5
-section CC 2(2)
-section RC 7
-ME 13(2), (3)
-section 2(1) of the Goods and Services Tax Act 1985
-EX 44B(1), (3),
-CD 5
-173P to 173R of the Tax Administration Act 1994
-sections FE 15 and
-section EW 31
-section GB 45(3)
-sections EY 12 (Meaning of life reinsurance) and
-Section 104
-section OK 11
+s FE 35
+part R
+subpart IA
+s CW 43
+s EX 10
+s OB 24
+s LH 8
+s GB 35
+s CE 1
+s 19
+s OA 5(8)
+s 91AAS
+s LA 5(4)
+s YC 15(3)
+sch 4
+s CD 43(26)
+s IA 2-IA 10
+s LD 3A(1)
+s NG 2(1)(a)
+sch 1 part
+s MG 10(1)
+s YB 7-YB 9
+s MB 5
+s 173
+part 7
+s OB 64
+s CX 10
+s CX 56C(2)
+s HM 51-HM 55
+s FE 5(1D)
+s IG 5(4)
+s OA 7
+s EW 52
+s CX 7
+s LA 5(5)
+s RM 13
+s EW 26
+s DG 12
+s CB 6-CB 16
+s EZ 38
+s OB 79
+s CW 9
+s FD 10(3)
+s EE 23
+s HB 11(5)(a)
+s CT 7(1)(b)+(c)
+s OP 42
+s GC 2
+s ME 5(1A)(c)+(2A)
+s GD 12B
+s HR 3(5)
+s DO 6
+s ED 2
+s ND 1Q
+s IZ 1
+s GB 10
+s ID 2
+s CD 9
+s DV 5
+s IC 8
+s HM 2(2)
+s LA 2
+s EY 14
+s HM 19C(2)
+s RD 29
+s HC 32
+s DC 12
+s EB 23
+s YB 10
+s EC 20
+s MC 8
+s EZ 11
+s EH 55
+s LC 11
+s EY 31(3)
+s CD 32
+s EX 73
+s FM 39
+s EX 21C(8)
+s CB 23
+s CU 18
+s IG 2(2)(e)+(4)(c)+(d)+(5)(b)+(c)
+s A
+s MBB 3
+s CZ 9
+s OA 2(1)(a)
+s 32G
+s EH 71
+s GB 17
+s ME 35
+s NG 9
+s DF 1
+s 39
+s EC 8
+s FE 10(6)(a)
+s EW 52B
+s HM 43(4)
+s DB 27
+s 32A
+s EX 37
+s YC 10-YC 13
+s KD 2(1)
+s CW 38(6)
+s RF 2(3)
+s RC 18(5)
+s DZ 9
+s FB 19(3)
+s DV 5(4)(a)
+s MC 3–MC 6
+s EY 25
+s DG 11(9)
+s IQ 7(1)
+s CD 44(7)(c)
+s LK 6
+s HG 11
+s HD 19-HD 25
+s EK 6
+s HM 34-HM 40
+s EY 29
+s CW 33(2)
+s EE 20-EE 24
+s CW 35
+s EW 29
+s KJ 3
+s EE 47(4)
+s HM 71B
+s CX 6-CX 38
+s BC 9(1)
+s 23
+s EH 40
+s IA 5
+s FM 10
+sch 6 table 1
+s OP 58
+s MK 1(3)
+s DG 9(2)
+s 140D(1)+(2)
+s RD 36(2)
+s IA 3
+s EJ 5
+s CB 20
+s MG 15(1)(e)+(2)(d)
+s IA 2(1)
+s 5–8
+s HL 3(7)
+s OP 44
+s LE 1
+s ME 12(1)
+s ME 13(1)
+s 90AF
+sch 4 part I
+s CB 25
+s HZ 3
+s FD 10(4)+(4C)
+s MF 7
+s GB 27(2)(b)
+s NF 5
+s CC 2(2)
+s RC 7
+s ME 13(2)+(3)
+s 2(1)
+s EX 44B(1)+(3)
+s CD 5
+s 173P-173R
+s FE 15
+s EW 31
+s GB 45(3)
+s EY 12
+s 104
+s OK 11
 subpart ED
-section YA 1
-33(2),
-section MC 2
-GC 31,
-section OB 54
-sections EE 58,
-NC 20(1),
-section FO 18(2)(a)
-EE 12
-sections 33(1) and
-143A, and
-sections EW 9 and
-section YC 11
-sections HM 36(1) and (2) and
-LD 8(3)
-section MK 4
-subparts MA to MF and
-section HR 2
-section 259 of the
-KJ 2
-section DP 11
-section IC 3(1)(a) and (b)
+s YA 1
+s 33(2)
+s MC 2
+s GC 31
+s OB 54
+s EE 58
+s NC 20(1)
+s FO 18(2)(a)
+s EE 12
+s 33(1)
+s 143A
+s EW 9
+s YC 11
+s HM 36(1)+(2)
+s LD 8(3)
+s MK 4
+subpart MA-MF
+s HR 2
+s 259
+s KJ 2
+s DP 11
+s IC 3(1)(a)+(b)
 subpart EB
-sections HM 36 and
-EX 53(10), and
-section EX 46(3)(a) and (b)
-section EX 68
-section CX 46
-sections EE 49(1)(b)(ii) and
-section OB 5
-IQ 4, and
-section 38(1) of the Tax Administration Act 1994
-section 2 of the Forestry Rights Registration Act 1983
-sections 3,
-DN 4
-section RM 8(4) or (5)
-section HR 6(7)
-section FC 2
-section LE 1(1) or
-section EK 6
-FG 10
-section CD 21
-EH 52
-MB 10
-Section 28
-FD 6(1),
-section OC 24
-EB 16
+s HM 36
+s EX 53(10)
+s EX 46(3)(a)+(b)
+s EX 68
+s CX 46
+s EE 49(1)(b)(ii)
+s OB 5
+s IQ 4
+s 38(1)
+s 2
+s 3
+s DN 4
+s RM 8(4)+(5)
+s HR 6(7)
+s FC 2
+s LE 1(1)
+s EK 6
+s FG 10
+s CD 21
+s EH 52
+s MB 10
+s 28
+s FD 6(1)
+s OC 24
+s EB 16
 subpart EE
-FB 3
-section EZ 48
-section LZ 6
-section 49(1) or (2) of that Act
-KC 5(1)
-section CC 9
-clause 4
-NF 10
-section BB 1
-HM 53
-section EE 14(1) and (2)
-section EX 54
-CX 41B
-section 177A of the Tax Administration Act 1994
-HH 4(3B), (3BB), (3BC)
-section RG 7
-FA 2B
-section LJ 5
-section EX 21E(2)
-section HD 26(2)
-Section 28B of the Tax Administration Act 1994
-section BF 1(b)
-section EZ 16
-section YA 2
-Part 7
-section IA 3(4)
-section FE 27
-DB 3
-GC 9, or
-LE 3
-section OZ 9
-Sections YB 6(1) and
-section 5(13) of the Goods and Services Tax Act 1985
-section LB 2
-OB 1
-section FZ 1(3)
-section EG 2(2) or (3)
-section EW 57(2)
-section HM 51
-section EC 39(1) or (2)
-section RE 3
-EA 4
-clause 2(1) of Schedule 1
-section CQ 1 (Attributed controlled foreign company income), or
-section BH 1
+s FB 3
+s EZ 48
+s LZ 6
+s 49(1)+(2)
+s KC 5(1)
+s CC 9
+cl 4
+s NF 10
+s BB 1
+s HM 53
+s EE 14(1)+(2)
+s EX 54
+s CX 41B
+s 177A
+s HH 4(3B)+(3BB)+(3BC)
+s RG 7
+s FA 2B
+s LJ 5
+s EX 21E(2)
+s HD 26(2)
+s 28B
+s BF 1(b)
+s EZ 16
+s YA 2
+part 7
+s IA 3(4)
+s FE 27
+s DB 3
+s GC 9
+s LE 3
+s OZ 9
+s YB 6(1)
+s 5(13)
+s LB 2
+s OB 1
+s FZ 1(3)
+s EG 2(2)+(3)
+s EW 57(2)
+s HM 51
+s EC 39(1)+(2)
+s RE 3
+s EA 4
+sch 1 cl 2(1)
+s CQ 1 (Attributed controlled foreign company income), or
+s BH 1
 IH 1,
-sections HM 21(1) and
-section 41
+ss HM 21(1) and
+s 41
 schedule 17
-section OB 49
-section CW 33(2)
-section DB 49(3)
-section OA 6(6)
-section HL 25
-section OC 11
-section HM 58
+s OB 49
+s CW 33(2)
+s DB 49(3)
+s OA 6(6)
+s HL 25
+s OC 11
+s HM 58
 EI 3
-section GC 5(5)
-Section 173M
+s GC 5(5)
+s 173M
 MG 2(4), (5)
-Section 89N
-section CW 28(2)
-section 225(d) of the Companies Act 1993
-section FM 3(5)
-section 49(2) or
-section 139B of the Tax Administration Act 1994
-section MC 2
+s 89N
+s CW 28(2)
+s 225(d) of the Companies Act 1993
+s FM 3(5)
+s 49(2) or
+s 139B of the Tax Administration Act 1994
+s MC 2
 EZ 38
 CX 20B
-sections EC 39 and
-sections EI 5 (Amount paid to lessor for non-compliance with covenant for repair) and
+ss EC 39 and
+ss EI 5 (Amount paid to lessor for non-compliance with covenant for repair) and
 OP 64 to OP 68
-section DO 8
+s DO 8
 EX 32,
 MJ 3(1)
 EK 12
 GC 14A
-section CD 26(3) or
-sections 6–14
+s CD 26(3) or
+ss 6–14
 ME 9C
 MD 1(4)(b), (c),
-Section EZ 54(2)
-section EH 63(2)
+s EZ 54(2)
+s EH 63(2)
 OJ 9,
-section DS 2
-section FA 10
+s DS 2
+s FA 10
 EE 3
-Sections EJ 13 to EJ 16
+ss EJ 13 to EJ 16
 BC 6
 ME 9(1), (1A), (2)
 LQ 1 and LQ 2
 HL
 FF 13(1)
 DU 6(1)(a)(ii)
-section MB 1(3)
+s MB 1(3)
 OD 5(7)
 140CB,
-section CZ 9B
-sections CW 17,
+s CZ 9B
+ss CW 17,
 FDA 1
-section EJ 2(6)
+s EJ 2(6)
 CW 10
 CW 42
-section CW 31
-section RA 15
-section HM 44B(2)
+s CW 31
+s RA 15
+s HM 44B(2)
 schedule 2
 subpart MF
 MF 3(1),
-sections EH 6(2) to (4) and
-section HF 10
+ss EH 6(2) to (4) and
+s HF 10
 EW 9
 RM 4, and
-section HM 14(1)
+s HM 14(1)
 clause 4 or
-section CV 8(3)
-sections CX 6 to CX 16
-section RD 47
-section RC 18
-section EX 46(6)
-section EE 1(5)
+s CV 8(3)
+ss CX 6 to CX 16
+s RD 47
+s RC 18
+s EX 46(6)
+s EE 1(5)
 NE 4,
-section OC 30
+s OC 30
 
 
