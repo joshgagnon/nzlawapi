@@ -54,8 +54,8 @@ tag_names = {
 
 def nodes_from_path_string(tree, path):
     path = path.lower().strip()
-    pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|s|r|cl)[, ]{,2}(.*)')
-    part_pattern = re.compile('([a-z\d]+),? ?(subpart|clause|rule|section|s|cl|r)?')
+    pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)[, ]{,2}(.*)')
+    part_pattern = re.compile('([a-z\d]+),? ?(subpart|clause|rule|section|ss|s|cl|r)?')
     parts = pattern.match(path)
     keys = []
     try:
@@ -87,7 +87,7 @@ def nodes_from_path_string(tree, path):
                     else:
                         keys.append(_keys[i])
                         i += 1
-        print keys
+
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
@@ -97,8 +97,10 @@ def find_sub_node(tree, keys):
     """depth first down the tree matching labels in keys"""
     node = tree
     xpath_query = ".//*[not(self::part) and not(self::subpart) and not(ancestor::amend) and not(ancestor::end)][%s]"
+    #xpath_query = "//*[self::prov or self::schedule or self::subprov][%s]"
     depth = lambda x: len(list(x.iterancestors('prov', 'subprov', 'schedule')))
-    shallowest = lambda nodes: sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
+    shallowest = lambda nodes: nodes[0] if len(node) == 1 else sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
+
     def get_closest(node, path):
         while True:
             try:
@@ -117,15 +119,16 @@ def find_sub_node(tree, keys):
                 nodes = []
                 for add in adds:
                     if '-' in add:
+
                         # we can't assume any reasonable lexicographical ordering of labels, so instead
                         # find first match and continue until last
                         labels = [label(x.strip()) for x in add.split('-')]
                         # get first node
                         start = get_closest(node, xpath_query % labels[0])
                         last = get_closest(node, xpath_query % labels[1])
-                        start_depth = depth(start)
                         tag = start.tag
-                        tree_iter = tree.iter(tag=tag)
+                        #tree_iter = next(start.iterancestors(tags=['part', 'schedule', 'body'])).iter(tag=tag)
+                        tree_iter = tree.iter(tag)
                         nodes.append(start)
                         current = None
                         while True:
@@ -139,15 +142,15 @@ def find_sub_node(tree, keys):
                                 break
                         # find every tag that matches depth, until we match last
                     else:
-                        matches = nodes.append(get_closest(node, xpath_query % label(add.strip())))
+                        nodes.append(get_closest(node, xpath_query % label(add.strip())))
                 node = nodes
             if i < len(keys) - 1:
                 #get shallowist nodes
                 node = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))[0][0]
             else:
                 #if last part, get all equally shallow results (so far, good enough)
-                #nodes = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))
-                #node = [x[0] for x in nodes if x[1] == nodes[0][1] and x[0].tag == nodes[0][0].tag]
+                # nodes = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))
+                # node = [x[0] for x in nodes if x[1] == nodes[0][1] and x[0].tag == nodes[0][0].tag]
                 node = nodes
         if not len(keys):
             node = [node]
@@ -208,6 +211,7 @@ def find_node_by_govt_id(tree, query):
         print e
         raise CustomException("Path not found")
 
+
 def get_references_for_ids(ids):
     with get_db().cursor() as cur:
         query = """ select id, title from
@@ -216,4 +220,47 @@ def get_references_for_ids(ids):
         cur.execute(query, {'ids': ids})
         return {'references': cur.fetchall()}
 
+
+def link_to_canonical(string):
+    # remove newlines
+    string = re.sub('\r?\n', ' ', string)
+    # strip long brackets
+    string = re.sub('\([^)]{5,}\)', '', string).strip()
+    string = re.sub(' +',' ', string)
+    clean_tail = lambda s: re.sub(r'(,|and|to|or)$', r'', s, flags=re.I).strip()
+
+    swap = re.compile('of (schedule|section|part|subpart)(.*)', flags=re.I)
+    swap_match = swap.search(string)
+    if swap_match:
+        string = swap_match.group(1)+swap_match.group(2)+ ' '+string
+    # dont care about anythin after ' of '
+    of_pattern = re.compile('[A-Z0-9 ](of) ')
+    of_matches = of_pattern.search(string)
+    if of_matches:
+        string = string[:of_matches.span(1)[0]]
+    while string != clean_tail(string):
+        string = clean_tail(string)
+
+    string = re.split(r'row [\d+]?', string, flags=re.I)[0]
+    string = re.sub(r'sections?', r's', string, flags=re.I)
+
+    if re.compile('(schedule|sch) .*, (part|subpart|table).*', flags=re.I).match(string):
+        string = re.sub(', ?', ' ', string)
+
+    start = re.compile('^(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)s? ', flags=re.I)
+    if not start.match(string):
+        string = 's '+string
+    else:
+        string = re.sub(r'^ss?', r's', string, flags=re.I)
+        string = re.sub(r'subparts?', r'subpart', string, flags=re.I)
+        string = re.sub(r'parts?', r'part', string, flags=re.I)
+        string = re.sub(r'sections?', r's', string, flags=re.I)
+        string = re.sub(r'schedules?', r'sch', string, flags=re.I)
+        string = re.sub(r'clauses?', r'cl', string, flags=re.I)
+        string = re.sub(r'rules?', r'r', string, flags=re.I)
+    string = re.sub(r' ?,? and ', r'+', string, flags=re.I)
+    string = re.sub(r' to ', r'-', string, flags=re.I)
+    string = re.sub(r' ?,? or ', r'+', string, flags=re.I)
+    string = re.sub(r' ?, ?', r'+', string, flags=re.I)
+    return string.strip()
 

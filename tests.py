@@ -53,7 +53,7 @@ class TestQueries(unittest.TestCase):
 
     def setUp(self):
         self.parser = etree.XMLParser(remove_blank_text=True)
-        self.tree = etree.parse('tests/companiesact.xml', parser=self.parser)
+        self.tree = etree.parse('tests/companiesact.xml', parser=self.parser).getroot()
 
     def test_path_query_counts(self):
         # test path queries return correct number of leaf nodes
