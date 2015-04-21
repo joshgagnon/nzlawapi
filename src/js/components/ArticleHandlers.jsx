@@ -59,7 +59,8 @@ var _ = require('lodash');
                                 id: link.attr('data-target-id') || link.attr('data-href'),
                                 doc_type: 'instrument',
                                 find: location_string ? 'location' : 'preview',
-                                location: location_string
+                                location: location_string,
+                                link_text: $(e.target).text()
                             },
                             query_string: '/link/'+url
                         });

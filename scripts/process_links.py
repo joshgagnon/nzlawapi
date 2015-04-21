@@ -238,13 +238,16 @@ def analyze_links(db):
                 if not len(refs):
                     continue
                 tree = etree.fromstring(result['document'], parser=p)
-                nodes_by_id = {x.attrib['id']: x for x in tree.xpath('.//*[@id]')}
+                for elem in tree.xpath('.//*[self::end or self::amend or self::text or self::history-note]'):
+                     elem.getparent().remove(elem)
+                #print etree.tostring(tree)
+                nodes_by_id = {x.attrib['id']: x for x in tree.findall('.//*[@id]')}
                 for ref in refs:
                     link = ref['link_text']
-                    if traversal.link_to_canonical(link).startswith('s s'):
-                        print ref['link_text']
-                        print traversal.link_to_canonical(link, True)
-                    #traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
+                    nodes = traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
+                    if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
+                        for n in nodes:
+                            print ref['link_text'], '---', get_path(n)
                 return
                 #links = tree.xpath('.//extref[@href][not(ancestor::history-note)]|.//intref[@href][not(ancestor::history-note)]'))
             results = cur.fetchmany(10)
@@ -272,7 +275,7 @@ if __name__ == "__main__":
     import sys
     from os import path
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-    from util import generate_path_string
+    from util import generate_path_string, get_path
     db = psycopg2.connect(
             database=config.DB,
             user=config.DB_USER,

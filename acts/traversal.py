@@ -42,7 +42,6 @@ def limit_tree_size(tree, nodes=300):
 
 
 def get_number(string):
-    print string
     match = re.compile('[^\d]*(\d+)/*$').match(string)
     if match:
         return match.groups(1)
@@ -76,7 +75,7 @@ def nodes_from_path_string(tree, path):
                 return nodes_from_path_string(tree, remainder.replace(',', '').strip())
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
-                    tree = tree.xpath(".//body")[0]
+                    tree = tree.findall(".//body")[0]
             if parts[1]:
                 _keys = map(lambda x: x.strip(), filter(lambda x: len(x), re.split('[^.a-zA-Z\d\+\- ]+', parts[1])))
                 # join on + -
@@ -89,7 +88,6 @@ def nodes_from_path_string(tree, path):
                     else:
                         keys.append(_keys[i])
                         i += 1
-
     except IndexError, e:
         raise CustomException("Path not found")
     return find_sub_node(tree, keys)
@@ -98,22 +96,31 @@ def nodes_from_path_string(tree, path):
 def find_sub_node(tree, keys):
     """depth first down the tree matching labels in keys"""
     node = tree
-    xpath_query = ".//*[not(self::part) and not(self::subpart) and not(ancestor::amend) and not(ancestor::end)][%s]"
+    xpath_query = ".//*[%s]"
     #xpath_query = "//*[self::prov or self::schedule or self::subprov][%s]"
-    depth = lambda x: len(list(x.iterancestors('prov', 'subprov', 'schedule')))
+    depth = lambda x: len(list(x.iterancestors()))
     shallowest = lambda nodes: nodes[0] if len(node) == 1 else sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
 
-    def get_closest(node, path):
+    def get_closest(node, label):
         while True:
             try:
-                return shallowest(node.xpath(path))
+                nodes = node.xpath(xpath_query % labelize(label))
+                #nodes = node.findall('.//*[label]')
+                #nodes = filter(lambda x: x.find('label').text and x.find('label').text.strip() in [label, label.upper()], nodes)
+                nodes = filter(lambda x: x.tag not in ['part', 'subpart'] and 
+                    not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(('amend', 'end'))), nodes)
+                return shallowest(nodes)
+
             except IndexError:
                 node = node.getparent()
+                #print label
                 if node is None or not len(node):
-                    raise StopIteration()
+                    raise StopIteration('no more parents')
 
-    def label(string):
+    def labelize(string):
         return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
+        #return "label[translate(normalize-space(.), '%s', '%s')   = '%s']" % (string.lower(), string.upper(), string.lower())
+
     try:
         for i, a in enumerate(keys):
             if a:
@@ -121,15 +128,14 @@ def find_sub_node(tree, keys):
                 nodes = []
                 for add in adds:
                     if '-' in add:
-
                         # we can't assume any reasonable lexicographical ordering of labels, so instead
                         # find first match and continue until last
-                        labels = [label(x.strip()) for x in add.split('-')]
+                        labels = [x.strip() for x in add.split('-')]
                         # get first node
-                        start = get_closest(node, xpath_query % labels[0])
-                        last = get_closest(node, xpath_query % labels[1])
+                        start = get_closest(node, labels[0])
+                        last = get_closest(node, labels[1])
                         tag = start.tag
-                        #tree_iter = next(start.iterancestors(tags=['part', 'schedule', 'body'])).iter(tag=tag)
+                        # this sucks, having to start at start
                         tree_iter = tree.iter(tag)
                         nodes.append(start)
                         current = None
@@ -144,7 +150,7 @@ def find_sub_node(tree, keys):
                                 break
                         # find every tag that matches depth, until we match last
                     else:
-                        nodes.append(get_closest(node, xpath_query % label(add.strip())))
+                        nodes.append(get_closest(node, add.strip()))
                 node = nodes
             if i < len(keys) - 1:
                 #get shallowist nodes
@@ -160,6 +166,7 @@ def find_sub_node(tree, keys):
             raise CustomException("Empty")
         return node
     except (IndexError, StopIteration, AttributeError), e:
+        # print e
         raise CustomException("Path not found")
 
 
@@ -223,9 +230,25 @@ def get_references_for_ids(ids):
         return {'references': cur.fetchall()}
 
 
+tags = ['schedule','section','part','subpart','subsection']
+ordinal_pattern = re.compile('^(.*?)(the)?\s?(%s)\s(%s)(.*)$' % (text_to_num.ordinal_keys, '|'.join(tags)), flags=re.I)
+
+
+def swap_ordinals(string, tags):
+    # turn 'fourth schedule into schedule forth'
+    match = ordinal_pattern.match(string)
+    while match:
+        string = ''.join([match.group(1), match.group(4), ' ', match.group(3), match.group(5)])
+        match = ordinal_pattern.match(string)
+    return string
+
+
 def link_to_canonical(string, debug=False):
-    tags = ['schedule','section','part','subpart','subsection']
-    string = unicode(string, 'utf-8').replace(u"\u00A0", u' ')
+    if type(string) != unicode:
+        string = unicode(string, 'utf-8')
+    string = string.replace(u"\u00A0", u' ')
+
+    string = swap_ordinals(string, tags)
     # remove newlines
     string = re.sub('\r?\n', ' ', string)
     # strip long brackets
@@ -296,33 +319,28 @@ def link_to_canonical(string, debug=False):
 
 def decide_govt_or_path(tree, govt_id, string, nodes_by_id=None):
     if not nodes_by_id:
-        govt_node = tree.xpath('.//*[@id]')[0]
+        govt_node = tree.findall(".//*[@id='%s']" % govt_id)[0]
     else:
         govt_node = nodes_by_id[govt_id]
-
+    if not string:
+        return [govt_node]
     path = link_to_canonical(string)
     # test if simple schedule, part or section string
-    simple_match = re.compile('^(s|part|sch) [^a-z()+-]+')
-    if simple_match.match(path):
+    simple_match = re.compile('^(s|part|sch) [^a-z()+-]+$')
+    if simple_match.match(path) or not path:
         return [govt_node]
-
     start_location = govt_node.getparent()
     this_match = re.compile('of this (section|part|schedule|clause)')
     if this_match.search(string):
         start_location = govt_node
 
-
-    print string
-    print govt_node
     # first 'hack', if govt_id is part, and string starts with 's ', replace
-    if nodes_by_id[govt_id].tag == 'part' and path.startswith('s '):
+    if govt_node.tag == 'part' and path.startswith('s '):
         path = re.sub('^s ', 'part ', path)
-    print path
     try:
         nodes = nodes_from_path_string(start_location, path)
-    except Exception, e:
+    except CustomException, e:
         nodes = [govt_node]
-        print 'error'
-    print nodes
+    return nodes
 
 

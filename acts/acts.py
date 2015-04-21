@@ -2,8 +2,8 @@
 
 from util import CustomException, tohtml, generate_path_string
 from traversal import cull_tree, \
-    find_node_by_govt_id, find_document_id_by_govt_id, \
-    find_node_by_location, limit_tree_size
+    decide_govt_or_path, find_document_id_by_govt_id, \
+    find_node_by_location, limit_tree_size, link_to_canonical
 from lxml import etree
 from flask import current_app
 from queries import get_instrument_object, get_latest_instrument_object, fetch_parts
@@ -67,6 +67,7 @@ def instrument_preview(instrument):
 
 
 def instrument_location(instrument, location):
+    #location = link_to_canonical(location)
     tree = find_node_by_location(instrument.get_tree(), location)
     full_location, _, __ = generate_path_string(tree[0])
     tree = cull_tree(tree)
@@ -87,8 +88,8 @@ def instrument_location(instrument, location):
     }
 
 
-def instrument_govt_location(instrument, id):
-    tree = find_node_by_govt_id(instrument.get_tree(), id)
+def instrument_govt_location(instrument, id, link_text):
+    tree = decide_govt_or_path(instrument.get_tree(), id, link_text)
     full_location, _, location = generate_path_string(tree[0])
     tree = cull_tree(tree)
     return {
@@ -151,7 +152,7 @@ def query_instrument(args):
     elif find == 'govt_location':
         if not govt_location:
             raise CustomException('No location specified')
-        return instrument_govt_location(instrument, govt_location)
+        return instrument_govt_location(instrument, govt_location, args.get('link_text'))
     """ default is full instrument """
     return instrument_full(instrument)
 
