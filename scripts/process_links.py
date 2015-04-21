@@ -85,9 +85,7 @@ def fix_cycles(db):
     db.commit()
 
 
-def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True):
-    if do_id_lookup:
-        id_lookup(db)
+def refs_and_subs(db, do_references, do_subordinates):
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         if do_references:
@@ -218,6 +216,54 @@ def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True)
     fix_cycles(db)
 
 
+def analyze_links(db):
+    from acts import traversal
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute('select count(*) as count from instruments')
+        total = cur.fetchone()['count']
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor(cursor_factory=extras.RealDictCursor) as cur2, db.cursor() as out:
+
+        cur.execute("""SELECT document, d.id, title, govt_id from instruments i join documents d on i.id = d.id where d.id=188066""")
+        results = cur.fetchmany(10)
+        while len(results):
+            for result in results:
+                print result['id']
+                cur2.execute("""select target_govt_id, link_text from id_lookup l
+                    left outer join section_references s on l.govt_id = s.target_govt_id
+                    where l.parent_id =  %(id)s and target_govt_id !=  %(govt_id)s
+
+                    group by  source_repr, target_govt_id, source_url, target_path, link_text;
+                    """, result)
+                refs = cur2.fetchall()
+                if not len(refs):
+                    continue
+                tree = etree.fromstring(result['document'], parser=p)
+                nodes_by_id = {x.attrib['id']: x for x in tree.xpath('.//*[@id]')}
+                for ref in refs:
+                    link = ref['link_text']
+                    if traversal.link_to_canonical(link).startswith('s s'):
+                        print ref['link_text']
+                        print traversal.link_to_canonical(link, True)
+                    #traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
+                return
+                #links = tree.xpath('.//extref[@href][not(ancestor::history-note)]|.//intref[@href][not(ancestor::history-note)]'))
+            results = cur.fetchmany(10)
+
+
+
+
+def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True, do_links=True):
+    if do_id_lookup:
+        id_lookup(db)
+
+    if do_references or do_subordinates:
+        refs_and_subs(db, do_references, do_subordinates)
+
+    if do_links:
+        analyze_links(db)
+
+
+
 if __name__ == "__main__":
     if not len(sys.argv) > 1:
         raise Exception('Missing configuration file')
@@ -233,9 +279,17 @@ if __name__ == "__main__":
             host=config.DB_HOST,
             password=config.DB_PW)
     # poor mans switches
-    run(db, config,
+    if False:
+        run(db, config,
         do_id_lookup=('skip_ids' not in sys.argv[1:]),
         do_references=('skip_references' not in sys.argv[1:]),
-        do_subordinates=('skip_subordinates' not in sys.argv[1:]))
+        do_subordinates=('skip_subordinates' not in sys.argv[1:]),
+        do_links=('skip_links' not in sys.argv[1:]))
+
+    run(db, config,
+        do_id_lookup=False,
+        do_references=False,
+        do_subordinates=False,
+        do_links=True)
     db.close()
 

@@ -3,6 +3,8 @@ from db import get_db
 from operator import itemgetter
 import re
 from lxml import etree
+from utils import text_to_num
+
 
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
@@ -221,33 +223,57 @@ def get_references_for_ids(ids):
         return {'references': cur.fetchall()}
 
 
-def link_to_canonical(string):
+def link_to_canonical(string, debug=False):
+    tags = ['schedule','section','part','subpart','subsection']
+    string = unicode(string, 'utf-8').replace(u"\u00A0", u' ')
     # remove newlines
     string = re.sub('\r?\n', ' ', string)
     # strip long brackets
     string = re.sub('\([^)]{5,}\)', '', string).strip()
-    string = re.sub(' +',' ', string)
+    # replace of this act
+    string = re.sub('of this Act ', '', string)
     clean_tail = lambda s: re.sub(r'(,|and|to|or)$', r'', s, flags=re.I).strip()
+    # remove any 'of the blah blah'
+    string = re.split(r'(to|of)\sthe', string, flags=re.I)[0]
+    # replace words with numbers
+    string = text_to_num.replace_number(string)
+    # of this:  we can't know the specific location, must use other information
+    string = re.sub('of this (schedule|section|part|subpart|subsection)', '', string).strip()
+    # remove multi spaces
+    string = re.sub(' +',' ', string)
 
-    swap = re.compile('of (schedule|section|part|subpart)(.*)', flags=re.I)
+    # reorder clause
+    swap = re.compile('of\s(schedule|section|part|subpart|subsection)(.*)', flags=re.I)
     swap_match = swap.search(string)
-    if swap_match:
-        string = swap_match.group(1)+swap_match.group(2)+ ' '+string
-    # dont care about anythin after ' of '
-    of_pattern = re.compile('[A-Z0-9 ](of) ')
+    remainders = []
+    while swap_match:
+        remainders.insert(0, string[:swap_match.span()[0]])
+        string = swap_match.group(1)+swap_match.group(2).rstrip()
+        swap_match = swap.search(string)
+    if len(remainders):
+        rem = ''.join(remainders)
+        string += rem if rem.startswith('(') and string not in tags else ' '+rem
+    # if supposed to be part of next link, ie "blah or section"
+
+    string = re.sub(r'or\s(section|part|schedule|subsection)$', r'', string, flags=re.I)
+
+    # dont care about anythin after ' of ' or ' to the '
+    of_pattern = re.compile('[A-Z0-9 ](of|to the) ')
     of_matches = of_pattern.search(string)
     if of_matches:
         string = string[:of_matches.span(1)[0]]
     while string != clean_tail(string):
         string = clean_tail(string)
-
-    string = re.split(r'row [\d+]?', string, flags=re.I)[0]
+    string = re.split(r'row\s[\d+]?', string, flags=re.I)[0]
+    string = re.sub(r'^subsections?', r's', string, flags=re.I)
+    string = re.sub(r'subsections?', r'', string, flags=re.I)
     string = re.sub(r'sections?', r's', string, flags=re.I)
 
     if re.compile('(schedule|sch) .*, (part|subpart|table).*', flags=re.I).match(string):
         string = re.sub(', ?', ' ', string)
 
-    start = re.compile('^(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)s? ', flags=re.I)
+    start = re.compile('^(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)s?\s', flags=re.I)
+
     if not start.match(string):
         string = 's '+string
     else:
@@ -262,5 +288,41 @@ def link_to_canonical(string):
     string = re.sub(r' to ', r'-', string, flags=re.I)
     string = re.sub(r' ?,? or ', r'+', string, flags=re.I)
     string = re.sub(r' ?, ?', r'+', string, flags=re.I)
+
+    # collapse brackets
+    string = re.sub('([A-Z\d)]) +\(', '\\1(', string)
     return string.strip()
+
+
+def decide_govt_or_path(tree, govt_id, string, nodes_by_id=None):
+    if not nodes_by_id:
+        govt_node = tree.xpath('.//*[@id]')[0]
+    else:
+        govt_node = nodes_by_id[govt_id]
+
+    path = link_to_canonical(string)
+    # test if simple schedule, part or section string
+    simple_match = re.compile('^(s|part|sch) [^a-z()+-]+')
+    if simple_match.match(path):
+        return [govt_node]
+
+    start_location = govt_node.getparent()
+    this_match = re.compile('of this (section|part|schedule|clause)')
+    if this_match.search(string):
+        start_location = govt_node
+
+
+    print string
+    print govt_node
+    # first 'hack', if govt_id is part, and string starts with 's ', replace
+    if nodes_by_id[govt_id].tag == 'part' and path.startswith('s '):
+        path = re.sub('^s ', 'part ', path)
+    print path
+    try:
+        nodes = nodes_from_path_string(start_location, path)
+    except Exception, e:
+        nodes = [govt_node]
+        print 'error'
+    print nodes
+
 

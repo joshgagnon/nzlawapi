@@ -1,0 +1,28 @@
+PROCESSING STEPS
+
+# analyzes tags, heirarchy, refererences
+# MUST be run
+scripts/process_links.py
+
+# inserts missing instrument references, processes definitions, creates skeleton
+# can be skipped and done per request, but then elastic search will be out of sync
+scripts/process_instruments.py
+
+# takes the resulting processed docs and populates elasticsearch
+scripts/populate_es.py
+
+# entry point
+server.py
+
+
+
+
+
+
+
+
+
+
+JAVASCRIPT
+
+react.js, using reflux pattern
