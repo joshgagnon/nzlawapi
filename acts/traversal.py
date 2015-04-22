@@ -97,35 +97,33 @@ def find_sub_node(tree, keys):
     """depth first down the tree matching labels in keys"""
     node = tree
     xpath_query = ".//*[%s]"
-    #xpath_query = "//*[self::prov or self::schedule or self::subprov][%s]"
     depth = lambda x: len(list(x.iterancestors()))
     shallowest = lambda nodes: nodes[0] if len(node) == 1 else sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
 
     def get_closest(node, label):
+        """ note: this is split between xpath and python for performance reasons (xpath too slow on ancestors) """
         while True:
             try:
                 nodes = node.xpath(xpath_query % labelize(label))
-                #nodes = node.findall('.//*[label]')
-                #nodes = filter(lambda x: x.find('label').text and x.find('label').text.strip() in [label, label.upper()], nodes)
                 nodes = filter(lambda x: x.tag not in ['part', 'subpart'] and 
                     not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(('amend', 'end'))), nodes)
                 return shallowest(nodes)
 
             except IndexError:
                 node = node.getparent()
-                #print label
                 if node is None or not len(node):
                     raise StopIteration('no more parents')
-
+                    
     def labelize(string):
         return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
-        #return "label[translate(normalize-space(.), '%s', '%s')   = '%s']" % (string.lower(), string.upper(), string.lower())
+
+    nodes = []
 
     try:
         for i, a in enumerate(keys):
             if a:
                 adds = a.split('+')
-                nodes = []
+                first_iter = True
                 for add in adds:
                     if '-' in add:
                         # we can't assume any reasonable lexicographical ordering of labels, so instead
@@ -151,20 +149,21 @@ def find_sub_node(tree, keys):
                         # find every tag that matches depth, until we match last
                     else:
                         nodes.append(get_closest(node, add.strip()))
+
+                    first_iter = True
                 node = nodes
             if i < len(keys) - 1:
-                #get shallowist nodes
-                node = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))[0][0]
-            else:
-                #if last part, get all equally shallow results (so far, good enough)
-                # nodes = sorted(map(lambda x: (x, depth(x)), node), key=itemgetter(1))
-                # node = [x[0] for x in nodes if x[1] == nodes[0][1] and x[0].tag == nodes[0][0].tag]
-                node = nodes
+                node = nodes[-1]
         if not len(keys):
-            node = [node]
-        if not len(node):
+            nodes = [node]
+        if not len(nodes):
             raise CustomException("Empty")
-        return node
+        # remove ancestors
+        ancestors = []
+        for n in nodes:
+            ancestors.extend(list(n.iterancestors()))
+        nodes = [n for n in nodes if n not in ancestors]
+        return nodes
     except (IndexError, StopIteration, AttributeError), e:
         # print e
         raise CustomException("Path not found")

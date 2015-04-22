@@ -100,7 +100,7 @@ def refs_and_subs(db, do_references, do_subordinates):
         id_lookup = dict(map(result_to_dict, cur.fetchall()))
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        query = """ select title, id from latest_instruments """
+        query = """ select title, id from instruments """
         cur.execute(query)
 
         titles = {unicode(x['title'].decode('utf-8')): x['id'] for x in cur.fetchall()}
@@ -109,16 +109,18 @@ def refs_and_subs(db, do_references, do_subordinates):
         keys = sorted(titles.keys(), key=lambda x: len(x), reverse=True)
         regex = re.compile(u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
 
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute('select count(*) as count from latest_instruments')
+        total = cur.fetchone()['count']
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
-        count = 0
+        count = 0.0
         cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id""")
         documents = cur.fetchmany(1)
         while len(documents):
             for document in documents:
-                if count % 100 == 0:
-                    print count
                 count += 1
+                sys.stdout.write("%d%%\r" % (count/total*100))
                 tree = etree.fromstring(document['document'], parser=p)
                 source_id = document['id']
 
@@ -136,9 +138,9 @@ def refs_and_subs(db, do_references, do_subordinates):
                         args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in flattened)
                         out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
 
-                        flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1], x['text']), links)
-                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s)", x) for x in flattened)
-                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text) VALUES " + args_str)
+                        flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1], x['text'], id_lookup[x['id']]), [l for l in links if id_lookup.get(l['id'])])
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in flattened)
+                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_document_id) VALUES " + args_str)
 
                 if do_subordinates:
                     ids = []
@@ -218,40 +220,51 @@ def refs_and_subs(db, do_references, do_subordinates):
 
 def analyze_links(db):
     from acts import traversal
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute('select count(*) as count from instruments')
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor(cursor_factory=extras.RealDictCursor) as cur2, db.cursor() as out:
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor(cursor_factory=extras.RealDictCursor) as cur2:
 
-        cur.execute("""SELECT document, d.id, title, govt_id from instruments i join documents d on i.id = d.id where d.id=188066""")
+        cur.execute("""SELECT document, id, title, govt_id from latest_instruments""")
         results = cur.fetchmany(10)
+        output = []
+        count = 0.0
         while len(results):
             for result in results:
+                count += 1
                 print result['id']
-                cur2.execute("""select target_govt_id, link_text from id_lookup l
-                    left outer join section_references s on l.govt_id = s.target_govt_id
-                    where l.parent_id =  %(id)s and target_govt_id !=  %(govt_id)s
-
-                    group by  source_repr, target_govt_id, source_url, target_path, link_text;
+                # these group bys significantly help the opimizer
+                cur2.execute("""select target_govt_id, link_text
+                    from section_references s
+                    where target_document_id =  %(id)s and target_govt_id !=  %(govt_id)s and target_path is null
+                    group by  target_govt_id, link_text;
                     """, result)
                 refs = cur2.fetchall()
                 if not len(refs):
                     continue
                 tree = etree.fromstring(result['document'], parser=p)
                 for elem in tree.xpath('.//*[self::end or self::amend or self::text or self::history-note]'):
-                     elem.getparent().remove(elem)
-                #print etree.tostring(tree)
+                    elem.getparent().remove(elem)
+
                 nodes_by_id = {x.attrib['id']: x for x in tree.findall('.//*[@id]')}
+
                 for ref in refs:
                     link = ref['link_text']
-                    nodes = traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
-                    if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
-                        for n in nodes:
-                            print ref['link_text'], '---', get_path(n)
-                return
-                #links = tree.xpath('.//extref[@href][not(ancestor::history-note)]|.//intref[@href][not(ancestor::history-note)]'))
-            results = cur.fetchmany(10)
+                    try:
+                        nodes = traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
+                        if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
+                            output.append(cur2.mogrify('select replace_references(%s, %s, %s)', (ref['target_govt_id'], ref['link_text'], [get_path(n) for n in nodes])))
+                    except Exception, e:
+                        print e
+                sys.stdout.write("%d%%\r" % (count/total*100))
+                sys.stdout.flush()
 
+
+            results = cur.fetchmany(10)
+    with db.cursor() as out:
+        for o in output:
+            out.execute(o)
+    db.commit()
 
 
 
@@ -291,8 +304,9 @@ if __name__ == "__main__":
 
     run(db, config,
         do_id_lookup=False,
-        do_references=False,
+        do_references=True,
         do_subordinates=False,
         do_links=True)
+
     db.close()
 

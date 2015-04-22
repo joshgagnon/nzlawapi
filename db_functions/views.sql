@@ -151,9 +151,24 @@ CREATE OR REPLACE FUNCTION get_versions(id integer)
         where s.id = $1 order by i.date_as_at desc
 $$ LANGUAGE SQL;
 
+
 CREATE OR REPLACE VIEW titles AS
     SELECT title as name, id, type, 'full' as find, null as query, year, generation, children, refs, base_score from latest_instruments i where (i.terminated is null or i.terminated = '')
     UNION
     SELECT full_citation as name, id, 'case' as type, 'full' as find, null as query, null as year, 1 as generation, 0 as children, 0 as refs, 0 as base_score  from cases
     UNION
     SELECT title as name, document_id, type, find, query, 10000 as year, 1 as generation, 10000 as children,  10000 as refs, 10000 as base_score  from shortcuts;
+
+
+-- this function is used to replace link placeholders
+-- ie, a link may exist, 'section 2(b)-(c)', that need to be split into s 2(b) and s 2(c), but ranges can only be calculated
+-- by processing the target doc, thus the 2 steps
+CREATE OR REPLACE FUNCTION replace_references(govt_id text, link_text text, target_paths text[])
+    RETURNS void
+    AS $$
+
+        INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_path)
+    (SELECT r.source_document_id, r.target_govt_id, r.source_repr, r.source_url, r.link_text,  unnest($3) as target_path
+        from section_references r where r.target_govt_id=$1 and r.link_text=$2)  ;
+        DELETE FROM section_references s where  s.target_govt_id = $1 and s.link_text = $2  and s.target_path is null;
+$$ LANGUAGE SQL;

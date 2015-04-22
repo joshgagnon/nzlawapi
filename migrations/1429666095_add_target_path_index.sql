@@ -1,0 +1,1 @@
+CREATE INDEX target_path_idx ON section_references  (target_path);
