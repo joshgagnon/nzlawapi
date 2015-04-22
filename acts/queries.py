@@ -341,10 +341,10 @@ def get_references(document_id):
         return {'references': map(lambda x: dict(x), cur.fetchall())}
 
 
-def get_section_references(govt_ids):
+def get_section_references(govt_ids, target_paths):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute("""select * from get_section_references(%(govt_ids)s)""", {'govt_ids': govt_ids})
+        cur.execute("""select * from get_section_references(%(govt_ids)s, %(target_paths)s)""", {'govt_ids': govt_ids, 'target_paths': target_paths})
         return {'section_references': map(lambda x: dict(x), cur.fetchall())}
 
 

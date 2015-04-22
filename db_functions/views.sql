@@ -132,13 +132,13 @@ CREATE OR REPLACE FUNCTION get_references(id integer)
 $$ LANGUAGE SQL;
 
 
-CREATE OR REPLACE FUNCTION get_section_references(govt_ids text[])
+CREATE OR REPLACE FUNCTION get_section_references(govt_ids text[], target_path text[])
     RETURNS TABLE (source_document_id integer, repr text, url text)
     AS $$
           SELECT source_document_id, source_repr, source_url
             FROM section_references  d
             JOIN latest_instruments i on d.source_document_id = i.id
-            WHERE target_govt_id = ANY($1) ORDER by source_repr
+            WHERE target_govt_id = ANY($1) or target_path = ANY($1) ORDER by source_repr
 $$ LANGUAGE SQL;
 
 

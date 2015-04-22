@@ -322,7 +322,10 @@ var PageStore = Reflux.createStore({
             this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data', section_id],
                 {fetching: true});
             request.get('/section_references')
-                .query({govt_ids: (page.getIn(['section_data', section_id, 'govt_ids']).toJS() || [])})
+                .query({
+                    govt_ids: (page.getIn(['section_data', section_id, 'govt_ids']).toJS() || []),
+                    target_paths: (page.getIn(['section_data', section_id, 'target_paths']).toJS() || []),
+                })
                 .promise()
                 .then(function(response){ Actions.requestSectionReferences.completed(page_id, section_id, response.body); })
                 .catch(function(response){ Actions.requestSectionReferences.failed(page_id, section_id, response.body); });
