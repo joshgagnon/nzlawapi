@@ -269,7 +269,7 @@ var PageStore = Reflux.createStore({
     },
     onSectionSummaryOpened: function(viewer_id, page_id, section_data){
         var page = this.getById(page_id);
-        var result = {};
+        var result = {} ;
         result[section_data.id] = section_data;
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'section_data'], result);
         this.update();
@@ -281,7 +281,7 @@ var PageStore = Reflux.createStore({
         this.update();
     },
 
-    onRequestPopoverData: function(page_id, popover_id){
+    onRequestPopoverData: function(page_id, popover_id){;
         var page = this.getById(page_id);
         if(page){
             var popover = page.get('popovers').get(popover_id);
@@ -323,8 +323,9 @@ var PageStore = Reflux.createStore({
                 {fetching: true});
             request.get('/section_references')
                 .query({
+                    document_id:  page.getIn(['section_data', section_id, 'document_id']),
                     govt_ids: (page.getIn(['section_data', section_id, 'govt_ids']).toJS() || []),
-                    target_paths: (page.getIn(['section_data', section_id, 'target_paths']).toJS() || []),
+                    target_path: page.getIn(['section_data', section_id, 'target_path']),
                 })
                 .promise()
                 .then(function(response){ Actions.requestSectionReferences.completed(page_id, section_id, response.body); })

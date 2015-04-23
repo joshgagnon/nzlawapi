@@ -62,7 +62,7 @@ var ContextMenu = React.createClass({
                 document_id: this.props.context_menu.getIn(['data', 'query', 'document_id']),
                 title:this.props.context_menu.getIn(['data', 'title']) + ' '+ this.props.context_menu.getIn(['data', 'location', 'repr']),
                 govt_ids: this.props.context_menu.getIn(['data', 'govt_ids']).toJS(),
-                target_paths: this.props.context_menu.getIn(['data', 'target_paths']).toJS()
+                target_path: this.props.context_menu.getIn(['data', 'target_path']),
         });
     },
     render: function(){

@@ -63,14 +63,6 @@ module.exports = {
         locs = _.filter(locs);
         return {repr: locs.join(''), locs: breadcrumb};
     },
-    getLocationPathChildren: function($el){
-        var query = '[data-location]:not([data-link-id]):not([data-hook]):not([data-location-no-path])';
-        return _.unique(_.flatten($el.closest(query).find(query).addBack().map(function(){
-                return $(this).parents(query).addBack().map(function(){
-                    return this.attributes['data-location'].value;
-                }).toArray().join('')
-            }).toArray()));
-    },
     locationsToSelector: function(locs){
         return _.map(locs, function(loc){
             return '[data-location="'+loc+'"]'

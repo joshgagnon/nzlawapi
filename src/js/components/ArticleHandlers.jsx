@@ -20,13 +20,13 @@ var _ = require('lodash');
                 var govt_ids = $target.parent().find('[id]').map(function(){
                     return this.attributes.id.textContent;
                 }).toArray();
-                var target_paths = Utils.getLocationPathChildren($(e.target));
+                var target_path = Utils.getLocation($(e.target)).repr;
                 Actions.contextMenuOpened(this.props.viewer_id, page_id, {
                         title: page.getIn(['content', 'title']),
                         location: location,
                         govt_ids: govt_ids,
-                        target_paths: target_paths,
-                        id: $target.attr('id'),
+                        target_path: target_path,
+                        id: target_path ,
                         query:{
                             document_id: this.getDocumentId(e.target),
                             location: location.repr,

@@ -110,7 +110,7 @@ def refs_and_subs(db, do_references, do_subordinates):
         regex = re.compile(u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute('select count(*) as count from latest_instruments')
+        cur.execute('select count(*) as count from instruments')
         total = cur.fetchone()['count']
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
@@ -227,12 +227,12 @@ def analyze_links(db):
 
         cur.execute("""SELECT document, id, title, govt_id from latest_instruments""")
         results = cur.fetchmany(10)
-        output = []
+        inserts = []
+        deletes = []
         count = 0.0
         while len(results):
             for result in results:
                 count += 1
-                print result['id']
                 # these group bys significantly help the opimizer
                 cur2.execute("""select target_govt_id, link_text
                     from section_references s
@@ -253,19 +253,26 @@ def analyze_links(db):
                     try:
                         nodes = traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
                         if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
-                            output.append(cur2.mogrify('select replace_references(%s, %s, %s)', (ref['target_govt_id'], ref['link_text'], [get_path(n) for n in nodes])))
+                            inserts.append(cur2.mogrify("""INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_path, target_document_id)
+                                (SELECT r.source_document_id, r.target_govt_id, r.source_repr, r.source_url, r.link_text,  unnest(%(target_paths)s) as target_path, r.target_document_id
+                                    from section_references r where r.target_govt_id=%(target_govt_id)s and r.link_text=%(link_text)s)""",
+                                {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text'], 'target_paths': [get_path(n) for n in nodes]}))
+                            deletes.append(cur2.mogrify("""DELETE FROM section_references s where  s.target_govt_id = %(target_govt_id)s and s.link_text = %(link_text)s  and s.target_path is null"""))
+
                     except Exception, e:
                         print e
                 sys.stdout.write("%d%%\r" % (count/total*100))
                 sys.stdout.flush()
 
-
             results = cur.fetchmany(10)
-    with db.cursor() as out:
-        for o in output:
-            out.execute(o)
-    db.commit()
 
+    with db.cursor() as out:
+        for insert in inserts:
+            out.execute(insert)
+        for delete in deletes:
+            out.execute(delete)
+
+    db.commit()
 
 
 def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True, do_links=True):
@@ -304,7 +311,7 @@ if __name__ == "__main__":
 
     run(db, config,
         do_id_lookup=False,
-        do_references=True,
+        do_references=False,
         do_subordinates=False,
         do_links=True)
 

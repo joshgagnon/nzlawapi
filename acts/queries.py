@@ -341,10 +341,13 @@ def get_references(document_id):
         return {'references': map(lambda x: dict(x), cur.fetchall())}
 
 
-def get_section_references(govt_ids, target_paths):
+def get_section_references(target_document_id, govt_ids, target_path):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute("""select * from get_section_references(%(govt_ids)s, %(target_paths)s)""", {'govt_ids': govt_ids, 'target_paths': target_paths})
+        print cur.mogrify("""select * from get_section_references(%(target_document_id)s, %(govt_ids)s, %(target_path)s)""",
+            {'govt_ids': govt_ids, 'target_path': '%s%%' % target_path, 'target_document_id': target_document_id})
+        cur.execute("""select * from get_section_references(%(target_document_id)s, %(govt_ids)s, %(target_path)s)""",
+            {'govt_ids': govt_ids, 'target_path': '%s%%' % target_path, 'target_document_id': target_document_id})
         return {'section_references': map(lambda x: dict(x), cur.fetchall())}
 
 

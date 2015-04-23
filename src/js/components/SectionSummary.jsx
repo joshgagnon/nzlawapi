@@ -13,6 +13,11 @@ module.exports = React.createClass({
             Actions.requestSectionReferences(this.props.page_id, this.props.sectionView.last());
         }
     },
+     componentDidUpdate: function(){
+        if(this.props.sectionView.last()){
+            Actions.requestSectionReferences(this.props.page_id, this.props.sectionView.last());
+        }
+    },
     getLast: function(){
         return this.props.sectionData.get(this.props.sectionView.last());
     },
