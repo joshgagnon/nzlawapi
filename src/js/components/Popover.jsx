@@ -115,6 +115,12 @@ var PopoverBehaviour = {
             query: query,
             page_type: type
         }, this.props.viewer_id)
+    },
+    getTitle: function(){
+        return this.props.popoverPage.get('title');
+    },
+    getDocumentId: function(){
+        return this.props.popoverPage.getIn(['query', 'document_id']);
     }
 }
 

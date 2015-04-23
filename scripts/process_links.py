@@ -257,7 +257,8 @@ def analyze_links(db):
                                 (SELECT r.source_document_id, r.target_govt_id, r.source_repr, r.source_url, r.link_text,  unnest(%(target_paths)s) as target_path, r.target_document_id
                                     from section_references r where r.target_govt_id=%(target_govt_id)s and r.link_text=%(link_text)s)""",
                                 {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text'], 'target_paths': [get_path(n) for n in nodes]}))
-                            deletes.append(cur2.mogrify("""DELETE FROM section_references s where  s.target_govt_id = %(target_govt_id)s and s.link_text = %(link_text)s  and s.target_path is null"""))
+                            deletes.append(cur2.mogrify("""DELETE FROM section_references s where  s.target_govt_id = %(target_govt_id)s and s.link_text = %(link_text)s  and s.target_path is null""",
+                            {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text']}))
 
                     except Exception, e:
                         print e

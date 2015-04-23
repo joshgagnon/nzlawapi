@@ -547,6 +547,9 @@ var ArticleContent = React.createClass({
     getDocumentId: function(target){
         return this.props.page.getIn(['content', 'document_id'])
     },
+    getTitle: function(target){
+        return this.props.page.getIn(['content', 'title'])
+    },
     render: function(){
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>

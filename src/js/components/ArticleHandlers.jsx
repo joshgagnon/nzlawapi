@@ -3,38 +3,40 @@ var Utils = require('../utils');
 var $ = require('jquery');
 var _ = require('lodash');
 
-// must implement getDocumentId, overlayOffset
+// must implement getDocumentId, overlayOffset and getTitle
 
  module.exports =
     {
         interceptLink: function(e){
             var link = $(e.target).closest('a:not([target])');
-            var page = this.props.page;
-            var page_id = page ? page.get('id') : this.props.page_id;
+            var page_id = this.props.page ? this.props.page.get('id') : this.props.page_id;
             var popover_offset = 250;
-            if(this.getDocumentId && $(e.target).closest('.focus-link').length && page){
+            if(this.getDocumentId && $(e.target).closest('.focus-link').length){
                 e.preventDefault();
                 e.stopPropagation();
                 var $target = $(e.target).closest('[id]');
                 var location = Utils.getLocation($(e.target));
-                var govt_ids = $target.parent().find('[id]').map(function(){
-                    return this.attributes.id.textContent;
-                }).toArray();
+                var govt_ids = [];
+                if(link.parent().parent().attr('id')){
+                    govt_ids = [link.parent().parent().attr('id')]
+                }
                 var target_path = Utils.getLocation($(e.target)).repr;
-                Actions.contextMenuOpened(this.props.viewer_id, page_id, {
-                        title: page.getIn(['content', 'title']),
-                        location: location,
-                        govt_ids: govt_ids,
-                        target_path: target_path,
-                        id: target_path ,
-                        query:{
-                            document_id: this.getDocumentId(e.target),
-                            location: location.repr,
-                            doc_type: 'instrument',
-                            find: 'location'
+                if(this.getDocumentId(e.target)){
+                    Actions.contextMenuOpened(this.props.viewer_id, page_id, {
+                            title: this.getTitle(),
+                            location: location,
+                            govt_ids: govt_ids,
+                            target_path: target_path,
+                            id: target_path ,
+                            query:{
+                                document_id: this.getDocumentId(e.target),
+                                location: location.repr,
+                                doc_type: 'instrument',
+                                find: 'location'
+                            },
                         },
-                    },
-                    {left: e.pageX, top: e.pageY});
+                        {left: e.pageX, top: e.pageY});
+                }
             }
             else if(link.length){
                 e.preventDefault();
