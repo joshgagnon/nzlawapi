@@ -489,7 +489,8 @@ var ArticleContent = React.createClass({
         else if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
         }
-        if(target && target.length){
+
+        if(this.props.content.get('format') !== 'fragment' && (target && target.length)){
             var container = this.getScrollContainer();
             container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
         }
