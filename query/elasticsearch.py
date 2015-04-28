@@ -68,15 +68,19 @@ def query_all(args):
                     "query": {
                         "multi_match": {
                             "query": query,
-                            "fields": ["title", "title.english", "title.ngram", "full_citation"]
+                            "fields": ["title^3", "title.english^3", "title.ngram^3", "full_citation", "document",]
                         },
                     },
                    # "script_score": {
                    #     "script": "_score * (1.0/sqrt(doc['title.simple'].value.length()))"
                    # }
                 }
+                },
+                "highlight": {
+                    "pre_tags": ["<span class='search_match'>"],
+                    "post_tags": ["</span>"],
+                    "fields": {'document': {}}
                 }
-                ,
         })
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
 

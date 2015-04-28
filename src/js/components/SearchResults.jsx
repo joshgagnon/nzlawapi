@@ -21,7 +21,11 @@ var SearchResult = React.createClass({
     },
     handleLinkClick: function(e){
         e.preventDefault();
-        var query = {find: 'full', doc_type: this.props.data.getIn(['_type']), id: this.props.data.getIn(['fields','id', 0])};
+        var query = {find: 'full',
+            doc_type: this.props.data.getIn(['_type']),
+            id: this.props.data.getIn(['fields','id', 0]),
+            title: this.props.data.getIn(['fields','title', 0])
+        };
         Actions.newPage({query: query, title: this.getTitle()}, this.props.viewer_id);
     },
     render: function(){
