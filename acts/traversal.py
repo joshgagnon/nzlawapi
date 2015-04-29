@@ -53,6 +53,11 @@ tag_names = {
     'subpart': 'subpart'
 }
 
+
+def labelize(string):
+    return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
+
+
 def nodes_from_path_string(tree, path):
     path = path.lower().strip()
     pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)[, ]{,2}(.*)')
@@ -71,7 +76,8 @@ def nodes_from_path_string(tree, path):
                     # sub[0] is the sch/part label
                     label = sub[0]
                     remainder = remainder[len(label):].strip()
-                tree = tree.xpath(".//%s[label='%s' or label='%s']" % (tag_names[parts[0]], label, label.upper()))[0]
+                tree = tree.xpath(".//%s[%s]" %
+                        (tag_names[parts[0]], labelize(label)))[0]
                 return nodes_from_path_string(tree, remainder.replace(',', '').strip())
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
@@ -105,7 +111,7 @@ def find_sub_node(tree, keys):
         while True:
             try:
                 nodes = node.xpath(xpath_query % labelize(label))
-                nodes = filter(lambda x: x.tag not in ['part', 'subpart'] and 
+                nodes = filter(lambda x: x.tag not in ['part', 'subpart'] and
                     not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(('amend', 'end'))), nodes)
                 return shallowest(nodes)
 
@@ -113,9 +119,6 @@ def find_sub_node(tree, keys):
                 node = node.getparent()
                 if node is None or not len(node):
                     raise StopIteration('no more parents')
-                    
-    def labelize(string):
-        return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
 
     nodes = []
 

@@ -12,7 +12,7 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
             var link = $(e.target).closest('a:not([target])');
             var page_id = this.props.page ? this.props.page.get('id') : this.props.page_id;
             var popover_offset = 250;
-            if(this.getDocumentId && $(e.target).closest('.focus-link').length){
+            if(this.getDocumentId && $(e.target).closest('.focus-link').length &&  !$(e.target).is('[quote]')){
                 e.preventDefault();
                 e.stopPropagation();
                 var $target = $(e.target).closest('[id]');

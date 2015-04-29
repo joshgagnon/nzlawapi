@@ -58,7 +58,7 @@ var AutoComplete = React.createClass({
     handleDocumentClick: function(e) {
         // If the click originated from within this component
         // don't do anything.
-        if (this.getDOMNode().contains(e.target)) {
+        if (React.findDOMNode(this).contains(e.target)) {
             return;
         }
         this.setState({show: false});
@@ -71,6 +71,11 @@ var AutoComplete = React.createClass({
         if (this._onDocumentClickListener) {
             this._onDocumentClickListener.remove();
             this._onDocumentClickListener = null;
+        }
+    },
+    componentDidUpdate: function(){
+        if(!this.state.show){
+            this.unbindRootCloseHandlers();
         }
     },
     onFocus: function(e) {
@@ -143,10 +148,23 @@ var AutoComplete = React.createClass({
         })
         return groups;
     },
+    getHighlight: function(title, startIndex, endIndex){
+        return <a href="#">
+                     { title.substring(0, startIndex)  }
+                    <strong>{
+                        title.substring(startIndex, endIndex)}
+                    </strong>
+                    {title.substring(endIndex)}</a>
+    },
     getResultListItem: function(groupIndex, result, index) {
         var title = result.name;
         var value = (this.props.search_value.search_query ||'').trim();
 
+        var max_length = 75;
+        if(title.length > max_length){
+            title = title.substring(0, Math.floor(max_length/2)) + '\u2026' + title.substring(title.length-Math.ceil(max_length/2)-1)
+            console.log(title)
+        }
         // Calcuate letter offsets for bolding search query
 
         var startIndex = title.toLowerCase().indexOf(value.toLowerCase());
@@ -157,20 +175,11 @@ var AutoComplete = React.createClass({
         for (var i = 0; i < groupIndex; i++) {
             index += groups[i].entries.length;
         }
-
-        if (startIndex > -1){
-            return <li className={index === this.state.activeIndex ? 'active' : ''} onMouseDown={ this.clickResult.bind(this, result) }
-                key={result.id}>
-                    <a href="#" data-doc-id={result.id} >
-                    {title.substring(0, startIndex)}
-                    <strong>{
-                        title.substring(startIndex, endIndex)}
-                    </strong>
-                    {title.substring(endIndex)}</a>
+        return <li className={index === this.state.activeIndex ? 'active' : ''} onMouseDown={ this.clickResult.bind(this, result) }
+                    key={result.id}>
+                    { startIndex > -1 ? this.getHighlight(title, startIndex, endIndex) :
+                        <a href="#" >{ title }</a> }
                 </li>;
-        }
-
-        return <li key = {result.id || undefined}><a href="#">{title}</a></li>;
     },
     clickResult: function(result) {
         this.props.onUpdate({
