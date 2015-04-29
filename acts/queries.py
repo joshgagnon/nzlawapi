@@ -344,11 +344,27 @@ def get_references(document_id):
 def get_section_references(target_document_id, govt_ids, target_path):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        print cur.mogrify("""select * from get_section_references(%(target_document_id)s, %(govt_ids)s, %(target_path)s)""",
-            {'govt_ids': govt_ids, 'target_path': '%s%%' % target_path, 'target_document_id': target_document_id})
         cur.execute("""select * from get_section_references(%(target_document_id)s, %(govt_ids)s, %(target_path)s)""",
             {'govt_ids': govt_ids, 'target_path': '%s%%' % target_path, 'target_document_id': target_document_id})
         return {'section_references': map(lambda x: dict(x), cur.fetchall())}
+
+
+def section_references(args):
+    sections = get_section_references(args.get('document_id'),
+                (args.get('govt_ids') or '').split(','),
+                args.get('target_path'))['section_references']
+    document_id = int(args.get('document_id'))
+    with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("""select title from instruments where id = %(id)s""",
+            {'id': document_id})
+        title = unicode(cur.fetchone()['title'].decode('utf-8'))
+    for s in sections:
+        s['url'] = unicode(s['url'].decode('utf-8'))
+        s['repr'] = unicode(s['repr'].decode('utf-8'))
+    external = filter(lambda x: x['source_document_id'] != document_id, sections)
+    internal = filter(lambda x: x['source_document_id'] == document_id, sections)
+    return {'html': render_template('section_refs.html',
+        title='%s %s' % (title, args.get('target_path')), external=external, internal=internal)}
 
 
 def get_versions(document_id):

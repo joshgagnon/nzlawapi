@@ -17,6 +17,7 @@ module.exports ={
 	NotLatestVersion: NotLatestVersion,
 	ArticleError: ArticleError,
     CaseError: ArticleError,
-	DefinitionError: ArticleError,
+    DefinitionError: ArticleError,
+	SectionReferenceError: ArticleError,
 	UnknownError: ArticleError
 };

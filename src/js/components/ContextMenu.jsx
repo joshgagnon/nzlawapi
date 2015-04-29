@@ -7,8 +7,8 @@ var Actions = require('../actions/Actions');
 var FadeMixin = require('react-bootstrap/lib/FadeMixin');
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 var EventListener = require('react-bootstrap/lib/utils/EventListener');
+var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
 var _  = require('lodash');
-
 
 var ContextMenu = React.createClass({
     mixins:[
@@ -46,7 +46,7 @@ var ContextMenu = React.createClass({
         Actions.newPage({
             title: this.props.context_menu.getIn(['data', 'location', 'repr']),
             query: this.props.context_menu.getIn(['data', 'query']).toJS()
-        },this.props.context_menu.get('viewer_id'));
+        }, this.props.context_menu.get('viewer_id'));
     },
     addPrint: function(){
         Actions.addToPrint({
@@ -55,15 +55,24 @@ var ContextMenu = React.createClass({
         });
     },
     findReferences: function(){
-        Actions.sectionSummaryOpened(
+        Actions.popoverOpened(
             this.props.context_menu.get('viewer_id'),
-            this.props.context_menu.get('page_id'),{
+            this.props.context_menu.get('page_id'), {
                 id: this.props.context_menu.getIn(['data', 'id']),
-                document_id: this.props.context_menu.getIn(['data', 'query', 'document_id']),
-                title:this.props.context_menu.getIn(['data', 'title']) + ' '+ this.props.context_menu.getIn(['data', 'location', 'repr']),
-                govt_ids: this.props.context_menu.getIn(['data', 'govt_ids']).toJS(),
-                target_path: this.props.context_menu.getIn(['data', 'target_path']),
-        });
+                type: POPOVER_TYPES.SECTION_REFERENCES,
+                title: this.props.context_menu.getIn(['data', 'title']) + ' '+ this.props.context_menu.getIn(['data', 'location', 'repr']),
+                source_sel: this.props.context_menu.getIn(['data', 'source_sel']),
+                fetched: false,
+                left: this.props.context_menu.getIn(['data', 'left']),
+                top: this.props.context_menu.getIn(['data', 'top']),
+                query: {
+                    document_id: this.props.context_menu.getIn(['data', 'query', 'document_id']),
+                    find: 'section_references',
+                    doc_type: 'instrument',
+                    govt_ids: this.props.context_menu.getIn(['data', 'govt_ids']).toJS(),
+                    target_path: this.props.context_menu.getIn(['data', 'target_path']),
+                }
+            });
     },
     render: function(){
         return <div className="context-menu fade" style={this.props.context_menu.get('position').toJS()} >

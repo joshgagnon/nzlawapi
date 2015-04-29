@@ -262,6 +262,7 @@ var PageStore = Reflux.createStore({
     },
     onPopoverOpened: function(viewer_id, page_id, popover){
         var page = this.getById(page_id);
+        popover.time = popover.time || (new Date()).getTime();
         var result = {};
         result[popover.id] = popover;
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers'], result);

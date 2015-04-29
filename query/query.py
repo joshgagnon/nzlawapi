@@ -68,7 +68,7 @@ def get_references_route(document_id):
         status = 500
     return jsonify(result), status
 
-
+# deprecate
 @Query.route('/section_references')
 @require_auth
 def get_section_references_route():
