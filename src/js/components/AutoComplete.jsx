@@ -112,6 +112,7 @@ var AutoComplete = React.createClass({
                 this.setState({
                     results: []
                 });
+
                 this.clickResult(this.getResultById(a.attr('data-doc-id')|0));
             } else {
                 // Searching on current text
@@ -148,8 +149,8 @@ var AutoComplete = React.createClass({
         })
         return groups;
     },
-    getHighlight: function(title, startIndex, endIndex){
-        return <a href="#">
+    getHighlight: function(index, title, startIndex, endIndex){
+        return <a href="#" data-doc-id={index}>
                      { title.substring(0, startIndex)  }
                     <strong>{
                         title.substring(startIndex, endIndex)}
@@ -176,8 +177,8 @@ var AutoComplete = React.createClass({
         }
         return <li className={index === this.state.activeIndex ? 'active' : ''} onMouseDown={ this.clickResult.bind(this, result) }
                     key={result.id}>
-                    { startIndex > -1 ? this.getHighlight(title, startIndex, endIndex) :
-                        <a href="#" >{ title }</a> }
+                    { startIndex > -1 ? this.getHighlight(result.id, title, startIndex, endIndex) :
+                        <a href="#" data-doc-id={result.id}>{ title }</a> }
                 </li>;
     },
     clickResult: function(result) {
