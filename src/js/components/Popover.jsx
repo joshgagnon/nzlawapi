@@ -36,7 +36,7 @@ var PopoverBehaviour = {
                             null }
                     </div>
                 </div>
-        }else if(this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION){
+        }else if(this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION || this.props.popoverPage.get('type') == POPOVER_TYPES.SECTION_REFERENCES){
             return <div className="popover-footer">
                     <div className="row">
                         <Button bsSize="small" bsStyle="primary" onClick={this.addToPrint}>Add To Print</Button >
@@ -103,10 +103,18 @@ var PopoverBehaviour = {
          Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.popoverPage.get('id'));
     },
     open: function(){
-        var type = this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION ? PAGE_TYPES.DEFINITION : PAGE_TYPES.INSTRUMENT;
+        var type = PAGE_TYPES.INSTRUMENT;
+        if(this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION){
+            type = PAGE_TYPES.DEFINITION;
+        }
+        else if(this.props.popoverPage.get('type') === POPOVER_TYPES.SECTION_REFERENCES){
+            type = PAGE_TYPES.SECTION_REFERENCES;
+        }
         var query = this.props.popoverPage.get('query');
-        if(query && query.get('find') === 'preview'){
+        if(query){
             query = query.toJS();
+        }
+        if(query && query.find === 'preview'){
             query = _.extend({}, query, {find: 'full'});
         }
         Actions.newPage({

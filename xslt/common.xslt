@@ -294,7 +294,7 @@
                 <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="label"/>
-            <xsl:apply-templates select="para/*[position() > 1]|para/amend/prov|label-para" />
+              <xsl:apply-templates select="para/*[position() > 1]|para[position() > 1]/*|para/amend/prov|label-para" />
         </div>
     </xsl:template>
 
@@ -376,7 +376,7 @@
             </xsl:if>
             <xsl:choose>
                 <xsl:when test="../para/text != ''">
-                    <xsl:apply-templates select="../para/text[1]"/>
+                    <xsl:apply-templates select="../para[1]/text"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="deleted label-deleted">[Repealed]</span>
@@ -518,7 +518,11 @@
     </xsl:template>
 
 
-    <xsl:template match="para">
+    <xsl:template match="para[1]">
+        <p class="text"><xsl:apply-templates /></p>
+    </xsl:template>
+
+    <xsl:template match="para[position() > 1]/text">
         <p class="text"><xsl:apply-templates /></p>
     </xsl:template>
 

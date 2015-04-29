@@ -15,6 +15,9 @@ module.exports = React.createClass({
     getDocumentId: function(){
         return this.props.page.getIn(['query', 'id'])
     },
+    getTitle: function(){
+        return this.props.page.getIn(['query', 'title'])
+    },
     render: function() {
         var resultContent;
         if(this.props.page.getIn(['content', 'search_results'])) {

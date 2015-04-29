@@ -39,6 +39,7 @@ var PrintSegment = React.createClass({
         if(this.props.seg && this.props.seg.get('html')){
             return <div className="print-section">
                         { this.printOverLay() }
+                        {/* this.printTitle() */}
                         <div ref={'body'} dangerouslySetInnerHTML={{__html: this.props.seg.get('html')}}/>
                     </div>
         }
@@ -52,6 +53,7 @@ var PrintSegment = React.createClass({
     componentDidUpdate:function(){
         this.fetch();
     },
+
     fetch: function(){
         if(this.props.seg && !this.props.seg.get('fetched')){
             Actions.fetchPrint(this.props.seg.get('id'));

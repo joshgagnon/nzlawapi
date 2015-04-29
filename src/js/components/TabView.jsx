@@ -10,6 +10,7 @@ var Article = require('./Article.jsx');
 var Case = require('./Case.jsx');
 var Definition = require('./Definition.jsx');
 var SectionSummary = require('./SectionSummary.jsx');
+var SectionReferences = require('./SectionReferences.jsx');
 var UnknownError = require('./Warnings.jsx').UnknownError;
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var DRAG_TYPES = require('../constants').DRAG_TYPES;
@@ -92,6 +93,12 @@ module.exports = React.createClass({
                 break;
             case(PAGE_TYPES.CASE):
                 result = <Case {...props} />
+                break;
+            case(PAGE_TYPES.DEFINITION):
+                result = <Definition {...props} />
+                break;
+             case(PAGE_TYPES.SECTION_REFERENCES):
+                result = <SectionReferences {...props} />
                 break;
             default:
                 result = <LoadUnknown {...props} />;

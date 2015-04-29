@@ -6,7 +6,7 @@ module.exports = {
 		CASE: 'case',
 		SEARCH: 'search',
 		DEFINITION: 'definition',
-		SECTION_REFS: 'section_refs',
+		SECTION_REFERENCES: 'section_references',
 	},
 	SEARCH_TYPES: {
 		LIST: 'list',
@@ -18,7 +18,8 @@ module.exports = {
 		DEFINITION: 'definition',
 		LINK: 'link',
 		LOCATION: 'location',
-		SECTION_SUMMARY: 'section_summary'
+		SECTION_SUMMARY: 'section_summary',
+		SECTION_REFERENCES: 'section_references'
 	},
 	CONTEXT_MENU_TYPES: {
 		LOCATION: 'location'

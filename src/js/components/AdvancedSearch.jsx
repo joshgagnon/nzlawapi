@@ -275,6 +275,7 @@ module.exports = React.createClass({
             title: title,
             page_type: 'search'
         });
+        Actions.toggleAdvanced(this.props.viewer_id, this.props.page_id)
     },
     shouldComponentUpdate: function(nextProps, nextState){
         return this.state.doc_type !== nextState.doc_type || this.props.query !== nextProps.query || this.props.view !== nextProps.view;
@@ -293,7 +294,7 @@ module.exports = React.createClass({
     },
     renderForm: function(){
         return <div className="container" onKeyDown={this.onKeyDown}>
-            <form className="form-horizontal">
+            {/* <form className="form-horizontal">
                 <div className="form-group">
                     <label className="control-label col-sm-2"><span>Query Type</span></label>
                     <div className="col-sm-10">
@@ -307,7 +308,7 @@ module.exports = React.createClass({
                         </label>
                     </div>
                 </div>
-                </form>
+            </form> */ }
             { this.state.doc_type === 'instruments' ?
                     <InstrumentSearch ref="sub" query={this.props.query && this.props.query.get('doc_type') === 'instruments' ? this.props.query : null}/> :
                     <CaseSearch ref="sub" query={this.props.query && this.props.query.get('doc_type') === 'cases' ? this.props.query : null} /> }

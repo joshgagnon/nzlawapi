@@ -1,0 +1,44 @@
+<case>
+	<intituling>
+	<full-citation></full-citation>
+	<court></court>
+	<court-file></court-file>
+	<neutral-citation></neutral-citation>
+	<parties>
+		<plantiff>
+			<qualifier></qualifier>
+			<value></value>
+			<descriptor></descriptor>
+		</plantiff>
+		<defendants>
+			<defendant>
+				<qualifier></qualifier>
+				<value></value>
+				<descriptor></descriptor>
+				</defendant>
+		</defendants>
+	</parties>
+	<counsel></counsel>
+	<bench></bench>
+	<judgment></judgment>
+	<waistband>
+	<title></title>
+	<post-divider>
+	</post-divider>
+	</waistband>
+	<solicitor>
+	</solicitor>
+	</intituling>
+
+
+	<body>
+		<title></title>
+		<paragraph><label></label>
+		<text>
+		</text>
+		<quote></quote>
+		</paragraph>
+
+	</body>
+
+</case>

@@ -65,6 +65,20 @@ var DialogStore = Reflux.createStore({
     },
 });
 
+// only current used for reset
+var FormStore = Reflux.createStore({
+    listenables: Actions,
+    onReset: function(state){
+        this.trigger({
+            article_type: null,
+            search_query: null,
+            location: null,
+            find: null
+        });
+    }
+});
+
+
 var UndoMixin = {
     componentDidMount: function(){
         $(document).on('keypress', function(e){
@@ -95,6 +109,7 @@ var PageDialog = React.createClass({
 
 
 
+
 module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(PageStore, 'onState'),
@@ -103,6 +118,7 @@ module.exports = React.createClass({
         Reflux.listenTo(BrowserStore, 'onState'),
         Reflux.listenTo(PrintStore, 'onState'),
         Reflux.listenTo(ErrorStore, 'onState'),
+        Reflux.listenTo(FormStore, 'onState'),
         ReactRouter.State,
         UndoMixin
     ],
@@ -142,6 +158,7 @@ module.exports = React.createClass({
     },
 
     onState: function(state){
+        // this will bite us in the ass at some point
         this.__state = _.extend(this.__state, state);
         this.aggSetState();
     },
@@ -313,10 +330,10 @@ module.exports = React.createClass({
         var active = this.getActive();
         var parentClass ="act_browser ";
 
-        if(this.state.browser.get('underlines') ){
+        if(this.state.browser.get('underlines')){
             parentClass += ' underlines';
         }
-        if(this.state.browser.get('notes') ){
+        if(this.state.browser.get('notes')){
             parentClass += ' notes';
         }
         return (<div className className={parentClass}>
