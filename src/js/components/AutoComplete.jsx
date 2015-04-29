@@ -162,8 +162,7 @@ var AutoComplete = React.createClass({
 
         var max_length = 75;
         if(title.length > max_length){
-            title = title.substring(0, Math.floor(max_length/2)) + '\u2026' + title.substring(title.length-Math.ceil(max_length/2)-1)
-            console.log(title)
+            //title = title.substring(0, Math.floor(max_length/2)) + '\u2026' + title.substring(title.length-Math.ceil(max_length/2)-1)
         }
         // Calcuate letter offsets for bolding search query
 
