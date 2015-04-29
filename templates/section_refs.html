@@ -1,0 +1,22 @@
+<div class="section-references">
+    <span>References for {{ title }}</span></br/>
+    {% if external|length %}
+    <span>This section has been externally referenced by: </span>
+    <ul>
+        {%- for ref in external -%}
+            <li><a data-query="{{ref['url']|safe}}" data-link-id="{{'ext-'+ref['repr'].replace(' ', '-')}}" href={{'/open_article/'+ref['url']|safe}}>{{ ref['repr'] }}</a></li>
+        {%- endfor -%}
+    </ul>
+    {% endif %}
+    {% if internal|length %}
+    <span>This section has been referenced internally by: </span>
+    <ul>
+        {%- for ref in internal -%}
+            <li><a data-query="{{ref['url']|safe}}" data-link-id="{{'int-'+ref['repr'].replace(' ', '-')}}" href={{'/open_article/'+ref['url']|safe}}>{{ ref['repr'] }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if not external|length and not internal|length %}
+    <span class="section-ref-empty">There are no external or internal references to this section.</span>
+    {% endif %}
+</div>
