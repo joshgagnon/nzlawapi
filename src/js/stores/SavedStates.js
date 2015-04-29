@@ -196,7 +196,9 @@ module.exports = Reflux.createStore({
 
     },
     onReset: function(){
-        Actions.setState(Immutable.fromJS({views:{}, pages:[]}));
+        Actions.setState(Immutable.fromJS({
+            views:{}, pages:[]
+        }));
     }
 });
 
