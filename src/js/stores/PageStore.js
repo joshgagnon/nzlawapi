@@ -4,7 +4,7 @@ var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var Immutable = require('immutable');
-var request = require('superagent');
+var request = require('../catalex-request');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 
 var PageStore = Reflux.createStore({

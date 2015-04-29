@@ -3,7 +3,7 @@ var Input = require('react-bootstrap/lib/Input');
 var Modal = require('react-bootstrap/lib/Modal');
 var ModalTrigger = require('react-bootstrap/lib/ModalTrigger');
 var Button = require('react-bootstrap/lib/Button');
-var request = require('superagent-bluebird-promise');
+var request = require('../catalex-request');
 var SavedStates = require('../stores/SavedStates')
 
 var ReportIssueModal = React.createClass({
