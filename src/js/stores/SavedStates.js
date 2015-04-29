@@ -9,7 +9,7 @@ var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
 var HistoryStore = require('./HistoryStore');
 var Immutable = require('immutable');
-var request = require('superagent-bluebird-promise');
+var request = require('../catalex-request');
 
 
 

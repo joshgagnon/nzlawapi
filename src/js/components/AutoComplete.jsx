@@ -3,7 +3,7 @@ var Input = require('react-bootstrap/lib/Input');
 var EventListener = require('react-bootstrap/lib/utils/EventListener');
 var $ = require('jquery');
 var _ = require('lodash');
-var request = require('superagent-bluebird-promise');
+var request = require('../catalex-request');
 // TODO, scroll overflow on arrows
 
 var AutoComplete = React.createClass({

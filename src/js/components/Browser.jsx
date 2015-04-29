@@ -14,6 +14,7 @@ var SavedStates = require('../stores/SavedStates.js');
 var BrowserStore = require('../stores/BrowserStore.js');
 var PageStore = require('../stores/PageStore.js');
 var PrintStore = require('../stores/PrintStore.js');
+var ErrorStore = require('../stores/ErrorStore.js');
 var Actions = require('../actions/Actions');
 var SearchResults = require('./SearchResults.jsx');
 var ArticleSideBar = require('./ArticleSideBar.jsx');
@@ -24,6 +25,7 @@ var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
 var Immutable = require('immutable');
 var SaveDialog = require('./SaveDialog.jsx');
+var UnavailableModal = require('./UnavailableModal.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
@@ -115,6 +117,7 @@ module.exports = React.createClass({
         Reflux.listenTo(DialogStore, 'onState'),
         Reflux.listenTo(BrowserStore, 'onState'),
         Reflux.listenTo(PrintStore, 'onState'),
+        Reflux.listenTo(ErrorStore, 'onState'),
         Reflux.listenTo(FormStore, 'onState'),
         ReactRouter.State,
         UndoMixin
@@ -334,6 +337,7 @@ module.exports = React.createClass({
             parentClass += ' notes';
         }
         return (<div className className={parentClass}>
+                { this.state.unavailable ? <UnavailableModal /> : null }
                 <div className="container-fluid">
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }
