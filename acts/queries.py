@@ -402,7 +402,7 @@ def prep_instrument(result, replace, db):
     else:
         document = result.get('processed_document')
     if redo_skele or not result.get('skeleton'):
-        skeleton, process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
+        skeleton = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         skeleton = result.get('skeleton')
     if redo_skele or not result.get('heights'):

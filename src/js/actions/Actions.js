@@ -6,11 +6,11 @@ module.exports = Reflux.createActions({
 	'queryChange': {},
 
 	'newPage': {},
-	'requestPage': {asyncResult: true},
+	'requestPage': {children: ['completed', 'failure']},
 	'replacePage': {},
 
 	'removePage': {},
-	'getMorePage': {asyncResult: true},
+	'getMorePage': {children: ['completed', 'failure']},
 	'showPage': {},
 	'showNewPage': {},
 
@@ -25,14 +25,14 @@ module.exports = Reflux.createActions({
 	'articleJumpTo': {},
 	'articleFocusLocation': {},
 
-	'requestReferences': {asyncResult: true},
-	'requestSectionReferences': {asyncResult: true},
-	'requestVersions': {asyncResult: true},
-	'requestContents': {asyncResult: true},
+	'requestReferences': {children: ['completed', 'failure']},
+	'requestSectionReferences': {children: ['completed', 'failure']},
+	'requestVersions': {children: ['completed', 'failure']},
+	'requestContents': {children: ['completed', 'failure']},
 
 	'sectionSummaryOpened': {},
 	'sectionSummaryClosed': {},
-	'requestPopoverData': {asyncResult: true},
+	'requestPopoverData': {children: ['completed', 'failure']},
 	'popoverOpened': {},
 	'popoverClosed': {},
 	'popoverUpdate': {},
