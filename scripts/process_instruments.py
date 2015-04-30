@@ -5,7 +5,7 @@ from os import path
 import importlib
 import os
 from multiprocessing import Pool
-
+from lxml import etree
 
 def get_db(config_filename):
     config = importlib.import_module(config_filename.replace('.py', ''), 'parent')
@@ -56,12 +56,27 @@ def run_process((config_filename, ids)):
                 if not len(result):
                     continue
 
-                tree, _ = queries.process_instrument(
+                queries.process_instrument(
                     row=result[0], db=db,
                     refresh=False,
                     latest=result[0].get('latest'),
                     strategy={'links': get_links})
+
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
+            for document_id in ids:
+                query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
+                        JOIN documents d on d.id = i.id
+                        where skeleton is null
+                        and i.id = %(id)s """
+
+                cur.execute(query, {'id': document_id})
+                result = cur.fetchall()
+                if not len(result):
+                    continue
+
+                tree = etree.fromstring(result[0]['processed_document'], parser=etree.XMLParser(huge_tree=True))
                 queries.process_skeleton(result[0].get('id'), tree, db=db)
+
     except KeyboardInterrupt:
         pass
     finally:
@@ -77,7 +92,7 @@ if __name__ == "__main__":
         try:
             query = """SELECT i.id as id FROM instruments i
                     JOIN documents d on d.id = i.id
-                    where processed_document is null"""
+                    where processed_document is null or skeleton is null"""
             cur.execute(query)
             results = cur.fetchall()
             if len(results):
