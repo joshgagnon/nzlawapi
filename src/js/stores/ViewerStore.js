@@ -47,11 +47,12 @@ module.exports =  Reflux.createStore({
     },
     onRemovePage: function(page_id){
         // clean up, don't publish
+        var tabs = ['tab-0', 'tab-1'];
         for(var i=0; i<2;i++){
-            this.views = this.views.deleteIn([i, 'settings', page_id]);
-            this.views = this.views.deleteIn([i, 'popovers', page_id]);
-            this.views = this.views.deleteIn([i, 'section_summaries', page_id]);
-            this.views = this.views.deleteIn([i, 'positions', page_id]);
+            this.views = this.views.deleteIn([tabs[i], 'settings', page_id]);
+            this.views = this.views.deleteIn([tabs[i], 'popovers', page_id]);
+            this.views = this.views.deleteIn([tabs[i], 'section_summaries', page_id]);
+            this.views = this.views.deleteIn([tabs[i], 'positions', page_id]);
         }
     },
     onCloseView: function(viewer_id){
