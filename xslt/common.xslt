@@ -305,7 +305,7 @@
         </ul>
     </xsl:template>
 
-    <xsl:template match="para/label-para">
+    <xsl:template match="label-para">
         <ul class="label-para">
             <xsl:call-template name="current"/>
             <li>
@@ -313,8 +313,8 @@
                 <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                     <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
                 </xsl:if>
-                <xsl:apply-templates select="label"/>
-                <xsl:apply-templates select="para/label-para"/>
+                <!-- label will render first para/text, so must match others separately -->
+                <xsl:apply-templates select="label|para/label-para|para/text[position()>1]"/>
             </li>
         </ul>
     </xsl:template>
@@ -375,8 +375,8 @@
                 </span>
             </xsl:if>
             <xsl:choose>
-                <xsl:when test="../para/text != ''">
-                    <xsl:apply-templates select="../para[1]/text"/>
+                <xsl:when test="../para[1]/text[1] != ''">
+                    <xsl:apply-templates select="../para[1]/text[1]"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <span class="deleted label-deleted">[Repealed]</span>
@@ -495,8 +495,10 @@
     </xsl:template> -->
 
    <xsl:template match="para/text|insertwords">
-         <xsl:apply-templates/>
+         <xsl:apply-templates />
     </xsl:template>
+
+
 
    <xsl:template match="citation">
          <xsl:apply-templates/>
