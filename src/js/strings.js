@@ -43,6 +43,10 @@ module.exports = {
     'types': 'Type',
     'status': 'Status',
 
+    'errors': {
+        'unavailable': { 'title': 'Temporarily Unavailable', 'text': 'CataLex Law Browser is currently unavailable due to maintainence. Please try again shortly.' }
+    },
+
 
     'act_principal': 'Principal Acts in force',
     'act_not_in_force': 'Acts not yet in force',

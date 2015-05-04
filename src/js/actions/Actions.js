@@ -79,5 +79,6 @@ module.exports = Reflux.createActions({
 	'notify': {},
 	'closeNotification' : {},
 
-	'setUnavailable': {}
+	'clearError': {},
+	'setError': {}
 });

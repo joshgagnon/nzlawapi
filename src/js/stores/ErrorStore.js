@@ -2,6 +2,7 @@
 'use strict';
 
 var Reflux = require('reflux');
+var strings = require('../strings');
 var Actions = require('../actions/Actions');
 
 module.exports =  Reflux.createStore({
@@ -10,13 +11,19 @@ module.exports =  Reflux.createStore({
         this.errors = this.getInitialState();
     },
     getInitialState: function() {
-        return { unavailable: false };
+        return { errorTitle: null, errorText: null };
     },
     update: function() {
         this.trigger(this.errors);
     },
-    onSetUnavailable: function(status) {
-        this.errors.unavailable = status;
+    onSetError: function(name) {
+        this.errors.errorTitle = strings.errors[name].title;
+        this.errors.errorText = strings.errors[name].text;
         this.update();
     },
+    onClearError: function() {
+        this.errors.errorTitle = null;
+        this.errors.errorText = null;
+        this.update();
+    }
 });

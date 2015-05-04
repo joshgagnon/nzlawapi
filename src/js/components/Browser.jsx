@@ -25,7 +25,7 @@ var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
 var Immutable = require('immutable');
 var SaveDialog = require('./SaveDialog.jsx');
-var UnavailableModal = require('./UnavailableModal.jsx');
+var ErrorModal = require('./ErrorModal.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
@@ -337,7 +337,7 @@ module.exports = React.createClass({
             parentClass += ' notes';
         }
         return (<div className className={parentClass}>
-                { this.state.unavailable ? <UnavailableModal /> : null }
+                { this.state.errorText ? <ErrorModal errorTitle={this.state.errorTitle} errorText={this.state.errorText} /> : null }
                 <div className="container-fluid">
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }

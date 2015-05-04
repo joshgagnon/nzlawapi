@@ -12,7 +12,7 @@ superagent.Request.prototype.promise =function() {
             if(err || !value.ok){
                 if(value.status === 503) {
                     // Trigger unavailable modal here
-                    Actions.setUnavailable(true);
+                    Actions.setError('unavailable');
                 }
                 // more status code tests here
                 return reject(value);

@@ -9,16 +9,16 @@ module.exports = React.createClass({
         OverlayMixin
     ],
     clearError: function() {
-        Actions.setUnavailable(false);
+        Actions.clearError();
     },
     render: function() {
         return null;
     },
     renderOverlay: function() {
         return (
-            <Modal {...this.props} title="Temporarily Unavailable" animation={true} onRequestHide={this.clearError}>
+            <Modal {...this.props} title={this.props.errorTitle} animation={true} onRequestHide={this.clearError}>
                 <div className='modal-body'>
-                    <p>CataLex Law Browser is currently unavailable due to maintainence. Please try again shortly.</p>
+                    <p>{this.props.errorText}</p>
                 </div>
                 <div className='modal-footer'>
                     <Button onClick={this.clearError}>Close</Button>
