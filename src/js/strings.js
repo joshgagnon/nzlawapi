@@ -44,6 +44,7 @@ module.exports = {
     'status': 'Status',
 
     'errors': {
+        'logged-out': { 'title': 'Session Expired', 'text': 'Please log in again to continue using Law Browser.' },
         'unavailable': { 'title': 'Temporarily Unavailable', 'text': 'CataLex Law Browser is currently unavailable due to maintainence. Please try again shortly.' }
     },
 
