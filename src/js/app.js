@@ -6,7 +6,6 @@ var Reflux = require('reflux');
 var ReactRouter = require('react-router');
 var Browser = require('./components/Browser.jsx');
 
-Reflux.setPromise(require('bluebird'));
 
 React.initializeTouchEvents(true);
 
@@ -18,11 +17,9 @@ if(!window.console || !window.console.log){
 }
 
 var App = React.createClass({
-  render: function(){
-    return (
-            <ReactRouter.RouteHandler/>
-          );
-  }
+    render: function(){
+        return (<ReactRouter.RouteHandler/>);
+    }
 });
 
 var routes = (

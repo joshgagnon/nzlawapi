@@ -75,7 +75,7 @@ module.exports =  {
                     { this.renderTableHead() }
                     <tbody>
                     { this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i){
-                            return this.renderRow(r, i);
+                            return this.renderRow(r, i)
                         }, this).toJS()
                     }
                     </tbody>

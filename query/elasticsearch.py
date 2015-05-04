@@ -58,7 +58,8 @@ def query_all(args):
     offset = args.get('offset')
     results = es.search(
         index="legislation",
-        explain=True,
+        #explain=True,
+        doc_type="instrument",
         body={
             "from": offset, "size": 25,
             "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype'],
@@ -68,7 +69,7 @@ def query_all(args):
                     "query": {
                         "multi_match": {
                             "query": query,
-                            "fields": ["title^3", "title.english^3", "title.ngram^3", "full_citation", "document",]
+                            "fields": ["title", "title.english", "title.ngram", "full_citation", "document^3"]
                         },
                     },
                    # "script_score": {

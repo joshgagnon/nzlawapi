@@ -19,6 +19,12 @@ var SearchResult = React.createClass({
     getYear: function(){
         return this.props.data.getIn(['fields','year', 0]);
     },
+    getContent: function(){
+        if(this.props.data.getIn(['highlight','document', 0])){
+            var html = (this.props.data.getIn(['highlight','document']) ||[]).join('\u2026');
+            return <div dangerouslySetInnerHTML={{__html: html}}/>
+        }
+    },
     handleLinkClick: function(e){
         e.preventDefault();
         var query = {find: 'full',
@@ -31,13 +37,10 @@ var SearchResult = React.createClass({
     render: function(){
         var html = '',
             id = this.props.data.getIn(['fields', 'id', 0]);
-        /*if( this.props.data.getIn(['highlight'])){
-            html = (this.props.data.getIn(['highlight','document']) ||[]).join('');
-        }*/
-
         return <tr className="search-result" onClick={this.handleLinkClick}>
         <td>{ this.props.index + 1}</td>
-        <td><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} >{ this.getTitle() }</a></td>
+        <td><div><a href={"/open_article/"+this.props.data.get('_type')+'/'+id} >{ this.getTitle() }</a></div>
+            { this.getContent() }</td>
         <td> { this.getType() } </td>
         <td> { this.getYear() }</td>
         </tr>

@@ -25,7 +25,6 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                 var selector = _.map(location.locs, function(loc){
                     return '[data-location="'+loc+'"]';
                 }).join(' ') + ' .focus-link';
-                console.log($target.parents('.def-para'));
                 if(this.getDocumentId(e.target) && !$target.is('.def-para')){
                     Actions.contextMenuOpened(this.props.viewer_id, page_id, {
                             title: this.getTitle(),

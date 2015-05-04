@@ -32,60 +32,66 @@ def index(db, es):
                     "html_analyzer": {
                         "type": "custom",
                         "char_filter": "html_strip",
-                        "tokenizer":"standard",
+                        "tokenizer": "standard",
                         "filter": ["standard", "lowercase", "stop", "custom_stemmer"]
                     },
                     "html_analyzer_highlightable": {
                         "type": "custom",
                         "char_filter": "html_strip",
-                        "tokenizer":"standard",
+                        "tokenizer": "standard",
                         "filter": ["standard", "lowercase", "stop", "custom_stemmer"],
                         "term_vector": "with_positions_offsets_payloads",
                     },
                     "text_analyzer": {
-                        "tokenizer":"standard",
-                        "filter":[ "standard", "lowercase", "stop", "custom_stemmer"],
+                        "tokenizer": "standard",
+                        "filter": ["standard", "lowercase", "stop", "custom_stemmer"],
                     },
                     "nontoken_analyzer": {
-                        "tokenizer":"keyword",
-                         "filter":["lowercase", "asciifolding"],
+                        "tokenizer": "keyword",
+                        "filter": ["lowercase", "asciifolding"],
+                    },
+                    "analyzer_highlightable": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": ["standard", "lowercase", "stop", "custom_stemmer"],
+                        "term_vector": "with_positions_offsets_payloads",
                     },
                     "partial_analyzer": {
-                        "type":      "custom",
+                        "type": "custom",
                         "tokenizer": "standard",
                         "filter": [
                             "lowercase",
                             "asciifolding",
-                            "ngram_filter" 
+                            "ngram_filter"
                         ]
-                    }                    
+                    }
                 },
-                "filter":{
-                    "ngram_filter": { 
-                        "type":"edge_ngram",
-                        "min_gram": 1,
+                "filter": {
+                    "ngram_filter": {
+                        "type": "edge_ngram",
+                        "min_gram": 4,
                         "max_gram": 20
                     },
                     "custom_stemmer": {
-                        "type" : "stemmer",
-                        "name" : "english"
+                        "type": "stemmer",
+                        "name": "english"
                     }
                 }
             }
         },
 
-        "mappings":{
+        "mappings": {
             "instrument": {
                 "properties": {
                     "title":{
                         "type": "string",
                         "fields": {
-                            "simple":   {
-                                "type":     "string",
+                            "simple": {
+                                "type": "string",
                                 "analyzer": "nontoken_analyzer"
                             },
-                            "english":   {
-                                "type":     "string",
+                            "english": {
+                                "type": "string",
                                 "analyzer": "english"
                             },
                             "ngram": {
@@ -95,9 +101,9 @@ def index(db, es):
                         }
                     },
                     "document": {
-                        "type":      "string",
-                        "analyzer":  "html_analyzer"
-                    },                  
+                        "type": "string",
+                        "analyzer" : "analyzer_highlightable"
+                    },
                     "stage": { "type": "string", "index": "not_analyzed" },
                     "type": { "type": "string", "index": "not_analyzed" },
                     "repealed": { "type": "string", "index": "not_analyzed" },
@@ -130,7 +136,7 @@ def index(db, es):
                         "analyzer": "html_analyzer_highlightable",
                     },
                 }
-            }, 
+            },
             "case": {
                 "properties": {
                     "full_citation":{
@@ -149,6 +155,22 @@ def index(db, es):
 def instruments(db, es):
     #with db.cursor() as cur:
     #    cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
+    def strip_html(result):
+        result = dict(result)
+        tree = etree.fromstring(result['document'], parser=etree.XMLParser(huge_tree=True))
+        to_remove = ['skeleton', 'history', 'history-note']
+        for r in to_remove:
+            for t in tree.findall(r):
+                t.getparent().remove(t)
+        for node in tree.iter():
+            if node.text:
+                node.text = node.text + ' '
+            if node.tail:
+                node.tail = node.tail + ' '
+        result['document'] = etree.tostring(tree, method="text", encoding="utf-8")
+        result['document'] = re.sub(' +', ' ', result['document'])
+        return result
+
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
@@ -162,11 +184,13 @@ def instruments(db, es):
         results = cur.fetchmany(100)
         count = 0.0
         while len(results):
+            results = map(strip_html, results)
             helpers.bulk(es, map(lambda x: {"_id": x['id'], "_source": dict(x), "_index":'legislation', "_type": 'instrument'}, results))
             count += len(results)
-            sys.stdout.write("%d%%\r" % (count/total*100))
+            sys.stdout.write("%d%%\r" % (count / total * 100))
             sys.stdout.flush()
             results = cur.fetchmany(100)
+
 
 def definitions(db, es):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
@@ -178,11 +202,12 @@ def definitions(db, es):
         results = cur.fetchmany(10000)
         count = 0.0
         while len(results):
-            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'] ,"_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
+            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'], "_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
             count += len(results)
-            sys.stdout.write("%d%%\r" % (count/total*100))
-            sys.stdout.flush()        
+            sys.stdout.write("%d%%\r" % (count / total * 100))
+            sys.stdout.flush()
             results = cur.fetchmany(10000)
+
 
 def parts(db, es):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
@@ -197,9 +222,10 @@ def parts(db, es):
             parts = []
             helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],  "_source": dict(x), "_index":'legislation', "_type": 'part'}, results))
             count += len(results)
-            sys.stdout.write("%d%%\r" % (count/total*100))
-            sys.stdout.flush()       
+            sys.stdout.write("%d%%\r" % (count / total * 100))
+            sys.stdout.flush()
             results = cur.fetchmany(1000)
+
 
 def cases(db, es):
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
