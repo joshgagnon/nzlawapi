@@ -21,6 +21,7 @@ DB = 'catalex_browser'
 ES_SERVER = {"host": "localhost", "port": 9200}
 
 USERS_LOGIN_URL = 'https://users.catalex.nz/browser-login'
+MAX_SESSIONS_PER_USER = 2
 
 SESSION_SECRET = 'secret_here'
 SSO_SHARED_SECRET = 'put_secret_here'
