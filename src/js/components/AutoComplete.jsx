@@ -9,6 +9,7 @@ var request = require('../catalex-request');
 var AutoComplete = React.createClass({
     getInitialState: function() {
         return {
+            show: false,
             results: [],
             activeIndex: -1,
         };
@@ -122,6 +123,14 @@ var AutoComplete = React.createClass({
                         results: []
                     });
                 }*/
+                // If this is an exact match we already know about search it directly
+                var search_query = this.props.search_value.search_query.trim().toLowerCase();
+                var matched_results = this.state.results.filter(function(result) {
+                    return result.name.trim().toLowerCase() === search_query;
+                });
+                if(matched_results.length) {
+                    this.clickResult(matched_results[0]);
+                }
             }
             this.setState({show: false})
         }
