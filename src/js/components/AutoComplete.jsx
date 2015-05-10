@@ -75,8 +75,14 @@ var AutoComplete = React.createClass({
         }
     },
     componentDidUpdate: function(){
-        if(!this.state.show){
+        if(this.refs.dropdown){
+            $(this.refs.dropdown.getDOMNode()).css('max-height', $(window).height() - 60);
+        }
+        if(!this.state.results.length && this._onDocumentClickListener){
             this.unbindRootCloseHandlers();
+        }
+        else if(this.state.results.length && !this._onDocumentClickListener){
+            this.bindRootCloseHandlers();
         }
     },
     onFocus: function(e) {
@@ -230,17 +236,6 @@ var AutoComplete = React.createClass({
 
             </div>
         );
-    },
-    componentDidUpdate: function(props, state){
-        if(this.refs.dropdown){
-            $(this.refs.dropdown.getDOMNode()).css('max-height', $(window).height() - 60);
-        }
-        if(!this.state.results.length && this._onDocumentClickListener){
-            this.unbindRootCloseHandlers();
-        }
-        else if(this.state.results.length && !this._onDocumentClickListener){
-            this.bindRootCloseHandlers();
-        }
     },
     componentWillUnmount: function(){
         this.unbindRootCloseHandlers();
