@@ -1,7 +1,6 @@
 var React = require('react/addons');
 var Input = require('react-bootstrap/lib/Input');
 var EventListener = require('react-bootstrap/lib/utils/EventListener');
-var $ = require('jquery');
 var _ = require('lodash');
 var request = require('../catalex-request');
 // TODO, scroll overflow on arrows
@@ -33,7 +32,7 @@ var AutoComplete = React.createClass({
                         groups: self.groupCategories(response.body.results)
                     });
                 });
-        }, 250)
+        }, 250);
     },
     onChange: function(event) {
         /* if typing, it means no autocomplete article was selected */
@@ -76,7 +75,9 @@ var AutoComplete = React.createClass({
     },
     componentDidUpdate: function(){
         if(this.refs.dropdown){
-            $(this.refs.dropdown.getDOMNode()).css('max-height', $(window).height() - 60);
+            var dropdownElement = this.refs.dropdown.getDOMNode();
+            var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            dropdownElement.style.maxHeight = (windowHeight - dropdownElement.getBoundingClientRect().top - 15) + 'px';
         }
         if(!this.state.results.length && this._onDocumentClickListener){
             this.unbindRootCloseHandlers();
@@ -111,24 +112,11 @@ var AutoComplete = React.createClass({
         }
         // Handle enter key
         if (event.key === 'Enter' || event.key === 'Tab') {
-            if (newIndex > -1) {
-                // Choosing an active item from the list
-                var a = $(this.getDOMNode()).find('li.active a');
-                var selectedText = a.text();
-
-                this.setState({
-                    results: []
-                });
-
-                this.clickResult(this.getResultById(a.attr('data-doc-id')|0));
-            } else {
-                // Searching on current text
-               /* if (this.props.onSubmit) {
-                    this.props.onSubmit();
-                    this.setState({
-                        results: []
-                    });
-                }*/
+            if(newIndex > -1) {
+                // Choosing an active item from the result list
+                this.clickResult(this.state.results[newIndex]);
+            }
+            else {
                 // If this is an exact match we already know about search it directly
                 var search_query = this.props.search_value.search_query.trim().toLowerCase();
                 var matched_results = this.state.results.filter(function(result) {
@@ -137,12 +125,14 @@ var AutoComplete = React.createClass({
                 if(matched_results.length) {
                     this.clickResult(matched_results[0]);
                 }
+                // Otherwise search on current text
+                else {
+                    // TODO: Fix the 'double-enter' bug, needs a proper refactor with Browser
+                }
             }
-            this.setState({show: false})
+
+            this.setState({ show: false });
         }
-    },
-    getResultById: function(id){
-        return _.find(this.state.results, {id: id});
     },
     groupCategories: function(results) {
         var groups = [];

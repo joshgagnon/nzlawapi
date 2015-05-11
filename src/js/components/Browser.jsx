@@ -309,7 +309,7 @@ module.exports = React.createClass({
             formClasses += 'showing-location';
         }
         return   <form className={formClasses}>
-                 <AutoComplete endpoint="/article_auto_complete" onUpdate={this.handleArticleChange} onKeyPress={this.handleEnter} className='main-search'  autoCapitalize="off" autoCorrect="off"
+                 <AutoComplete onUpdate={this.handleArticleChange} onKeyPress={this.handleEnter} className='main-search'  autoCapitalize="off" autoCorrect="off"
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
                     { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location}
