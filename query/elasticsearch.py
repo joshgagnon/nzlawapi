@@ -65,22 +65,22 @@ def query_all(args):
             "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype'],
             "sort": get_sort(args),
             "query": {
-                "function_score" : {
-                    "query": {
-                        "multi_match": {
-                            "query": query,
-                            "fields": ["title", "title.english", "title.ngram", "full_citation", "document^3"]
-                        },
-                    },
+                "multi_match": {
+                    "query": query,
+                     "type": "phrase",
+                     "operator":   "and",
+                    "fields": ["title", "title.english", "title.ngram", "full_citation", "document^3"]
+                },
+            },
                    # "script_score": {
                    #     "script": "_score * (1.0/sqrt(doc['title.simple'].value.length()))"
                    # }
-                }
-                },
+
                 "highlight": {
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
-                    "fields": {'document': {}}
+
+                    "fields": {'document': {"fragment_size" : 50, "number_of_fragments" : 3}}
                 }
         })
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
