@@ -347,6 +347,7 @@ var ArticleSkeletonContent = React.createClass({
             return;
         }
         var target;
+
         if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
             if(!target.length){
@@ -360,6 +361,7 @@ var ArticleSkeletonContent = React.createClass({
                 var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id])').filter(function(){
                     return this.getAttribute('data-location').trim() === jump.location[i].trim();
                 });
+                // bug mother fucker!
                 if(!new_node.length){
                     new_node = $(this._refs[this._child_locations[jump.location[i]]]);
                     this._delayed_jump = {ref: this._child_locations[jump.location[i]], jump: jump};

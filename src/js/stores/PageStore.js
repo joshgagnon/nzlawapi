@@ -78,7 +78,8 @@ var PageStore = Reflux.createStore({
         if(existing_page){
             if(viewer_id !== undefined){
                 console.log('dupe');
-                Actions.showPage(viewer_id, existing_page.get('id'));
+                // may have new position
+                Actions.showPage(viewer_id, existing_page.get('id'), settings);
             }
             else{
             }
