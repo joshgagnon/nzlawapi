@@ -128,7 +128,10 @@ def find_sub_node(tree, keys):
                 adds = a.split('+')
                 first_iter = True
                 for add in adds:
-                    if '-' in add:
+                    add = add.strip()
+                    if not add:
+                        continue
+                    elif '-' in add:
                         # we can't assume any reasonable lexicographical ordering of labels, so instead
                         # find first match and continue until last
                         labels = [x.strip() for x in add.split('-')]
