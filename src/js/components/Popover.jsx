@@ -81,9 +81,9 @@ var PopoverBehaviour = {
             if(fragment){
                 classes = 'fragment ';
             }
-            return <div className={classes}>
-                    {fragment ? <DynamicArticleBreadCrumbs {...this.props} content={this.props.popoverPage} container={this}/> : null }
-                    <div dangerouslySetInnerHTML={{__html: html}}  onClick={this.interceptLink}/>
+            return <div className={classes}   onClick={this.interceptLink}>
+                    {fragment ? <DynamicArticleBreadCrumbs {...this.props} content={this.props.popoverPage} container={this} use_popover={true} /> : null }
+                    <div dangerouslySetInnerHTML={{__html: html}}/>
                 </div>
         }
         else{

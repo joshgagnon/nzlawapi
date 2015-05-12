@@ -58,18 +58,26 @@ var DynamicArticleBreadCrumbs = React.createClass({
        this.findCurrent();
     },
     handleClick: function(i, event){
-        Actions.newPage({
-            title: this.state.breadcrumbs[i].title,
-            query: this.state.breadcrumbs[i].query,
-        }, this.props.viewer_id);
-        event.preventDefault();
+        if(!this.props.use_popover){
+            event.preventDefault();
+            event.stopPropagation();
+            Actions.newPage({
+                title: this.state.breadcrumbs[i].title,
+                query: this.state.breadcrumbs[i].query,
+            }, this.props.viewer_id);
+        }
     },
     render: function(){
         return <ol className="breadcrumb">
                 { _.map(this.state.breadcrumbs, function(v, i){
+                    var url = Utils.queryUrl(v.query);
                     return <li key={i}>
                     <a onClick={this.handleClick.bind(this, i)}
-                        href={Utils.queryUrl(v.query)}>
+                        data-link-id={'breadcrumb-'+i}
+                        data-location={v.query.location}
+                        data-target-id={v.query.document_id}
+                        data-href={url}
+                        href={url}>
                     {v.repr}</a></li>
                 }, this) }
         </ol>

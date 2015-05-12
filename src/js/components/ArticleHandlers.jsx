@@ -54,7 +54,7 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                         url = 'instrument/'+url;
                     }
                     var location = Utils.getLocation(link);
-                    var location_string = link.attr('data-location')
+                    var location_string = link.attr('data-location');
                     Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                             type: POPOVER_TYPES.LINK,

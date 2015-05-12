@@ -20,7 +20,7 @@ module.exports =  {
         return $(this.getDOMNode()).parents('.tab-content, .results-container')
     },
     shouldComponentUpdate: function(newProps){
-        return this.props.page.get('content') !== newProps.page.get('content');
+        return this.props.page.get('content') !== newProps.page.get('content') || this.props.page.get('fetching') !== newProps.page.get('fetching');
     },
     isDefaultSortCol: function(key){
         return !this.props.page.getIn(['query', 'sort_col']) && key === '_score';
@@ -57,7 +57,6 @@ module.exports =  {
             </thead>
     },
     renderTable: function(){
-
         var total = this.props.page.getIn(['content', 'search_results', 'total']);
         if(!this.props.page.getIn(['content', 'search_results']) && this.props.page.get('fetching')){
             return <div className="search-results"><div className="csspinner" /></div>
