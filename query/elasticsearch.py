@@ -51,6 +51,18 @@ def get_sort(args):
     return sort_order
 
 
+"""
+            "query": {
+              "bool": {
+                "should": [
+                    {"match": {"title": {"type" : "phrase",  "query" : query}}},
+                    {"match": {"title.english": {"type" : "phrase",  "query" : query}}},
+                    {"match": {"title.ngram": {"type" : "phrase",  "query" : query}}},
+                    {"match": {"document": {  "query" : query}}},
+                    ]
+            }},
+"""
+
 def query_all(args):
     """ this is the basic search """
     query = args.get('query').lower()
@@ -79,8 +91,8 @@ def query_all(args):
                 "highlight": {
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
-
-                    "fields": {'document': {"fragment_size" : 50, "number_of_fragments" : 3}}
+                    # bug with match phrase, returning too much
+                    "fields": {'document': {"fragment_size" : 100, "number_of_fragments" : 5,"no_match_size": 100}}
                 }
         })
     return {'type': 'search', 'search_results': results['hits'], 'title': 'Search: %s' % query}
