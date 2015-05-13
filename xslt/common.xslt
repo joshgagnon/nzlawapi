@@ -155,7 +155,9 @@
                         <xsl:value-of select="@data-hook-length"/>
                     </xsl:attribute>
                 </xsl:if>
-            <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">part</xsl:with-param>
+            </xsl:call-template>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
                      <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
@@ -174,7 +176,7 @@
                 <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 <xsl:value-of select="heading"/>
             </h2>
-            <xsl:apply-templates select="subpart|crosshead|prov|amend/prov"/>
+            <xsl:apply-templates select="subpart|crosshead|prov|amend/prov|para"/>
         </div>
     </xsl:template>
 
@@ -193,7 +195,9 @@
                         <xsl:value-of select="@data-hook-length"/>
                     </xsl:attribute>
                 </xsl:if>
-            <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">subpart</xsl:with-param>
+            </xsl:call-template>
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
                      <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
@@ -239,8 +243,10 @@
                     <xsl:attribute name="data-location">s <xsl:value-of select="label"/></xsl:attribute>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:call-template name="current"/>
-
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">prov</xsl:with-param>
+            </xsl:call-template>
+            <xsl:if test="heading !=''">
                     <h5 class="prov labelled">
                         <a class="focus-link">
                         <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@id"/></xsl:attribute>
@@ -251,7 +257,7 @@
                         <xsl:value-of select="heading"/>
                         </a>
                     </h5>
-
+            </xsl:if>
 
             <ul class="prov">
                 <li>
@@ -262,7 +268,9 @@
                                  <p class="headless label">
                                         <span class="label">
                                                 <xsl:call-template name="parentquote"/>
+                                                 <a class="focus-link">
                                                 <xsl:value-of select="label"/>
+                                                </a>
                                         </span>
                                          <xsl:value-of select="prov.body/para/text"/>
                                 </p>
@@ -284,8 +292,7 @@
                             </span>
                         </xsl:otherwise>
                     </xsl:choose>
-                    <xsl:apply-templates select="def-para" />
-                    <xsl:apply-templates select="notes/history/history-note" />
+                    <xsl:apply-templates select="def-para|prov.body/para/def-para|notes/history/history-note" />
                 </li>
             </ul>
         </div>
@@ -294,7 +301,9 @@
 
     <xsl:template match='subprov'>
         <div class="subprov">
-            <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">subprov</xsl:with-param>
+            </xsl:call-template>
             <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                 <xsl:attribute name="data-location">
                     <xsl:call-template name="bracketlocation">
@@ -309,7 +318,9 @@
 
     <xsl:template match='prov.body/para/list'>
         <ul class="list">
-            <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">list</xsl:with-param>
+            </xsl:call-template>
             <xsl:apply-templates select="item" />
         </ul>
     </xsl:template>
@@ -318,7 +329,9 @@
         <ul class="label-para">
             <xsl:call-template name="current"/>
             <li>
-                <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">label-para</xsl:with-param>
+            </xsl:call-template>
                 <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                     <xsl:attribute name="data-location">
                     <xsl:call-template name="bracketlocation">
@@ -336,7 +349,9 @@
 
     <xsl:template match="def-para">
         <div class="def-para">
-            <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">def-para</xsl:with-param>
+            </xsl:call-template>
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
@@ -381,7 +396,9 @@
 
     <xsl:template match="label">
         <p class="labelled label">
-            <xsl:call-template name="current"/>
+            <xsl:call-template name="current">
+                <xsl:with-param name="class">labelled label</xsl:with-param>
+            </xsl:call-template>
 
             <xsl:if test="text() != ''">
                 <span class="label focus-link">
@@ -607,13 +624,18 @@
         <xsl:attribute name="id">
             <xsl:value-of select="@id"/>
         </xsl:attribute>
+        <xsl:if test="label != '' and starts-with(label, 'Part ')">
+               <xsl:attribute name="data-location">, <xsl:value-of select="label"/></xsl:attribute>
+        </xsl:if>
             <h2 class="head1">
                  <xsl:if test="label != ''">
-                <span class="label"><xsl:value-of select="label"/></span><br/>
+                <span class="label">
+                    <xsl:value-of select="label"/>
+                </span><br/>
                 </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>
-        <xsl:apply-templates select="prov|para|head2|head3|head4|head5"/>
+        <xsl:apply-templates select="prov|para|head2|head3|head4|head5|notes"/>
       </div>
     </xsl:template>
 

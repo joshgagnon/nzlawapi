@@ -16,8 +16,9 @@
     </xsl:template>
 
     <xsl:template name="current">
+        <xsl:param name="class" />
         <xsl:if test="@current = 'true'">
-           <xsl:attribute name="class">current</xsl:attribute>
+           <xsl:attribute name="class">current <xsl:value-of select="$class"/></xsl:attribute>
         </xsl:if>
     </xsl:template>
 

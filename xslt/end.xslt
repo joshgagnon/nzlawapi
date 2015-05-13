@@ -105,5 +105,11 @@
             </ul>
         </div>
     </xsl:template>
+
+
+    <xsl:template match="reprint.amend">
+        <xsl:apply-templates select="reprint.amend"/>
+    </xsl:template>
+
 </xsl:stylesheet>
 

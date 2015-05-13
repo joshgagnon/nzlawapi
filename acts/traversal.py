@@ -50,20 +50,21 @@ tag_names = {
     'sch': 'schedule',
     'schedule': 'schedule',
     'part': 'part',
+    'pt': 'part',
     'subpart': 'subpart'
 }
 
 
 def labelize(string):
     # 2 is very slow, 3 is stupid, but I've found cases where the label has ()
-    #return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s'] or label = '(%s)'" % (string, string.upper(), string)
+    # return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s'] or label = '(%s)'" % (string, string.upper(), string)
     return "label[normalize-space(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ()', 'abcdefghijklmnopqrstuvwxyz  ')) = '%s']" %  string.lower()
 
 
 def nodes_from_path_string(tree, path):
     path = path.lower().strip()
-    pattern = re.compile('(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)[, ]{,2}(.*)')
-    part_pattern = re.compile('([a-z\d]+),? ?(subpart|clause|rule|section|ss|s|cl|r)?')
+    pattern = re.compile('(schedule|section|regulation|sch|clause|rule|part|subpart|pt|reg|ss|s|r|cl)[, ]{,2}(.*)')
+    part_pattern = re.compile('([a-z\d]+),? ?(subpart|regulation|clause|rule|section|part|pt|reg|ss|s|cl|r)?')
     parts = pattern.match(path)
     keys = []
     try:
@@ -77,16 +78,21 @@ def nodes_from_path_string(tree, path):
                     sub = part_pattern.match(remainder).groups()
                     # sub[0] is the sch/part label
                     label = sub[0]
-                    remainder = remainder[len(label):].strip()
+                    remainder = remainder[len(label):].replace(',', '').strip()
                 try:
                     tree = tree.xpath(".//%s[%s]" %
                             (tag_names[parts[0]], labelize(label)))[0]
-                except IndexError:
-                    # try empty label
-                    tree = tree.xpath(".//%s" %
-                            (tag_names[parts[0]]))[0]
-                    remainder = path[len(parts[0]):]
-                return nodes_from_path_string(tree, remainder.replace(',', '').strip())
+                    return nodes_from_path_string(tree, remainder)
+                except IndexError: pass
+                try:
+                    # try fake Part
+                    tree = tree.xpath(".//head1[%s]" % labelize('part %s' % label))[0]
+                    return nodes_from_path_string(tree, remainder)
+                except IndexError: pass
+                # try empty label
+                tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
+                remainder = path[len(parts[0]):]
+                return nodes_from_path_string(tree, remainder)
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
                     tree = tree.findall(".//body")[0]
@@ -147,7 +153,8 @@ def find_sub_node(tree, keys):
                         start = get_closest(node, labels[0])
                         last = get_closest(node, labels[1])
                         tag = start.tag
-                        # this sucks, having to start at start
+                        # this sucks, having to start at start,
+                        # try to find way to start iter at arbitrary node
                         tree_iter = tree.iter(tag)
                         nodes.append(start)
                         current = None

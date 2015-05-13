@@ -1,7 +1,7 @@
 // visibility for fragments
 
 .fragment .legislation{
-    h1,h2,h3,h4,h5, .cover{
+    h1,h2,h3,h4,h5, .cover, .empowering-prov-layout{
         display:none;
     }
     .current, .prov{
@@ -22,6 +22,15 @@
 
 .legislation .labelled.label .label{
     cursor:pointer;
+}
+
+.legislation-result .legislation div.prov ul.prov li p.headless.label{
+    margin-bottom:0;
+    a{
+        text-decoration: none;
+        color:#000;
+        cursor:pointer;
+    }
 }
 
 .legislation p.label{
