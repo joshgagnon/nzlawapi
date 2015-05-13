@@ -22,15 +22,21 @@ module.exports = React.createClass({
             $(this).removeClass('active');
         });
         this.active = [];
-        var active = $el.find('[href='+value.get('id')+']');
-        if(active && active.parent().length){
-            active  = active.parent();
-            active.addClass('active');
-            active.parentsUntil( '.contents', 'li').each(function(){
-                $(this).addClass('active');
-            });
-            $el.scrollTop(active.offset().top -$el.offset().top - $el.height()/2 + $el.scrollTop());
-        }else if($el.find('li:first').siblings().length === 0){
+        var active;
+        var ids = value.get('ids') ? value.get('ids').toJS() : [];
+        while(ids.length){
+            active = $el.find('[href='+ids.shift()+']');
+            if(active && active.parent().length){
+                active  = active.parent();
+                active.addClass('active');
+                active.parentsUntil( '.contents', 'li').each(function(){
+                    $(this).addClass('active');
+                });
+                $el.scrollTop(active.offset().top -$el.offset().top - $el.height()/2 + $el.scrollTop());
+                break;
+            }
+        }
+        if(!ids.length && $el.find('li:first').siblings().length === 0){
             $el.find('li:first').addClass('active')
         }
         this.refs.jumpTo.onPositionChange(value);

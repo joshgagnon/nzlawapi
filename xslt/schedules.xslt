@@ -81,7 +81,14 @@
             <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <xsl:attribute name="data-location"><xsl:if test="ancestor::schedule">&#160;</xsl:if>sch <xsl:value-of select="label"/></xsl:attribute>
+            <xsl:attribute name="data-location">
+              <xsl:if test="ancestor::schedule">&#160;</xsl:if>
+                <xsl:choose>
+                  <xsl:when test="label[normalize-space(.) != '']">sch <xsl:value-of select="label"/>
+                  </xsl:when>
+                  <xsl:otherwise>sch</xsl:otherwise>
+                  </xsl:choose>
+              </xsl:attribute>
             <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
                 <tbody><tr>
                     <td class="header">

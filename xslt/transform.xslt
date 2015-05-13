@@ -9,7 +9,6 @@
     <xsl:import href="schedules.xslt" />
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:'`’")(</xsl:variable>
-
     <xsl:template match="/">
 
         <xsl:apply-templates />
@@ -30,7 +29,21 @@
         <xsl:if test="../@quote = '1'"><xsl:attribute name="quote"></xsl:attribute>“</xsl:if>
     </xsl:template>
 
+    <xsl:template name="openbracket">
+    <xsl:if test="not(contains(. ,'('))">(</xsl:if>
+    </xsl:template>
 
+    <xsl:template name="closebracket">
+    <xsl:if test="not(contains(. ,'('))">)</xsl:if>
+    </xsl:template>
+
+    <xsl:template name="bracketlocation">
+        <xsl:param name="label" />
+        <xsl:choose>
+            <xsl:when test="not(contains($label ,'('))">(<xsl:value-of select="$label"/>)</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$label"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
  <xsl:template match="*[@amend.level1='struckout-draft']">
         <del href="struckout-draft">
@@ -40,7 +53,7 @@
 
  <xsl:template match="*[@amend.level1='insert-draft']">
         <ins href="insert-draft">
-                 <xsl:apply-imports/>
+            <xsl:apply-imports/>
         </ins>
 </xsl:template>
 

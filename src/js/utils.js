@@ -61,7 +61,19 @@ module.exports = {
         }
         breadcrumb = _.filter(breadcrumb);
         locs = _.filter(locs);
-        return {repr: locs.join(''), locs: breadcrumb};
+        var filtered_locs = [];
+        var is_sub = function(loc1, loc2){
+            //loc2 must have '.',
+            return loc2.indexOf('.') > -1 && loc2.replace(/[()]/g, '').indexOf(loc1.replace(/[()]/g, '')) > -1;
+        }
+        // no filter now locs that are consecutive rules, identified by having a '.'
+        for(var i=0;i < locs.length -1; i++){
+            if(!is_sub(locs[i], locs[i+1])){
+                filtered_locs.push(locs[i]);
+            }
+        }
+        filtered_locs.push(locs[locs.length-1]);
+        return {repr: filtered_locs.join(''), locs: breadcrumb};
     },
     locationsToSelector: function(locs){
         return _.map(locs, function(loc){

@@ -1,5 +1,6 @@
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+
 
     <xsl:template match="act">
         <div class="legislation">
@@ -234,8 +235,7 @@
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:call-template name="current"/>
-              <xsl:choose>
-                <xsl:when test="label != ''">
+
                     <h5 class="prov labelled">
                         <a class="focus-link">
                         <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@id"/></xsl:attribute>
@@ -246,8 +246,8 @@
                         <xsl:value-of select="heading"/>
                         </a>
                     </h5>
-                </xsl:when>
-            </xsl:choose>
+
+
             <ul class="prov">
                 <li>
                     <xsl:choose>
@@ -266,7 +266,7 @@
                              </xsl:if>
                         </xsl:when>
                         <xsl:otherwise>
-
+                            <!-- error in Lawyers and Conveyancers Act (Lawyers: Conduct and Client Care) Rules 2008 chapter 15 -->
                             <span class="deleted label-deleted">
                                 <xsl:choose>
                                 <xsl:when test="ancestor::act">
@@ -291,7 +291,11 @@
         <div class="subprov">
             <xsl:call-template name="current"/>
             <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
-                <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
+                <xsl:attribute name="data-location">
+                    <xsl:call-template name="bracketlocation">
+                        <xsl:with-param name="label"><xsl:value-of select="label"/></xsl:with-param>
+                    </xsl:call-template>
+                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="label"/>
               <xsl:apply-templates select="para/*[position() > 1]|para[position() > 1]/*|para/amend/prov|label-para" />
@@ -311,7 +315,12 @@
             <li>
                 <xsl:call-template name="current"/>
                 <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
-                    <xsl:attribute name="data-location">(<xsl:value-of select="label"/>)</xsl:attribute>
+                    <xsl:attribute name="data-location">
+                    <xsl:call-template name="bracketlocation">
+                        <xsl:with-param name="label"><xsl:value-of select="label"/></xsl:with-param>
+                    </xsl:call-template>
+                </xsl:attribute>
+
                 </xsl:if>
                 <!-- label will render first para/text, so must match others separately -->
                 <xsl:apply-templates select="label|para/label-para|para/text[position()>1]"/>
@@ -371,7 +380,10 @@
 
             <xsl:if test="text() != ''">
                 <span class="label focus-link">
-                     <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
+                     <xsl:call-template name="parentquote"/>
+                     <xsl:call-template name="openbracket"/>
+                     <xsl:value-of select="."/>
+                     <xsl:call-template name="closebracket"/>
                 </span>
             </xsl:if>
             <xsl:choose>
@@ -487,6 +499,17 @@
         </a>
     </xsl:template>
 
+    <xsl:template match="link">
+        <a>
+            <xsl:attribute name="data-link-id"><xsl:value-of select="@link-id"/></xsl:attribute>
+            <xsl:attribute name="data-href"><xsl:value-of select="@href"/>
+            </xsl:attribute>
+              <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@xmlId"/>
+            </xsl:attribute>
+            <xsl:value-of select="linkcontent"/>xx
+        </a>
+    </xsl:template>
+
    <!-- <xsl:template match="*[@current = 'true']">
 
         <xsl:attribute name="class">current
@@ -501,7 +524,7 @@
 
 
    <xsl:template match="citation">
-         <xsl:apply-templates/>
+         x<xsl:apply-templates/>x
     </xsl:template>
 
    <xsl:template match="example">
@@ -640,4 +663,21 @@
     <xsl:template match="brk">
         <br class="brk"/>
     </xsl:template>
+
+    <xsl:template match="list">
+            <ul class="list">
+             <xsl:apply-templates select="item"/>
+        </ul>
+    </xsl:template>
+
+    <xsl:template match="list/item">
+        <li class="bull">
+            <p class="item">
+                <xsl:value-of select="label"/>
+
+                <xsl:apply-templates select="para/text|para/list"/>
+            </p>
+        </li>
+    </xsl:template>
+
 </xsl:stylesheet>

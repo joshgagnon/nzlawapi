@@ -55,7 +55,9 @@ tag_names = {
 
 
 def labelize(string):
-    return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s']" % (string, string.upper())
+    # 2 is very slow, 3 is stupid, but I've found cases where the label has ()
+    #return "label[normalize-space(.) = '%s'] or label[normalize-space(.) = '%s'] or label = '(%s)'" % (string, string.upper(), string)
+    return "label[normalize-space(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ()', 'abcdefghijklmnopqrstuvwxyz  ')) = '%s']" %  string.lower()
 
 
 def nodes_from_path_string(tree, path):
@@ -69,15 +71,21 @@ def nodes_from_path_string(tree, path):
             parts = parts.groups()
             if any([parts[0].startswith(k) for k in tag_names.keys()]):
                 # match up 'cl ' or 's ', 'section ' or 'clause ' then until '('
-                label = '1'
+                label = ''
                 remainder = parts[1].strip()
                 if remainder: # and not re.compile('(s|sch|cl|clause)').match(remainder):
                     sub = part_pattern.match(remainder).groups()
                     # sub[0] is the sch/part label
                     label = sub[0]
                     remainder = remainder[len(label):].strip()
-                tree = tree.xpath(".//%s[%s]" %
-                        (tag_names[parts[0]], labelize(label)))[0]
+                try:
+                    tree = tree.xpath(".//%s[%s]" %
+                            (tag_names[parts[0]], labelize(label)))[0]
+                except IndexError:
+                    # try empty label
+                    tree = tree.xpath(".//%s" %
+                            (tag_names[parts[0]]))[0]
+                    remainder = path[len(parts[0]):]
                 return nodes_from_path_string(tree, remainder.replace(',', '').strip())
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
@@ -96,6 +104,7 @@ def nodes_from_path_string(tree, path):
                         i += 1
     except IndexError, e:
         raise CustomException("Path not found")
+    print keys
     return find_sub_node(tree, keys)
 
 
@@ -126,7 +135,6 @@ def find_sub_node(tree, keys):
         for i, a in enumerate(keys):
             if a:
                 adds = a.split('+')
-                first_iter = True
                 for add in adds:
                     add = add.strip()
                     if not add:
@@ -155,8 +163,6 @@ def find_sub_node(tree, keys):
                         # find every tag that matches depth, until we match last
                     else:
                         nodes.append(get_closest(node, add.strip()))
-
-                    first_iter = True
                 node = nodes
             if i < len(keys) - 1:
                 node = nodes[-1]

@@ -318,11 +318,6 @@ module.exports = React.createClass({
                         <span className="input-group-btn">
                         <Button bsStyle={'primary'} onClick={this.submit} >Search</Button>
                         </span>
-                   {/* <SplitButton bsStyle={'primary'} title={'Search'} onClick={this.submit} >
-                            <MenuItem eventKey={'search_all'}>Search All</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={'search_advanced'} onClick={this.toggleAdvanced}>Advanced Search</MenuItem>
-                    </SplitButton>*/ }
                      </AutoComplete>
                 </form>
     },

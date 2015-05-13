@@ -131,10 +131,10 @@ var ArticleSkeletonContent = React.createClass({
             var $part = $(find_current_part(top));
             var repr = Utils.getLocation($part).repr;
             var id = $part.attr('id') || $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-
+            var ids = $el.parents('[id]').map(function(){ return '#' + this.getAttribute('id'); }).toArray();
             if(repr){
                 Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                    {pixel: top, repr: repr, id: id ? '#'+id : id});
+                    {pixel: top, repr: repr, id: id ? '#'+id : id, ids: ids});
             }
         }
     },
@@ -422,9 +422,10 @@ var ArticleContent = React.createClass({
                 var $el = $(find_current(self.locations));
                 var result = Utils.getLocation($el).repr;
                 var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
+                var ids = $el.parents('[id]').map(function(){ return '#' + this.getAttribute('id'); }).toArray();
                 if(result){
                     Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                        {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id});
+                        {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id, ids: ids});
                 }
             }
         }, 300);

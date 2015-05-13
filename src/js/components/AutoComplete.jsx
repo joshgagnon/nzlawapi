@@ -26,6 +26,7 @@ var AutoComplete = React.createClass({
                 })
              .promise()
              .then(function(response){
+                    self._fetching = false;
                     self.bindRootCloseHandlers();
                     self.setState({
                         results: response.body.results,
@@ -51,6 +52,7 @@ var AutoComplete = React.createClass({
                     results: []
                 });
             } else {
+                this._fetching = true;
                 this.debounceFetch(value);
             }
         }

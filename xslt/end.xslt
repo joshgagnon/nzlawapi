@@ -84,22 +84,6 @@
         <hr class="reprint-index"/>
     </xsl:template>
 
-    <xsl:template match="list">
-            <ul class="list">
-             <xsl:apply-templates select="item"/>
-        </ul>
-    </xsl:template>
-
-    <xsl:template match="list/item">
-        <li>
-            <p class="labelled item">
-                <span class="label"><xsl:value-of select="label"/></span>
-
-                <xsl:apply-templates select="para/text|para/list"/>
-            </p>
-        </li>
-    </xsl:template>
-
 
 
     <xsl:template match="reprint.notes">

@@ -381,7 +381,8 @@ def get_contents(document_id):
         cur.execute(""" SELECT contents from documents WHERE id = %(document_id)s""",
             {'document_id': document_id})
         result = cur.fetchone()
-        if not result.get('contents'):
+        # TODO, rewmove this  !!!!!!!!!!!!!!!!!!!!
+        if True or not result.get('contents'):
             contents = process_contents(document_id,
                 etree.fromstring(get_instrument_object(document_id).document, parser=large_parser), db=db)
         else:

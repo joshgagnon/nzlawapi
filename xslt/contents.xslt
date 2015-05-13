@@ -37,7 +37,7 @@
                 <span class="schedule-label">Schedule <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
-                <xsl:apply-templates select="./schedule.provisions/prov|./schedule.provisions/part|./schedule.provisions/schedule.group/schedule|./schedule.forms/form" />
+                <xsl:apply-templates select="./schedule.provisions/prov|./schedule.provisions/part|./schedule.misc/head1|./schedule.provisions/schedule.group/schedule|./schedule.forms/form" />
              </ul>
         </li>
     </xsl:template>
@@ -48,6 +48,19 @@
                 <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
                 <xsl:attribute name="title">Subpart <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
                 <span class="subpart-label">Subpart <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
+            </a>
+             <ul class="nav">
+                <xsl:apply-templates select="./crosshead|./prov"/>
+            </ul>
+        </li>
+    </xsl:template>
+
+    <xsl:template match="head1[@toc]">
+        <li>
+            <a>
+                <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
+                <xsl:attribute name="title"><xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
+                <span class="subpart-label"><span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
             </a>
              <ul class="nav">
                 <xsl:apply-templates select="./crosshead|./prov"/>
