@@ -1,5 +1,5 @@
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"  xmlns:atidlm="http://www.arbortext.com/namespace/atidlm">
 
 
     <xsl:template match="act">
@@ -120,6 +120,10 @@
         </div>
     </xsl:template>
 
+    <xsl:template match="body[@prov-type='regulation']/heading">
+        <h2 class="regulation-type"><xsl:value-of select="."/></h2>
+    </xsl:template>
+
     <xsl:template match="body">
         <div class="body">
             <xsl:attribute name="id">
@@ -136,6 +140,7 @@
              <xsl:apply-templates />
         </div>
     </xsl:template>
+
 
     <xsl:template match="part">
         <div class="part">
@@ -499,14 +504,14 @@
         </a>
     </xsl:template>
 
-    <xsl:template match="link">
+    <xsl:template match="atidlm:link">
         <a>
-            <xsl:attribute name="data-link-id"><xsl:value-of select="@link-id"/></xsl:attribute>
-            <xsl:attribute name="data-href"><xsl:value-of select="@href"/>
+            <xsl:attribute name="data-link-id"><xsl:value-of select="@atidlm:xmlId"/></xsl:attribute>
+            <xsl:attribute name="data-href"><xsl:value-of select="atidlm:resourcepair/@atidlm:targetXmlId"/>
             </xsl:attribute>
-              <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@xmlId"/>
+              <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="atidlm:resourcepair/@atidlm:targetXmlId"/>
             </xsl:attribute>
-            <xsl:value-of select="linkcontent"/>xx
+            <xsl:value-of select="atidlm:linkcontent"/>
         </a>
     </xsl:template>
 
@@ -524,7 +529,7 @@
 
 
    <xsl:template match="citation">
-         x<xsl:apply-templates/>x
+         <xsl:apply-templates />
     </xsl:template>
 
    <xsl:template match="example">
