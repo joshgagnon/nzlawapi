@@ -11,6 +11,7 @@ def require_auth(f):
                 # hack for dev, find a better way
                 if current_app.config.get('NO_AUTH'):
                     session['user_id'] = 666
+                    return f(*args, **kwargs)
                 # Add IP + UA hash to user_logins table
                 db = get_db()
                 with db.cursor() as cur:
