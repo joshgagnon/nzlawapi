@@ -163,10 +163,10 @@
                      <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
                      </xsl:when>
                     <xsl:when test="ancestor::schedule">
-                        <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
+                        <xsl:attribute name="data-location">, cl <xsl:value-of select="normalize-space(./prov/label)"/></xsl:attribute>
                     </xsl:when>
                         <xsl:otherwise>
-                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
+                        <xsl:attribute name="data-location">s <xsl:value-of select="normalize-space(./prov/label)"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:if test="not(ancestor::amend)">
@@ -203,10 +203,10 @@
                      <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
                      </xsl:when>
                     <xsl:when test="ancestor::schedule">
-                        <xsl:attribute name="data-location">, cl <xsl:value-of select="./prov/label"/></xsl:attribute>
+                        <xsl:attribute name="data-location">, cl <xsl:value-of select="normalize-space(./prov/label)"/></xsl:attribute>
                     </xsl:when>
                         <xsl:otherwise>
-                        <xsl:attribute name="data-location">s <xsl:value-of select="./prov/label"/></xsl:attribute>
+                        <xsl:attribute name="data-location">s <xsl:value-of select="normalize-space(./prov/label)"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
                  <xsl:if test="not(ancestor::amend)">
@@ -237,10 +237,10 @@
                      <xsl:when test="ancestor::*[@quote] or ancestor::amend">
                      </xsl:when>
                 <xsl:when test="ancestor::schedule">
-                    <xsl:attribute name="data-location">, cl <xsl:value-of select="label"/></xsl:attribute>
+                    <xsl:attribute name="data-location">, cl <xsl:value-of select="normalize-space(label)"/></xsl:attribute>
                 </xsl:when>
                     <xsl:otherwise>
-                    <xsl:attribute name="data-location">s <xsl:value-of select="label"/></xsl:attribute>
+                    <xsl:attribute name="data-location">s <xsl:value-of select="normalize-space(label)"/></xsl:attribute>
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:call-template name="current">
@@ -307,7 +307,7 @@
             <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                 <xsl:attribute name="data-location">
                     <xsl:call-template name="bracketlocation">
-                        <xsl:with-param name="label"><xsl:value-of select="label"/></xsl:with-param>
+                        <xsl:with-param name="label"><xsl:value-of select="normalize-space(label)"/></xsl:with-param>
                     </xsl:call-template>
                  </xsl:attribute>
             </xsl:if>
@@ -335,7 +335,7 @@
                 <xsl:if test="label != '' and not(ancestor::*[@quote]) and not(ancestor::amend)">
                     <xsl:attribute name="data-location">
                     <xsl:call-template name="bracketlocation">
-                        <xsl:with-param name="label"><xsl:value-of select="label"/></xsl:with-param>
+                        <xsl:with-param name="label"><xsl:value-of select="normalize-space(label)"/></xsl:with-param>
                     </xsl:call-template>
                 </xsl:attribute>
 
@@ -625,7 +625,7 @@
             <xsl:value-of select="@id"/>
         </xsl:attribute>
         <xsl:if test="label != '' and starts-with(label, 'Part ')">
-               <xsl:attribute name="data-location">, <xsl:value-of select="label"/></xsl:attribute>
+               <xsl:attribute name="data-location">, <xsl:value-of select="normalize-space(label)"/></xsl:attribute>
         </xsl:if>
             <h2 class="head1">
                  <xsl:if test="label != ''">

@@ -84,8 +84,7 @@
             <xsl:attribute name="data-location">
               <xsl:if test="ancestor::schedule">&#160;</xsl:if>
                 <xsl:choose>
-                  <xsl:when test="label[normalize-space(.) != '']">sch <xsl:value-of select="label"/>
-                  </xsl:when>
+                  <xsl:when test="label[normalize-space(.) != '']">sch <xsl:value-of select="normalize-space(label)"/></xsl:when>
                   <xsl:otherwise>sch</xsl:otherwise>
                   </xsl:choose>
               </xsl:attribute>

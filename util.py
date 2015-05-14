@@ -146,6 +146,8 @@ def get_path(node):
             if text:
                 result = u'%s %s' % (prov_str, text + result)
 
+    # need a iter for fake parts, ie head1 with label that says 'Part x'
+
     it = itertools.chain([node] if node.tag == 'schedule' else [], iter(node.iterancestors('schedule')))
     for n in it:
         if len(n.xpath('./label')):
