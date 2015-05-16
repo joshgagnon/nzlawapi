@@ -82,16 +82,21 @@ def nodes_from_path_string(tree, path):
                 try:
                     tree = tree.xpath(".//%s[%s]" %
                             (tag_names[parts[0]], labelize(label)))[0]
-                    return nodes_from_path_string(tree, remainder)
-                except IndexError: pass
-                try:
-                    # try fake Part
-                    tree = tree.xpath(".//head1[%s]" % labelize('part %s' % label))[0]
-                    return nodes_from_path_string(tree, remainder)
-                except IndexError: pass
-                # try empty label
-                tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
-                remainder = path[len(parts[0]):]
+
+                except IndexError:
+                    try:
+                        # try fake Part
+                        tree = tree.xpath(".//head1[%s]" % labelize('part %s' % label))[0]
+                    except IndexError:
+                        # try empty label, ie unnumbered schedule
+                        tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
+                        remainder = path[len(parts[0]):]
+                # total hack job, but must support subpart/part ranges
+                #if remainder.startswith('-'):
+                #    tree = tree.getparent()
+                #    remainder = parts[1]
+                #    print remainder
+                #    print tree
                 return nodes_from_path_string(tree, remainder)
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:

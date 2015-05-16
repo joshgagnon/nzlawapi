@@ -1,0 +1,1 @@
+wget -m --random-wait 0.1 -e robots=off http://www.legislation.govt.nz/subscribe/ --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36" --referer "http://www.legislation.govt.nz/subscribe/"

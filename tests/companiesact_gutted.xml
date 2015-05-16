@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<act act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.first.valid="2007-09-18" date.terminated="nulldate" description="" hard.copy.reprint="nulldate" id="DLM319569" instructing.office="Economic Development" irdnumbering="no" prospective.consolidation="F" prospective.consolidation.base.version="" prospective.consolidation.based.on="" sonz="" stage="reprint" terminated="" xml:lang="en-NZ" year="1993" year.imprint="2014">
+	<cover id="DLM319570">
+		<reprint-date>2014-09-11</reprint-date>
+		<title xml:lang="en-NZ">Companies Act 1993</title>
+		<assent>1993-09-28</assent>
+		<commencement>see section 1(2)</commencement>
+		<cover.reprint-note>
+			<para>
+				<text>Changes authorised by
+					<citation jurisdiction="nz">
+						<extref href="DLM2998524">subpart 2</extref></citation>of Part 2 of the Legislation Act 2012 have been made in this official reprint.</text>
+			</para>
+			<para>
+				<text>Note 4 at the end of this reprint provides a list of the amendments incorporated.</text>
+			</para>
+			<admin-office>This Act is administered by the
+				<ministry>Ministry of Business, Innovation, and Employment</ministry>
+				.</admin-office>
+		</cover.reprint-note>
+	</cover>
+	<contents>
+		<heading xml:lang="en-NZ">Contents</heading>
+		<toc/>
+	</contents>
+	<front id="DLM319571" xml:lang="en-NZ">
+		<long-title id="DLM319572" toc="yes" xml:lang="en-NZ">
+			<para xml:lang="en-NZ">
+				<text>An Act to reform the law relating to companies, and, in particular,—</text>
+				<label-para skeleton="no" xml:lang="en-NZ">
+					<label auto.number="no" denominator="yes">a</label>
+					<para xml:lang="en-NZ">
+						<text>to reaffirm the value of the company as a means of achieving economic and social benefits through the aggregation of capital for productive purposes, the spreading of economic risk, and the taking of business risks; and</text>
+					</para>
+				</label-para>
+				<label-para skeleton="no" xml:lang="en-NZ">
+					<label auto.number="no" denominator="yes">b</label>
+					<para xml:lang="en-NZ">
+						<text>to provide basic and adaptable requirements for the incorporation, organisation, and operation of companies; and</text>
+					</para>
+				</label-para>
+				<label-para skeleton="no" xml:lang="en-NZ">
+					<label auto.number="no" denominator="yes">c</label>
+					<para xml:lang="en-NZ">
+						<text>to define the relationships between companies and their directors, shareholders, and creditors; and</text>
+					</para>
+				</label-para>
+				<label-para skeleton="no" xml:lang="en-NZ">
+					<label auto.number="no" denominator="yes">d</label>
+					<para xml:lang="en-NZ">
+						<text>to encourage efficient and responsible management of companies by allowing directors a wide discretion in matters of business judgment while at the same time providing protection for shareholders and creditors against the abuse of management power; and</text>
+					</para>
+				</label-para>
+				<label-para skeleton="no" xml:lang="en-NZ">
+					<label auto.number="no" denominator="yes">e</label>
+					<para xml:lang="en-NZ">
+						<text>to provide straightforward and fair procedures for realising and distributing the assets of insolvent companies</text>
+					</para>
+				</label-para>
+			</para>
+		</long-title>
+	</front>
+	<body id="DLM319573" prov-type="section" xml:lang="en-NZ">
+		<part act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.first.valid="2007-09-18" date.terminated="nulldate" description="" hard.copy.reprint="nulldate" id="DLM320460" irdnumbering="no" prospective.consolidation="F" prospective.consolidation.based.on="" sonz="" stage="reprint" terminated="" toc="yes" xml:lang="en-NZ" year="1993">
+			<prov id="DLM1624957" irdnumbering="no" skeleton="no" toc="yes">
+				<label auto.number="no" denominator="yes">112C</label>
+				<heading>Timing of transfer of shares</heading>
+				<prov.body>
+					<subprov skeleton="no">
+						<label auto.number="no" denominator="yes">1</label>
+						<para>
+							<text>On the day on which a board gives notice under
+								<citation jurisdiction="nz">
+									<intref href="DLM320497">section 111(2)(e)</intref></citation>that the board agrees to the purchase of shares by the company,—</text>
+							<label-para skeleton="no">
+								<label auto.number="no" denominator="yes">a</label>
+								<para>
+									<text>the legal title to those shares passes to the company; and</text>
+								</para>
+							</label-para>
+							<label-para skeleton="no">
+								<label auto.number="no" denominator="yes">b</label>
+								<para>
+									<text>the rights of the shareholder in relation to those shares end.</text>
+								</para>
+							</label-para>
+						</para>
+					</subprov>
+					<subprov skeleton="no">
+						<label auto.number="no" denominator="yes">2</label>
+						<para>
+							<text>However, for the purposes of
+								<citation jurisdiction="nz">
+									<intref href="DLM320498">sections 112</intref>
+									and
+									<intref href="DLM1624955">112A</intref></citation>,
+								<def-term id="DLM1624958">shareholder</def-term>
+								and
+								<def-term id="DLM1624959">holder of the shares</def-term>
+								means the person who held the legal title to the shares immediately before the board gave notice under
+								<citation jurisdiction="nz">
+									<intref href="DLM320497">section 111(2)(e)</intref></citation>that the board agrees to the purchase of those shares by the company.</text>
+						</para>
+					</subprov>
+					<subprov skeleton="no">
+						<label auto.number="no" denominator="yes">3</label>
+						<para>
+							<text>Subsection (2) applies despite subsection (1).</text>
+						</para>
+					</subprov>
+				</prov.body>
+			</prov>
+		</part>
+	</body>
+</act>

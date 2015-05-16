@@ -1,33 +1,42 @@
 # -*- coding: utf-8 -*-
 from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp
 from lxml import etree
-from nltk.stem.wordnet import WordNetLemmatizer
 from pattern.en import pluralize, singularize
 from xml.dom import minidom
 from collections import defaultdict
-from itertools import chain
+from traversal import decide_govt_or_path
 import re
 import os
 import uuid
 import json
 
-lmtzr = WordNetLemmatizer()
 
 """
     naming conventions in http://www.lawfoundation.org.nz/style-guide/nzlsg_12.html#4.1.1
 """
 
-
 def key_set(full_word):
+    words = []
     if singularize(full_word) == full_word:
-        return (full_word, pluralize(full_word))
+        plural = pluralize(full_word)
+        words = [full_word, plural]
     else:
-        return (singularize(full_word), full_word)
+        words = [singularize(full_word), full_word]
+    for w in words[:]:
+        # if not already plural like
+        if not w.endswith('s'):
+            suffix = 's'
+            if any([w.endswith(suf) for suf in ['x', 'z', 'ch', 'sh']]):
+                suffix = 'es'
+            words.append('%s%s' % (w, suffix))
+    tup = tuple(sorted(list(set(words))))
+    return tup
+
 
 
 class Definition(object):
 
-    def __init__(self, full_word, id, document_id, results=[], expiry_tag=None, priority=None, **kwargs):
+    def __init__(self, full_word, id, document_id, results=[], expiry_tags=[], priority=None, exclusive=False, **kwargs):
         self.full_word = full_word
         self.keys = key_set(full_word)
         self.results = results
@@ -36,7 +45,10 @@ class Definition(object):
         self.id = id
         self.ids = [id]
         self.document_id = document_id
-        self.expiry_tag = expiry_tag
+        self.exclusive = exclusive
+        self.expiry_tags = expiry_tags
+        if not self.expiry_tags or not len(self.expiry_tags):
+            self.expiry_tags = ['root']
 
     def __eq__(self, other):
         return self.id == other.id
@@ -46,7 +58,12 @@ class Definition(object):
             self.ids += [other.id]
             self.ids = list(set(self.ids))
         else:
-            self.results += other.results
+            # prioritize
+            if self.priority > other.priority:
+                self.results += other.results
+            else:
+                self.results = other.results + self.results
+                self.priority = other.priority
 
     def apply_definitions(self, dicttree):
         for result in self.results:
@@ -70,7 +87,7 @@ class Definition(object):
         return {
             'full_word': self.full_word,
             'html': html,
-            'expiry_tag': self.expiry_tag,
+            'expiry_tags': self.expiry_tags,
             'id': self.id,
             'keys': list(self.keys),
             'priority': self.priority
@@ -81,7 +98,8 @@ class Definitions(object):
     use_life_cycle = True
 
     def __init__(self):
-        self.pool = defaultdict(list)
+        self.pool = []
+        self.tag_pool = defaultdict(list)
         self.active = defaultdict(list)
         self.regex = None
         self.titles = []
@@ -89,40 +107,49 @@ class Definitions(object):
     def get_active(self, key):
         keys = key_set(key)
         if keys in self.active:
-            return self.active[keys][-1]
+            return self.active[keys][::-1]
         # try lower
         keys = key_set(key.lower())
         if keys in self.active:
-            return self.active[keys][-1]
+            return self.active[keys][::-1]
         # remove possession
         keys = key_set(re.split("['`’]", key)[0])
         if keys in self.active:
-            return self.active[keys][-1]
+            return self.active[keys][::-1]
         raise KeyError
 
     def add(self, definition, external=False):
-        for d in self.pool[definition.expiry_tag]:
-            if d.full_word == definition.full_word:
-                # same scope, must join together
-                d.combine(definition, external)
-                # todo, consider equivalent plurals etc
-                return
-        self.pool[definition.expiry_tag].append(definition)
-        if not definition.expiry_tag:
-            self.active[definition.keys].append(definition)
+        # will remove expiry_tag collisions
+        """for tag in definition.expiry_tags[:]:
+            for d in self.tag_pool[tag]:
+                if d.full_word == definition.full_word:
+                    # same scope, must join together
+                    d.combine(definition, external)
+                    definition.expiry_tags.remove(tag)
+                    break"""
+                    # todo, consider equivalent plurals etc
+
+        # if there are any tags left, then add to pool
+        if len(definition.expiry_tags):
+            self.pool.append(definition)
+            for tag in definition.expiry_tags:
+                self.tag_pool[tag].append(definition)
+            # if root, then enable immediately
+            if 'root' in definition.expiry_tags:
+                self.active[definition.keys].append(definition)
 
     def items(self):
-        return list(chain.from_iterable(self.pool.values()))
+        return self.pool
 
     def enable_tag(self, tag):
-        if tag in self.pool:
-            for definition in self.pool[tag]:
+        if tag in self.tag_pool:
+            for definition in self.tag_pool[tag]:
                 self.active[definition.keys].append(definition)
                 self.regex = None
 
     def expire_tag(self, tag):
-        if tag in self.pool:
-            for definition in self.pool[tag]:
+        if tag in self.tag_pool:
+            for definition in self.tag_pool[tag]:
                 self.active[definition.keys].remove(definition)
                 if not len(self.active[definition.keys]):
                     del self.active[definition.keys]
@@ -154,62 +181,117 @@ class Definitions(object):
         for n in dicttree.values():
             del n.attrib['temp-def-id']
         for p in self.pool:
-            for d in self.pool[p]:
-                d.apply_definitions(dicttree)
+            p.apply_definitions(dicttree)
 
     def __deepcopy__(self):
         newone = type(self)()
-        newone.pool = self.pool.copy()
+        newone.pool = self.pool[:]
+        newone.tag_pool = self.tag_pool.copy()
         newone.active = self.active.copy()
         return newone
 
     def to_json(self):
         return json.dumps({
-            'values': self.pool.values(),
+            'values': self.pool,
             'titles': self.titles},
             default=lambda o: o.__dict__)
 
 
 def infer_life_time(node):
-    def get_id(node):
-        if not node.attrib.get('id'):
-            node.attrib['id'] = str(uuid.uuid4())
-        return node.attrib.get('id')
+    default_priority = 0
+    highest_priority = 100
+
     try:
         parent = node
         try:
             parent = node.iterancestors('para').next()
         except StopIteration:
             pass
-        text = etree.tostring(parent.xpath('.//text')[0], method="text", encoding='UTF-8').strip().lower()
-        if 'in an enactment passed or made before the commencement of this act' in text:
-            return 'maxdate:%s' % node.getroottree().getroot().attrib.get('date.assent', '')
-        if text.startswith('in this act') or text.startswith('in these regulations'):
-            return None
-        if text.startswith('in this part'):
-            return get_id(parent.iterancestors('part').next())
-        if text.startswith('in this subpart'):
-            return get_id(parent.iterancestors('subpart').next())
-        if text.startswith('in the formula'):
-            return get_id(parent.iterancestors('prov').next())
-        if 'in subsection' in text or 'of subsection' in text or 'in subclause' in text:
-            # prov on purpose
-            return get_id(parent.iterancestors('prov').next())
-        if 'this section' in text or 'in this clause' in text:
-            return get_id(parent.iterancestors('prov').next())
-        if 'in schedule' in text or 'in this schedule' in text:
-            return get_id(parent.iterancestors('schedule').next())
-        if 'in this subpart' in text or 'purposes of this subpart' in text:
-            return get_id(parent.iterancestors('subpart').next())
-        if 'in this part' in text or 'purposes of this part' in text:
-            return get_id(parent.iterancestors('part').next())
+
+        context_text = etree.tostring(parent.xpath('.//text')[0], method="text", encoding='UTF-8').strip().lower()
+        node_text = etree.tostring(node, method="text", encoding='UTF-8').strip().lower()
+
+        def life(parent, text):
+
+            def get_id(node):
+                if not node.attrib.get('id'):
+                    node.attrib['id'] = str(uuid.uuid4())
+                return node.attrib.get('id')
+
+            """ the common starts with clauses """
+            if 'in an enactment passed or made before the commencement of this act' in text:
+                return ['maxdate:%s' % node.getroottree().getroot().attrib.get('date.assent', '')], default_priority
+            if text.startswith('in this act') or text.startswith('in these regulations'):
+                return ['root'], highest_priority
+            if text.startswith('in this part'):
+                return [get_id(parent.iterancestors('part').next())], default_priority
+            if text.startswith('in this subpart'):
+                return [get_id(parent.iterancestors('subpart').next())], default_priority
+            if text.startswith('in the formula'):
+                return [get_id(parent.iterancestors('prov').next())], default_priority
+
+            """ targetted life times """
+            if 'for the purposes of' in text or 'in sections' in text or 'in clauses':
+                # get first intref or link and continue until another tag is encountered
+                tags = []
+                for el in parent.iterdescendants():
+                    if el.tag in ['citation', 'text']:
+                        continue
+                    if el.tag in ['intref', 'link']:
+                        # complex link, try to parse it
+                        govt_id = el.attrib.get('href', el.attrib.get('link'))
+                        if any(q in el.text for q in [', ', ' to ', ' and ']):
+                            # get nodes that match text
+                            print govt_id, el.text
+                            nodes = decide_govt_or_path(node.getroottree(), govt_id, el.text)
+                            print nodes
+                            # find closes ids
+                            for n in nodes:
+                                # doesn't look safe, but there MUST be an id in there somewhere
+                                while not n.attrib.get('id'):
+                                    n = n.getparent()
+                                tags.append(n.attrib['id'])
+                        else:
+                            tags.append(govt_id)
+                    else:
+                        break
+
+            """ parent based life times """
+            if 'in subsection' in text or 'of subsection' in text or 'in subclause' in text:
+                # prov on purpose, no ids on subprov. so not perfect, but should be close enough
+                tags += [get_id(parent.iterancestors('prov').next())]
+            if 'this section' in text or 'in this clause' in text:
+                tags += [get_id(parent.iterancestors('prov').next())]
+            if 'in schedule' in text or 'in this schedule' in text:
+                tags += [get_id(parent.iterancestors('schedule').next())]
+            if 'in this subpart' in text or 'purposes of this subpart' in text:
+                tags += [get_id(parent.iterancestors('subpart').next())]
+            if 'in this part' in text or 'purposes of this part' in text:
+                tags += [get_id(parent.iterancestors('part', 'head1').next())]
+
+            if not len(tags):
+                tags = ['root']
+            return tags, default_priority
+
+
+        def exclusivity(text):
+            # very rough
+            if re.search('\Wmeans\W', text):
+                return True
+            return False
+
+        tags, priority = life(parent, context_text)
+
+        exclusive = exclusivity(node_text)
+        return tags, priority, exclusive
+
 
     except (AttributeError, IndexError), e:
         print 'infer life error', e
     except StopIteration:
         # couldn't find safe parent
         pass
-    return None
+    return ['root'], default_priority, False
 
 
 def find_all_definitions(tree, definitions, document_id, expire=True, title=None):
@@ -247,8 +329,10 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
                 src.attrib['location'] = location
                 src_id = src.attrib['src']
                 src = etree.tostring(src, method="html", encoding="UTF-8")
-                expiry_tag = infer_life_time(parent) if expire else None
-                priority = None
+                if expire:
+                    expiry_tags, priority, exclusive = infer_life_time(parent)
+                else:
+                    expiry_tags, priority, exclusive = ['root'], 100, False
                 try:
                     context_parent = parent.iterancestors('para').next()
                     context = context_parent.xpath('./text')[0]
@@ -257,20 +341,25 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
                     result = {'context_id': context_id, 'temp_id': temp_id, 'src': src}
                 except (StopIteration, IndexError):
                     result = {'temp_id': temp_id, 'src': src}
-
                 definitions.add(Definition(full_word=text, results=[result],
                                 id='%d-%s' % (document_id, src_id),
-                                document_id=document_id, expiry_tag=expiry_tag, priority=priority))
+                                document_id=document_id, expiry_tags=expiry_tags,
+                                priority=priority, exclusive=exclusive))
                 count += 1
         except StopIteration:
             pass
 
 
 def process_definitions(tree, definitions):
-    def create_def(doc, word, definition, index):
+    def create_def(doc, word, definitions, index):
         match = doc.createElement('catalex-def')
-        match.setAttribute('def-ids', ';'.join(definition.ids))
-        match.setAttribute('def-idx', 'idx-%d-%d-%d' % (definition.document_id, monitor.i, index))
+        ids = []
+        for d in definitions:
+            ids.append(d.id)
+            if d.exclusive:
+                break
+        match.setAttribute('def-ids', ';'.join(ids))
+        match.setAttribute('def-idx', 'idx-%d-%d-%d' % (definitions[0].document_id, monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
     monitor = Monitor(5000000)

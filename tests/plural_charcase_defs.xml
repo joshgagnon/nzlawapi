@@ -133,14 +133,6 @@
                         </para>
                     </subprov>
                     <subprov skeleton="no" xml:lang="en-NZ">
-                        <label auto.number="no" denominator="yes">6</label>
-                        <para xml:lang="en-NZ">
-                            <text match="false" cid="plural_wrong">
-                                And the multiple is not childs.
-                            </text>
-                        </para>
-                    </subprov>
-                    <subprov skeleton="no" xml:lang="en-NZ">
                         <label auto.number="no" denominator="yes">7</label>
                         <para xml:lang="en-NZ">
                             <text match="true" cid="complex_plural_correct">

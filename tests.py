@@ -48,7 +48,7 @@ def init_database(filename):
 
     return conn
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestQueries(unittest.TestCase):
 
     def setUp(self):
@@ -104,7 +104,7 @@ class TestDefinitions(unittest.TestCase):
         find_all_definitions(tree, definitions, document_id=0, expire=False)
         self.assertEqual(len(definitions.items()), 3)
         self.assertTrue(('accounting period', 'accounting periods') in definitions.active)
-        self.assertTrue(('address for service', 'addresses for service') in definitions.active)
+        self.assertTrue(('address for service', 'address for services', 'addresses for service', 'addresses for services') in definitions.active)
         self.assertTrue(('annual meeting', 'annual meetings') in definitions.active)
 
     def test_definition_transience_simple(self):
@@ -129,7 +129,6 @@ class TestDefinitions(unittest.TestCase):
         tree, definitions = populate_definitions(tree, document_id=0)
         tree, _ = process_definitions(tree, definitions)
         self.assertEqual(len(definitions.items()), 6)
-        self.assertEqual(len(tree.xpath('.//catalex-def')), 11)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_start"]/catalex-def-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_end"]/catalex-def')), 0)
         self.assertEqual(len(tree.xpath('.//*[@cid="case_correct"]/catalex-def')), 1)
@@ -139,6 +138,13 @@ class TestDefinitions(unittest.TestCase):
         self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_correct"]/catalex-def')), 1)
         self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct"]/catalex-def')), 1)
         self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_2"]/catalex-def')), 2)
+        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_3"]/catalex-def')), 4)
+        self.assertEqual(len(tree.xpath('.//catalex-def')), 12)
+
+    def test_complex(self):
+        tree = etree.parse('tests/companiesact_gutted.xml', parser=self.parser)
+        tree, definitions = populate_definitions(tree, document_id=0)
+        tree, _ = process_definitions(tree, definitions)
 
 
 def transform_eqn(filename, parser):
@@ -152,7 +158,7 @@ def transform_eqn(filename, parser):
 def print_error(msg):
     print msg
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -180,7 +186,7 @@ class TestPathExtraction(unittest.TestCase):
         el = tree.xpath('.//*[@id="aaa"]')[0]
         self.assertEqual(generate_path_string(el)[0], 'Test Act 666 sch 1 cl 1(1)')
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class AutocompleteTest(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
@@ -214,7 +220,7 @@ class AutocompleteTest(unittest.TestCase):
 
 # TODO, assumes data in db, but in a hurry
 # TODO, replace companies act with much much smaller act, everywhere
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class InstrumentTest(unittest.TestCase):
 
     def setUp(self):
