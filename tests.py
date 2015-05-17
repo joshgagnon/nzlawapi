@@ -48,7 +48,7 @@ def init_database(filename):
 
     return conn
 
-@unittest.skip("demonstrating skipping")
+#@unittest.skip("demonstrating skipping")
 class TestQueries(unittest.TestCase):
 
     def setUp(self):
@@ -145,6 +145,10 @@ class TestDefinitions(unittest.TestCase):
         tree = etree.parse('tests/companiesact_gutted.xml', parser=self.parser)
         tree, definitions = populate_definitions(tree, document_id=0)
         tree, _ = process_definitions(tree, definitions)
+        for d in definitions.pool:
+            if d.full_word in ['shareholder', 'holder of the shares']:
+                self.assertIn('DLM320498', d.expiry_tags)
+                self.assertIn('DLM1624955', d.expiry_tags)
 
 
 def transform_eqn(filename, parser):
@@ -158,7 +162,7 @@ def transform_eqn(filename, parser):
 def print_error(msg):
     print msg
 
-@unittest.skip("demonstrating skipping")
+#@unittest.skip("demonstrating skipping")
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -186,7 +190,7 @@ class TestPathExtraction(unittest.TestCase):
         el = tree.xpath('.//*[@id="aaa"]')[0]
         self.assertEqual(generate_path_string(el)[0], 'Test Act 666 sch 1 cl 1(1)')
 
-@unittest.skip("demonstrating skipping")
+#@unittest.skip("demonstrating skipping")
 class AutocompleteTest(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
@@ -220,7 +224,7 @@ class AutocompleteTest(unittest.TestCase):
 
 # TODO, assumes data in db, but in a hurry
 # TODO, replace companies act with much much smaller act, everywhere
-@unittest.skip("demonstrating skipping")
+#@unittest.skip("demonstrating skipping")
 class InstrumentTest(unittest.TestCase):
 
     def setUp(self):

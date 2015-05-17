@@ -240,11 +240,9 @@ def infer_life_time(node):
                     if el.tag in ['intref', 'link']:
                         # complex link, try to parse it
                         govt_id = el.attrib.get('href', el.attrib.get('link'))
-                        if any(q in el.text for q in [', ', ' to ', ' and ']):
+                        if el.text and any(q in el.text for q in [', ', ' to ', ' and ']):
                             # get nodes that match text
-                            print govt_id, el.text
                             nodes = decide_govt_or_path(node.getroottree(), govt_id, el.text)
-                            print nodes
                             # find closes ids
                             for n in nodes:
                                 # doesn't look safe, but there MUST be an id in there somewhere
@@ -255,6 +253,7 @@ def infer_life_time(node):
                             tags.append(govt_id)
                     else:
                         break
+
 
             """ parent based life times """
             if 'in subsection' in text or 'of subsection' in text or 'in subclause' in text:
@@ -288,6 +287,7 @@ def infer_life_time(node):
 
     except (AttributeError, IndexError), e:
         print 'infer life error', e
+        print etree.tostring(parent, method="text", encoding='UTF-8')
     except StopIteration:
         # couldn't find safe parent
         pass
@@ -295,7 +295,7 @@ def infer_life_time(node):
 
 
 def find_all_definitions(tree, definitions, document_id, expire=True, title=None):
-    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)]")
+    nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::table)][not(ancestor::amend)][not(ancestor::schedule.amendments)]")
 
     def get_parent(node):
         try:
@@ -307,6 +307,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
         # super ugly hack to prevent placeholders likept 'A'
         try:
             text = re.sub('[][()]', '', node.itertext().next())
+
             if len(text) > 1:
                 # another hack:  if you are in a  label-para which is in a def-para, you aren't the primary definition
                 try:
@@ -346,6 +347,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
                                 document_id=document_id, expiry_tags=expiry_tags,
                                 priority=priority, exclusive=exclusive))
                 count += 1
+
         except StopIteration:
             pass
 
@@ -354,11 +356,15 @@ def process_definitions(tree, definitions):
     def create_def(doc, word, definitions, index):
         match = doc.createElement('catalex-def')
         ids = []
+        extra_ids = []
+        extra = False
         for d in definitions:
-            ids.append(d.id)
+            ids.append(d.id) if not extra else extra_ids.append(d.id)
             if d.exclusive:
-                break
+                extra = True
         match.setAttribute('def-ids', ';'.join(ids))
+        if len(extra_ids):
+            match.setAttribute('def-ex-ids', ';'.join(extra_ids))
         match.setAttribute('def-idx', 'idx-%d-%d-%d' % (definitions[0].document_id, monitor.i, index))
         match.appendChild(doc.createTextNode(word))
         return match
