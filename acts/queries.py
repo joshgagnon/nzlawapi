@@ -150,15 +150,16 @@ def process_skeleton(id, tree, db=None):
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
 
     db = db or get_db()
-    if len(parts):
-        with (db or get_db()).cursor() as cur:
-            query = """UPDATE documents d SET skeleton =  %(skeleton)s
-                        WHERE d.id =  %(id)s """
-            cur.execute(query, {
-                'id': id,
-                'skeleton': skeleton
-            })
+    with db.cursor() as cur:
+        query = """UPDATE documents d SET skeleton =  %(skeleton)s
+                    WHERE d.id =  %(id)s """
+        cur.execute(query, {
+            'id': id,
+            'skeleton': skeleton
+        })
 
+    if len(parts):
+        with db.cursor() as cur:
             cur.execute('DELETE FROM document_parts WHERE document_id = %(id)s', {'id': id})
             args_str = ','.join(cur.mogrify("(%s, %s, %s, %s)", (id, i, p[0], p[1])) for i, p in enumerate(parts))
             cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
@@ -230,11 +231,12 @@ def add_parent_definitions(row, db=None, definitions=None,
             def_dict = dict(d)
             def_dict['keys'] = map(lambda x: unicode(x.decode('utf-8')), def_dict.pop('words'))
             def_dict['full_word'] =unicode(def_dict['full_word'].decode('utf-8'))
-            def_dict['expiry_tags'] = filter(lambda x: x, def_dict['expiry_tags'])
+            def_dict['expiry_tags'] = filter(lambda x: x, def_dict['expiry_tags'] )
             # warning, this is not exclusive yet
-            if (def_dict.get('expiry_tag') or '').startswith('maxdate:'):
-                if row.get('date_assent') and row.get('date_assent') < safe_date(def_dict.get('expiry_tags')[len('maxdate:'):]):
-                    def_dict['expiry_tags'] = None
+            for exp in def_dict.get('expiry_tags')[:]:
+                if exp.startswith('maxdate:'):
+                    if row.get('date_assent') and row.get('date_assent') < safe_date(exp[len('maxdate:'):]):
+                        def_dict['expiry_tags'] = []
 
             definitions.add(Definition(**def_dict), external=True)
 

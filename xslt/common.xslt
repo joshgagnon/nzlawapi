@@ -169,11 +169,14 @@
                         <xsl:attribute name="data-location">s <xsl:value-of select="normalize-space(./prov/label)"/></xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:if test="not(ancestor::amend)">
+                <xsl:if test="not(ancestor::amend) and label!='' ">
                 <xsl:attribute name="data-location-breadcrumb">Part <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
                 </xsl:if>
+
             <h2 class="part">
-                <span class="label">Part <xsl:value-of select="label"/></span><br/>
+                <xsl:if test="not(ancestor::amend) and label!='' ">
+                    <span class="label">Part <xsl:value-of select="label"/></span><br/>
+                </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>
             <xsl:apply-templates select="subpart|crosshead|prov|amend/prov|para"/>

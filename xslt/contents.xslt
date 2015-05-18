@@ -20,8 +20,17 @@
         <li>
             <a>
               <xsl:attribute name="href">#<xsl:value-of select="@id"/></xsl:attribute>
-              <xsl:attribute name="title">Part <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
-            <span class="part-label">Part <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
+                <xsl:choose>
+              <xsl:when test="label!='' ">
+                <xsl:attribute name="title">Part <xsl:value-of select="./label"/>&#160;<xsl:value-of select="./heading"/></xsl:attribute>
+                <span class="part-label">Part <span class="number"><xsl:value-of select="./label"/>&#160;</span><xsl:value-of select="./heading"/></span>
+                </xsl:when>
+                <xsl:otherwise>
+                <xsl:attribute name="title"><xsl:value-of select="./heading"/></xsl:attribute>
+                <span class="part-label"><xsl:value-of select="./heading"/></span>
+                </xsl:otherwise>
+                </xsl:choose>
+
             </a>
              <ul class="nav">
                 <xsl:apply-templates select="./subpart|./crosshead|./prov"/>

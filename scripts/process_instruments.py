@@ -46,6 +46,7 @@ def run_process((config_filename, ids)):
 
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
             for document_id in ids:
+                print 'fetching %d for processing' % document_id
                 query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
                         JOIN documents d on d.id = i.id
                         where processed_document is null
@@ -64,6 +65,7 @@ def run_process((config_filename, ids)):
 
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
             for document_id in ids:
+                print 'fetching %d for skeletizing' % document_id
                 query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
                         JOIN documents d on d.id = i.id
                         where skeleton is null
@@ -72,6 +74,7 @@ def run_process((config_filename, ids)):
                 cur.execute(query, {'id': document_id})
                 result = cur.fetchall()
                 if not len(result):
+                    print 'skipping %d for skeletizing' % document_id
                     continue
 
                 tree = etree.fromstring(result[0]['processed_document'], parser=etree.XMLParser(huge_tree=True))
@@ -96,12 +99,15 @@ if __name__ == "__main__":
             cur.execute(query)
             results = cur.fetchall()
             if len(results):
+                print '%s documents to process' % len(results)
                 processes = min(int(sys.argv[2] if len(sys.argv) > 2 else 2), len(results))
                 pool = Pool(processes=processes)
                 args = map(lambda x: (sys.argv[1], x), (list(chunks(map(lambda x: x['id'], results),
                            len(results) / processes + len(results) % processes))))
                 pool.map(run_process, (args))
                 pool.join()
+            else:
+                print 'Nothing to do'
         except KeyboardInterrupt:
             print "Keyboard interrupt in main"
         finally:

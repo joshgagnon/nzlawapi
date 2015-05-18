@@ -96,39 +96,60 @@ def refs_and_subs(db, do_references, do_subordinates):
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         result_to_dict = lambda r: (r['govt_id'], r['parent_id'])
-        cur.execute("""SELECT i.govt_id, parent_id from id_lookup i join latest_instruments l on i.parent_id = l.id """)
+        cur.execute("""SELECT i.govt_id, parent_id from id_lookup i join latest_instruments l on i.parent_id = l.id
+            """)
         id_lookup = dict(map(result_to_dict, cur.fetchall()))
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        query = """ select title, id from instruments """
+        query = """ select title, id from latest_instruments """
         cur.execute(query)
 
         titles = {unicode(x['title'].decode('utf-8')): x['id'] for x in cur.fetchall()}
         id_to_title = {v: k for k, v in titles.items()}
 
         keys = sorted(titles.keys(), key=lambda x: len(x), reverse=True)
-        regex = re.compile(u"(^|\W)(%s)($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
+        regex = re.compile(u"(^|\W)(%s)s?($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from instruments')
         total = cur.fetchone()['count']
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
-        count = 0.0
-        cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id""")
+        count = 0
+        cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id
+            """)
         documents = cur.fetchmany(1)
+
+        def safe_target(el):
+            try:
+                return el.attrib.get('href') or el.get('targetXmlId') or el.xpath('resourcepair')[0].attrib.get('targetXmlId')
+            except:
+                return el.attrib.get('id', None)
+
+        ancestor_rule = '[not(ancestor::end)][not(ancestor::skeleton)][not(ancestor::amend)]'
+
+        tags_to_remove = ['history-note', 'end', 'skeleton', 'amend', 'schedule.amendments', 'insertwords', 'amend.in']
+
+
+
         while len(documents):
             for document in documents:
                 count += 1
-                sys.stdout.write("%d%%\r" % (count/total*100))
+                if count % 100 == 0:
+                    print count
                 tree = etree.fromstring(document['document'], parser=p)
                 source_id = document['id']
 
+                for el in tree.iter(*tags_to_remove):
+                    el.getparent().remove(el)
+
                 # todo, break up processing steps
                 if do_references:
-                    links = map(lambda x: {'id': x.attrib['href'], 'text': etree.tostring(x, method="text", encoding="UTF-8"),
+                    links = map(lambda x: {'id': safe_target(x),
+                        'text': etree.tostring(x, method="text", encoding="UTF-8"),
                         'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
-                        tree.xpath('.//extref[@href][not(ancestor::history-note)]|.//intref[@href][not(ancestor::history-note)]'))
+                        tree.xpath('.//*[@href]|.//link[resourcepair]'))
+
                     counters = defaultdict(int)
                     for link in links:
                         if link['id'] in id_lookup:
@@ -143,75 +164,69 @@ def refs_and_subs(db, do_references, do_subordinates):
                         out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_document_id) VALUES " + args_str)
 
                 if do_subordinates:
-                    ids = []
-                    pursuant = tree.xpath('.//pursuant[not(ancestor::end)][not(ancestor::skeleton)]')
-                    title = unicode(document['title'].decode('utf-8'))
-                    if len(pursuant):
-                        try:
-                            refs = pursuant[0].xpath('.//extref')
-                            if len(refs):
-                                ids = [id_lookup[ref.attrib['href']] for ref in refs]
-                            else:
-                                ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
-                            ids = list(set(ids))
-                        except KeyError:
-                            print refs, document.get('title')
-                    else:
-                        # see if there is a 'is called the principal Act'
-                        rules = ('translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")', '[not(ancestor::end)][not(ancestor::skeleton)]')
-                        principal = tree.xpath('//text[contains(%s, "is called the principal act")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "these regulations amend the")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "an act to amend the")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this act amends the")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "these regulations amend the")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this part amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "these parts amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this section amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "these sections amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this clause amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this clauses amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this schedule amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "these schedules amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this regulation amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "this rule amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//text[contains(%s, "these rules amends ")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//def-term[contains(%s, "principal act")]%s' % rules)
-                        if not len(principal):
-                            principal = tree.xpath('//def-term[contains(%s, "principal regulations")]%s' % rules)
-                        try:
-                            if len(principal):
-                                link = principal[0].xpath('./extref|./def-term')
-                                if len(link):
-                                    link_id = link[0].attrib.get('href') or link[0].attrib.get('id')
-                                    ids = [id_lookup[link_id]]
+                    if 'Amendment' in document.get('title') or 'Rules' in document.get('title')  or 'Regulations' in document.get('title'):
+                        ids = []
+                        pursuant = tree.xpath('.//pursuant')
+                        title = unicode(document['title'].decode('utf-8'))
+                        if len(pursuant):
+                            try:
+                                refs = pursuant[0].xpath('.//extref|.//link')
+                                if len(refs):
+
+                                    ids = [id_lookup[safe_target(ref)] for ref in refs if id_lookup[safe_target(ref)] != document.get('id')]
                                 else:
-                                    ids = [titles[x[1]] for x in regex.findall(etree.tostring(principal[0], method="text", encoding="UTF-8"))]
-                        except (KeyError, IndexError):
-                            print document.get('title')
-                        # 'These regulations amend the'
-                    ids = list(set([i for i in ids if i != document.get('id') and id_to_title.get(i) != title]))
-                    if len(ids):
-                        print document.get('title'), [id_to_title.get(i) for i in ids]
-                        args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
-                        out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
-                    else:
-                        if 'Amendment' in document.get('title'):
+                                    ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
+                                ids = list(set(ids))
+                            except KeyError:
+                                print refs, document.get('title')
+                        else:
+                            # see if there is a 'is called the principal Act'
+                            text_pairs = map(lambda x: (x, etree.tostring(x, method="text", encoding="UTF-8")), tree.xpath('.//text'))
+                            principal_els = []
+                            for t in text_pairs:
+                                if any([phrase in t[1].lower() for phrase in [
+                                "an act to amend the",
+                                "this act amends the",
+                                "these regulations amend the",
+                                #"this part amends ",
+                                #"these parts amends ",
+                                #"this section amends ",
+                                #"these sections amends ",
+                                #"this clause amends ",
+                                #"this clauses amends ",
+                                #"this schedule amends ",
+                                #"these schedules amends ",
+                                #"this regulation amends ",s
+                                #"this rule amends ",
+                                "these rules amends ",
+                                "principal act",
+                                "principal regulations"]]):
+                                    principal_els.append(t)
+                                    if 'principal' in t[1].lower():
+                                        break
+
+                            for el in tree.xpath('.//prov[heading[contains(., "Principal Act") or contains(., "Principal Regulation")]]'):
+                                principal_els.append((el, etree.tostring(el, method="text", encoding="UTF-8")))
+                            for el in tree.xpath('.//leg-title[contains(., "to amend")]'):
+                                principal_els.append((el, etree.tostring(el, method="text", encoding="UTF-8")))
+                            try:
+                                if len(principal_els):
+                                    for el, text in principal_els:
+                                        links = el.xpath('.//link[resourcepair]|.//*[@href]')
+                                        for link in links:
+                                            ids += [id_lookup[safe_target(link)] for link in links]
+                                        else:
+                                            ids += [titles[x[1]] for x in regex.findall(text)]
+                            except (KeyError, IndexError):
+                                print document.get('title')
+                            # 'These regulations amend the'
+                        ids = list(set([i for i in ids if i != document.get('id') and id_to_title.get(i) != title]))
+
+                        if len(ids):
+                            print document.get('title'), [id_to_title.get(i) for i in ids]
+                            args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
+                            out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
+                        else:
                             print 'Could not find parent for: ', document.get('title')
             documents = cur.fetchmany(1)
     db.commit()
@@ -303,18 +318,13 @@ if __name__ == "__main__":
             host=config.DB_HOST,
             password=config.DB_PW)
     # poor mans switches
-    if False:
-        run(db, config,
-        do_id_lookup=('skip_ids' not in sys.argv[1:]),
-        do_references=('skip_references' not in sys.argv[1:]),
-        do_subordinates=('skip_subordinates' not in sys.argv[1:]),
-        do_links=('skip_links' not in sys.argv[1:]))
-
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute(""" refresh materialized view latest_instruments """)
     run(db, config,
-        do_id_lookup=False,
-        do_references=False,
-        do_subordinates=False,
-        do_links=True)
+    do_id_lookup=('skip_ids' not in sys.argv[1:]),
+    do_references=('skip_references' not in sys.argv[1:]),
+    do_subordinates=('skip_subordinates' not in sys.argv[1:]),
+    do_links=('skip_links' not in sys.argv[1:]))
 
     db.close()
 

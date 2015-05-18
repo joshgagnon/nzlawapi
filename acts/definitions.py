@@ -199,6 +199,7 @@ class Definitions(object):
 
 def infer_life_time(node):
     default_priority = 0
+    high_priority = 50
     highest_priority = 100
 
     try:
@@ -221,8 +222,10 @@ def infer_life_time(node):
             """ the common starts with clauses """
             if 'in an enactment passed or made before the commencement of this act' in text:
                 return ['maxdate:%s' % node.getroottree().getroot().attrib.get('date.assent', '')], default_priority
-            if text.startswith('in this act') or text.startswith('in these regulations'):
+            if text.startswith('in an enactment'):
                 return ['root'], highest_priority
+            if text.startswith('in this act') or text.startswith('in these regulations'):
+                return ['root'], high_priority
             if text.startswith('in this part'):
                 return [get_id(parent.iterancestors('part').next())], default_priority
             if text.startswith('in this subpart'):
@@ -239,10 +242,13 @@ def infer_life_time(node):
                         continue
                     if el.tag in ['intref', 'link']:
                         # complex link, try to parse it
-                        govt_id = el.attrib.get('href', el.attrib.get('link'))
-                        if el.text and any(q in el.text for q in [', ', ' to ', ' and ']):
+                        govt_id = el.attrib.get('href')
+                        if not govt_id and len(el.xpath('resourcepair')):
+                            govt_id = el.xpath('resourcepair')[0].attrib.get('targetXmlId')
+                        link_text = etree.tostring(el.text, method="text", encoding="UTF-8")
+                        if link_text and any(q in link_text for q in [', ', ' to ', ' and ']):
                             # get nodes that match text
-                            nodes = decide_govt_or_path(node.getroottree(), govt_id, el.text)
+                            nodes = decide_govt_or_path(node.getroottree(), govt_id, link_text)
                             # find closes ids
                             for n in nodes:
                                 # doesn't look safe, but there MUST be an id in there somewhere
