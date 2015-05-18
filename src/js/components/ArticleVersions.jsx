@@ -7,6 +7,9 @@ var utils = require('../utils');
 
 
 module.exports = React.createClass({
+    propTypes: {
+        article: React.PropTypes.object.isRequired
+    },
     componentDidMount: function(){
         Actions.requestVersions(this.props.article.get('id'));
     },

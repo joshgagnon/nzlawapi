@@ -5,6 +5,9 @@ var Actions = require('../actions/Actions.js');
 var _ = require('lodash');
 
 module.exports = React.createClass({
+    propTypes: {
+        article: React.PropTypes.object.isRequired
+    },
     componentDidMount: function(){
         Actions.requestReferences(this.props.article.get('id'));
     },

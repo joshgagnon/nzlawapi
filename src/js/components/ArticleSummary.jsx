@@ -25,8 +25,10 @@ var fields = [
 ];
 
 module.exports = React.createClass({
-
-	render: function(){
+    propTypes: {
+        summary: React.PropTypes.object.isRequired
+    },
+    render: function(){
         return <div className="summary">
         <dl className="dl-horizontal">
             { _.map(fields, function(v){
@@ -36,5 +38,5 @@ module.exports = React.createClass({
             }.bind(this))}
             </dl>
         </div>
-     },
-    });
+    },
+});
