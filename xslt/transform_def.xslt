@@ -30,7 +30,21 @@
 
     <xsl:template name="parentquote">
     </xsl:template>
+    <xsl:template name="openbracket">
+    <xsl:if test="not(contains(. ,'('))">(</xsl:if>
+    </xsl:template>
 
+    <xsl:template name="closebracket">
+    <xsl:if test="not(contains(. ,'('))">)</xsl:if>
+    </xsl:template>
+
+    <xsl:template name="bracketlocation">
+        <xsl:param name="label" />
+        <xsl:choose>
+            <xsl:when test="not(contains($label ,'('))">(<xsl:value-of select="$label"/>)</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$label"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
     <xsl:template match="def-para|para">
                 <div class="def-para">

@@ -65,6 +65,7 @@ def nodes_from_path_string(tree, path):
     path = path.lower().strip()
     pattern = re.compile('(schedule|section|regulation|sch|clause|rule|part|subpart|pt|reg|ss|s|r|cl)[, ]{,2}(.*)')
     part_pattern = re.compile('([a-z\d]+),? ?(subpart|regulation|clause|rule|section|part|pt|reg|ss|s|cl|r)?')
+    range_pattern = re.compile('^\w+[-+]\w+$')
     parts = pattern.match(path)
     keys = []
     try:
@@ -74,7 +75,11 @@ def nodes_from_path_string(tree, path):
                 # match up 'cl ' or 's ', 'section ' or 'clause ' then until '('
                 label = ''
                 remainder = parts[1].strip()
-                if remainder: # and not re.compile('(s|sch|cl|clause)').match(remainder):
+
+                if remainder:
+                    # total hack job, but must support subpart/part/schedule ranges
+                    if range_pattern.match(remainder):
+                        return find_sub_node(tree, [remainder], limit_tags=[])
                     sub = part_pattern.match(remainder).groups()
                     # sub[0] is the sch/part label
                     label = sub[0]
@@ -82,16 +87,16 @@ def nodes_from_path_string(tree, path):
                 try:
                     tree = tree.xpath(".//%s[%s]" %
                             (tag_names[parts[0]], labelize(label)))[0]
-                    return nodes_from_path_string(tree, remainder)
-                except IndexError: pass
-                try:
-                    # try fake Part
-                    tree = tree.xpath(".//head1[%s]" % labelize('part %s' % label))[0]
-                    return nodes_from_path_string(tree, remainder)
-                except IndexError: pass
-                # try empty label
-                tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
-                remainder = path[len(parts[0]):]
+
+                except IndexError:
+                    try:
+                        # try fake Part
+                        tree = tree.xpath(".//head1[%s]" % labelize('part %s' % label))[0]
+                    except IndexError:
+                        # try empty label, ie unnumbered schedule
+                        tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
+                        remainder = path[len(parts[0]):]
+
                 return nodes_from_path_string(tree, remainder)
             else:
                 if isinstance(tree, etree._ElementTree) or tree.getroottree().getroot() == tree:
@@ -114,8 +119,10 @@ def nodes_from_path_string(tree, path):
     return find_sub_node(tree, keys)
 
 
-def find_sub_node(tree, keys):
+def find_sub_node(tree, keys, limit_tags=['part', 'subpart']):
     """depth first down the tree matching labels in keys"""
+    """ limit tags exists to prevent ambiguity between parts and section labels.  however, sometimes we must treat
+        parts etc like sections, for ranges etc """
     node = tree
     xpath_query = ".//*[%s]"
     depth = lambda x: len(list(x.iterancestors()))
@@ -126,7 +133,7 @@ def find_sub_node(tree, keys):
         while True:
             try:
                 nodes = node.xpath(xpath_query % labelize(label))
-                nodes = filter(lambda x: x.tag not in ['part', 'subpart'] and
+                nodes = filter(lambda x: x.tag not in limit_tags and
                     not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(('amend', 'end'))), nodes)
                 return shallowest(nodes)
 
@@ -184,7 +191,6 @@ def find_sub_node(tree, keys):
         nodes = [n for n in nodes if n not in ancestors]
         return nodes
     except (IndexError, StopIteration, AttributeError), e:
-        # print e
         raise CustomException("Path not found")
 
 

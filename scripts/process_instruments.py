@@ -101,7 +101,7 @@ if __name__ == "__main__":
                 args = map(lambda x: (sys.argv[1], x), (list(chunks(map(lambda x: x['id'], results),
                            len(results) / processes + len(results) % processes))))
                 pool.map(run_process, (args))
-                #pool.join()
+                pool.join()
         except KeyboardInterrupt:
             print "Keyboard interrupt in main"
         finally:

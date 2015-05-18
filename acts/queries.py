@@ -230,10 +230,11 @@ def add_parent_definitions(row, db=None, definitions=None,
             def_dict = dict(d)
             def_dict['keys'] = map(lambda x: unicode(x.decode('utf-8')), def_dict.pop('words'))
             def_dict['full_word'] =unicode(def_dict['full_word'].decode('utf-8'))
+            def_dict['expiry_tags'] = filter(lambda x: x, def_dict['expiry_tags'])
             # warning, this is not exclusive yet
             if (def_dict.get('expiry_tag') or '').startswith('maxdate:'):
-                if row.get('date_assent') and row.get('date_assent') < safe_date(def_dict.get('expiry_tag')[len('maxdate:'):]):
-                    def_dict['expiry_tag'] = None
+                if row.get('date_assent') and row.get('date_assent') < safe_date(def_dict.get('expiry_tags')[len('maxdate:'):]):
+                    def_dict['expiry_tags'] = None
 
             definitions.add(Definition(**def_dict), external=True)
 
@@ -256,7 +257,8 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
 
     title = unicode(row.get('title').decode('utf-8'))
 
-    tree, definitions = populate_definitions(tree, definitions=definitions, title=title, expire=True, document_id=row.get('id'))
+    tree, definitions = populate_definitions(tree, definitions=definitions,
+        title=title, expire=True, document_id=row.get('id'))
 
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
         strategy=strategy)
@@ -274,10 +276,10 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
         defs = definitions.render(document_id=row.get('id'))
         if len(defs):
             print 'New Definitions: ', len(defs)
-            args_str = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s)", (row.get('id'), x['id'],  x['full_word'], x['keys'], x['html'], x['expiry_tag'], x['priority']))
+            args_str = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s)", (row.get('id'), x['id'],  x['full_word'], x['keys'], x['html'], x['expiry_tags'], x['priority']))
                 for x in defs)
             cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
-            cur.execute("INSERT INTO definitions (document_id, id, full_word, words, html, expiry_tag, priority) VALUES " + args_str)
+            cur.execute("INSERT INTO definitions (document_id, id, full_word, words, html, expiry_tags, priority) VALUES " + args_str)
         if refresh:
             cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
     (db or get_db()).commit()
