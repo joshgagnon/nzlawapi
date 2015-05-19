@@ -22,6 +22,8 @@ def timing(f):
 class CustomException(Exception):
     pass
 
+large_parser = etree.XMLParser(
+    )
 
 class Monitor(object):
     i = 0

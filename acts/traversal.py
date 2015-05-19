@@ -115,7 +115,6 @@ def nodes_from_path_string(tree, path):
                         i += 1
     except IndexError, e:
         raise CustomException("Path not found")
-    print keys
     return find_sub_node(tree, keys)
 
 

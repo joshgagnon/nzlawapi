@@ -395,6 +395,16 @@ def get_contents(document_id):
 
 
 def prep_instrument(result, replace, db):
+    from links import analyze_new_links
+
+    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        query = """SELECT *, true as latest FROM latest_instruments i
+                JOIN documents d on d.id = i.id
+                where i.id =  %(id)s
+            """
+        cur.execute(query, {'id': result.get('id')})
+        analyze_new_links(cur.fetchone(), db)
+
     if not result:
         raise CustomException('Instrument not found')
     tree = None

@@ -245,7 +245,7 @@ def infer_life_time(node):
                         govt_id = el.attrib.get('href')
                         if not govt_id and len(el.xpath('resourcepair')):
                             govt_id = el.xpath('resourcepair')[0].attrib.get('targetXmlId')
-                        link_text = etree.tostring(el.text, method="text", encoding="UTF-8")
+                        link_text = etree.tostring(el, method="text", encoding="UTF-8")
                         if link_text and any(q in link_text for q in [', ', ' to ', ' and ']):
                             # get nodes that match text
                             nodes = decide_govt_or_path(node.getroottree(), govt_id, link_text)

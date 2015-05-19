@@ -40,7 +40,61 @@ def id_lookup(db):
     db.commit()
 
 
-def fix_cycles(db):
+
+
+def refs_and_subs(db, do_references, do_subordinates):
+    from acts import links
+
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        if do_references:
+            cur.execute(""" delete from document_references""")
+            cur.execute(""" delete from section_references""")
+        if do_subordinates:
+            cur.execute(""" delete from subordinates""")
+
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        cur.execute('select count(*) as count from instruments')
+        total = cur.fetchone()['count']
+
+    id_lookup = links.get_all_ids(db)
+
+    links = links.get_links(db)
+
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
+        count = 0
+        cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id
+            """)
+        documents = cur.fetchmany(1)
+
+        while len(documents):
+            for document in documents:
+                count += 1
+                if count % 100 == 0:
+                    print count
+                tree = etree.fromstring(document['document'], parser=p)
+                source_id = document['id']
+                title = unicode(document['title'].decode('utf-8'))
+
+                tree = links.remove_ignored_tags(tree)
+
+                if do_references:
+                    document_refs, section_refs = links.find_references(tree, source_id, title, id_lookup)
+
+                    if len(document_refs):
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in document_refs)
+                        out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
+
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in section_refs)
+                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_document_id) VALUES " + args_str)
+
+                if do_subordinates:
+                    ids = links.find_parent_instrument(tree, source_id, title, id_lookup, links)
+                    if len(ids):
+                        args_str = ','.join(cur.mogrify("(%s, %s)", (x, source_id)) for x in ids)
+                        out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
+
+            documents = cur.fetchmany(1)
+    db.commit()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         # lets make the interpretation act the parent of everything
 
@@ -55,190 +109,17 @@ def fix_cycles(db):
             INSERT INTO subordinates (parent_id, child_id)
                 (select null as parent_id, id as child_id from instruments where title = 'Interpretation Act 1999' AND version = 19)
                 """)
-    # find and remove cycles
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """
-            WITH RECURSIVE search_graph(child_id, parent_id, depth, path, cycle) AS (
-                SELECT g.child_id, g.parent_id, 1,
-                  ARRAY[g.child_id],
-                  false
-                FROM subordinates g
-              UNION ALL
-                SELECT g.child_id, g.parent_id, sg.depth + 1,
-                  path || g.child_id,
-                  g.child_id = ANY(path)
-                FROM subordinates g, search_graph sg
-                WHERE g.child_id = sg.parent_id AND NOT cycle )
 
-            SELECT distinct child_id, parent_id, year FROM search_graph g join instruments on id = child_id where cycle = true order by year limit 1; """
-
-        rm_query = """delete from subordinates where child_id = %(child_id)s and parent_id = %(parent_id)s"""
-        while True:
-            cur.execute(query)
-            results = cur.fetchall()
-            if len(results):
-
-                print 'removing cycle', dict(results[0])
-                cur.execute(rm_query, results[0])
-            else:
-                break
-    db.commit()
-
-
-def refs_and_subs(db, do_references, do_subordinates):
-
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        if do_references:
-            cur.execute(""" delete from document_references""")
-            cur.execute(""" delete from section_references""")
-        if do_subordinates:
-            cur.execute(""" delete from subordinates""")
-
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        result_to_dict = lambda r: (r['govt_id'], r['parent_id'])
-        cur.execute("""SELECT i.govt_id, parent_id from id_lookup i join latest_instruments l on i.parent_id = l.id
-            """)
-        id_lookup = dict(map(result_to_dict, cur.fetchall()))
-
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        query = """ select title, id from latest_instruments """
-        cur.execute(query)
-
-        titles = {unicode(x['title'].decode('utf-8')): x['id'] for x in cur.fetchall()}
-        id_to_title = {v: k for k, v in titles.items()}
-
-        keys = sorted(titles.keys(), key=lambda x: len(x), reverse=True)
-        regex = re.compile(u"(^|\W)(%s)s?($|\W)" % u"|".join(map(lambda x: re.escape(x), keys)), flags=re.I & re.UNICODE)
-
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute('select count(*) as count from instruments')
-        total = cur.fetchone()['count']
-
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
-        count = 0
-        cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id
-            """)
-        documents = cur.fetchmany(1)
-
-        def safe_target(el):
-            try:
-                return el.attrib.get('href') or el.get('targetXmlId') or el.xpath('resourcepair')[0].attrib.get('targetXmlId')
-            except:
-                return el.attrib.get('id', None)
-
-        ancestor_rule = '[not(ancestor::end)][not(ancestor::skeleton)][not(ancestor::amend)]'
-
-        tags_to_remove = ['history-note', 'end', 'skeleton', 'amend', 'schedule.amendments', 'insertwords', 'amend.in']
-
-
-
-        while len(documents):
-            for document in documents:
-                count += 1
-                if count % 100 == 0:
-                    print count
-                tree = etree.fromstring(document['document'], parser=p)
-                source_id = document['id']
-
-                for el in tree.iter(*tags_to_remove):
-                    el.getparent().remove(el)
-
-                # todo, break up processing steps
-                if do_references:
-                    links = map(lambda x: {'id': safe_target(x),
-                        'text': etree.tostring(x, method="text", encoding="UTF-8"),
-                        'path': generate_path_string(x, title=unicode(document['title'].decode('utf-8')))},
-                        tree.xpath('.//*[@href]|.//link[resourcepair]'))
-
-                    counters = defaultdict(int)
-                    for link in links:
-                        if link['id'] in id_lookup:
-                            counters[id_lookup[link['id']]] = counters[id_lookup[link['id']]] + 1
-                    if len(counters.items()):
-                        flattened = map(lambda x: (source_id, x[0], x[1]), counters.items())
-                        args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in flattened)
-                        out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
-
-                        flattened = map(lambda x: (source_id, x['id'], x['path'][0], x['path'][1], x['text'], id_lookup[x['id']]), [l for l in links if id_lookup.get(l['id'])])
-                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in flattened)
-                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_document_id) VALUES " + args_str)
-
-                if do_subordinates:
-                    if 'Amendment' in document.get('title') or 'Rules' in document.get('title')  or 'Regulations' in document.get('title'):
-                        ids = []
-                        pursuant = tree.xpath('.//pursuant')
-                        title = unicode(document['title'].decode('utf-8'))
-                        if len(pursuant):
-                            try:
-                                refs = pursuant[0].xpath('.//extref|.//link')
-                                if len(refs):
-
-                                    ids = [id_lookup[safe_target(ref)] for ref in refs if id_lookup[safe_target(ref)] != document.get('id')]
-                                else:
-                                    ids = [titles[x[1]] for x in regex.findall(etree.tostring(pursuant[0], method="text", encoding="UTF-8"))]
-                                ids = list(set(ids))
-                            except KeyError:
-                                print refs, document.get('title')
-                        else:
-                            # see if there is a 'is called the principal Act'
-                            text_pairs = map(lambda x: (x, etree.tostring(x, method="text", encoding="UTF-8")), tree.xpath('.//text'))
-                            principal_els = []
-                            for t in text_pairs:
-                                if any([phrase in t[1].lower() for phrase in [
-                                "an act to amend the",
-                                "this act amends the",
-                                "these regulations amend the",
-                                #"this part amends ",
-                                #"these parts amends ",
-                                #"this section amends ",
-                                #"these sections amends ",
-                                #"this clause amends ",
-                                #"this clauses amends ",
-                                #"this schedule amends ",
-                                #"these schedules amends ",
-                                #"this regulation amends ",s
-                                #"this rule amends ",
-                                "these rules amends ",
-                                "principal act",
-                                "principal regulations"]]):
-                                    principal_els.append(t)
-                                    if 'principal' in t[1].lower():
-                                        break
-
-                            for el in tree.xpath('.//prov[heading[contains(., "Principal Act") or contains(., "Principal Regulation")]]'):
-                                principal_els.append((el, etree.tostring(el, method="text", encoding="UTF-8")))
-                            for el in tree.xpath('.//leg-title[contains(., "to amend")]'):
-                                principal_els.append((el, etree.tostring(el, method="text", encoding="UTF-8")))
-                            try:
-                                if len(principal_els):
-                                    for el, text in principal_els:
-                                        links = el.xpath('.//link[resourcepair]|.//*[@href]')
-                                        for link in links:
-                                            ids += [id_lookup[safe_target(link)] for link in links]
-                                        else:
-                                            ids += [titles[x[1]] for x in regex.findall(text)]
-                            except (KeyError, IndexError):
-                                print document.get('title')
-                            # 'These regulations amend the'
-                        ids = list(set([i for i in ids if i != document.get('id') and id_to_title.get(i) != title]))
-
-                        if len(ids):
-                            print document.get('title'), [id_to_title.get(i) for i in ids]
-                            args_str = ','.join(cur.mogrify("(%s, %s)", (x, document['id'])) for x in ids)
-                            out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
-                        else:
-                            print 'Could not find parent for: ', document.get('title')
-            documents = cur.fetchmany(1)
-    db.commit()
-    fix_cycles(db)
+    links.fix_cycles(db)
 
 
 def analyze_links(db):
     from acts import traversal
+    from acts import links
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute('select count(*) as count from latest_instruments')
         total = cur.fetchone()['count']
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor(cursor_factory=extras.RealDictCursor) as cur2:
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
 
         cur.execute("""SELECT document, id, title, govt_id from latest_instruments""")
         results = cur.fetchmany(10)
@@ -248,35 +129,10 @@ def analyze_links(db):
         while len(results):
             for result in results:
                 count += 1
-                # these group bys significantly help the opimizer
-                cur2.execute("""select target_govt_id, link_text
-                    from section_references s
-                    where target_document_id =  %(id)s and target_govt_id !=  %(govt_id)s and target_path is null
-                    group by  target_govt_id, link_text;
-                    """, result)
-                refs = cur2.fetchall()
-                if not len(refs):
-                    continue
-                tree = etree.fromstring(result['document'], parser=p)
-                for elem in tree.xpath('.//*[self::end or self::amend or self::text or self::history-note]'):
-                    elem.getparent().remove(elem)
-
-                nodes_by_id = {x.attrib['id']: x for x in tree.findall('.//*[@id]')}
-
-                for ref in refs:
-                    link = ref['link_text']
-                    try:
-                        nodes = traversal.decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
-                        if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
-                            inserts.append(cur2.mogrify("""INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_path, target_document_id)
-                                (SELECT r.source_document_id, r.target_govt_id, r.source_repr, r.source_url, r.link_text,  unnest(%(target_paths)s) as target_path, r.target_document_id
-                                    from section_references r where r.target_govt_id=%(target_govt_id)s and r.link_text=%(link_text)s)""",
-                                {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text'], 'target_paths': [get_path(n) for n in nodes]}))
-                            deletes.append(cur2.mogrify("""DELETE FROM section_references s where  s.target_govt_id = %(target_govt_id)s and s.link_text = %(link_text)s  and s.target_path is null""",
-                            {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text']}))
-
-                    except Exception, e:
-                        print e
+                tree = etree.fromstring(document['document'], parser=p)
+                ins, dels = links.get_reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
+                inserts += ins
+                dels += dels
                 sys.stdout.write("%d%%\r" % (count/total*100))
                 sys.stdout.flush()
 
@@ -300,7 +156,6 @@ def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True,
 
     if do_links:
         analyze_links(db)
-
 
 
 if __name__ == "__main__":
