@@ -13,6 +13,9 @@ var ContainsResult = require('./ContainsResult.jsx');
 var SEARCH_TYPES = require('../constants').SEARCH_TYPES;
 
 module.exports = React.createClass({
+    propTypes: {
+        page: React.PropTypes.object.isRequired
+    },
     renderPage: function(){
         var result;
         switch(this.props.page.get('search_type')){

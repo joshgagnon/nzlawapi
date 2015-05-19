@@ -159,6 +159,9 @@ var PrintOverview = React.createClass({
 
 
 module.exports = React.createClass({
+    propTypes: {
+        view: React.PropTypes.object.isRequired
+    },
     shouldComponentUpdate: function(newProps, newState){
         return (this.props.view !== newProps.view) || (this.props.print !== newProps.print);
     },

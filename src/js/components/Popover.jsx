@@ -136,6 +136,11 @@ var PopoverBehaviour = {
 module.exports = {
     Popover: React.createClass({
         mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin, {stopScrollPropagation: utils.stopScrollPropagation}, PopoverFix],
+        propTypes: {
+            popoverView: React.PropTypes.object.isRequired,
+            popoverPage: React.PropTypes.object.isRequired,
+            getScrollContainer: React.PropTypes.func.isRequired
+        },
         topOffset: 20,
         openLinksInTabs: true,
         scrollable_selector: '.popover-content > *',

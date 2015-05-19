@@ -14,6 +14,9 @@ var $ = require('jquery');
 
 module.exports = React.createClass({
     mixins: [ArticleHandlers, Popovers, PageMixins],
+    propTypes: {
+        page: React.PropTypes.object.isRequired
+    },
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
             return <div className="legislation-result"><SectionReferenceError error={this.props.page.getIn(['content', 'error'])}/></div>

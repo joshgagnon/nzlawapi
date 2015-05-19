@@ -22,6 +22,9 @@ var DefinitionResult = React.createClass({
 
 module.exports = React.createClass({
     mixins: [ArticleHandlers, Popovers, PageMixins, GetMore],
+    propTypes: {
+        page: React.PropTypes.object.isRequired
+    },
     render: function() {
         var resultContent;
         if(this.props.page.getIn(['content', 'search_results'])) {

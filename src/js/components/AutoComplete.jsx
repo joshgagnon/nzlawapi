@@ -6,6 +6,9 @@ var request = require('../catalex-request');
 // TODO, scroll overflow on arrows
 
 var AutoComplete = React.createClass({
+    propTypes: {
+        search_value: React.PropTypes.object.isRequired
+    },
     getInitialState: function() {
         return {
             show: false,

@@ -255,6 +255,9 @@ module.exports = React.createClass({
     mixins:[
         FormHelper
     ],
+    propTypes: {
+        view: React.PropTypes.object.isRequired
+    },
     stateFields: ['doc_type'],
     getInitialState: function(){
         // if coming from basic search, doc_type might be 'all'.

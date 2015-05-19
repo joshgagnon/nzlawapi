@@ -54,6 +54,9 @@ module.exports = React.createClass({
     mixins: [
         SearchTable, GetMore
     ],
+    propTypes: {
+        page: React.PropTypes.object.isRequired
+    },
     renderRow: function(data, index){
         return <SearchResult index={index} key={data.getIn(['fields', 'id', 0])+''+index} data={data} page={this.props.page} viewer_id={this.props.viewer_id}/>;
     },

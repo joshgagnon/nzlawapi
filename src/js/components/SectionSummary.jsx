@@ -8,6 +8,9 @@ var Actions = require('../actions/Actions.js');
 var _= require('lodash');
 
 module.exports = React.createClass({
+    propTypes: {
+        sectionView: React.PropTypes.object.isRequired
+    },
     componentDidMount: function(){
         if(this.props.sectionView.last()){
             Actions.requestSectionReferences(this.props.page_id, this.props.sectionView.last());

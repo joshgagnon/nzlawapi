@@ -7,6 +7,9 @@ var NotLatestVersion = React.createClass({
 });
 
 var ArticleError = React.createClass({
+    propTypes: {
+        error: React.PropTypes.string
+    },
     render: function(){
         return <div className="alert alert-danger" role="alert"><strong>Error</strong> {this.props.error}</div>
     }
