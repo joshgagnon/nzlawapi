@@ -7,13 +7,16 @@
     <xsl:import href="tables.xslt" />
     <xsl:import href="end.xslt" />
     <xsl:import href="schedules.xslt" />
+
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:'`’")(</xsl:variable>
-    <xsl:template match="/">
 
+
+    <xsl:template match="/">
         <xsl:apply-templates />
 
     </xsl:template>
+
 
     <xsl:template name="current">
         <xsl:param name="class" />

@@ -9,7 +9,7 @@
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
                     <xsl:call-template name="current"/>
-                    <xsl:apply-templates select="billref|billdetail|cover|front|body|schedule.group|end"/>
+                    <xsl:apply-templates select="billref|billdetail|cover|front|body|schedule.group|end|explnote"/>
                 </div>
             </div>
         </div>
@@ -17,7 +17,40 @@
 
 
     <xsl:template match="sop">
-        <xsl:apply-templates select="bill.sop.body/bill|billref|body" />
+        <div class="legislation">
+            <div>
+                <div class="sop top-level">
+                     <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:attribute>
+                <xsl:apply-templates select="bill.sop.body/bill|billref|body|explnote|end" />
+                </div>
+            </div>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="sop.amend">
+        <div class="sop-amend">
+                 <xsl:attribute name="id">
+                    <xsl:value-of select="@id"/>
+                </xsl:attribute>
+            <p class="clause-ref"><xsl:value-of select="clause.ref"/></p>
+            <xsl:apply-templates select="sop.para"/>
+
+        </div>
+    </xsl:template>
+
+    <xsl:template match="billref">
+        <p class="billref"><xsl:value-of select="."/></p>
+    </xsl:template>
+
+    <xsl:template match="sop/body/heading">
+
+        <h2 class="sop-body"><xsl:value-of select="."/></h2>
+    </xsl:template>
+
+    <xsl:template match="motion">
+        <p class="motion"><xsl:value-of select="."/></p>
     </xsl:template>
 
 

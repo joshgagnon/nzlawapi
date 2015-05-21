@@ -175,6 +175,7 @@ def process_heights(id, tree, db=None, measure=True):
     html = tohtml(tree)
     parts = False
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
+    print skeleton
     for i, div in enumerate(html.xpath('.//div[@class="prov" or @class="schedule"][not(ancestor::div[@class="prov"] or ancestor::div[@class="schedule"] or ancestor::div[@class="amend"])]')):
         div.attrib['data-hook'] = '%d' % i
         parts = True

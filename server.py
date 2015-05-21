@@ -34,7 +34,7 @@ if not os.path.isfile('build/manifest.json'):
     raise Exception('need a build manifest.  Run gulp')
 
 
-app = MyFlask(__name__, static_folder='build')
+app = Flask(__name__, static_folder='build')
 app.config.from_pyfile(sys.argv[1])
 app.register_blueprint(Base)
 app.register_blueprint(Validator)
