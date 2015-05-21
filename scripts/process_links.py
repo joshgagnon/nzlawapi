@@ -58,13 +58,13 @@ def refs_and_subs(db, do_references, do_subordinates):
 
     id_lookup = links.get_all_ids(db)
 
-    links = links.get_links(db)
+    titles = links.get_links(db)
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
         count = 0
         cur.execute("""SELECT document, d.id, title from instruments i join documents d on i.id = d.id
             """)
-        documents = cur.fetchmany(1)
+        documents = cur.fetchmany(100)
 
         while len(documents):
             for document in documents:
@@ -88,12 +88,12 @@ def refs_and_subs(db, do_references, do_subordinates):
                         out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_document_id) VALUES " + args_str)
 
                 if do_subordinates:
-                    ids = links.find_parent_instrument(tree, source_id, title, id_lookup, links)
+                    ids = links.find_parent_instrument(tree, source_id, title, id_lookup, titles)
                     if len(ids):
                         args_str = ','.join(cur.mogrify("(%s, %s)", (x, source_id)) for x in ids)
                         out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
 
-            documents = cur.fetchmany(1)
+            documents = cur.fetchmany(100)
     db.commit()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         # lets make the interpretation act the parent of everything
@@ -129,7 +129,7 @@ def analyze_links(db):
         while len(results):
             for result in results:
                 count += 1
-                tree = etree.fromstring(document['document'], parser=p)
+                tree = etree.fromstring(result['document'], parser=p)
                 ins, dels = links.get_reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
                 inserts += ins
                 dels += dels

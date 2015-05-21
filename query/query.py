@@ -21,7 +21,7 @@ def article_auto_complete():
             cur.execute("""
                 select name, id, type, find, query  from titles
                    where name ilike '%%'||%(query)s||'%%'
-                   order by  base_score asc, position(%(query)s in lower(name)), char_length(name) asc, refs desc, children desc, year desc
+                   order by  base_score asc, position(%(query)s in lower(name)), char_length(name) asc, refs desc,  year desc
                 limit 50;
                 """, {'query': request.args.get('query').lower()})
             return jsonify({'results': cur.fetchall()})
@@ -76,6 +76,7 @@ def get_section_references_route():
     try:
         result = get_section_references(request.args.get('document_id'), request.args.get('govt_ids').split(','), request.args.get('target_path'))
     except Exception, e:
+        current_app.logger.info("Error %e" % e)
         result = {'error': str(e)}
         status = 500
     return jsonify(result), status
@@ -88,6 +89,7 @@ def get_versions_route(document_id):
     try:
         result = get_versions(document_id)
     except Exception, e:
+        current_app.logger.info("Error %e" % e)
         result = {'error': str(e)}
         status = 500
     return jsonify(result), status
@@ -100,6 +102,7 @@ def get_contents_route(document_id):
     try:
         result = get_contents(document_id)
     except Exception, e:
+        current_app.logger.info("Error %e" % e)
         result = {'error': str(e)}
         status = 500
     return jsonify(result), status
@@ -128,6 +131,7 @@ def query_definitions(term):
             })
             result = {'title': 'Define: %s' % term, 'results': cur.fetchall()}
     except Exception, e:
+        current_app.logger.info("Error %e" % e)
         result = {'error': str(e)}
         status = 500
     return jsonify(result), status
@@ -160,6 +164,7 @@ def query():
         else:
             raise CustomException('Badly formed query')
     except CustomException, e:
+        current_app.logger.info("Error %s" % str(e))
         result = {'error': str(e)}
         status = 500
     return jsonify(result), status

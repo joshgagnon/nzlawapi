@@ -4,7 +4,7 @@ from operator import itemgetter
 import re
 from lxml import etree
 from utils import text_to_num
-
+from flask import current_app
 
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
@@ -115,6 +115,7 @@ def nodes_from_path_string(tree, path):
                         i += 1
     except IndexError, e:
         raise CustomException("Path not found")
+    current_app.logger.debug("Path: %s" % ",".join(keys))
     return find_sub_node(tree, keys)
 
 
@@ -210,7 +211,6 @@ def find_definition(tree, query):
         lev_nodes = sorted(map(lambda x: (x, levenshtein(query, x.text)), nodes), key=itemgetter(1))
         return lev_nodes[0][0].iterancestors(tag='def-para').next()
     except Exception, e:
-        print e
         raise CustomException("Path for definition not found")
 
 
@@ -224,7 +224,6 @@ def find_document_id_by_govt_id(node_id, db=None):
             cur.execute(query, {'node_id': node_id})
             return cur.fetchone()[0]
         except Exception, e:
-            print e
             raise CustomException("Result not found")
 
 
@@ -232,7 +231,6 @@ def find_node_by_query(tree, query):
     try:
         return tree.xpath(".//*[contains(.,'%s')]" % query)
     except Exception, e:
-        print e
         raise CustomException("Path not found")
 
 
@@ -240,7 +238,6 @@ def find_node_by_govt_id(tree, query):
     try:
         return tree.xpath(".//*[@id='%s']" % query)
     except Exception, e:
-        print e
         raise CustomException("Path not found")
 
 

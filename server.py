@@ -12,8 +12,9 @@ from flask.json import JSONEncoder
 import datetime
 import time
 import elasticsearch
+import logging
 import json
-
+from logging import Formatter
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -32,7 +33,8 @@ if len(sys.argv) <= 1:
 if not os.path.isfile('build/manifest.json'):
     raise Exception('need a build manifest.  Run gulp')
 
-app = Flask(__name__, static_folder='build')
+
+app = MyFlask(__name__, static_folder='build')
 app.config.from_pyfile(sys.argv[1])
 app.register_blueprint(Base)
 app.register_blueprint(Validator)
@@ -45,29 +47,24 @@ app.secret_key = app.config['SESSION_SECRET']
 with open('build/manifest.json') as m:
     app.config['manifest'] =json.loads(m.read())
 
-# disabled for now
-if False:
-    @app.route('/map')
-    def map():
-        args = request.args
-        centre_id = args.get('id')
-        centre_type = args.get('type')
-        status = 200
-        try:
-            result = {'results': graph.get_links(graph.get_connected(centre_type, centre_id), {'type': centre_type, 'id': centre_id})}
-        except CustomException, e:
-            result = {'error': str(e)}
-            status = 500
-        return jsonify(result), status
-
+if app.config.get('LOG_FILE'):
+    handler = logging.FileHandler(filename=app.config['LOG_FILE'])
+else:
+    handler = logging.StreamHandler()
+handler.setFormatter(Formatter(
+    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+handler.setLevel(logging.DEBUG)
+app.logger.addHandler(handler)
 
 
 def run():
+
     @app.teardown_appcontext
     def close_db(error):
         if hasattr(g, 'db'):
+            g.db.commit()
             g.db.close()
-
 
     @app.before_request
     def before_request():
@@ -76,12 +73,19 @@ def run():
         if os.path.isfile('down_lock') and not request.path.endswith(('.png', '.jpg', '.css')):
             return render_template('down.html'), 503
 
-
     @app.teardown_request
     def teardown_request(exception=None):
         diff = time.time() - g.start
         if diff > 2:
-            print 'Request took %.2f seconds' % diff
+            app.logger.info('Request took %.2f seconds' % diff)
+
+    @app.errorhandler(CustomException)
+    def handle_invalid_usage(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        app.logger.info('ERROR %s' % error.message)
+        return response
+
     app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])
 
 

@@ -6,6 +6,8 @@ import importlib
 import os
 from multiprocessing import Pool
 from lxml import etree
+import logging
+
 
 def get_db(config_filename):
     config = importlib.import_module(config_filename.replace('.py', ''), 'parent')
@@ -46,7 +48,7 @@ def run_process((config_filename, ids)):
 
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
             for document_id in ids:
-                print 'fetching %d for processing' % document_id
+                #print 'fetching %d for processing' % document_id
                 query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
                         JOIN documents d on d.id = i.id
                         where processed_document is null
@@ -63,6 +65,20 @@ def run_process((config_filename, ids)):
                     latest=result[0].get('latest'),
                     strategy={'links': get_links})
 
+    except KeyboardInterrupt:
+        pass
+    finally:
+        db.rollback()
+        db.close()
+
+def run_skeleton((config_filename, ids)):
+    from acts import acts
+    from acts import queries
+    from acts import links
+    import server
+    sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+    try:
+        db = get_db(config_filename)
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur, server.app.test_request_context():
             for document_id in ids:
                 print 'fetching %d for skeletizing' % document_id
@@ -83,6 +99,7 @@ def run_process((config_filename, ids)):
     except KeyboardInterrupt:
         pass
     finally:
+        db.rollback()
         db.close()
 
 
@@ -91,27 +108,53 @@ if __name__ == "__main__":
         raise Exception('Missing configuration file')
     sys.path.append(os.getcwd())
     db = get_db(sys.argv[1])
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        try:
+    logging.basicConfig(level=logging.INFO)
+
+    try:
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             query = """SELECT i.id as id FROM instruments i
                     JOIN documents d on d.id = i.id
-                    where processed_document is null or skeleton is null"""
+                    where processed_document is null """
             cur.execute(query)
             results = cur.fetchall()
-            if len(results):
-                print '%s documents to process' % len(results)
-                processes = min(int(sys.argv[2] if len(sys.argv) > 2 else 2), len(results))
-                pool = Pool(processes=processes)
-                args = map(lambda x: (sys.argv[1], x), (list(chunks(map(lambda x: x['id'], results),
-                           len(results) / processes + len(results) % processes))))
-                pool.map(run_process, (args))
-                pool.join()
-            else:
-                print 'Nothing to do'
-        except KeyboardInterrupt:
-            print "Keyboard interrupt in main"
-        finally:
-            print "Cleaning up Main"
+        if len(results):
+            print '%s documents to process' % len(results)
+            processes = min(int(sys.argv[2] if len(sys.argv) > 2 else 2), len(results))
+            pool = Pool(processes=processes)
+            args = map(lambda x: (sys.argv[1], x), (list(chunks(map(lambda x: x['id'], results),
+                       len(results) / processes + len(results) % processes))))
+
+            pool.map(run_process, (args))
+            pool.close()
+            pool.join()
+        else:
+            print 'Nothing to do'
+
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+            query = """SELECT i.id as id FROM instruments i
+                    JOIN documents d on d.id = i.id
+                    where skeleton is null """
+            cur.execute(query)
+            results = cur.fetchall()
+        if len(results):
+            print '%s documents to process' % len(results)
+            processes = min(int(sys.argv[2] if len(sys.argv) > 2 else 2), len(results))
+            pool = Pool(processes=processes)
+            args = map(lambda x: (sys.argv[1], x), (list(chunks(map(lambda x: x['id'], results),
+                       len(results) / processes + len(results) % processes))))
+            pool.map(run_process, (args))
+            pool.close()
+        else:
+            print 'Nothing to do'
+
+    except KeyboardInterrupt:
+        pool.terminate()
+        print "Keyboard interrupt in main"
+    finally:
+        pool.join()
+        print "Cleaning up Main"
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
-    db.close()
+        db.commit()
+        db.close()
 

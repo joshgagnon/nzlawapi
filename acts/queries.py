@@ -5,6 +5,7 @@ import psycopg2
 from psycopg2 import extras
 from lxml import etree
 from definitions import populate_definitions, process_definitions, Definitions, Definition
+from instrument_es import insert_instrument_es
 from links import process_instrument_links
 from flask import render_template, current_app
 from traversal import nodes_from_path_string
@@ -165,6 +166,7 @@ def process_skeleton(id, tree, db=None):
             cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
 
     db.commit()
+    #insert_instrument_es(id, db)
     return skeleton
 
 
@@ -215,7 +217,7 @@ def add_parent_definitions(row, db=None, definitions=None,
             row)
 
         for result in cur.fetchall():
-            print 'Parent: ', result.get('title')
+            current_app.logger.info('Parent: %s' % result.get('title'))
             processed_parent = True
             title = unicode(result.get('title').decode('utf-8'))
             if title not in definitions.titles:
@@ -245,7 +247,7 @@ def add_parent_definitions(row, db=None, definitions=None,
 
 def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False,
         strategy={'links': process_instrument_links}):
-    print 'Processing: ', row.get('title')
+    current_app.logger.info('Processing: %s' % row.get('title'))
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
     if not latest:
@@ -277,7 +279,7 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
         })
         defs = definitions.render(document_id=row.get('id'))
         if len(defs):
-            print 'New Definitions: ', len(defs)
+            current_app.logger.info('New Definitions: %d' % len(defs))
             args_str = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s)", (row.get('id'), x['id'],  x['full_word'], x['keys'], x['html'], x['expiry_tags'], x['priority']))
                 for x in defs)
             cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
@@ -395,23 +397,15 @@ def get_contents(document_id):
 
 
 def prep_instrument(result, replace, db):
-    from links import analyze_new_links
-
-    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """SELECT *, true as latest FROM latest_instruments i
-                JOIN documents d on d.id = i.id
-                where i.id =  %(id)s
-            """
-        cur.execute(query, {'id': result.get('id')})
-        analyze_new_links(cur.fetchone(), db)
-
     if not result:
         raise CustomException('Instrument not found')
     tree = None
     definitions = None
     redo_skele = False
     if replace or not result.get('processed_document'):
-        tree, definitions = process_instrument(row=get_unprocessed_instrument(result.get('id')), db=db, latest=result.get('latest'), refresh=True)
+        tree, definitions = process_instrument(
+            row=get_unprocessed_instrument(result.get('id'), db=db),
+            db=db, latest=result.get('latest'), refresh=True)
         document = etree.tostring(tree, encoding='UTF-8', method="html")
         redo_skele = True
     else:

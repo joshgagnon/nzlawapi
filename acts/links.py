@@ -176,27 +176,19 @@ def find_parent_instrument(tree, document_id, title, id_lookup, titles):
     return ids
 
 
-def get_reparse_link_texts(tree, target_id, target_govt_id, source_id=None, db=None):
+def get_reparse_link_texts(tree, target_id, target_govt_id, db=None):
     """ find links whose href is misrepresented by its text """
     """ ie, "section 2(e) and 3(b)(i)"" will be default only point to s 2 """
     inserts = []
     deletes = []
     db = db or get_db()
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor(cursor_factory=extras.RealDictCursor) as cur2:
-    # these group bys significantly help the opimize
-        if source_id:
-            cur.execute("""select target_govt_id, link_text
-                from section_references s
-                where target_document_id =  %(id)s and target_govt_id !=  %(govt_id)s
-                    and source_document_id = %(source_document_id)s and target_path is null
-                group by  target_govt_id, link_text;
-                """, {'id': target_id, 'govt_id': target_govt_id, 'source_document_id': source_id})
-        else:
-            cur.execute("""select target_govt_id, link_text
-                from section_references s
-                where target_document_id =  %(id)s and target_govt_id !=  %(govt_id)s and target_path is null
-                group by  target_govt_id, link_text;
-                """, {'id': target_id, 'govt_id': target_govt_id})
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="link_cursor") as cur:
+    # these group bys significantly help the optimizer, #UPDATE NOT ANY MORE
+        cur.execute("""select target_govt_id, link_text
+            from section_references s
+            where target_document_id =  %(id)s and target_govt_id !=  %(govt_id)s and target_path is null
+            group by  target_govt_id, link_text;
+            """, {'id': target_id, 'govt_id': target_govt_id})
         refs = cur.fetchall()
         if len(refs):
             nodes_by_id = {x.attrib['id']: x for x in tree.findall('.//*[@id]')}
@@ -206,15 +198,34 @@ def get_reparse_link_texts(tree, target_id, target_govt_id, source_id=None, db=N
                 try:
                     nodes = decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
                     if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
-                        inserts.append(cur2.mogrify("""INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_path, target_document_id)
+                        inserts.append(cur.mogrify("""INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_path, target_document_id)
                             (SELECT r.source_document_id, r.target_govt_id, r.source_repr, r.source_url, r.link_text,  unnest(%(target_paths)s) as target_path, r.target_document_id
                                 from section_references r where r.target_govt_id=%(target_govt_id)s and r.link_text=%(link_text)s)""",
                             {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text'], 'target_paths': [get_path(n) for n in nodes]}))
-                        deletes.append(cur2.mogrify("""DELETE FROM section_references s where  s.target_govt_id = %(target_govt_id)s and s.link_text = %(link_text)s  and s.target_path is null""",
+                        deletes.append(cur.mogrify("""DELETE FROM section_references s where  s.target_govt_id = %(target_govt_id)s and s.link_text = %(link_text)s  and s.target_path is null""",
                         {'target_govt_id': ref['target_govt_id'], 'link_text': ref['link_text']}))
                 except Exception, e:
-                    logging.debug(e)
+                    current_app.logger.debug(e)
     return inserts, deletes
+
+def replace_reparse_link_texts(tree, target_id, target_govt_id, section_refs, db=None):
+    """ find links whose href is misrepresented by its text """
+    """ ie, "section 2(e) and 3(b)(i)"" will be default only point to s 2 """
+    inserts = []
+    nodes_by_id = {x.attrib['id']: x for x in tree.findall('.//*[@id]')}
+    for tuple_ref in section_refs:
+        ref = {'source_document_id': tuple_ref[0], 'target_govt_id': tuple_ref[1],
+                'source_repr': tuple_ref[2], 'source_url': tuple_ref[3], 'link_text': tuple_ref[4], 'target_document_id': tuple_ref[5]}
+        try:
+            nodes = decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
+            if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
+                for n in nodes:
+                    inserts.append((tuple_ref[0], tuple_ref[1], tuple_ref[2], tuple_ref[3], get_path(n), tuple_ref[5]))
+            else:
+                inserts.append(tuple_ref)
+        except Exception, e:
+            current_app.logger.debug(e)
+    return inserts
 
 
 def reparse_link_text(tree, document_id, db=None):
@@ -286,12 +297,8 @@ def analyze_new_links(row, db=None):
             out.execute("""INSERT INTO document_references (source_id, target_id, count) VALUES """ +
                         args_str)
 
-            args_str = ','.join(out.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in section_refs)
-            out.execute("""INSERT INTO section_references (source_document_id, target_govt_id,
-                source_repr, source_url, link_text, target_document_id) VALUES """ + args_str)
-
     parent_ids = find_parent_instrument(tree, document_id, title, id_lookup, links)
-    logging.info('parents: %s', ','.join(parent_ids))
+    logging.info('parents: %s', ','.join(parent_ids) or 'None')
     if len(parent_ids):
         with db.cursor() as out:
             args_str = ','.join(out.mogrify("(%s, %s)", (x, document_id)) for x in parent_ids)
@@ -304,7 +311,7 @@ def analyze_new_links(row, db=None):
                 INSERT INTO subordinates (parent_id, child_id) values
                     ((select id as parent_id from instruments where title = 'Interpretation Act 1999' AND version = 19), %(child_id)s)
                 """, {'child_id': document_id})
-    inserts, deletes = [], []
+    inserts = []
     # documents to scan to find true targets
     documents_ids_scan = map(lambda x: x[1], document_refs)
     for id_scan in documents_ids_scan:
@@ -312,15 +319,15 @@ def analyze_new_links(row, db=None):
             cur.execute('select document, govt_id from instruments i join documents d on i.id = d.id where i.id = %(id)s', {'id': id_scan})
             row_to_scan = cur.fetchone()
             tree_to_scan = etree.fromstring(row_to_scan['document'], parser=large_parser)
-            ins, dels = get_reparse_link_texts(tree_to_scan, id_scan, row_to_scan.get('govt_id'), source_id=document_id, db=db)
-            inserts += ins
-            deletes += dels
-    logging.info('fixing %d links' % len(deletes))
-    with db.cursor() as out:
-        for insert in inserts:
-            out.execute(insert)
-        for delete in deletes:
-            out.execute(delete)
+            refs = filter(lambda x: x[5] == id_scan, section_refs)
+            inserts += replace_reparse_link_texts(tree_to_scan, id_scan, row_to_scan.get('govt_id'), refs, db=db)
+
+    logging.info('inserting %d links' % len(inserts))
+    if len(inserts):
+        with db.cursor() as out:
+            args_str = ','.join(out.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in inserts)
+            out.execute("""INSERT INTO section_references (source_document_id, target_govt_id,
+                source_repr, source_url, link_text, target_document_id) VALUES """ + args_str)
     fix_cycles(db)
 
 

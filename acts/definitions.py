@@ -292,8 +292,7 @@ def infer_life_time(node):
 
 
     except (AttributeError, IndexError), e:
-        print 'infer life error', e
-        print etree.tostring(parent, method="text", encoding='UTF-8')
+        pass
     except StopIteration:
         # couldn't find safe parent
         pass

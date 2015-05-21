@@ -16,6 +16,10 @@ url = "http://www.legislation.govt.nz/atom.aspx?search=ad_act@bill@regulation@de
 resource_url = "http://www.legislation.govt.nz/subscribe"
 parser=etree.XMLParser(resolve_entities=False)
 def run(db, config):
+    from acts.links import analyze_new_links
+    from acts.queries import get_unprocessed_instrument, get_instrument_object
+    from acts.instrument_es import delete_instrument_es
+    import server
 
     #response = urllib2.urlopen(url)
     #response_string = response.read()
@@ -41,6 +45,7 @@ def run(db, config):
             path = '/'.join(link.attrib['href'].split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
             # look for path in db
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+                logging.info('checking %s' % path)
                 cur.execute("""select i.id, (d.updated < %(updated)s) as stale from instruments i join documents d on i.id = d.id
                     where path = %(path)s""",
                     {'path': path, 'updated': updated})
@@ -48,31 +53,35 @@ def run(db, config):
 
                 if document and document.get('stale'):
                     cur.execute("""delete from documents where id = %(id)s """, {'id': document.get('id')})
-                    print 'remove ', updated, document.get('id')
+                    with server.app.test_request_context():
+                        delete_instrument_es(document.get('id'))
+                    logging.info('remove %s %d' % (updated, document.get('id')))
                 # we have found newer
                 if not document or document.get('stale'):
                     doc_url = '/'.join([resource_url, path])
                     logging.info('Fetching %s' % doc_url)
                     doc_response = urllib2.urlopen(doc_url)
 
-                    updated_ids.append(initial_insert(doc_response.read(), doc_url, updated, db))
+                    updated_ids.append(initial_insert(doc_response.read(), path, updated, db))
                     break
     updated_ids = filter(lambda x: x, updated_ids)
     db.commit()
     if not len(updated_ids): return
-    from acts.links import analyze_new_links
-    from acts.queries import get_unprocessed_instrument, get_instrument_object
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        logging.info('New instruments found, updating view (%d)' % len(updated_ids))
+        logging.info('New instruments found, updating (%d)' % len(updated_ids))
         cur.execute("refresh materialized view latest_instruments")
         # analyze the new links
     for updated_id in updated_ids:
-
         analyze_new_links(get_unprocessed_instrument(updated_id, db=db), db)
     # process the docs
-    for updated_id in updated_ids:
-        get_instrument_object(updated_id, db)
+    with server.app.test_request_context():
+        for updated_id in updated_ids:
+            get_instrument_object(updated_id, db=db)
 
+    db.commit()
+
+    # find all ids that are not latest
+    # updated_ids
     return
 
 
@@ -101,8 +110,9 @@ def initial_insert(xml_text, doc_path, updated, db):
                         %(year)s, %(repealed)s, %(in_amend)s, %(pco_suffix)s, %(raised_by)s, %(official)s, %(subtype)s,
                         %(terminated)s, %(stage)s, %(date_signed)s, %(imperial)s, %(instructing_office)s, %(attr)s); """
 
-                cur.execute(""" INSERT INTO documents (document, type) VALUES (%(document)s, 'xml') returning id""",
-                        {'document': xml_text})
+                cur.execute(""" INSERT INTO documents (document, type, updated) VALUES (%(document)s, 'xml', %(updated)s) returning id""",
+                        {'document': xml_text,
+                        'updated': updated})
 
                 document_id = cur.fetchone()['id']
 
@@ -132,8 +142,7 @@ def initial_insert(xml_text, doc_path, updated, db):
                     'date_signed': safe_date(attrib.get('date.signed')),
                     'imperial':  attrib.get('imperial') == 'yes',
                     'instructing_office': attrib.get('instructing_office'),
-                    'attr': json.dumps(dict(attrib)),
-                    'updated': updated
+                    'attr': json.dumps(dict(attrib))
                 }
                 cur.execute(query, values)
 
@@ -152,7 +161,8 @@ if __name__ == "__main__":
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
     from acts import queries
     import server
-    logging.basicConfig(filename='update_legislation.log', level=logging.INFO)
+    #logging.basicConfig(filename='update_legislation.log', level=logging.INFO)
+    logging.basicConfig(filename=config.UPDATE_LEGISLATION_LOG_FILE, level=logging.INFO)
     db = psycopg2.connect(
             database=config.DB,
             user=config.DB_USER,

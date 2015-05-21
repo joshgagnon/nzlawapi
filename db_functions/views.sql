@@ -44,8 +44,9 @@ CREATE MATERIALIZED VIEW latest_instruments AS
     SELECT title, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
     i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
     i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
-    i.instructing_office, i.number, document, processed_document, skeleton, heights, contents, coalesce(g.count, 0)+1 as generation,
-    coalesce(c.children, 0) as children,
+    i.instructing_office, i.number, document, processed_document, skeleton, heights, contents,
+    --coalesce(g.count, 0)+1 as generation,
+    --coalesce(c.children, 0) as children,
     coalesce(r.count, 0) as refs,
     ((case when (i.title like '%Amendment%' or i.title like '%Order%' or i.title like '%Notice%') and g.count = 1 then 1 else 0 END) +
     (case when i.type = 'sop' then 1 else 0 END) +
@@ -59,7 +60,7 @@ CREATE MATERIALIZED VIEW latest_instruments AS
     JOIN newest n on n.id = i.id
     JOIN documents d on d.id = i.id
     LEFT OUTER JOIN subordinate_depth() g on g.child_id = i.id
-    LEFT OUTER JOIN child_count() c  on c.parent_id = i.id
+    --LEFT OUTER JOIN child_count() c  on c.parent_id = i.id
     LEFT OUTER JOIN (select govt_id, true as bill_enacted from instruments l where l.type = 'act' or  l.type = 'regulation' group by govt_id) sub on i.govt_id = sub.govt_id
     LEFT OUTER JOIN ( select count(*), target_id from document_references join newest i on i.id = source_id group by target_id) r on r.target_id = i.id;
 
@@ -153,8 +154,8 @@ $$ LANGUAGE SQL;
 
 
 CREATE OR REPLACE VIEW titles AS
-    SELECT title as name, id, type, 'full' as find, null as query, year, generation, children, refs, base_score from latest_instruments i where (i.terminated is null or i.terminated = '')
+    SELECT title as name, id, type, 'full' as find, null as query, year, refs, base_score from latest_instruments i where (i.terminated is null or i.terminated = '')
     UNION
-    SELECT full_citation as name, id, 'case' as type, 'full' as find, null as query, null as year, 1 as generation, 0 as children, 0 as refs, 0 as base_score  from cases
+    SELECT full_citation as name, id, 'case' as type, 'full' as find, null as query, null as year, 0 as refs, 0 as base_score  from cases
     UNION
-    SELECT title as name, document_id, type, find, query, 10000 as year, 1 as generation, 10000 as children,  10000 as refs, 10000 as base_score  from shortcuts;
+    SELECT title as name, document_id, type, find, query, 10000 as year,   10000 as refs, 10000 as base_score  from shortcuts;

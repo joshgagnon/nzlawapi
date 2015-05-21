@@ -153,23 +153,7 @@ def index(db, es):
     })
 
 def instruments(db, es):
-    #with db.cursor() as cur:
-    #    cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
-    def strip_html(result):
-        result = dict(result)
-        tree = etree.fromstring(result['document'], parser=etree.XMLParser(huge_tree=True))
-        to_remove = ['skeleton', 'history', 'history-note']
-        for r in to_remove:
-            for t in tree.findall(r):
-                t.getparent().remove(t)
-        for node in tree.iter():
-            if node.text:
-                node.text = node.text + ' '
-            if node.tail:
-                node.tail = node.tail + ' '
-        result['document'] = etree.tostring(tree, method="text", encoding="utf-8")
-        result['document'] = re.sub(' +', ' ', result['document'])
-        return result
+    from acts.instrument_es import strip_html
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from latest_instruments')
@@ -179,7 +163,7 @@ def instruments(db, es):
         cur.execute("""SELECT title, true as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
-            i.instructing_office, i.number, base_score, refs, children, processed_document as document, bill_enacted
+            i.instructing_office, i.number, base_score, refs,  processed_document as document, bill_enacted
             FROM latest_instruments i """)
         results = cur.fetchmany(100)
         count = 0.0
