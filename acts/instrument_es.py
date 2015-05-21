@@ -35,27 +35,33 @@ instrument_query = """SELECT title, exists(select 1 from latest_instruments i wh
         where i.id = %(id)s """
 
 
-def insert_instrument_es(document_id, db=None):
+def update_document_es(document_id, db=None):
     es = current_app.extensions['elasticsearch']
     db = db or get_db()
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        current_app.logger.info('Insert document into es')
-        cur.execute(instrument_query, {"id": document_id})
-        result = cur.fetchone()
-        #print result
-        result = strip_html(result)
-        es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         current_app.logger.info('Insert definitions into es')
         cur.execute(""" SELECT document_id, html, id, full_word FROM definitions
-            where i.id = %(id)s """, {"id": document_id})
+            where document_id = %(id)s """, {"id": document_id})
         results = cur.fetchall()
         helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
             "_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+
+
+def insert_instrument_es(document_id, db=None):
+    es = current_app.extensions['elasticsearch']
+    db = db or get_db()
+    update_document_es(document_id, db)
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        current_app.logger.info('Insert document into es')
+        cur.execute(instrument_query, {"id": document_id})
+        result = cur.fetchone()
+        result = strip_html(result)
+        es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
+
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         current_app.logger.info('Insert parts into es')
         cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as html, title FROM document_parts
-                        where i.id = %(id)s """, {"id": document_id})
+                        where document_id = %(id)s """, {"id": document_id})
         results = cur.fetchall()
         helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
             "_source": dict(x), "_index":'legislation', "_type": 'part'}, results))
@@ -64,8 +70,22 @@ def insert_instrument_es(document_id, db=None):
     es.indices.refresh(index="legislation")
     return
 
+def update_old_versions_es(document_ids, db=None):
+    es = current_app.extensions['elasticsearch']
+    db = db or get_db()
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        current_app.logger.info('Updating old versions into es')
+        query = """select id from instruments i
+            join (select govt_id from instruments where id  = ANY(%(ids)s::int[])) sub on i.govt_id = sub.govt_id
+            where NOT (i.id = ANY(%(ids)s::int[]))"""
+        cur.execute(query, {'ids': document_ids})
+        for result in cur.fetchall():
+            update_document_es(result['id'], db)
+
 
 def delete_instrument_es(document_id):
     es = current_app.extensions['elasticsearch']
     es.delete(index='legislation', doc_type='instrument',  id=result['id'])
     es.indices.refresh(index="legislation")
+
+

@@ -243,7 +243,6 @@ def run(db, config):
     instruments(db, es)
     definitions(db, es)
     parts(db, es)
-    cases(db, es)
 
     es.indices.refresh(index="legislation")
 

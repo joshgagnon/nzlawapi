@@ -9,6 +9,7 @@ from psycopg2 import extras
 from copy import deepcopy
 from collections import defaultdict
 import logging
+from flask import current_app
 
 
 def add_new_ids(tree, document_id, title, db=None):
@@ -264,7 +265,7 @@ def fix_cycles(db=None):
             cur.execute(query)
             results = cur.fetchall()
             if len(results):
-                logging.info('removing cycle', dict(results[0]))
+                current_app.logger.info('removing cycle', dict(results[0]))
                 cur.execute(rm_query, results[0])
             else:
                 break
@@ -290,7 +291,7 @@ def analyze_new_links(row, db=None):
     id_lookup = get_all_ids(db)
     links = get_links(db)
     document_refs, section_refs = find_references(tree, document_id, title, id_lookup)
-    logging.info('found refs: %d %d' % (len(document_refs), len(section_refs)))
+    current_app.logger.info('found refs: %d %d' % (len(document_refs), len(section_refs)))
     if len(document_refs):
         with db.cursor() as out:
             args_str = ','.join(out.mogrify("(%s,%s,%s)", x) for x in document_refs)
@@ -298,7 +299,6 @@ def analyze_new_links(row, db=None):
                         args_str)
 
     parent_ids = find_parent_instrument(tree, document_id, title, id_lookup, links)
-    logging.info('parents: %s', ','.join(parent_ids) or 'None')
     if len(parent_ids):
         with db.cursor() as out:
             args_str = ','.join(out.mogrify("(%s, %s)", (x, document_id)) for x in parent_ids)
@@ -322,7 +322,7 @@ def analyze_new_links(row, db=None):
             refs = filter(lambda x: x[5] == id_scan, section_refs)
             inserts += replace_reparse_link_texts(tree_to_scan, id_scan, row_to_scan.get('govt_id'), refs, db=db)
 
-    logging.info('inserting %d links' % len(inserts))
+    current_app.logger.info('inserting %d links' % len(inserts))
     if len(inserts):
         with db.cursor() as out:
             args_str = ','.join(out.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in inserts)

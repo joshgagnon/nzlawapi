@@ -74,7 +74,7 @@ def get_contents_route(document_id):
 
 def get_definition(ids):
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        cur.execute('SELECT html, priority FROM definitions WHERE  id=ANY(%(ids)s) order by priority', {
+        cur.execute('SELECT html, priority FROM definitions WHERE  id=ANY(%(ids)s) order by priority desc', {
             'ids': ids
         })
         return {'html_content': ''.join(map(lambda a: a['html'], cur.fetchall()))}

@@ -37,8 +37,7 @@ class CustomException(Exception):
         return rv
 
 
-large_parser = etree.XMLParser(
-    )
+large_parser = etree.XMLParser(huge_tree=True)
 
 class Monitor(object):
     i = 0

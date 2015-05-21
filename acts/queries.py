@@ -8,7 +8,6 @@ from definitions import populate_definitions, process_definitions, Definitions, 
 from instrument_es import insert_instrument_es
 from links import process_instrument_links
 from flask import render_template, current_app
-from traversal import nodes_from_path_string
 import datetime
 import json
 import tempfile
@@ -166,7 +165,9 @@ def process_skeleton(id, tree, db=None):
             cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
 
     db.commit()
-    #insert_instrument_es(id, db)
+
+    insert_instrument_es(id, db)
+
     return skeleton
 
 
@@ -175,7 +176,6 @@ def process_heights(id, tree, db=None, measure=True):
     html = tohtml(tree)
     parts = False
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
-    print skeleton
     for i, div in enumerate(html.xpath('.//div[@class="prov" or @class="schedule"][not(ancestor::div[@class="prov"] or ancestor::div[@class="schedule"] or ancestor::div[@class="amend"])]')):
         div.attrib['data-hook'] = '%d' % i
         parts = True

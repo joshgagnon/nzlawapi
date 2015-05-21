@@ -10,6 +10,8 @@ import os
 from os import path
 import re
 import json
+from flask import current_app
+
 
 url = "http://www.legislation.govt.nz/atom.aspx?search=ad_act@bill@regulation@deemedreg______25_ac@bc@rc@dc@apub@aloc@apri@apro@aimp@bgov@bloc@bpri@bmem@rpub@rimp_ac@bc@rc@ainf@anif@aaif@aase@arep@bcur@bena@bter@rinf@rnif@raif@rasm@rrev_a_aw_se&p=1&t=New%20Zealand%20Legislation%20custom%20feed&d=90"
 
@@ -18,16 +20,14 @@ parser=etree.XMLParser(resolve_entities=False)
 def run(db, config):
     from acts.links import analyze_new_links
     from acts.queries import get_unprocessed_instrument, get_instrument_object
-    from acts.instrument_es import delete_instrument_es
+    from acts.instrument_es import delete_instrument_es, update_old_versions_es
     import server
 
-    #response = urllib2.urlopen(url)
-    #response_string = response.read()
+    response = urllib2.urlopen(url)
+    response_string = response.read()
 
-    #doc = etree.fromstring(response_string)
+    doc = etree.fromstring(response_string)
 
-    with open('tests/rss_feed.xml') as x:
-        doc = etree.fromstring(x.read(), parser)
     objectify.deannotate(doc, cleanup_namespaces=True)
     for elem in doc.iter():
         if not hasattr(elem.tag, 'find'): continue  # (1)
@@ -45,7 +45,7 @@ def run(db, config):
             path = '/'.join(link.attrib['href'].split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
             # look for path in db
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-                logging.info('checking %s' % path)
+                current_app.logger.debug('checking %s' % path)
                 cur.execute("""select i.id, (d.updated < %(updated)s) as stale from instruments i join documents d on i.id = d.id
                     where path = %(path)s""",
                     {'path': path, 'updated': updated})
@@ -53,31 +53,33 @@ def run(db, config):
 
                 if document and document.get('stale'):
                     cur.execute("""delete from documents where id = %(id)s """, {'id': document.get('id')})
-                    with server.app.test_request_context():
-                        delete_instrument_es(document.get('id'))
-                    logging.info('remove %s %d' % (updated, document.get('id')))
+                    delete_instrument_es(document.get('id'))
+                    current_app.logger.info('remove %s %d' % (updated, document.get('id')))
                 # we have found newer
                 if not document or document.get('stale'):
                     doc_url = '/'.join([resource_url, path])
-                    logging.info('Fetching %s' % doc_url)
-                    doc_response = urllib2.urlopen(doc_url)
+                    current_app.logger.info('Fetching %s' % doc_url)
+                    try:
+                        doc_response = urllib2.urlopen(doc_url)
+                        updated_ids.append(initial_insert(doc_response.read(), path, updated, db))
+                    except:
+                        current_app.logger.info('Failed to fetch %s ' % doc_url)
 
-                    updated_ids.append(initial_insert(doc_response.read(), path, updated, db))
-                    break
     updated_ids = filter(lambda x: x, updated_ids)
     db.commit()
     if not len(updated_ids): return
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        logging.info('New instruments found, updating (%d)' % len(updated_ids))
+        current_app.logger.info('New instruments found, updating (%d)' % len(updated_ids))
         cur.execute("refresh materialized view latest_instruments")
         # analyze the new links
     for updated_id in updated_ids:
         analyze_new_links(get_unprocessed_instrument(updated_id, db=db), db)
     # process the docs
-    with server.app.test_request_context():
-        for updated_id in updated_ids:
-            get_instrument_object(updated_id, db=db)
 
+    for updated_id in updated_ids:
+        get_instrument_object(updated_id, db=db)
+
+    update_old_versions_es(updated_ids, db=db)
     db.commit()
 
     # find all ids that are not latest
@@ -169,4 +171,5 @@ if __name__ == "__main__":
             host=config.DB_HOST,
             password=config.DB_PW)
     db.set_client_encoding('utf8')
-    run(db, config)
+    with server.app.test_request_context():
+        run(db, config)

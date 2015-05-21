@@ -21,7 +21,7 @@ def key_set(full_word):
         plural = pluralize(full_word)
         words = [full_word, plural]
     else:
-        words = [singularize(full_word), full_word]
+        words = [singularize(full_word), full_word, pluralize(singularize(full_word))]
     for w in words[:]:
         # if not already plural like
         if not w.endswith('s'):
@@ -112,6 +112,11 @@ class Definitions(object):
         keys = key_set(key.lower())
         if keys in self.active:
             return self.active[keys][::-1]
+        # if more than one word, try lowering the first letter
+        if len(key.split()) > 1:
+            keys = key_set(key[0].lower() + key[1:])
+            if keys in self.active:
+                return self.active[keys][::-1]
         # remove possession
         keys = key_set(re.split("['`’]", key)[0])
         if keys in self.active:
