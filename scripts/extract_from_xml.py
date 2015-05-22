@@ -1,5 +1,5 @@
 import os
-from lxml import etree
+from lxml import etree, objectify
 import psycopg2
 from psycopg2 import extras
 import datetime
@@ -22,7 +22,7 @@ def process(type, db, config):
     count = 0
     with db.cursor() as cur:
 
-        parser = etree.XMLParser(resolve_entities=False)
+        parser = etree.XMLParser(resolve_entities=False, huge_tree=True)
         print location
         for dirpath, dirs, files in os.walk(location):
             files = [f for f in files if f.endswith('.xml')]
@@ -34,6 +34,12 @@ def process(type, db, config):
                 try:
                     print path
                     tree = etree.parse(os.path.join(dirpath, files[0]), parser)
+                    objectify.deannotate(tree, cleanup_namespaces=True)
+                    for elem in tree.iter():
+                        if not hasattr(elem.tag, 'find'): continue
+                        i = elem.tag.find('}')
+                        if i >= 0:
+                            elem.tag = elem.tag[i+1:]
 
                     attrib = tree.getroot().attrib
                     if attrib.get('id'):

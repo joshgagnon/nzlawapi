@@ -31,16 +31,18 @@ module.exports = React.createClass({
         if(this.props.article.getIn(['article-verions','fetching'])){
             className += " csspinner traditional";
         }
+
         var refs = this.props.article.getIn(['versions', 'versions_data']);
         if(refs && refs.size){
             return <div className={className}>
                     <table className="table versions-table">
                         { refs.map(function(r, i){
+                            console.log(r.getIn(['query', 'doc_type']))
                             if(this.props.article.getIn(['query', 'document_id']) === r.get('id')){
                                 return <tr key={i}><td>{r.get('title')}</td>
                                 <td>{utils.formatGovtDate(r.get('date_as_at'))}</td></tr>
                             }
-                            return <tr key={i}><td><a onClick={this.handleLinkClick.bind(this, r.get('id'),r.get('type'), r.get('title'))}
+                            return <tr key={i}><td><a onClick={this.handleLinkClick.bind(this, r.get('id'),this.props.article.getIn(['query', 'doc_type']), r.get('title'))}
                                 href={"/open_article/"+r.get('type')+'/'+r.get('id')}>{r.get('title')}</a></td>
                                 <td>{utils.formatGovtDate(r.get('date_as_at'))}</td></tr>
                         }, this).toJS() }

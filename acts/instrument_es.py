@@ -39,12 +39,11 @@ def update_document_es(document_id, db=None):
     es = current_app.extensions['elasticsearch']
     db = db or get_db()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        current_app.logger.info('Insert definitions into es')
-        cur.execute(""" SELECT document_id, html, id, full_word FROM definitions
-            where document_id = %(id)s """, {"id": document_id})
-        results = cur.fetchall()
-        helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
-            "_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
+        current_app.logger.info('Insert document into es')
+        cur.execute(instrument_query, {"id": document_id})
+        result = cur.fetchone()
+        result = strip_html(result)
+        es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
 
 
 def insert_instrument_es(document_id, db=None):
@@ -52,11 +51,12 @@ def insert_instrument_es(document_id, db=None):
     db = db or get_db()
     update_document_es(document_id, db)
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        current_app.logger.info('Insert document into es')
-        cur.execute(instrument_query, {"id": document_id})
-        result = cur.fetchone()
-        result = strip_html(result)
-        es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])
+        current_app.logger.info('Insert definitions into es')
+        cur.execute(""" SELECT document_id, html, id, full_word FROM definitions
+            where document_id = %(id)s """, {"id": document_id})
+        results = cur.fetchall()
+        helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
+            "_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         current_app.logger.info('Insert parts into es')
@@ -85,7 +85,9 @@ def update_old_versions_es(document_ids, db=None):
 
 def delete_instrument_es(document_id):
     es = current_app.extensions['elasticsearch']
-    es.delete(index='legislation', doc_type='instrument',  id=result['id'])
-    es.indices.refresh(index="legislation")
+    try:
+        es.delete(index='legislation', doc_type='instrument',  id=document_id)
+        es.indices.refresh(index="legislation")
+    except exceptions.NotFoundError: pass
 
 

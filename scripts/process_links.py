@@ -24,7 +24,7 @@ def id_lookup(db):
                 if count % 10 == 0:
                     print count, len(id_results)
                 count += 1
-                for el in etree.fromstring(result['document'], parser=p).xpath('//*[@id]'):
+                for el in etree.fromstring(result['document'], parser=p).findall('//*[@id]'):
                     new_id = el.attrib.get('id')
                     id_results.append( (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0]))
             results = cur.fetchmany(1)
@@ -78,14 +78,11 @@ def refs_and_subs(db, do_references, do_subordinates):
                 tree = links.remove_ignored_tags(tree)
 
                 if do_references:
-                    document_refs, section_refs = links.find_references(tree, source_id, title, id_lookup)
+                    section_refs = links.find_references(tree, source_id, title, id_lookup)
 
-                    if len(document_refs):
-                        args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in document_refs)
-                        out.execute("INSERT INTO document_references (source_id, target_id, count) VALUES " + args_str)
-
-                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s, %s)", x) for x in section_refs)
-                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text, target_document_id) VALUES " + args_str)
+                    if len(section_refs):
+                        args_str = ','.join(cur.mogrify("(%s,%s,%s,%s, %s)", x) for x in section_refs)
+                        out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text) VALUES " + args_str)
 
                 if do_subordinates:
                     ids = links.find_parent_instrument(tree, source_id, title, id_lookup, titles)
@@ -116,23 +113,22 @@ def refs_and_subs(db, do_references, do_subordinates):
 def analyze_links(db):
     from acts import traversal
     from acts import links
+    import server
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        cur.execute('select count(*) as count from latest_instruments')
+        cur.execute('select count(*) as count from instruments')
         total = cur.fetchone()['count']
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, server.app.test_request_context():
 
-        cur.execute("""SELECT document, id, title, govt_id from latest_instruments""")
+        cur.execute("""SELECT document, i.id, title, govt_id from instruments i join documents d on i.id = d.id""")
         results = cur.fetchmany(10)
         inserts = []
-        deletes = []
         count = 0.0
         while len(results):
             for result in results:
                 count += 1
                 tree = etree.fromstring(result['document'], parser=p)
-                ins, dels = links.get_reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
-                inserts += ins
-                dels += dels
+                inserts += links.get_reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
+
                 sys.stdout.write("%d%%\r" % (count/total*100))
                 sys.stdout.flush()
 
@@ -141,8 +137,6 @@ def analyze_links(db):
     with db.cursor() as out:
         for insert in inserts:
             out.execute(insert)
-        for delete in deletes:
-            out.execute(delete)
 
     db.commit()
 

@@ -538,6 +538,17 @@
         </a>
     </xsl:template>
 
+    <xsl:template match="link">
+        <a>
+            <xsl:attribute name="data-link-id"><xsl:value-of select="@xmlId"/></xsl:attribute>
+            <xsl:attribute name="data-href"><xsl:value-of select="resourcepair/@targetXmlId"/>
+            </xsl:attribute>
+              <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="resourcepair/@targetXmlId"/>
+            </xsl:attribute>
+            <xsl:value-of select="linkcontent"/>
+        </a>
+    </xsl:template>
+
    <!-- <xsl:template match="*[@current = 'true']">
 
         <xsl:attribute name="class">current

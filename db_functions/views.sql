@@ -138,8 +138,8 @@ CREATE OR REPLACE FUNCTION get_section_references(target_document_id integer, go
     AS $$
           SELECT source_document_id, source_repr, source_url
             FROM section_references  d
-            JOIN latest_instruments i on d.source_document_id = i.id
-            WHERE target_document_id = $1 and (target_govt_id = ANY($2) or target_path like $3) GROUP BY source_document_id, source_repr, source_url ORDER by source_repr
+            JOIN document_section_references s on d.link_id = s.link_id
+            WHERE target_document_id = $1 and (d.target_govt_id = ANY($2) or target_path like $3)  GROUP BY source_document_id, source_repr, source_url ORDER by source_repr
 $$ LANGUAGE SQL;
 
 

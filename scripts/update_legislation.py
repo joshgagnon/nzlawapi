@@ -26,11 +26,11 @@ def run(db, config):
     response = urllib2.urlopen(url)
     response_string = response.read()
 
-    doc = etree.fromstring(response_string)
+    doc = etree.fromstring(response_string, etree.XMLParser(resolve_entities=False, huge_tree=True))
 
     objectify.deannotate(doc, cleanup_namespaces=True)
     for elem in doc.iter():
-        if not hasattr(elem.tag, 'find'): continue  # (1)
+        if not hasattr(elem.tag, 'find'): continue
         i = elem.tag.find('}')
         if i >= 0:
             elem.tag = elem.tag[i+1:]
@@ -51,7 +51,7 @@ def run(db, config):
                     {'path': path, 'updated': updated})
                 document = cur.fetchone()
 
-                if document and document.get('stale'):
+                if document and (document.get('stale') or True):
                     cur.execute("""delete from documents where id = %(id)s """, {'id': document.get('id')})
                     delete_instrument_es(document.get('id'))
                     current_app.logger.info('remove %s %d' % (updated, document.get('id')))
@@ -72,6 +72,7 @@ def run(db, config):
         current_app.logger.info('New instruments found, updating (%d)' % len(updated_ids))
         cur.execute("refresh materialized view latest_instruments")
         # analyze the new links
+
     for updated_id in updated_ids:
         analyze_new_links(get_unprocessed_instrument(updated_id, db=db), db)
     # process the docs
