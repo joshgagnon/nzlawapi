@@ -2,6 +2,7 @@
 from util import tohtml, generate_path_string, node_replace, Monitor, remove_nbsp
 from lxml import etree
 from pattern.en import pluralize, singularize
+from nltk.stem.wordnet import WordNetLemmatizer
 from xml.dom import minidom
 from collections import defaultdict
 from traversal import decide_govt_or_path
@@ -10,18 +11,22 @@ import os
 import uuid
 import json
 
+lmtzr = WordNetLemmatizer()
 
 """
     naming conventions in http://www.lawfoundation.org.nz/style-guide/nzlsg_12.html#4.1.1
 """
 
+
 def key_set(full_word):
     words = []
-    if singularize(full_word) == full_word:
+    # hack for class etc
+    if singularize(full_word) == full_word or full_word.endswith('ss'):
         plural = pluralize(full_word)
         words = [full_word, plural]
     else:
         words = [singularize(full_word), full_word, pluralize(singularize(full_word))]
+
     for w in words[:]:
         # if not already plural like
         if not w.endswith('s'):
@@ -31,7 +36,6 @@ def key_set(full_word):
             words.append('%s%s' % (w, suffix))
     tup = tuple(sorted(list(set(words))))
     return tup
-
 
 
 class Definition(object):

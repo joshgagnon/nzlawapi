@@ -6,8 +6,9 @@ from psycopg2 import extras
 import importlib
 import os
 from lxml import etree
-from collections import defaultdict
 import re
+import logging
+
 
 p = etree.XMLParser(huge_tree=True)
 
@@ -115,30 +116,29 @@ def analyze_links(db):
     from acts import links
     import server
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        cur.execute('select count(*) as count from instruments')
-        total = cur.fetchone()['count']
-    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, server.app.test_request_context():
-
-        cur.execute("""SELECT document, i.id, title, govt_id from instruments i join documents d on i.id = d.id""")
-        results = cur.fetchmany(10)
-        inserts = []
+        cur.execute(""" delete from document_section_references""")
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute('select id from latest_instruments order by id')
+        ids = [x['id'] for x in cur.fetchall()]
+        total = len(ids)
         count = 0.0
-        while len(results):
-            for result in results:
+    with server.app.test_request_context():
+        server.app.logger.propagate = False
+        for document_id in ids:
+            with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+                cur.execute("""SELECT document, i.id, title, govt_id
+                    from instruments i join documents d on i.id = d.id where d.id = %(id)s""", {'id': document_id})
+                result = cur.fetchone()
                 count += 1
                 tree = etree.fromstring(result['document'], parser=p)
-                inserts += links.get_reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
-
-                sys.stdout.write("%d%%\r" % (count/total*100))
+                inserts = links.reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
+                with db.cursor() as out:
+                    sys.stdout.flush()
+                    for insert in inserts:
+                        out.execute(insert)
+                sys.stdout.write("%d%% inserted %d            \r" % (count/total*100,len(inserts)))
                 sys.stdout.flush()
-
-            results = cur.fetchmany(10)
-
-    with db.cursor() as out:
-        for insert in inserts:
-            out.execute(insert)
-
-    db.commit()
+            db.commit()
 
 
 def run(db, config, do_id_lookup=True, do_references=True, do_subordinates=True, do_links=True):
@@ -167,8 +167,8 @@ if __name__ == "__main__":
             host=config.DB_HOST,
             password=config.DB_PW)
     # poor mans switches
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        cur.execute(""" refresh materialized view latest_instruments """)
+    #with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+    #    cur.execute(""" refresh materialized view latest_instruments """)
     run(db, config,
     do_id_lookup=('skip_ids' not in sys.argv[1:]),
     do_references=('skip_references' not in sys.argv[1:]),

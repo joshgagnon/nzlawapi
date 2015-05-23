@@ -15,6 +15,8 @@ import elasticsearch
 import logging
 import json
 from logging import Formatter
+from logging.handlers import RotatingFileHandler
+
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -48,7 +50,11 @@ with open('build/manifest.json') as m:
     app.config['manifest'] =json.loads(m.read())
 
 if app.config.get('LOG_FILE'):
-    handler = logging.FileHandler(filename=app.config['LOG_FILE'])
+
+    handler = RotatingFileHandler(
+    app.config['LOG_FILE'], 'a',
+    maxBytes=1024 * 1024,
+    backupCount=20)
 else:
     handler = logging.StreamHandler()
 handler.setFormatter(Formatter(

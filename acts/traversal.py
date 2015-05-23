@@ -63,8 +63,8 @@ def labelize(string):
 
 def nodes_from_path_string(tree, path):
     path = path.lower().strip()
-    pattern = re.compile('(schedule|section|regulation|sch|clause|rule|part|subpart|pt|reg|ss|s|r|cl)[, ]{,2}(.*)')
-    part_pattern = re.compile('([a-z\d]+),? ?(subpart|regulation|clause|rule|section|part|pt|reg|ss|s|cl|r)?')
+    pattern = re.compile('(schedule|section|regulation|clause|rule|subpart|part|sch|pt|reg|rr|hcr|ss|s|r|cl)[, ]{,2}(.*)')
+    part_pattern = re.compile('([a-z\d]+),? ?(subpart|regulation|clause|rule|section|part|pt|reg|rr|hcr|ss|s|cl|r)?')
     range_pattern = re.compile('^\w+[-+]\w+$')
     parts = pattern.match(path)
     keys = []
@@ -115,7 +115,7 @@ def nodes_from_path_string(tree, path):
                         i += 1
     except IndexError, e:
         raise CustomException("Path not found")
-    current_app.logger.debug("Path: %s" % ",".join(keys))
+    current_app.logger.debug("Path: %s %s" % (",".join(keys), path))
     return find_sub_node(tree, keys)
 
 
@@ -311,11 +311,12 @@ def link_to_canonical(string, debug=False):
     string = re.sub(r'^subsections?', r's', string, flags=re.I)
     string = re.sub(r'subsections?', r'', string, flags=re.I)
     string = re.sub(r'sections?', r's', string, flags=re.I)
+    string = re.sub(r'high court rules?', r'hcr', string, flags=re.I)
 
     if re.compile('(schedule|sch) .*, (part|subpart|table).*', flags=re.I).match(string):
         string = re.sub(', ?', ' ', string)
 
-    start = re.compile('^(schedule|section|sch|clause|rule|part|subpart|ss|s|r|cl)s?\s', flags=re.I)
+    start = re.compile('^(schedule|section|sch|clause|rule|part|hcr|subpart|rr|ss|s|r|cl)s?\s', flags=re.I)
 
     if not start.match(string):
         string = 's '+string
@@ -327,6 +328,7 @@ def link_to_canonical(string, debug=False):
         string = re.sub(r'schedules?', r'sch', string, flags=re.I)
         string = re.sub(r'clauses?', r'cl', string, flags=re.I)
         string = re.sub(r'rules?', r'r', string, flags=re.I)
+        string = re.sub(r'rr', r'r', string, flags=re.I)
     string = re.sub(r' ?,? and ', r'+', string, flags=re.I)
     string = re.sub(r' to ', r'-', string, flags=re.I)
     string = re.sub(r' ?,? or ', r'+', string, flags=re.I)

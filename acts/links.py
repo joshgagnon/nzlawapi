@@ -175,7 +175,7 @@ def find_parent_instrument(tree, document_id, title, id_lookup, titles):
     return ids
 
 
-def get_reparse_link_texts(tree, target_id, target_govt_id, db=None):
+def reparse_link_texts(tree, target_id, target_govt_id, db=None):
     """ find links whose href is misrepresented by its text """
     """ ie, "section 2(e) and 3(b)(i)"" will be default only point to s 2 """
     inserts = []
@@ -185,21 +185,33 @@ def get_reparse_link_texts(tree, target_id, target_govt_id, db=None):
         cur.execute("""select * from id_lookup i join section_references s on i.govt_id = s.target_govt_id where parent_id = %(id)s;
             """, {'id': target_id, 'govt_id': target_govt_id})
         refs = cur.fetchall()
+        memo = {}
         if len(refs):
+            current_app.logger.info('%d refs for id %d' % (len(refs), target_id))
             nodes_by_id = {x.attrib['id']: x for x in tree.findall('.//*[@id]')}
 
             for ref in refs:
                 try:
-                    nodes = decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
-                    if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
-                        for n in nodes:
+                    paths = []
+                    if (ref['target_govt_id'], ref['link_text']) in memo:
+                        paths = memo[(ref['target_govt_id'], ref['link_text'])]
+
+                    else:
+                        nodes = decide_govt_or_path(tree, ref['target_govt_id'], ref['link_text'], nodes_by_id=nodes_by_id)
+                        if len(nodes) > 1 or nodes[0] != nodes_by_id[ref['target_govt_id']]:
+                            paths = [get_path(n) for n in nodes]
+                    memo[(ref['target_govt_id'], ref['link_text'])] = paths
+                    if len(paths):
+                        for p in paths:
                             inserts.append(cur.mogrify("""INSERT INTO document_section_references (link_id, target_path, target_govt_id, target_document_id)
-                                    (%(link_id)s, %(target_path)s, %(target_govt_id)s, %(target_document_id)s)""",
-                                    {'link_id': ref['link_id'], 'target_path': get_path(n), 'target_govt_id': ref['target_govt_id'], 'target_document_id': target_id} ))
+                                    VALUES (%(link_id)s, %(target_path)s, %(target_govt_id)s, %(target_document_id)s)""",
+                                    {'link_id': ref['link_id'], 'target_path': p, 'target_govt_id': ref['target_govt_id'], 'target_document_id': target_id} ))
                     else:
                         inserts.append(cur.mogrify("""INSERT INTO document_section_references (link_id, target_path, target_govt_id, target_document_id)
-                                    (%(link_id)s, %(target_path)s, %(target_govt_id)s, %(target_document_id)s)""",
+                                    VALUES (%(link_id)s, %(target_path)s, %(target_govt_id)s, %(target_document_id)s)""",
                                      {'link_id': ref['link_id'], 'target_path': None, 'target_govt_id': ref['target_govt_id'], 'target_document_id': target_id} ))
+
+
 
                 except Exception, e:
                     current_app.logger.debug(e)
@@ -208,7 +220,7 @@ def get_reparse_link_texts(tree, target_id, target_govt_id, db=None):
 
 
 def reparse_link_text(tree, document_id, db=None):
-    inserts, deletes = get_reparse_link_textss(tree, document_id, db)
+    inserts, deletes = reparse_link_textss(tree, document_id, db)
     if len(inserts):
         with db.cursor() as cur:
             for insert in inserts:
@@ -292,7 +304,7 @@ def analyze_new_links(row, db=None):
             cur.execute('select document, govt_id from instruments i join documents d on i.id = d.id where i.id = %(id)s', {'id': id_scan})
             row_to_scan = cur.fetchone()
             tree_to_scan = etree.fromstring(row_to_scan['document'], parser=large_parser)
-            inserts += get_reparse_link_texts(tree_to_scan, id_scan, result.get('govt_id'), db=db)
+            inserts += reparse_link_texts(tree_to_scan, id_scan, result.get('govt_id'), db=db)
 
     current_app.logger.info('inserting %d links' % len(inserts))
     with db.cursor() as out:
