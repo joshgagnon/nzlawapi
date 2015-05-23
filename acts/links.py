@@ -175,15 +175,18 @@ def find_parent_instrument(tree, document_id, title, id_lookup, titles):
     return ids
 
 
-def reparse_link_texts(tree, target_id, target_govt_id, db=None):
+def reparse_link_texts(tree, target_id, target_govt_id, source_id=None, db=None):
     """ find links whose href is misrepresented by its text """
     """ ie, "section 2(e) and 3(b)(i)"" will be default only point to s 2 """
     inserts = []
     db = db or get_db()
     with db.cursor(cursor_factory=extras.RealDictCursor, name="link_cursor") as cur:
-    # these group bys significantly help the optimizer, #UPDATE NOT ANY MORE
-        cur.execute("""select * from id_lookup i join section_references s on i.govt_id = s.target_govt_id where parent_id = %(id)s;
-            """, {'id': target_id, 'govt_id': target_govt_id})
+        if source_id:
+            cur.execute("""select * from id_lookup i join section_references s on i.govt_id = s.target_govt_id and source_document_id=%(source_id)s where parent_id = %(id)s;
+                """, {'id': target_id, 'govt_id': target_govt_id, 'source_id': source_id})
+        else:
+            cur.execute("""select * from id_lookup i join section_references s on i.govt_id = s.target_govt_id where parent_id = %(id)s;
+                """, {'id': target_id, 'govt_id': target_govt_id})
         refs = cur.fetchall()
         memo = {}
         if len(refs):
@@ -267,7 +270,7 @@ def analyze_new_links(row, db=None):
     document_id = row.get('id')
     # clean up refs
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        cur.execute(""" delete from document_references where source_id = %(document_id)s""",
+        cur.execute(""" delete from document_section_references where source_id = %(document_id)s""",
                     {'document_id': document_id})
         cur.execute(""" delete from section_references where source_document_id = %(document_id)s""",
                     {'document_id': document_id})
@@ -304,7 +307,7 @@ def analyze_new_links(row, db=None):
             cur.execute('select document, govt_id from instruments i join documents d on i.id = d.id where i.id = %(id)s', {'id': id_scan})
             row_to_scan = cur.fetchone()
             tree_to_scan = etree.fromstring(row_to_scan['document'], parser=large_parser)
-            inserts += reparse_link_texts(tree_to_scan, id_scan, result.get('govt_id'), db=db)
+            inserts += reparse_link_texts(tree_to_scan, id_scan, result.get('govt_id'), source_id=document_id, db=db)
 
     current_app.logger.info('inserting %d links' % len(inserts))
     with db.cursor() as out:
