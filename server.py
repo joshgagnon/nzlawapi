@@ -37,7 +37,7 @@ if not os.path.isfile('build/manifest.json'):
 
 
 app = Flask(__name__, static_folder='build')
-app.config.from_pyfile(sys.argv[1])
+app.config.from_pyfile(os.environ.get('CONFIG_FILE') or sys.argv[1])
 app.register_blueprint(Base)
 app.register_blueprint(Validator)
 app.register_blueprint(Query)

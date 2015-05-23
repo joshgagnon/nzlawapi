@@ -1,3 +1,8 @@
+#CELERY START
+
+celery -A celeries  worker -l info --concurrency=6
+
+
 PROCESSING STEPS
 
 # analyzes tags, heirarchy, refererences
