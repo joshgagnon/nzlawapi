@@ -1,0 +1,1 @@
+CREATE INDEX document_section_references_target_id_idx ON document_section_references (target_document_id);

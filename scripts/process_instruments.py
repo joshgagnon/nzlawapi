@@ -39,7 +39,7 @@ if __name__ == "__main__":
             results = cur.fetchall()
         if len(results):
             print '%s documents to process' % len(results)
-            jobs = list(chunks([r['id'] for r in results], 100))
+            jobs = list(chunks([r['id'] for r in results], 1))
             tasks = [process_instrument.delay(j) for j in jobs]
             while True:
                 tasks_finished = len(filter(lambda x: x.ready(), tasks))

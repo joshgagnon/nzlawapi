@@ -16,6 +16,8 @@ from subprocess import Popen, PIPE
 import shutil
 import codecs
 from copy import deepcopy
+import re
+
 
 large_parser = etree.XMLParser(huge_tree=True)
 
@@ -352,7 +354,7 @@ def get_section_references(target_document_id, govt_ids, target_path):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute("""select * from get_section_references(%(target_document_id)s, %(govt_ids)s, %(target_path)s)""",
-            {'govt_ids': govt_ids, 'target_path': '%s%%' % target_path, 'target_document_id': target_document_id})
+            {'govt_ids': govt_ids, 'target_path': '%s(\(.*)?$' % re.escape(target_path), 'target_document_id': target_document_id})
         results = cur.fetchall()
         return {'section_references': map(lambda x: dict(x), results)}
 

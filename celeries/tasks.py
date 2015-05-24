@@ -5,6 +5,8 @@ from db import get_db
 import server
 from acts import links
 from acts import queries
+from util import large_parser
+from lxml import etree
 
 
 @app.task
@@ -31,4 +33,28 @@ def process_instrument(document_ids):
                         refresh=False,
                         latest=result[0].get('latest'),
                         strategy={'links': get_links})
+        db.commit()
+        db.close()
     return 'done'
+
+
+@app.task
+def process_skeleton(document_ids):
+    with server.app.test_request_context():
+        db = get_db()
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+            for document_id in document_ids:
+                print 'fetching %d for skeletizing' % document_id
+                query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
+                        JOIN documents d on d.id = i.id
+                        where skeleton is null
+                        and i.id = %(id)s """
+
+                cur.execute(query, {'id': document_id})
+                result = cur.fetchall()
+                if result:
+                    tree = etree.fromstring(result[0]['processed_document'], parser=large_parser)
+                    queries.process_skeleton(result[0].get('id'), tree, db=db)
+
+        db.commit()
+        db.close()

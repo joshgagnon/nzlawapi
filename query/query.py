@@ -29,9 +29,9 @@ def article_auto_complete():
 @Query.route('/definition/<string:ids>')
 @Query.route('/definition/<string:ids>/<string:exids>')
 @require_auth
-def get_definition_route(ids, exids=''):
+def get_definition_route(ids, exids=None):
     try:
-        return jsonify(get_definition(ids.split(';'), exids.split(';')))
+        return jsonify(get_definition(ids.split(';'), exids.split(';') if exids else None))
     except Exception, e:
         raise CustomException('Could not retrieve definition')
 
@@ -73,13 +73,23 @@ def get_versions_route(document_id):
 def get_contents_route(document_id):
     return jsonify(get_contents(document_id))
 
+
 def get_definition(ids, exids):
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute('SELECT html, priority FROM definitions WHERE  id=ANY(%(ids)s) order by priority desc', {
             'ids': ids
         })
         defs = cur.fetchall()
-        return {'html_content': ''.join(map(lambda a: a['html'], defs))}
+        html = ''.join(map(lambda a: a['html'], defs))
+        if exids and len(exids):
+            cur.execute('SELECT html, priority FROM definitions WHERE  id=ANY(%(ids)s) order by priority desc', {
+                'ids': exids
+            })
+            defs = cur.fetchall()
+            # TODO get rid of html
+            html += '<p class="other-defs">Other definitions found:</p>'
+            html += ''.join(map(lambda a: a['html'], defs))
+        return {'html_content': html}
 
 
 @Query.route('/definitions/<string:term>')
