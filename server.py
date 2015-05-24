@@ -67,33 +67,35 @@ logging.getLogger('werkzeug').addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
 
-@app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, 'db'):
-        g.db.commit()
-        g.db.close()
-
-@app.before_request
-def before_request():
-    g.start = time.time()
-    # Check that application is not down for maintenance
-    if os.path.isfile('down_lock') and not request.path.endswith(('.png', '.jpg', '.css')):
-        return render_template('down.html'), 503
-
-@app.teardown_request
-def teardown_request(exception=None):
-    diff = time.time() - g.start
-    if diff > 2:
-        app.logger.info('Request took %.2f seconds' % diff)
-
-@app.errorhandler(CustomException)
-def handle_invalid_usage(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    app.logger.info('ERROR %s' % error.message)
-    return response
 
 def run():
+    @app.teardown_appcontext
+    def close_db(error):
+        if hasattr(g, 'db'):
+            g.db.commit()
+            g.db.close()
+
+    @app.before_request
+    def before_request():
+        g.start = time.time()
+        # Check that application is not down for maintenance
+        if os.path.isfile('down_lock') and not request.path.endswith(('.png', '.jpg', '.css')):
+            return render_template('down.html'), 503
+
+    @app.teardown_request
+    def teardown_request(exception=None):
+        diff = time.time() - g.start
+        if diff > 2:
+            app.logger.info('Request took %.2f seconds' % diff)
+
+    @app.errorhandler(CustomException)
+    def handle_invalid_usage(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        app.logger.info('ERROR %s' % error.message)
+        return response
+
+
     app.run(app.config['IP'], debug=app.config['DEBUG'], port=app.config['PORT'])
     app.logger.info('Starting Server')
 

@@ -254,7 +254,7 @@ def etree_to_dict(t, end=None):
     return d
 
 def remove_nbsp(input):
-    return unicode(input, 'utf-8').replace(u"\u00A0", u' ').encode('utf-8')
+    return unicode(input, 'utf-8').replace(u"\u00A0", u' ').replace(u"\u2060", u'').encode('utf-8')
 
 
 def safe_date(string, date_format='%Y-%m-%d'):

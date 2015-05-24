@@ -318,10 +318,18 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
             return node.iterancestors('para').next()
     count = 0
     for node in nodes:
-        # super ugly hack to prevent placeholders likept 'A'
         try:
+            # super ugly hack to prevent placeholders likept 'A'
             text = re.sub('[][()]', '', node.itertext().next())
 
+
+            # now if the preceeding text is a bracket, ignore this
+            try:
+                if (node.xpath('preceding::text()[1]')[-1][-1] == '(' and
+                    node.xpath('following::text()[1]')[0][0] == ')'):
+                    continue
+            except IndexError:
+                pass
             if len(text) > 1:
                 # another hack:  if you are in a  label-para which is in a def-para, you aren't the primary definition
                 try:

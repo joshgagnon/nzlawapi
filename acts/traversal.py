@@ -6,6 +6,7 @@ from lxml import etree
 from utils import text_to_num
 from flask import current_app
 
+
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
     [n.attrib.update({'current': 'true'}) for n in nodes_to_keep]
@@ -159,11 +160,11 @@ def find_sub_node(tree, keys, limit_tags=['part', 'subpart']):
                         # get first node
                         start = get_closest(node, labels[0])
                         last = get_closest(node, labels[1])
-                        tag = start.tag
                         # this sucks, having to start at start,
+                        tag = start.tag
+                        nodes.append(start)
                         # try to find way to start iter at arbitrary node
                         tree_iter = tree.iter(tag)
-                        nodes.append(start)
                         current = None
                         while True:
                             current = next(tree_iter)

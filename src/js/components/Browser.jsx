@@ -253,6 +253,7 @@ module.exports = React.createClass({
     canHaveSidebar: function(page){
         return page &&
             (page.get('page_type') ===  constants.PAGE_TYPES.INSTRUMENT
+                && ! page.get('error')
             //|| page.get('page_type') ===  constants.PAGE_TYPES.CASE
             )
     },

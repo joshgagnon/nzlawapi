@@ -148,7 +148,7 @@ module.exports = React.createClass({
             </div>
 
         }
-        else if(this.props.pages.size ==1){
+        else if(this.props.pages.size === 1){
             var page = this.props.pages.get(0);
             return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
                 { this.modalVisible() ? this.renderModals() : null }

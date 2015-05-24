@@ -88,6 +88,10 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                         });
                 }
                 else if(link.attr('data-def-id')){
+                    var url = '/definition/'+link.attr('data-def-id');
+                    if(link.attr('data-def-ex-id')){
+                        url += '/' + link.attr('data-def-ex-id')
+                    }
                    Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                         type: POPOVER_TYPES.DEFINITION,
@@ -97,7 +101,7 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                         top:link.position().top + this.overlayOffset().top,
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
-                        query_string: '/definition/'+link.attr('data-def-id')
+                        query_string: url
                     });
                 }
             }

@@ -37,7 +37,6 @@ module.exports = React.createClass({
             return <div className={className}>
                     <table className="table versions-table">
                         { refs.map(function(r, i){
-                            console.log(r.getIn(['query', 'doc_type']))
                             if(this.props.article.getIn(['query', 'document_id']) === r.get('id')){
                                 return <tr key={i}><td>{r.get('title')}</td>
                                 <td>{utils.formatGovtDate(r.get('date_as_at'))}</td></tr>

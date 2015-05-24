@@ -115,11 +115,11 @@ var ArticleSkeletonContent = React.createClass({
             var part = key+'';
             // the current focus is a child of a hook, get it from precalculated index
             // if between hooks, get next id
-            if(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length){
+            if(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length-1){
                 part = (1+key)+'';
             }
             // if we haven't processesed children or there are no children
-            if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length ){
+            if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length){
                 return self._refs[part];
             }
             var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last) -1;

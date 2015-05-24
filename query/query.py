@@ -27,10 +27,11 @@ def article_auto_complete():
 
 
 @Query.route('/definition/<string:ids>')
+@Query.route('/definition/<string:ids>/<string:exids>')
 @require_auth
-def get_definition_route(ids):
+def get_definition_route(ids, exids=''):
     try:
-        return jsonify(get_definition(ids.split(';')))
+        return jsonify(get_definition(ids.split(';'), exids.split(';')))
     except Exception, e:
         raise CustomException('Could not retrieve definition')
 
@@ -72,12 +73,13 @@ def get_versions_route(document_id):
 def get_contents_route(document_id):
     return jsonify(get_contents(document_id))
 
-def get_definition(ids):
+def get_definition(ids, exids):
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute('SELECT html, priority FROM definitions WHERE  id=ANY(%(ids)s) order by priority desc', {
             'ids': ids
         })
-        return {'html_content': ''.join(map(lambda a: a['html'], cur.fetchall()))}
+        defs = cur.fetchall()
+        return {'html_content': ''.join(map(lambda a: a['html'], defs))}
 
 
 @Query.route('/definitions/<string:term>')

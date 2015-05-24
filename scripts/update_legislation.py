@@ -11,12 +11,14 @@ from os import path
 import re
 import json
 from flask import current_app
+import socket
 
 
 url = "http://www.legislation.govt.nz/atom.aspx?search=ad_act@bill@regulation@deemedreg______25_ac@bc@rc@dc@apub@aloc@apri@apro@aimp@bgov@bloc@bpri@bmem@rpub@rimp_ac@bc@rc@ainf@anif@aaif@aase@arep@bcur@bena@bter@rinf@rnif@raif@rasm@rrev_a_aw_se&p=1&t=New%20Zealand%20Legislation%20custom%20feed&d=90"
 
 resource_url = "http://www.legislation.govt.nz/subscribe"
-parser=etree.XMLParser(resolve_entities=False)
+parser=etree.XMLParser(resolve_entities=False, huge_tree=True)
+
 def run(db, config):
     from acts.links import analyze_new_links
     from acts.queries import get_unprocessed_instrument, get_instrument_object
@@ -26,7 +28,7 @@ def run(db, config):
     response = urllib2.urlopen(url)
     response_string = response.read()
 
-    doc = etree.fromstring(response_string, etree.XMLParser(resolve_entities=False, huge_tree=True))
+    doc = etree.fromstring(response_string, parser)
 
     objectify.deannotate(doc, cleanup_namespaces=True)
     for elem in doc.iter():
@@ -50,20 +52,24 @@ def run(db, config):
                     where path = %(path)s""",
                     {'path': path, 'updated': updated})
                 document = cur.fetchone()
-
-                if document and (document.get('stale') or True):
-                    cur.execute("""delete from documents where id = %(id)s """, {'id': document.get('id')})
-                    delete_instrument_es(document.get('id'))
-                    current_app.logger.info('remove %s %d' % (updated, document.get('id')))
+                document_id = None
+                if document and (document.get('stale')):
+                    document_id = document.get('id')
+                    cur.execute("""delete from instruments where id = %(id)s """, {'id': document.get('id')})
+                    cur.execute("""update from document set skeleton=null, processed_document=null, contents=null where id = %(id)s """, {'id': document.get('id')})
+                    # delete_instrument_es(document.get('id'))
+                    current_app.logger.info('removed %s %d' % (updated, document.get('id')))
                 # we have found newer
-                if not document or document.get('stale'):
+                if not document or (document.get('stale')):
                     doc_url = '/'.join([resource_url, path])
                     current_app.logger.info('Fetching %s' % doc_url)
                     try:
-                        doc_response = urllib2.urlopen(doc_url)
-                        updated_ids.append(initial_insert(doc_response.read(), path, updated, db))
-                    except:
+                        doc_response = urllib2.urlopen(doc_url, timeout=10)
+                        updated_ids.append(initial_insert(doc_response.read(), path, updated, document_id=document_id, db=db))
+                    except urllib2.URLError as e:
                         current_app.logger.info('Failed to fetch %s ' % doc_url)
+                    except socket.timeout as e:
+                        current_app.logger.info('Failed to fetch %s, timeout ' % doc_url)
 
     updated_ids = filter(lambda x: x, updated_ids)
     db.commit()
@@ -78,6 +84,7 @@ def run(db, config):
     # process the docs
 
     for updated_id in updated_ids:
+        # this will trigger definitions, skeletonizing and elastic search insertion
         get_instrument_object(updated_id, db=db)
 
     update_old_versions_es(updated_ids, db=db)
@@ -88,23 +95,19 @@ def run(db, config):
     return
 
 
-
-def initial_insert(xml_text, doc_path, updated, db):
-    from util import safe_date, get_title
-
+def initial_insert(xml_text, doc_path, updated, document_id=None, db=None):
+    from util import safe_date, get_title, remove_nbsp
 
     version = int(float(doc_path.split('/')[-2]))
     doc_type = doc_path.split('/')[0]
-    document_id = None
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         try:
-            tree = etree.fromstring(xml_text, parser)
+            tree = etree.fromstring(remove_nbsp(xml_text), parser)
 
             attrib = tree.attrib
             if attrib.get('id'):
                 title = get_title(tree)
                 title = title.replace('\n', '').strip()
-
                 query = """INSERT INTO instruments (id, govt_id, version, title, path, number, date_as_at,date_assent, type,
                         date_first_valid, date_gazetted, date_terminated, date_imprint, year, repealed, in_amend,
                         pco_suffix, raised_by, official, subtype, terminated, stage, date_signed, imperial, instructing_office, attributes)
@@ -113,11 +116,16 @@ def initial_insert(xml_text, doc_path, updated, db):
                         %(year)s, %(repealed)s, %(in_amend)s, %(pco_suffix)s, %(raised_by)s, %(official)s, %(subtype)s,
                         %(terminated)s, %(stage)s, %(date_signed)s, %(imperial)s, %(instructing_office)s, %(attr)s); """
 
-                cur.execute(""" INSERT INTO documents (document, type, updated) VALUES (%(document)s, 'xml', %(updated)s) returning id""",
-                        {'document': xml_text,
-                        'updated': updated})
-
-                document_id = cur.fetchone()['id']
+                if document_id:
+                    cur.execute(""" update documents set document=%(document)s, updated=%(updated)s where id = %(id)s""",
+                            {'document': xml_text,
+                            'id': document_id,
+                            'updated': updated})
+                else:
+                    cur.execute(""" INSERT INTO documents (document, type, updated) VALUES (%(document)s, 'xml', %(updated)s) returning id""",
+                            {'document': xml_text,
+                            'updated': updated})
+                    document_id = cur.fetchone()['id']
 
                 values = {
                     'id': document_id,
@@ -164,7 +172,6 @@ if __name__ == "__main__":
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
     from acts import queries
     import server
-    #logging.basicConfig(filename='update_legislation.log', level=logging.INFO)
     logging.basicConfig(filename=config.UPDATE_LEGISLATION_LOG_FILE, level=logging.INFO)
     db = psycopg2.connect(
             database=config.DB,

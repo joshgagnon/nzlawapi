@@ -98,13 +98,6 @@ def find_references(tree, document_id, title, id_lookup):
         'text': etree.tostring(x, method="text", encoding="UTF-8"),
         'path': generate_path_string(x, title=title)},
         tree.xpath('.//*[@href]|.//link[resourcepair]'))
-
-    #counters = defaultdict(int)
-    #for link in links:
-    #    if link['id'] in id_lookup:
-    #        counters[id_lookup[link['id']]] = counters[id_lookup[link['id']]] + 1
-    #section = []
-    #if len(counters.items()):
     section = map(lambda x: (document_id, x['id'], x['path'][0], x['path'][1], x['text']), [l for l in links if id_lookup.get(l['id'])])
     return section
 
@@ -270,8 +263,8 @@ def analyze_new_links(row, db=None):
     document_id = row.get('id')
     # clean up refs
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        cur.execute(""" delete from document_section_references where source_id = %(document_id)s""",
-                    {'document_id': document_id})
+        #cur.execute(""" delete from document_section_references where source_document_id = %(document_id)s""",
+        #            {'document_id': document_id})
         cur.execute(""" delete from section_references where source_document_id = %(document_id)s""",
                     {'document_id': document_id})
         cur.execute(""" delete from id_lookup where parent_id = %(document_id)s""",
@@ -298,16 +291,25 @@ def analyze_new_links(row, db=None):
                 INSERT INTO subordinates (parent_id, child_id) values
                     ((select id as parent_id from instruments where title = 'Interpretation Act 1999' AND version = 19), %(child_id)s)
                 """, {'child_id': document_id})
+
+    with db.cursor() as out:
+        if len(section_refs):
+            args_str = ','.join(out.mogrify("(%s,%s,%s,%s, %s)", x) for x in section_refs)
+            out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text) VALUES " + args_str)
+
+    db.commit()
+
     inserts = []
 
     # documents to scan to find true targets
-    documents_ids_scan = list(set(map(lambda x: x[1], section_refs)))
+    documents_ids_scan = [x for x in list(set(map(lambda x: id_lookup.get(x[1]), section_refs))) if x]
+    inserts += reparse_link_texts(tree, document_id, row.get('govt_id'), db=db)
     for id_scan in documents_ids_scan:
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute('select document, govt_id from instruments i join documents d on i.id = d.id where i.id = %(id)s', {'id': id_scan})
             row_to_scan = cur.fetchone()
             tree_to_scan = etree.fromstring(row_to_scan['document'], parser=large_parser)
-            inserts += reparse_link_texts(tree_to_scan, id_scan, result.get('govt_id'), source_id=document_id, db=db)
+            inserts += reparse_link_texts(tree_to_scan, id_scan, row_to_scan.get('govt_id'), source_id=document_id, db=db)
 
     current_app.logger.info('inserting %d links' % len(inserts))
     with db.cursor() as out:
