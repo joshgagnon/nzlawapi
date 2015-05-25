@@ -535,7 +535,7 @@ var ArticleContent = React.createClass({
         if(this.props.page.getIn(['content', 'error'])){
             return <ArticleError error={this.props.page.getIn(['content', 'error'])}/>
         }
-        else if(!this.props.page.getIn(['content', 'attributes', 'latest'])){
+        else if(!this.props.page.getIn(['content', 'latest'])){
             return <NotLatestVersion />
         }
         return null;

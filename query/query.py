@@ -1,5 +1,5 @@
 from acts.acts import query_instrument
-from acts.queries import get_references, get_versions, get_section_references, get_contents
+from acts.queries import get_references, get_versions, get_section_references, get_contents, get_summary
 from cases.cases import query_case
 from elasticsearch import query_instrument_fields, query_case_fields, query_all
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
@@ -46,20 +46,18 @@ def get_link_route(doc_type=None, key=None):
         raise CustomException("Can't locate link information")
 
 
-
 @Query.route('/references/<int:document_id>')
 @require_auth
 def get_references_route(document_id):
     return jsonify(get_references(document_id))
 
 
-# deprecate
+# deprecated
 @Query.route('/section_references')
 @require_auth
 def get_section_references_route():
     return jsonify(get_section_references(
         request.args.get('document_id'), request.args.get('govt_ids').split(','), request.args.get('target_path')))
-
 
 
 @Query.route('/versions/<int:document_id>')
@@ -72,6 +70,12 @@ def get_versions_route(document_id):
 @require_auth
 def get_contents_route(document_id):
     return jsonify(get_contents(document_id))
+
+
+@Query.route('/summary/<int:document_id>')
+@require_auth
+def get_summary_route(document_id):
+    return jsonify(get_summary(document_id))
 
 
 def get_definition(ids, exids):

@@ -29,6 +29,7 @@ module.exports = Reflux.createActions({
 	'requestSectionReferences': {children: ['completed', 'failure']},
 	'requestVersions': {children: ['completed', 'failure']},
 	'requestContents': {children: ['completed', 'failure']},
+	'requestSummary': {children: ['completed', 'failure']},
 
 	'sectionSummaryOpened': {},
 	'sectionSummaryClosed': {},

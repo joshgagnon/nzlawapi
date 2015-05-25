@@ -352,7 +352,7 @@ var PageStore = Reflux.createStore({
         }
     },
 
-    // functions below are all basically the sdame
+    // functions below are all basically the sdame, refactor them
     onRequestVersions: function(page_id){
         var page = this.getById(page_id);
         if(!page.getIn(['versions', 'fetching']) && !page.getIn(['versions', 'fetched']) && !page.get('error')){
@@ -407,6 +407,35 @@ var PageStore = Reflux.createStore({
             this.update();
         }
     },
+
+    onRequestSummary: function(page_id){
+        var page = this.getById(page_id);
+        if(page && !page.getIn(['summary', 'fetching']) && !page.getIn(['summary', 'fetched']) && !page.get('error')){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'summary'], {fetching: true});
+            request.get('/summary/'+page.get('content').get('document_id'))
+                .promise()
+                .then(function(response){ Actions.requestSummary.completed(page_id, response.body); })
+                .catch(function(response){ Actions.requestSummary.failure(page_id, response.body);; });
+            this.update();
+        }
+    },
+    onRequestSummaryCompleted: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'summary'],
+                    _.extend({fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+    onRequestSummaryFailure: function(page_id, data){
+        var page = this.getById(page_id);
+        if(page){
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'summary'],
+                    _.extend({error: true, fetched: true, fetching: false}, data));
+            this.update();
+        }
+    },
+
     onRequestContents: function(page_id){
         var page = this.getById(page_id);
         if(!page.getIn(['contents', 'fetching']) && !page.getIn(['contents', 'fetched']) && !page.get('error')){

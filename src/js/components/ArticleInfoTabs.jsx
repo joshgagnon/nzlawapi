@@ -5,7 +5,7 @@ var ArticleScrollSpy = require('./ArticleScrollSpy.jsx');
 var ArticleSummary = require('./ArticleSummary.jsx');
 var ArticleReferences = require('./ArticleReferences.jsx');
 var ArticleVersions = require('./ArticleVersions.jsx');
-
+var Actions = require('../actions/Actions');
 
 var strings = {
     'location': 'Location',
@@ -19,16 +19,18 @@ module.exports = React.createClass({
         return {active: 'location', options: ['location',  'references', 'versions', 'summary']};
     },
     setVisible: function(active){
-        this.setState({active: active})
+        this.setState({active: active},function(){
+            //Actions.userAction();
+        });
+
     },
     renderBody: function(childname){
-
         if(childname === 'location'){
             return <ArticleScrollSpy article={this.props.article} viewer_id={this.props.viewer_id}
               position={this.props.view.getIn(['positions', this.props.article.get('id')])}/>;
         }
         else if(childname === 'summary'){
-             return <ArticleSummary summary={this.props.article.getIn(['content','attributes']) } viewer_id={this.props.viewer_id}/>;
+             return <ArticleSummary article={this.props.article} viewer_id={this.props.viewer_id}/>;
         }
         else if(childname=== 'references'){
              return <ArticleReferences article={this.props.article} viewer_id={this.props.viewer_id}/>;

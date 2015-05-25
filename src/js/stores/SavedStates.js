@@ -8,9 +8,8 @@ var ViewerStore = require('./ViewerStore');
 var BrowserStore = require('./BrowserStore');
 var PrintStore = require('./PrintStore');
 var HistoryStore = require('./HistoryStore');
-var Immutable = require('immutable');
 var request = require('../catalex-request');
-
+var Immutable = require('immutable');
 
 
 
@@ -31,7 +30,6 @@ module.exports = Reflux.createStore({
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
         this.listenTo(Actions.userAction, this.saveCurrent);
         this.listenTo(Actions.reset, this.onReset);
-
         this.pages = Immutable.List();
         this.print = Immutable.List();
         this.views = Immutable.Map();

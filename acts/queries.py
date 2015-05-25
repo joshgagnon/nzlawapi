@@ -33,6 +33,7 @@ class Instrument(object):
         self.tree = tree
         self.definitions = definitions
         self.length = len(self.document)
+        # will remove
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents', 'definitions']
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
 
@@ -391,13 +392,36 @@ def get_contents(document_id):
         cur.execute(""" SELECT contents from documents WHERE id = %(document_id)s""",
             {'document_id': document_id})
         result = cur.fetchone()
-        # TODO, rewmove this  !!!!!!!!!!!!!!!!!!!!
-        if True or not result.get('contents'):
+
+        if not result.get('contents'):
             contents = process_contents(document_id,
                 etree.fromstring(get_instrument_object(document_id).document, parser=large_parser), db=db)
         else:
             contents = result.get('contents')
         return {'html': contents}
+
+def get_summary(document_id):
+    db = get_db()
+    with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(""" SELECT title, type, subtype, number, version,
+            to_char( date_assent, 'dd Month YYYY') as date_assent,  to_char(date_first_valid, 'dd Month YYYY') as date_first_valid
+            from instruments WHERE id = %(document_id)s""",
+            {'document_id': document_id})
+        attributes = cur.fetchone()
+        cur.execute(""" select i.title, i.id, count(i.id) from amendments a
+                join instruments i on a.source_govt_id = i.govt_id
+                join latest_instruments l on l.id = i.id
+                where target_document_id = %(document_id)s group by i.title, i.id order by count desc""",
+            {'document_id': document_id})
+        amending = cur.fetchall()
+        cur.execute(""" select i.title, i.id from subordinates s
+            join newest n on s.parent_id = n.govt_id
+            join instruments i on n.id = i.id where s.child_id = %(document_id)s
+            and title != 'Interpretation Act 1999' """,
+            {'document_id': document_id})
+        parent = cur.fetchone()
+
+        return {'attributes': attributes, 'amending': amending, 'parent': parent}
 
 
 def prep_instrument(result, replace, db):

@@ -1,14 +1,14 @@
+"use strict";
 var React = require('react/addons')
+var Actions = require('../actions/Actions');
 var _ = require('lodash')
-
 
 var fields = [
     ['title', 'Title'],
     ['type', 'Type'],
-    ['sub_type', 'Subtype'],
-    ['version', 'Version'],
     ['subtype', 'Subtype'],
     ['number', 'Number'],
+    ['version', 'Version'],
     ['date_first_valid', 'Date First Valid'],
     ['date_assent', 'Date Assent'],
     ['date_gazetted', 'Date Gazetted'],
@@ -34,7 +34,7 @@ var format = function(field, value){
     if(field === 'type'){
         return _.capitalize(value)
     }
-    if(field === 'sub_type'){
+    if(field === 'subtype'){
         return _.capitalize(value)
     }
     return value;
@@ -42,19 +42,64 @@ var format = function(field, value){
 
 module.exports = React.createClass({
     propTypes: {
-        summary: React.PropTypes.object.isRequired
+        article: React.PropTypes.object.isRequired
+    },
+    componentDidMount: function(){
+        Actions.requestSummary(this.props.article.get('id'));
+    },
+    componentDidUpdate: function(){
+        Actions.requestSummary(this.props.article.get('id'));
+    },
+    handleLinkClick: function(id, doc_type, title, e){
+        e.preventDefault();
+        Actions.newPage({
+            query: {
+                id: id,
+                doc_type: doc_type
+            },
+            title: title
+        }, this.props.viewer_id)
+    },
+    renderTable: function(){
+        var amending = this.props.article.getIn(['summary', 'amending']);
+        if(amending && amending.size){
+            return <div><h5>Amendments</h5>
+            <table className="table summary-table">
+                        <tr><th>Title</th><th>Count</th></tr>
+                        { amending.map(function(r, i){
+                            return <tr key={i}><td><a onClick={this.handleLinkClick.bind(this, r.get('id'),this.props.article.getIn(['query', 'doc_type']), r.get('title'))}
+                                href={"/open_article/"+r.get('type')+'/'+r.get('id')}>{r.get('title')}</a></td>
+                                <td>{r.get('count')}</td></tr>
+                        }, this).toJS() }
+                        </table></div>
+        }
+    },
+    renderParent: function(){
+        var parent = this.props.article.getIn(['summary', 'parent']);
+        if(parent && parent.size){
+            return <div><h5>Parent Legislation</h5>
+            <a onClick={this.handleLinkClick.bind(this, parent.get('id'),this.props.article.getIn(['query', 'doc_type']), parent.get('title'))}
+                                href={"/open_article/"+this.props.article.getIn(['query', 'doc_type'])+'/'+parent.get('id')}>{parent.get('title')}</a>
+            </div>
+        }
     },
     render: function(){
-        return <div className="summary">
+        var className = "article-summary";
+        if(this.props.article.getIn(['summary', 'fetching'])){
+            className += " csspinner traditional";
+        }
+        return <div className={className}>
         <dl className="dl-horizontal">
             { _.map(fields, function(v){
-                if(this.props.summary.get(v[0])){
-                    return <div key={v[0]}><dt>{v[1]}</dt>
-                        <dd>{format(v[0], this.props.summary.get(v[0]))}</dd>
+                if(this.props.article.getIn(['summary', 'attributes', v[0]])){
+                    return <div key={v[0]} ><dt>{v[1]}</dt>
+                        <dd>{format(v[0], this.props.article.getIn(['summary', 'attributes', v[0]]))}</dd>
                     </div>
                 }
             }.bind(this))}
             </dl>
+            { this.renderParent() }
+            { this.renderTable() }
         </div>
     },
 });

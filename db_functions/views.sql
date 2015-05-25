@@ -1,3 +1,9 @@
+CREATE MATERIALIZED VIEW newest as
+    SELECT id, s.govt_id FROM instruments i
+        JOIN  (SELECT govt_id, max(version) as version FROM instruments GROUP BY govt_id) s ON s.govt_id = i.govt_id and i.version = s.version;
+-- TODO maybe abandon mat view
+CREATE UNIQUE INDEX newest_view_latest_instuments_idx ON newest (id);
+CREATE INDEX newest_view_latest_instuments_govt_idx ON newest (govt_id);
 
 
 CREATE OR REPLACE FUNCTION subordinate_depth()
@@ -5,13 +11,15 @@ CREATE OR REPLACE FUNCTION subordinate_depth()
     AS $$
     WITH RECURSIVE graph(parent_id, child_id, count)
         AS (
-            SELECT parent_id, child_id, 0 as count
-            FROM subordinates where parent_id is null
-            UNION ALL
-            SELECT t.parent_id, t.child_id ,count+1
-            FROM graph p
-            JOIN subordinates t
-            ON p.child_id = t.parent_id
+          SELECT n.id, child_id, 0 as count
+          FROM subordinates s
+          JOIN newest n on s.parent_id = n.govt_id
+          UNION ALL
+          SELECT n.id, t.child_id ,count+1
+          FROM graph p
+          JOIN subordinates t
+       JOIN newest n on t.parent_id = n.govt_id
+          ON p.parent_id = t.child_id
         )
         SELECT child_id, max(count) as count from graph g group by (child_id);
 $$ LANGUAGE SQL;
@@ -22,25 +30,24 @@ CREATE OR REPLACE FUNCTION child_count()
     AS $$
 
     WITH RECURSIVE graph(parent_id, child_id)
-
         AS (
-            SELECT parent_id, child_id
-            FROM subordinates
-            UNION ALL
-            SELECT s.parent_id, s.child_id
-            FROM graph p
-            JOIN subordinates as s ON s.parent_id = p.child_id
+          SELECT n.id, child_id
+          FROM subordinates s
+          JOIN newest n on s.parent_id = n.govt_id
+          UNION ALL
+          SELECT n.id, t.child_id
+          FROM graph p
+          JOIN subordinates t
+       JOIN newest n on t.parent_id = n.govt_id
+          ON p.parent_id = t.child_id
         )
     select parent_id, count(distinct child_id)::integer as children from graph group by parent_id
 
 $$ LANGUAGE SQL;
 
 
+
 CREATE MATERIALIZED VIEW latest_instruments AS
-    WITH newest AS (
-            SELECT id FROM instruments i
-            JOIN  (SELECT govt_id, max(version) as version FROM instruments GROUP BY govt_id) s ON s.govt_id = i.govt_id and i.version = s.version
-    )
     SELECT title, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
     i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
     i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
@@ -112,13 +119,15 @@ CREATE OR REPLACE FUNCTION parent_definitions(id integer)
     AS $$
     WITH RECURSIVE graph(parent_id, child_id)
         AS (
-          SELECT parent_id, child_id
-          FROM subordinates
+          SELECT n.id, child_id
+          FROM subordinates s
+          JOIN newest n on s.parent_id = n.govt_id
           WHERE child_id = $1
           UNION ALL
-          SELECT t.parent_id, t.child_id
+          SELECT n.id, t.child_id
           FROM graph p
           JOIN subordinates t
+       JOIN newest n on t.parent_id = n.govt_id
           ON p.parent_id = t.child_id
         )
         SELECT document_id, words, html,  full_word, id,  expiry_tags, priority

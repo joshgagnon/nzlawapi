@@ -1,4 +1,5 @@
 DROP MATERIALIZED VIEW IF EXISTS latest_instruments CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS newest CASCADE;
 DROP FUNCTION IF EXISTS parent_definitions(integer);
 DROP FUNCTION IF EXISTS subordinate_depth();
 DROP FUNCTION IF EXISTS child_count();

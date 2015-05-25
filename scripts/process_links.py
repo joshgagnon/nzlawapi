@@ -58,6 +58,7 @@ def refs_and_subs(db, do_references, do_subordinates):
         total = cur.fetchone()['count']
 
     id_lookup = links.get_all_ids(db)
+    govt_id_lookup = links.get_all_govt_ids(db)
 
     titles = links.get_links(db)
 
@@ -86,7 +87,7 @@ def refs_and_subs(db, do_references, do_subordinates):
                         out.execute("INSERT INTO section_references (source_document_id, target_govt_id, source_repr, source_url, link_text) VALUES " + args_str)
 
                 if do_subordinates:
-                    ids = links.find_parent_instrument(tree, source_id, title, id_lookup, titles)
+                    ids = links.find_parent_instrument(tree, source_id, title, govt_id_lookup, titles)
                     if len(ids):
                         args_str = ','.join(cur.mogrify("(%s, %s)", (x, source_id)) for x in ids)
                         out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
@@ -99,7 +100,7 @@ def refs_and_subs(db, do_references, do_subordinates):
         cur.execute("""
             INSERT INTO subordinates (parent_id, child_id)
             SELECT
-                (select id from instruments where title = 'Interpretation Act 1999' AND version = 19) as parent_id,
+                (select govt_id from instruments where title = 'Interpretation Act 1999' AND version = 19) as parent_id,
                 id as child_id  FROM instruments WHERE
                 title != 'Interpretation Act 1999'
                 """)
@@ -133,7 +134,6 @@ def analyze_links(db):
                 tree = etree.fromstring(result['document'], parser=p)
                 inserts = links.reparse_link_texts(tree, result.get('id'), result.get('govt_id'), db=db)
                 with db.cursor() as out:
-                    sys.stdout.flush()
                     for insert in inserts:
                         out.execute(insert)
                 sys.stdout.write("%d%% inserted %d            \r" % (count/total*100,len(inserts)))
@@ -170,8 +170,8 @@ if __name__ == "__main__":
     #with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
     #    cur.execute(""" refresh materialized view latest_instruments """)
     run(db, config,
-    do_id_lookup=('skip_ids' not in sys.argv[1:]),
-    do_references=('skip_references' not in sys.argv[1:]),
+    do_id_lookup= 'skip_ids' not in sys.argv[1:]),
+    do_references= ('skip_references' not in sys.argv[1:]),
     do_subordinates=('skip_subordinates' not in sys.argv[1:]),
     do_links=('skip_links' not in sys.argv[1:]))
 

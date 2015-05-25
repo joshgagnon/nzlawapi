@@ -28,7 +28,7 @@ module.exports = React.createClass({
     },
     render: function(){
         var className = "article-versions";
-        if(this.props.article.getIn(['article-verions','fetching'])){
+        if(this.props.article.getIn(['versions','fetching'])){
             className += " csspinner traditional";
         }
 

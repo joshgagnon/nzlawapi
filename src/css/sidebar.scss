@@ -58,6 +58,7 @@
             background-color:$deep-red;
         }
     }
+    .article-summary,
     .article-references,
     .article-versions{
             overflow-y: auto;
@@ -67,5 +68,27 @@
             left: 5px;
             right: 5px;
 
+    }
+    .article-summary{
+        dl{
+            dt{
+              width: 40%;
+              float: left;
+            }
+            dd{
+            margin-left:0px;
+              width: 60%;
+              float: left;
+              padding-left: 10px;
+            }
+          margin-bottom: 20px;
+          float: left;
+          width: 100%;
+        }
+        h5{
+            width: 100%;
+              text-align: center;
+              font-style: italic;
+        }
     }
 }

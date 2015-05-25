@@ -10,6 +10,7 @@ from copy import deepcopy
 from collections import defaultdict
 import logging
 from flask import current_app
+import calendar
 
 
 def add_new_ids(tree, document_id, title, db=None):
@@ -241,19 +242,22 @@ def fix_cycles(db=None):
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """
             WITH RECURSIVE search_graph(child_id, parent_id, depth, path, cycle) AS (
-                SELECT g.child_id, g.parent_id, 1,
+                SELECT g.child_id, n.id, 1,
                   ARRAY[g.child_id],
                   false
                 FROM subordinates g
+                JOIN newest n on g.parent_id = n.govt_id
               UNION ALL
-                SELECT g.child_id, g.parent_id, sg.depth + 1,
+                SELECT g.child_id, n.id, sg.depth + 1,
                   path || g.child_id,
                   g.child_id = ANY(path)
-                FROM subordinates g, search_graph sg
+                FROM subordinates g
+        JOIN newest n on g.parent_id = n.govt_id,
+                search_graph sg
+
                 WHERE g.child_id = sg.parent_id AND NOT cycle )
 
             SELECT distinct child_id, parent_id, year FROM search_graph g join instruments on id = child_id where cycle = true order by year limit 1; """
-
         rm_query = """delete from subordinates where child_id = %(child_id)s and parent_id = %(parent_id)s"""
         while True:
             cur.execute(query)
@@ -271,19 +275,21 @@ def find_amendments(tree, document_id, govt_id_lookup=None, links=None, db=None)
     govt_id_lookup = govt_id_lookup or get_all_govt_ids(db)
     db = db or get_db()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        date_pat = re.compile('^\d\d? (\w){3,} (\d){4}$')
+        # there are typos in the acts, screw em
+        date_pat = re.compile('^\d\d? (%s) (\d){4}$' % '|'.join([c for c in calendar.month_name if c]))
         results = []
         for history in tree.findall('.//history-note'):
             data = {'note_id': None, 'target_id': document_id, 'source_id': None, 'amendment_date': None, 'unknown_source_text': None}
             data['note_id'] = history.attrib.get('id')
             try:
-                data['source_id'] = govt_id_lookup[history.findall('amending-provision')[0].attrib['href']]
+                data['source_id'] = govt_id_lookup[history.findall('.//amending-provision')[0].attrib['href']]
             except (IndexError, KeyError):
                 try:
-                    data['source_id'] = links.get_active(history.find('amending-leg'))
-                except MatchError:
+                    text = etree.tostring(history.find('amending-leg'), method="text", encoding="UTF-8")
+                    data['source_id'] = links.get_active(text)['id']
+                except (MatchError, TypeError):
                     if history.find('amending-leg') is not None:
-                        data['unknown_source_text'] = etree.tostring(history.find('amending-leg'), method="text", encoding="UTF-8")
+                        data['unknown_source_text'] = text
                     else:
                         continue
             if history.find('amendment-date') is not None:
@@ -336,7 +342,8 @@ def analyze_new_links(row, db=None):
             # i really don't like this, think of a better way
             out.execute("""
                 INSERT INTO subordinates (parent_id, child_id) values
-                    ((select id as parent_id from instruments where title = 'Interpretation Act 1999' AND version = 19), %(child_id)s)
+
+                    ((select i.govt_id as parent_id from newest n join instruments i i.id=n.id where i.title = 'Interpretation Act 1999'), %(child_id)s)
                 """, {'child_id': document_id})
 
     with db.cursor() as out:
