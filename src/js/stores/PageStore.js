@@ -352,6 +352,10 @@ var PageStore = Reflux.createStore({
         }
     },
 
+
+
+
+
     // functions below are all basically the sdame, refactor them
     onRequestVersions: function(page_id){
         var page = this.getById(page_id);

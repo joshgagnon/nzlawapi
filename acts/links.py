@@ -252,7 +252,7 @@ def fix_cycles(db=None):
                   path || g.child_id,
                   g.child_id = ANY(path)
                 FROM subordinates g
-        JOIN newest n on g.parent_id = n.govt_id,
+                JOIN newest n on g.parent_id = n.govt_id,
                 search_graph sg
 
                 WHERE g.child_id = sg.parent_id AND NOT cycle )

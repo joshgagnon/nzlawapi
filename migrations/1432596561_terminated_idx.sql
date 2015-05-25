@@ -1,0 +1,1 @@
+CREATE INDEX instruments_terminated_idx ON instruments (terminated);
