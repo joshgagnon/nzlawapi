@@ -4,8 +4,9 @@ var _ = require('lodash')
 
 var fields = [
     ['title', 'Title'],
-    ['version', 'Version'],
     ['type', 'Type'],
+    ['sub_type', 'Subtype'],
+    ['version', 'Version'],
     ['subtype', 'Subtype'],
     ['number', 'Number'],
     ['date_first_valid', 'Date First Valid'],
@@ -24,6 +25,21 @@ var fields = [
     ['instrucing_office', 'Instrucing Office'],
 ];
 
+
+
+var format = function(field, value){
+    if(field === 'in_amend'){
+        return value ? 'Yes': 'No';
+    }
+    if(field === 'type'){
+        return _.capitalize(value)
+    }
+    if(field === 'sub_type'){
+        return _.capitalize(value)
+    }
+    return value;
+}
+
 module.exports = React.createClass({
     propTypes: {
         summary: React.PropTypes.object.isRequired
@@ -33,7 +49,9 @@ module.exports = React.createClass({
         <dl className="dl-horizontal">
             { _.map(fields, function(v){
                 if(this.props.summary.get(v[0])){
-                    return <div key={v[0]}><dt>{v[1]}</dt><dd>{this.props.summary.get(v[0])}</dd></div>
+                    return <div key={v[0]}><dt>{v[1]}</dt>
+                        <dd>{format(v[0], this.props.summary.get(v[0]))}</dd>
+                    </div>
                 }
             }.bind(this))}
             </dl>

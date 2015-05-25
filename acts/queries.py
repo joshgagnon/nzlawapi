@@ -354,7 +354,7 @@ def get_section_references(target_document_id, govt_ids, target_path):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute("""select * from get_section_references(%(target_document_id)s, %(govt_ids)s, %(target_path)s)""",
-            {'govt_ids': govt_ids, 'target_path': '%s(\(.*)?$' % re.escape(target_path), 'target_document_id': target_document_id})
+            {'govt_ids': govt_ids, 'target_path': '%s' % re.escape(target_path), 'target_document_id': target_document_id})
         results = cur.fetchall()
         return {'section_references': map(lambda x: dict(x), results)}
 
@@ -422,6 +422,7 @@ def prep_instrument(result, replace, db):
         heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         heights = result.get('heights')
+
     return Instrument(
         id=result.get('id'),
         document=document,

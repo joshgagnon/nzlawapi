@@ -34,6 +34,14 @@ def get_all_ids(db=None):
             """)
         return dict(map(result_to_dict, cur.fetchall()))
 
+def get_all_govt_ids(db=None):
+    """ find every id, so we know what document a link refers to """
+    db = db or get_db()
+    with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
+        result_to_dict = lambda r: (r['govt_id'], r['parent_id'])
+        cur.execute("""SELECT i.govt_id, l.govt_id as parent_id from id_lookup i join latest_instruments l on i.parent_id = l.id
+            """)
+        return dict(map(result_to_dict, cur.fetchall()))
 
 def safe_target(el):
     """ try to get the target id, in priority order """
@@ -258,6 +266,36 @@ def fix_cycles(db=None):
     db.commit()
 
 
+def find_amendments(tree, document_id, govt_id_lookup=None, links=None, db=None):
+    links = links or get_links(db)
+    govt_id_lookup = govt_id_lookup or get_all_govt_ids(db)
+    db = db or get_db()
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        date_pat = re.compile('^\d\d? (\w){3,} (\d){4}$')
+        results = []
+        for history in tree.findall('.//history-note'):
+            data = {'note_id': None, 'target_id': document_id, 'source_id': None, 'amendment_date': None, 'unknown_source_text': None}
+            data['note_id'] = history.attrib.get('id')
+            try:
+                data['source_id'] = govt_id_lookup[history.findall('amending-provision')[0].attrib['href']]
+            except (IndexError, KeyError):
+                try:
+                    data['source_id'] = links.get_active(history.find('amending-leg'))
+                except MatchError:
+                    if history.find('amending-leg') is not None:
+                        data['unknown_source_text'] = etree.tostring(history.find('amending-leg'), method="text", encoding="UTF-8")
+                    else:
+                        continue
+            if history.find('amendment-date') is not None:
+                text = history.find('amendment-date').text
+                if text and date_pat.match(text):
+                    data['amendment_date'] = text
+
+            results.append(cur.mogrify("""(%(note_id)s, %(target_id)s, %(source_id)s, to_date(%(amendment_date)s, 'dd Month YYYY'), %(unknown_source_text)s) """,
+                data))
+        return results
+
+
 def analyze_new_links(row, db=None):
     db = db or get_db()
     document_id = row.get('id')
@@ -268,6 +306,8 @@ def analyze_new_links(row, db=None):
         cur.execute(""" delete from section_references where source_document_id = %(document_id)s""",
                     {'document_id': document_id})
         cur.execute(""" delete from id_lookup where parent_id = %(document_id)s""",
+                    {'document_id': document_id})
+        cur.execute(""" delete from amendments where target_document_id = %(document_id)s""",
                     {'document_id': document_id})
 
     title = unicode(row['title'].decode('utf-8'))
@@ -283,6 +323,13 @@ def analyze_new_links(row, db=None):
         with db.cursor() as out:
             args_str = ','.join(out.mogrify("(%s, %s)", (x, document_id)) for x in parent_ids)
             out.execute("INSERT INTO subordinates (parent_id, child_id) VALUES " + args_str)
+
+    amends = find_amendments(tree, document_id, id_lookup, links, db)
+    if len(amends):
+        with db.cursor() as out:
+            args_str = ','.join(amends)
+            out.execute("""INSERT INTO amendments(note_id, target_document_id, source_govt_id,
+                amendment_date, unknown_source_text) VALUES """ + args_str)
 
     if title != 'Interpretation Act 1999':  # lol
         with db.cursor() as out:

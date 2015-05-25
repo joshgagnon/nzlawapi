@@ -126,14 +126,18 @@ CREATE OR REPLACE FUNCTION parent_definitions(id integer)
 $$ LANGUAGE SQL;
 
 
-CREATE OR REPLACE FUNCTION get_references(id integer)
+CREATE OR REPLACE FUNCTION get_references(document_id integer)
     RETURNS TABLE (id integer, title text, count bigint, type text)
     AS $$
-    SELECT  id, title, count(id), type FROM latest_instruments i
-    JOIN section_references d on i.id = d.source_document_id
-    JOIN document_section_references s on s.link_id = d.link_id
-    WHERE target_document_id = $1 and source_document_id != $1 group by title, id, type order by count desc
-$$ LANGUAGE SQL;
+    BEGIN
+        RETURN QUERY  SELECT i.id, i.title, count(i.id), i.type
+            FROM latest_instruments i
+            JOIN section_references s on i.id = s.source_document_id
+            JOIN document_section_references d on s.link_id = d.link_id
+            WHERE target_document_id = $1 and i.id != $1 group by i.title, i.id, i.type order by count desc;
+
+        END
+  $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_section_references(target_document_id integer, govt_ids text[], target_path text)
