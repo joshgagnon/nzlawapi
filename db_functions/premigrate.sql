@@ -11,3 +11,6 @@ DROP FUNCTION IF EXISTS get_versions(integer);
 DROP FUNCTION IF EXISTS replace_references(text, text, text[]);
 
 DROP  VIEW IF EXISTS titles;
+
+DROP INDEX  IF EXISTS mat_view_latest_instuments_idx;
+DROP INDEX  IF EXISTS mat_view_latest_instuments_govt_idx;

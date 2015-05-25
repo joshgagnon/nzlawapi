@@ -65,6 +65,9 @@ CREATE MATERIALIZED VIEW latest_instruments AS
     LEFT OUTER JOIN ( select count(*), target_id from document_references join newest i on i.id = source_id group by target_id) r on r.target_id = i.id;
 
 
+-- TODO maybe abandon mat view
+CREATE UNIQUE INDEX mat_view_latest_instuments_idx ON latest_instruments (id);
+CREATE INDEX mat_view_latest_instuments_govt_idx ON latest_instruments (govt_id);
 
 CREATE OR REPLACE FUNCTION get_processed_instrument(id integer)
     RETURNS TABLE(title text, latest boolean, id integer, govt_id text, version integer, type text, date_first_valid date, date_as_at date, stage text,
@@ -124,24 +127,32 @@ $$ LANGUAGE SQL;
 
 
 CREATE OR REPLACE FUNCTION get_references(id integer)
-    RETURNS TABLE (id integer, title text, count integer, type text)
+    RETURNS TABLE (id integer, title text, count bigint, type text)
     AS $$
-    SELECT d.source_id as id, title, count, type FROM document_references d
-    JOIN latest_instruments i on i.id = d.source_id
-    WHERE target_id = $1
-    ORDER BY count DESC
+    SELECT  id, title, count(id), type FROM latest_instruments i
+    JOIN section_references d on i.id = d.source_document_id
+    JOIN document_section_references s on s.link_id = d.link_id
+    WHERE target_document_id = $1 and source_document_id != $1 group by title, id, type order by count desc
 $$ LANGUAGE SQL;
 
 
 CREATE OR REPLACE FUNCTION get_section_references(target_document_id integer, govt_ids text[], target_path text)
     RETURNS TABLE (source_document_id integer, repr text, url text)
     AS $$
-          SELECT source_document_id, source_repr, source_url
-            FROM section_references  d
-            JOIN latest_instruments i on d.source_document_id = i.id
-            JOIN document_section_references s on d.link_id = s.link_id
-            WHERE target_document_id = $1 and ((array_length($2, 1)> 0 and d.target_govt_id = ANY($2)) or target_path ~ $3)  GROUP BY source_document_id, source_repr, source_url ORDER by source_repr
-$$ LANGUAGE SQL;
+    BEGIN
+        RETURN QUERY SELECT s.source_document_id, source_repr, source_url
+            FROM section_references  s
+            JOIN latest_instruments i on s.source_document_id = i.id
+            JOIN document_section_references d on d.link_id = s.link_id
+            WHERE d.target_document_id = $1 and
+            (
+            (array_length($2, 1)> 0 and d.target_govt_id = ANY($2))
+            or
+            (d.target_path like ($3||'%') and d.target_path ~ ($3||'(\(.*)?$')
+            )
+            )  GROUP BY s.source_document_id, source_repr, source_url ORDER by source_repr;
+        END
+  $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_versions(id integer)
