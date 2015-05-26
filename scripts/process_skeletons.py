@@ -61,7 +61,8 @@ if __name__ == "__main__":
     finally:
         print "Cleaning up Main"
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-            cur.execute('REFRESH MATERIALIZED VIEW latest_instruments')
+            cur.execute("select update_views()")
+
         db.commit()
         db.close()
 

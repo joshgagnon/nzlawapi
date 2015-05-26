@@ -289,7 +289,7 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
             cur.execute("DELETE FROM definitions where document_id = %(id)s", {'id': row.get('id')})
             cur.execute("INSERT INTO definitions (document_id, id, full_word, words, html, expiry_tags, priority) VALUES " + args_str)
         if refresh:
-            cur.execute("REFRESH MATERIALIZED VIEW latest_instruments")
+            cur.execute("select update_views()")
     (db or get_db()).commit()
     return tree, definitions
 

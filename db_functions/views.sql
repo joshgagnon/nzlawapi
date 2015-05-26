@@ -143,7 +143,7 @@ CREATE OR REPLACE FUNCTION get_references(document_id integer)
     RETURNS TABLE (id integer, title text, count bigint, type text)
     AS $$
     BEGIN
-        RETURN QUERY  select i.id, i.title, count, i.type
+        RETURN QUERY  select i.id, i.title, r.count, i.type
             FROM reference_counts r
             JOIN instruments i on r.source_document_id = i.id
             JOIN newest n on n.id = i.id
@@ -189,3 +189,12 @@ CREATE OR REPLACE VIEW titles AS
     SELECT full_citation as name, id, 'case' as type, 'full' as find, null as query, null as year, 0 as refs, 0 as base_score  from cases
     UNION
     SELECT title as name, document_id, type, find, query, 10000 as year,   10000 as refs, 10000 as base_score  from shortcuts;
+
+
+CREATE OR REPLACE FUNCTION update_views()
+  RETURNS void
+  AS $$
+  REFRESH MATERIALIZED VIEW newest;
+  REFRESH MATERIALIZED VIEW reference_counts;
+  REFRESH MATERIALIZED VIEW scores;
+$$ LANGUAGE SQL;

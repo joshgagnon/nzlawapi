@@ -167,8 +167,8 @@ if __name__ == "__main__":
             host=config.DB_HOST,
             password=config.DB_PW)
     # poor mans switches
-    #with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-    #    cur.execute(""" refresh materialized view latest_instruments """)
+    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+        cur.execute("select update_views()")
     run(db, config,
     do_id_lookup= 'skip_ids' not in sys.argv[1:]),
     do_references= ('skip_references' not in sys.argv[1:]),

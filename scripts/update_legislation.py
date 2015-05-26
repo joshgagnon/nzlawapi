@@ -76,7 +76,8 @@ def run(db, config):
     if not len(updated_ids): return
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         current_app.logger.info('New instruments found, updating (%d)' % len(updated_ids))
-        cur.execute("refresh materialized view latest_instruments")
+        cur.execute("select update_views()")
+
         # analyze the new links
 
     for updated_id in updated_ids:
