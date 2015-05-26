@@ -6,6 +6,7 @@ var _ = require('lodash');
 var Immutable = require('immutable');
 var request = require('../catalex-request');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
+var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
 
 var PageStore = Reflux.createStore({
     listenables: Actions,
@@ -353,121 +354,35 @@ var PageStore = Reflux.createStore({
     },
 
 
-
-
-
-    // functions below are all basically the sdame, refactor them
-    onRequestVersions: function(page_id){
+    onRequestSubResource: function(resource, page_id){
         var page = this.getById(page_id);
-        if(!page.getIn(['versions', 'fetching']) && !page.getIn(['versions', 'fetched']) && !page.get('error')){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'], {fetching: true});
-            request.get('/versions/'+page.get('content').get('document_id'))
-                .promise()
-                .then(function(response){ Actions.requestVersions.completed(page_id, response.body); })
-                .catch(function(response){ Actions.requestVersions.failure(page_id, response.body); });
-            this.update();
+        if(_.values(RESOURCE_TYPES).indexOf(resource) >= 0){
+            if(!page.getIn([resource, 'fetching']) && !page.getIn([resource, 'fetched']) && !page.get('error')){
+                this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), resource], {fetching: true});
+                request.get('/'+resource+'/'+page.get('content').get('document_id'))
+                    .promise()
+                    .then(function(response){ Actions.requestSubResource.completed(resource, page_id, response.body); })
+                    .catch(function(response){ Actions.requestSubResource.failure(resource, page_id, response.body); });
+                this.update();
+            }
         }
     },
-    onRequestVersionsCompleted: function(page_id, data){
+    onRequestSubResourceCompleted: function(resource, page_id, data){
         var page = this.getById(page_id);
         if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'],
-                    {fetched: true, fetching: false, versions_data: data.versions});
-            this.update();
-        }
-    },
-    onRequestVersionsFailure: function(page_id ,data){
-        var page = this.getById(page_id);
-        if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'versions'],
-                    _.extend({error: true, fetched: true, fetching: false}, data));
-            this.update();
-        }
-    },
-    onRequestReferences: function(page_id){
-        var page = this.getById(page_id);
-        if(page && !page.getIn(['references', 'fetching']) && !page.getIn(['references', 'fetched']) && !page.get('error')){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'], {fetching: true});
-            request.get('/references/'+page.get('content').get('document_id'))
-                .promise()
-                .then(function(response){ Actions.requestReferences.completed(page_id, response.body); })
-                .catch(function(response){ Actions.requestReferences.failure(page_id, response.body);; });
-            this.update();
-        }
-    },
-    onRequestReferencesCompleted: function(page_id, data){
-        var page = this.getById(page_id);
-        if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'],
-                    {references_data: data.references, fetched: true, fetching: false});
-            this.update();
-        }
-    },
-    onRequestReferencesFailure: function(page_id, data){
-        var page = this.getById(page_id);
-        if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'references'],
-                    _.extend({error: true, fetched: true, fetching: false}, data));
-            this.update();
-        }
-    },
-
-    onRequestSummary: function(page_id){
-        var page = this.getById(page_id);
-        if(page && !page.getIn(['summary', 'fetching']) && !page.getIn(['summary', 'fetched']) && !page.get('error')){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'summary'], {fetching: true});
-            request.get('/summary/'+page.get('content').get('document_id'))
-                .promise()
-                .then(function(response){ Actions.requestSummary.completed(page_id, response.body); })
-                .catch(function(response){ Actions.requestSummary.failure(page_id, response.body);; });
-            this.update();
-        }
-    },
-    onRequestSummaryCompleted: function(page_id, data){
-        var page = this.getById(page_id);
-        if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'summary'],
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), resource],
                     _.extend({fetched: true, fetching: false}, data));
             this.update();
         }
     },
-    onRequestSummaryFailure: function(page_id, data){
+    onRequestSubResourceFailure: function(resource, page_id ,data){
         var page = this.getById(page_id);
         if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'summary'],
+            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), resource],
                     _.extend({error: true, fetched: true, fetching: false}, data));
             this.update();
         }
-    },
-
-    onRequestContents: function(page_id){
-        var page = this.getById(page_id);
-        if(!page.getIn(['contents', 'fetching']) && !page.getIn(['contents', 'fetched']) && !page.get('error')){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'], {fetching: true});
-            request.get('/contents/'+page.get('content').get('document_id'))
-                .promise()
-                .then(function(response){ Actions.requestContents.completed(page_id, response.body); })
-                .catch(function(response){ Actions.requestContents.failure(page_id, response.body); });
-            this.update();
-        }
-    },
-    onRequestContentsCompleted: function(page_id, data){
-        var page = this.getById(page_id);
-        if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'],
-                    _.extend({fetched: true, fetching: false}, data));
-            this.update();
-        }
-    },
-    onRequestContentsFailure: function(page_id, data){
-        var page = this.getById(page_id);
-        if(page){
-            this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'contents'],
-                    _.extend({error: true, fetched: true, fetching: false}, data));
-            this.update();
-        }
-    },
-
+    }
 });
 
 

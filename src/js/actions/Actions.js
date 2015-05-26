@@ -25,11 +25,7 @@ module.exports = Reflux.createActions({
 	'articleJumpTo': {},
 	'articleFocusLocation': {},
 
-	'requestReferences': {children: ['completed', 'failure']},
-	'requestSectionReferences': {children: ['completed', 'failure']},
-	'requestVersions': {children: ['completed', 'failure']},
-	'requestContents': {children: ['completed', 'failure']},
-	'requestSummary': {children: ['completed', 'failure']},
+	'requestSubResource': {children: ['completed', 'failure']},
 
 	'sectionSummaryOpened': {},
 	'sectionSummaryClosed': {},

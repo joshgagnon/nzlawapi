@@ -4,18 +4,24 @@ var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
 var utils = require('../utils');
+var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 
 module.exports = React.createClass({
     propTypes: {
         article: React.PropTypes.object.isRequired
     },
+    mixins: [
+        PureRenderMixin
+    ],
     componentDidMount: function(){
-        Actions.requestVersions(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.VERSIONS, this.props.article.get('id'));
     },
     componentDidUpdate: function(){
-        Actions.requestVersions(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.VERSIONS, this.props.article.get('id'));
     },
+
     handleLinkClick: function(id, doc_type, title, e){
         e.preventDefault();
         Actions.newPage({
@@ -32,7 +38,7 @@ module.exports = React.createClass({
             className += " csspinner traditional";
         }
 
-        var refs = this.props.article.getIn(['versions', 'versions_data']);
+        var refs = this.props.article.getIn(['versions', 'versions']);
         if(refs && refs.size){
             return <div className={className}>
                     <table className="table versions-table">

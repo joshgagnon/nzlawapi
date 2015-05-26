@@ -2,6 +2,8 @@
 var React = require('react/addons')
 var Actions = require('../actions/Actions');
 var _ = require('lodash')
+var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var fields = [
     ['title', 'Title'],
@@ -44,11 +46,14 @@ module.exports = React.createClass({
     propTypes: {
         article: React.PropTypes.object.isRequired
     },
+    mixins: [
+        PureRenderMixin
+    ],
     componentDidMount: function(){
-        Actions.requestSummary(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.SUMMARY, this.props.article.get('id'));
     },
     componentDidUpdate: function(){
-        Actions.requestSummary(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.SUMMARY, this.props.article.get('id'));
     },
     handleLinkClick: function(id, doc_type, title, e){
         e.preventDefault();

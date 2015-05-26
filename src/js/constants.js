@@ -26,5 +26,11 @@ module.exports = {
 	},
 	DRAG_TYPES: {
 		POPOVER: 'popover'
+	},
+	RESOURCE_TYPES: {
+		SUMMARY: 'summary',
+		REFERENCES: 'references',
+		VERSIONS: 'versions',
+		CONTENTS: 'contents'
 	}
 };

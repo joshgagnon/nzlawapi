@@ -3,16 +3,22 @@ var React = require('react/addons');
 var Reflux = require('reflux');
 var Actions = require('../actions/Actions.js');
 var _ = require('lodash');
+var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 
 module.exports = React.createClass({
     propTypes: {
         article: React.PropTypes.object.isRequired
     },
+    mixins: [
+        PureRenderMixin
+    ],
     componentDidMount: function(){
-        Actions.requestReferences(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.REFERENCES, this.props.article.get('id'));
     },
     componentDidUpdate: function(){
-        Actions.requestReferences(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.REFERENCES, this.props.article.get('id'));
     },
     handleLinkClick: function(id, doc_type, title, e){
         e.preventDefault();
@@ -30,7 +36,7 @@ module.exports = React.createClass({
         if(fetching){
             return <div className={'article-references csspinner traditional'}/>
         }
-        var refs = this.props.article.getIn(['references', 'references_data']);
+        var refs = this.props.article.getIn(['references', 'references']);
         if(refs && refs.size){
             return <div className={className}>
                 <table className="table references-table">

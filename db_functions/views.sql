@@ -90,7 +90,7 @@ CREATE OR REPLACE FUNCTION get_processed_instrument(id integer)
                 heights json
                 )
     AS $$
-    SELECT title, exists(select 1 from newest i where i.id=$1), i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+    SELECT title, exists(select 1 from newest i where i.id=$1) as newest, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
     i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
     i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
     i.instructing_office, i.number,
@@ -108,7 +108,7 @@ CREATE OR REPLACE FUNCTION get_unprocessed_instrument(id integer)
                 document text
                 )
     AS $$
-    SELECT title, exists(select 1 from newest i where i.id=$1), i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+    SELECT title, exists(select 1 from newest i where i.id=$1) as newest, i.id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
     i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
     i.attributes, i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
     i.instructing_office, i.number,

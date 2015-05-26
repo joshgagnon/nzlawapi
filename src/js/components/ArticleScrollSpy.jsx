@@ -5,10 +5,12 @@ var JumpTo = require('./JumpTo.jsx');
 var Actions = require('../actions/Actions');
 var $ = require('jquery');
 var utils = require('../utils');
+var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
+
 
 module.exports = React.createClass({
     mixins: [
-      {stopScrollPropagation: utils.stopScrollPropagation}
+      {stopScrollPropagation: utils.stopScrollPropagation},
     ],
     propTypes: {
        article: React.PropTypes.object.isRequired,
@@ -50,7 +52,7 @@ module.exports = React.createClass({
         }
     },
     componentDidMount: function(){
-        Actions.requestContents(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.CONTENTS, this.props.article.get('id'));
         if(this.props.position){
             this.onPositionChange(this.props.position);
         }
@@ -65,7 +67,7 @@ module.exports = React.createClass({
         return false;
     },
     componentDidUpdate: function(){
-        Actions.requestContents(this.props.article.get('id'));
+        Actions.requestSubResource(RESOURCE_TYPES.CONTENTS, this.props.article.get('id'));
         if(this.props.position){
             this.onPositionChange(this.props.position);
         }

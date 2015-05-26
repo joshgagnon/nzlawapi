@@ -35,7 +35,7 @@ class Instrument(object):
         self.length = len(self.document)
         # will remove
         ignore = ['document', 'processed_document', 'attributes', 'skeleton', 'heights', 'contents', 'definitions']
-        self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore and v))
+        self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore))
 
     def get_tree(self):
         return self.tree or etree.fromstring(self.document, parser=large_parser)
@@ -446,7 +446,6 @@ def prep_instrument(result, replace, db):
         heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         heights = result.get('heights')
-
     return Instrument(
         id=result.get('id'),
         document=document,
@@ -460,7 +459,7 @@ def get_instrument_object(id=None, db=None, replace=False):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
         query = """SELECT * from get_processed_instrument(%(id)s) """
         cur.execute(query, {'id': id})
-        return prep_instrument(cur.fetchone(), replace, db)
+        return prep_instrument(dict(cur.fetchone()), replace, db)
 
 
 def get_unprocessed_instrument(id=None, db=None):
