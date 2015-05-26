@@ -43,7 +43,7 @@ $.fn.isOnScreen = function(tolerance){
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
 };
 
-
+var id_parent_el = '.part[id], .subpart[id], .schedule[id], .crosshead[id], div.prov[id], .form[id]';
 
 var ArticleSkeletonContent = React.createClass({
     mixins: [
@@ -115,8 +115,9 @@ var ArticleSkeletonContent = React.createClass({
             var part = key+'';
             // the current focus is a child of a hook, get it from precalculated index
             // if between hooks, get next id
-            if(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length-1){
-                part = (1+key)+'';
+            while(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length-1){
+                key++;
+                part = key+'';
             }
             // if we haven't processesed children or there are no children
             if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length){
@@ -127,14 +128,16 @@ var ArticleSkeletonContent = React.createClass({
             return self._skeleton_locations[part].sorted_children[child_key] || self._refs[part];
         };
         if(self.isMounted()){
+
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
             var repr = Utils.getLocation($part).repr;
-            var id = $part.attr('id') || $part.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-            var ids = $part.parents('[id]').map(function(){ return '#' + this.getAttribute('id'); }).toArray();
+            var id = '#' + $part.closest(id_parent_el).attr('id');
+            var ids = $part.parents(id_parent_el).map(function(){ return '#' + this.getAttribute('id'); }).toArray();
+            ids.unshift(id)
             if(repr){
                 Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                    {pixel: top, repr: repr, id: id ? '#'+id : id, ids: ids});
+                    {pixel: top, repr: repr, id: id, ids: _.uniq(ids)});
             }
         }
     },
@@ -266,9 +269,8 @@ var ArticleSkeletonContent = React.createClass({
             }
             this._refs[k].setAttribute('data-visible', true);
 
-
             var top = this._refs[k].offsetTop;
-            var pairs = _.map(this._refs[k].querySelectorAll('[data-location]:not([data-link-id])'),
+            var pairs = _.map(this._refs[k].querySelectorAll('[data-location]:not([data-link-id]):not(.def-term)'),
                 function(el){ return [el, el.offsetTop - top];
             });
             var children =  _.zipObject(pairs.map(function(p){
@@ -358,7 +360,7 @@ var ArticleSkeletonContent = React.createClass({
         else if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length && node.length;i++){
-                var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id])').filter(function(){
+                var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id]):not(.def-term)').filter(function(){
                     return this.getAttribute('data-location').trim() === jump.location[i].trim();
                 });
                 if(!new_node.length){
@@ -413,19 +415,24 @@ var ArticleContent = React.createClass({
         this.refresh();
         var find_current = function(store){
             var top = self.getScrollContainer().scrollTop();
-            var i = _.sortedIndex(_.map(store, function(x){ return x.offset; }), top);
-            return store[Math.min(Math.max(0, i), store.length -1)].target;
+            var i = _.sortedLastIndex(_.map(store, function(x){ return x.offset; }), top);
+            i = Math.min(Math.max(0, i), store.length -1);
+            if(i>0 && store[i-1].offset + store[i-1].height > top){
+                i--;
+            }
+            return store[i].target;
         };
         this.debounce_scroll = _.debounce(function(){
             if(self.isMounted()){
                 var offset = self.getScrollContainer().offset().top +  self.getScrollContainer().position().top;
                 var $el = $(find_current(self.locations));
                 var result = Utils.getLocation($el).repr;
-                var id = $el.closest('div.part[id], div.subpart[id], div.schedule[id], div.crosshead[id], div.prov[id], .case-para[id], .form[id]').attr('id');
-                var ids = $el.parents('[id]').map(function(){ return '#' + this.getAttribute('id'); }).toArray();
+                var id = '#' + $el.closest(id_parent_el).attr('id');
+                var ids = $el.parents(id_parent_el).map(function(){ return '#' + this.getAttribute('id'); }).toArray();
+                ids.unshift(id)
                 if(result){
                     Actions.articlePosition(self.props.viewer_id, self.props.page_id,
-                        {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id ? '#'+id : id, ids: ids});
+                        {pixel: self.getScrollContainer().scrollTop() + offset, repr: result, id: id, ids: _.uniq(ids)});
                 }
             }
         }, 300);
@@ -463,11 +470,11 @@ var ArticleContent = React.createClass({
         var offset = this.getScrollContainer().offset().top;
         this.scrollHeight = $(self.getDOMNode()).height();
         this.locations = self.locations.concat($(self.getDOMNode())
-            .find('[data-location]:not([data-link-id])')
+            .find('[data-location]:not([data-link-id]):not(.def-term)')
             .map(function() {
                 var $el = $(this);
                 return ( $el.is(':visible') && [
-                    {offset: $el[pos]().top - offset, target: this}
+                    {offset: $el[pos]().top - offset, height:  $el.outerHeight(), target: this}
                 ]) || null
             })
             .toArray())
@@ -484,7 +491,7 @@ var ArticleContent = React.createClass({
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length;i++){
-                node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id])');
+                node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id]):not(.def-term)');
             }
             target = node;
         }

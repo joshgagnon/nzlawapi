@@ -143,7 +143,7 @@ def query_case_fields(args):
         raise CustomException('There was a problem with your query')
 
 def common(args):
-    query = []
+    query = [{"term" : { "latest" : True }}]
     search_type = 'list'
     doc_type = 'instrument'
     fields = ["id", "title", 'year', 'number', 'type', 'subtype']

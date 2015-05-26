@@ -56,6 +56,12 @@ def index(db, es):
                         "filter": ["standard", "lowercase", "stop", "custom_stemmer"],
                         "term_vector": "with_positions_offsets_payloads",
                     },
+                    "simple_highlightable": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": ["standard", "lowercase", "stop"],
+                        "term_vector": "with_positions_offsets_payloads",
+                    },
                     "partial_analyzer": {
                         "type": "custom",
                         "tokenizer": "standard",
@@ -102,8 +108,10 @@ def index(db, es):
                     },
                     "document": {
                         "type": "string",
-                        "analyzer" : "analyzer_highlightable"
+                        "term_vector" : "with_positions_offsets"
                     },
+
+                    "latest": { "type": "boolean", "index": "not_analyzed" },
                     "stage": { "type": "string", "index": "not_analyzed" },
                     "type": { "type": "string", "index": "not_analyzed" },
                     "repealed": { "type": "string", "index": "not_analyzed" },
@@ -156,16 +164,19 @@ def instruments(db, es):
     from acts.instrument_es import strip_html
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
-        cur.execute('select count(*) as count from latest_instruments')
+        cur.execute('select count(*) as count from instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         print 'Instruments'
-        cur.execute("""SELECT title, true as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+        cur.execute("""SELECT title, exists(select 1 from newest n where n.id=i.id) as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
             i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
             i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
-            i.instructing_office, i.number, base_score, refs,  processed_document as document, bill_enacted
-            FROM latest_instruments i """)
-        results = cur.fetchmany(100)
+            i.instructing_office, i.number, base_score, refs,  document as document, bill_enacted
+            FROM instruments i
+            JOIN documents d on d.id = i.id
+            JOIN scores s on i.id = s.id
+            """)
+        results = cur.fetchmany(5)
         count = 0.0
         while len(results):
             results = map(strip_html, results)
@@ -173,7 +184,7 @@ def instruments(db, es):
             count += len(results)
             sys.stdout.write("%d%%\r" % (count / total * 100))
             sys.stdout.flush()
-            results = cur.fetchmany(100)
+            results = cur.fetchmany(5)
 
 
 def definitions(db, es):

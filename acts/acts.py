@@ -32,7 +32,7 @@ def instrument_skeleton_response(instrument):
 
 
 def instrument_full(instrument):
-    if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
+    if current_app.config.get('USE_SKELETON'):# and instrument.length > 100000:
         return instrument_skeleton_response(instrument)
     print instrument.attributes
     return {
