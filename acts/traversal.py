@@ -195,10 +195,6 @@ def find_sub_node(tree, keys, limit_tags=['part', 'subpart']):
         raise CustomException("Path not found")
 
 
-def find_node_by_location(tree, query):
-    return nodes_from_path_string(tree, query)
-
-
 def find_definitions(tree, query):
     nodes = tree.xpath(".//def-para[descendant::def-term[contains(.,'%s')]]" % query)
     if not len(nodes):
@@ -261,6 +257,7 @@ def swap_ordinals(string, tags):
     while match:
         string = ''.join([match.group(1), match.group(4), ' ', match.group(3), match.group(5)])
         match = ordinal_pattern.match(string)
+    print string
     return string
 
 

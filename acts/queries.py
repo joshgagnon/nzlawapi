@@ -38,7 +38,9 @@ class Instrument(object):
         self.attributes = dict(((k, v) for k, v in attributes.items() if k not in ignore))
 
     def get_tree(self):
-        return self.tree or etree.fromstring(self.document, parser=large_parser)
+        if self.tree is None:
+            self.tree = etree.fromstring(self.document, parser=large_parser)
+        return self.tree
 
 
 def format_dates(tree):

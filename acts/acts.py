@@ -3,7 +3,7 @@
 from util import CustomException, tohtml, generate_path_string
 from traversal import cull_tree, \
     decide_govt_or_path, find_document_id_by_govt_id, \
-    find_node_by_location, limit_tree_size, link_to_canonical
+    nodes_from_path_string, limit_tree_size, link_to_canonical
 from lxml import etree
 from flask import current_app
 from queries import get_instrument_object, get_latest_instrument_object, fetch_parts, section_references
@@ -18,7 +18,6 @@ def instrument_skeleton_response(instrument):
         'full_title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
-        #'attributes': instrument.attributes,
         "latest": instrument.attributes['latest'],
         'format': 'skeleton',
         'heights': instrument.heights,
@@ -32,16 +31,15 @@ def instrument_skeleton_response(instrument):
 
 
 def instrument_full(instrument):
-    if current_app.config.get('USE_SKELETON'):# and instrument.length > 100000:
+    "who doesn't love magic numbers?"
+    if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
         return instrument_skeleton_response(instrument)
-    print instrument.attributes
     return {
         'html_content': etree.tostring(tohtml(instrument.get_tree()), encoding='UTF-8', method="html"),
         'title': instrument.title,
         'full_title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
-        #'attributes': instrument.attributes,
         "latest": instrument.attributes['latest'],
         'format': 'full',
         'query': {
@@ -60,7 +58,6 @@ def instrument_preview(instrument):
         'full_title': instrument.title,
         'document_id': instrument.id,
         'doc_type': 'instrument',
-        #'attributes': instrument.attributes,
         "latest": instrument.attributes['latest'],
         'format': 'preview',
         'query': {
@@ -72,9 +69,12 @@ def instrument_preview(instrument):
 
 
 def instrument_location(instrument, location):
-    #location = link_to_canonical(location)
-    tree = find_node_by_location(instrument.get_tree(), location)
-    full_location, _, __ = generate_path_string(tree[0])
+    tree = nodes_from_path_string(instrument.get_tree(), location)
+    print tree, instrument.get_tree()
+    if len(tree) == 1 and tree[0] == instrument.get_tree():
+        print link_to_canonical(location)
+        tree = nodes_from_path_string(instrument.get_tree(), link_to_canonical(location))
+    full_location, _, path = generate_path_string(tree[0])
     tree = cull_tree(tree)
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
@@ -82,14 +82,13 @@ def instrument_location(instrument, location):
         'full_title': full_location,
         'document_id': instrument.id,
         'doc_type': 'instrument',
-        #'attributes': instrument.attributes,
         "latest": instrument.attributes['latest'],
         'format': 'fragment',
         'query': {
             'doc_type': 'instrument',
             'document_id': instrument.id,
             'find': 'location',
-            'location': location
+            'location': path
         }
     }
 
@@ -104,7 +103,6 @@ def instrument_govt_location(instrument, id, link_text):
         'full_title': full_location,
         'document_id': instrument.id,
         'doc_type': 'instrument',
-        #'attributes': instrument.attributes,
         "latest": instrument.attributes['latest'],
         'format': 'fragment',
         'query': {
@@ -116,9 +114,9 @@ def instrument_govt_location(instrument, id, link_text):
     }
 
 
-def instrument_more(instrument, parts):
+def instrument_more(document_id, parts):
     return {
-        'parts': fetch_parts(instrument.id, parts=map(lambda p: int(p), parts))
+        'parts': fetch_parts(document_id, parts=map(lambda p: int(p), parts))
     }
 
 
@@ -127,9 +125,10 @@ def query_instrument(args):
 
     if find == 'contains':
         return query_contains(args)
-
     if find == 'section_references':
         return section_references(args)
+    if find == 'more':
+        return instrument_more(args.get('document_id'), args.get('parts').split(','))
 
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
@@ -137,27 +136,20 @@ def query_instrument(args):
         if isinstance(id, basestring) and id.startswith('DLM'):
             govt_id = id
             id = find_document_id_by_govt_id(id)
-            instrument = get_instrument_object(
-                id,
-                replace=current_app.config.get('REPROCESS_DOCS'))
+            instrument = get_instrument_object(id)
             if instrument.attributes['govt_id'] != govt_id:
                 find = 'govt_location'
                 govt_location = govt_id
         else:
-            instrument = get_instrument_object(
-                id,
-                replace=current_app.config.get('REPROCESS_DOCS'))
+            instrument = get_instrument_object(id)
     elif args.get('title'):
-        instrument = get_latest_instrument_object(
-            args.get('title'),
-            replace=current_app.config.get('REPROCESS_DOCS'))
+        instrument = get_latest_instrument_object(args.get('title'))
     else:
         raise CustomException('No instrument specified')
 
     if find == 'preview':
         return instrument_preview(instrument)
-    elif find == 'more':
-        return instrument_more(instrument, args.get('parts').split(','))
+
     elif find == 'location':
         if args.get('location'):
             return instrument_location(instrument, args.get('location'))
