@@ -77,13 +77,17 @@ def query_all(args):
             "fields": ["id", "title", "full_citation", 'year', 'number', 'type', 'subtype'],
             "sort": get_sort(args),
             "query": {
-                "multi_match": {
-                    "query": query,
-                     "type": "phrase",
-                     "operator":   "and",
-                    "fields": ["title", "title.english", "title.ngram", "full_citation", "document^3"]
+                "bool": {
+                    "must": [{"term" : { "latest" : True }},
+                             {"multi_match": {
+                                    "query": query,
+                                     "type": "phrase",
+                                     "operator":   "and",
+                                    "fields": ["title", "title.english", "title.ngram", "full_citation", "document^3"]
+                                }
+                            }]
+                        }
                 },
-            },
                    # "script_score": {
                    #     "script": "_score * (1.0/sqrt(doc['title.simple'].value.length()))"
                    # }

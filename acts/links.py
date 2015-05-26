@@ -54,7 +54,7 @@ def safe_target(el):
 def remove_ignored_tags(tree):
     """ optimization to skip elements we aren't interested in """
     tree = deepcopy(tree)
-    tags_to_remove = ['history-note', 'end', 'skeleton', 'amend', 'schedule.amendments', 'insertwords', 'amend.in']
+    tags_to_remove = ['history-note', 'end', 'skeleton', 'amend', 'schedule.amendments', 'insertwords', 'amend.in', 'empowering-prov']
     for el in tree.iter(*tags_to_remove):
         el.getparent().remove(el)
     return tree

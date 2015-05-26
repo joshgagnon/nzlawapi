@@ -69,11 +69,14 @@ def instrument_preview(instrument):
 
 
 def instrument_location(instrument, location):
-    tree = nodes_from_path_string(instrument.get_tree(), location)
-    print tree, instrument.get_tree()
-    if len(tree) == 1 and tree[0] == instrument.get_tree():
-        print link_to_canonical(location)
-        tree = nodes_from_path_string(instrument.get_tree(), link_to_canonical(location))
+    def massage():
+        return nodes_from_path_string(instrument.get_tree(), link_to_canonical(location))
+    try:
+        tree = nodes_from_path_string(instrument.get_tree(), location)
+        if len(tree) == 1 and tree[0] == instrument.get_tree():
+            raise CustomException('try again')
+    except CustomException:
+        tree = massage()
     full_location, _, path = generate_path_string(tree[0])
     tree = cull_tree(tree)
     return {

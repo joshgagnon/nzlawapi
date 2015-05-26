@@ -80,7 +80,7 @@ def nodes_from_path_string(tree, path):
                 if remainder:
                     # total hack job, but must support subpart/part/schedule ranges
                     if range_pattern.match(remainder):
-                        return find_sub_node(tree, [remainder], limit_tags=[])
+                        return find_sub_node(tree, [remainder], limit_tags=[], force_tag=tag_names[parts[0]])
                     sub = part_pattern.match(remainder).groups()
                     # sub[0] is the sch/part label
                     label = sub[0]
@@ -120,12 +120,12 @@ def nodes_from_path_string(tree, path):
     return find_sub_node(tree, keys)
 
 
-def find_sub_node(tree, keys, limit_tags=['part', 'subpart']):
+def find_sub_node(tree, keys, limit_tags=['part', 'subpart'], force_tag=None):
     """depth first down the tree matching labels in keys"""
     """ limit tags exists to prevent ambiguity between parts and section labels.  however, sometimes we must treat
         parts etc like sections, for ranges etc """
     node = tree
-    xpath_query = ".//*[%s]"
+    xpath_query = ".//%s[%s]"
     depth = lambda x: len(list(x.iterancestors()))
     shallowest = lambda nodes: nodes[0] if len(node) == 1 else sorted(map(lambda x: (x, depth(x)), nodes), key=itemgetter(1))[0][0]
 
@@ -133,7 +133,8 @@ def find_sub_node(tree, keys, limit_tags=['part', 'subpart']):
         """ note: this is split between xpath and python for performance reasons (xpath too slow on ancestors) """
         while True:
             try:
-                nodes = node.xpath(xpath_query % labelize(label))
+                tag = force_tag if force_tag else '*'
+                nodes = node.xpath(xpath_query % (tag, labelize(label)))
                 nodes = filter(lambda x: x.tag not in limit_tags and
                     not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(('amend', 'end'))), nodes)
                 return shallowest(nodes)
@@ -247,18 +248,21 @@ def get_references_for_ids(ids):
         return {'references': cur.fetchall()}
 
 
-tags = ['schedule','section','part','subpart','subsection']
-ordinal_pattern = re.compile('^(.*?)(the)?\s?(%s)\s(%s)(.*)$' % (text_to_num.ordinal_keys, '|'.join(tags)), flags=re.I)
+tags = ['schedule','section','part','subpart','subsection', 'clause']
+ordinal_pattern = re.compile('^(.*?)(the)?\s?(%s)\s(%s)(.*)$' %
+    (text_to_num.ordinal_keys + '|'+ text_to_num.small_keys, '|'.join(tags)), flags=re.I)
 
 
 def swap_ordinals(string, tags):
     # turn 'fourth schedule into schedule forth'
     match = ordinal_pattern.match(string)
+    suffix = []
     while match:
-        string = ''.join([match.group(1), match.group(4), ' ', match.group(3), match.group(5)])
+        string = ' '.join([match.group(1), match.group(4), ' ',  match.group(5)])
+        string = re.sub(r'\s+', ' ', string)
+        suffix.insert(0, match.group(3))
         match = ordinal_pattern.match(string)
-    print string
-    return string
+    return string + ' '.join(suffix)
 
 
 def link_to_canonical(string, debug=False):
@@ -281,7 +285,7 @@ def link_to_canonical(string, debug=False):
     # of this:  we can't know the specific location, must use other information
     string = re.sub('of this (schedule|section|part|subpart|subsection)', '', string).strip()
     # remove multi spaces
-    string = re.sub(' +',' ', string)
+    string = re.sub(r'\s+', ' ', string)
 
     # reorder clause
     swap = re.compile('of\s(schedule|section|part|subpart|subsection)(.*)', flags=re.I)

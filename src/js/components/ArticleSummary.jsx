@@ -82,7 +82,7 @@ module.exports = React.createClass({
     renderParent: function(){
         var parent = this.props.article.getIn(['summary', 'parent']);
         if(parent && parent.size){
-            return <div><h5>Parent Legislation</h5>
+            return <div><h5>Principal Legislation</h5>
             <a onClick={this.handleLinkClick.bind(this, parent.get('id'),this.props.article.getIn(['query', 'doc_type']), parent.get('title'))}
                                 href={"/open_article/"+this.props.article.getIn(['query', 'doc_type'])+'/'+parent.get('id')}>{parent.get('title')}</a>
             </div>
