@@ -58,9 +58,11 @@ if app.config.get('LOG_FILE'):
     backupCount=20)
 else:
     handler = logging.StreamHandler()
+
 handler.setFormatter(Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
+
 handler.setLevel(logging.DEBUG)
 app.logger.addHandler(handler)
 logging.getLogger('werkzeug').addHandler(handler)
@@ -81,11 +83,12 @@ def before_request():
     if os.path.isfile('down_lock') and not request.path.endswith(('.png', '.jpg', '.css')):
         return render_template('down.html'), 503
 
-@app.teardown_request
-def teardown_request(exception=None):
+@app.after_request
+def check_response_time(response):
     diff = time.time() - g.start
     if diff > 2:
         app.logger.info('Request took %.2f seconds' % diff)
+    return response
 
 @app.errorhandler(CustomException)
 def handle_invalid_usage(error):

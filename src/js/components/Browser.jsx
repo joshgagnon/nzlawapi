@@ -218,7 +218,8 @@ module.exports = React.createClass({
     handleArticleChange: function(value){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
-        this.setState({search_query: value.search_query, document_id: value.id,
+        this.setState({search_query: value.search_query,
+            document_id: value.id, focus: '', jump_to: '',
             article_type: value.type, find: value.find, query: value.query}, function(){
             /*if(self.showLocation() && self.refs.location){
                 // hack!
@@ -241,7 +242,7 @@ module.exports = React.createClass({
             this.submit(e);
         }
     },
-    handleLocationEnter: function(e){
+    handleFocusEnter: function(e){
         if (e.key === 'Enter') {
             this.submitLocation(e);
         }

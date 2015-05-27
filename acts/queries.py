@@ -217,7 +217,7 @@ def add_parent_definitions(row, db=None, definitions=None,
         # first recurse through parent chain
         cur.execute(""" SELECT *, exists(select 1 from latest_instruments where id=%(id)s) as latest
             FROM subordinates s
-            JOIN instruments i ON parent_id = i.id
+            JOIN instruments i ON parent_id = i.govt_id
             JOIN documents d on i.id = d.id
             WHERE processed_document is null  and child_id = %(id)s AND title != %(title)s """,
             row)
