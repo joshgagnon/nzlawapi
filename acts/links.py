@@ -343,7 +343,7 @@ def analyze_new_links(row, db=None):
             out.execute("""
                 INSERT INTO subordinates (parent_id, child_id) values
 
-                    ((select i.govt_id as parent_id from newest n join instruments i i.id=n.id where i.title = 'Interpretation Act 1999'), %(child_id)s)
+                    ((select i.govt_id as parent_id from newest n join instruments i on i.id=n.id where i.title = 'Interpretation Act 1999'), %(child_id)s)
                 """, {'child_id': document_id})
 
     with db.cursor() as out:
