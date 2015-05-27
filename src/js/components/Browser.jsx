@@ -35,7 +35,7 @@ var ContextMenu = require('./ContextMenu.jsx');
 var ButtonBar = require('./ButtonBar.jsx');
 var MQ = require('./Responsive.jsx');
 var constants = require('../constants');
-
+var Utils = require('../utils');
 
 $.fn.focusNextInputField = function() {
     return this.each(function() {
@@ -166,6 +166,30 @@ module.exports = React.createClass({
         e.preventDefault();
         this.fetch();
     },
+    submitJumpTo: function(e){
+        var page_type = constants.PAGE_TYPES.INSTRUMENT;
+        var query = {
+                doc_type: this.state.article_type,
+                find: 'full',
+                document_id: this.state.query || this.state.document_id
+            };
+        var title = this.state.search_query + ' ' + this.state.jump_to;
+    Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0',
+        {position: {location: Utils.splitLocation(this.state.jump_to)}});
+
+    },
+    submitFocus: function(e){
+        var page_type = constants.PAGE_TYPES.INSTRUMENT;
+        var query = {
+            doc_type: this.state.article_type,
+            find: 'location',
+            location: this.state.focus,
+            document_id: this.state.query || this.state.document_id
+        };
+        var title = this.state.search_query + ' '+this.state.focus;
+
+        Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0');
+    },
     fetch: function(){
         if(!this.state.search_query){
             return;
@@ -173,16 +197,7 @@ module.exports = React.createClass({
         var query;
         var title;
         var page_type = constants.PAGE_TYPES.INSTRUMENT;
-        if(this.showLocation()){
-            query = {
-                doc_type: this.state.article_type,
-                find: !this.state.location ? 'full' : 'location',
-                location: this.state.location,
-                document_id: this.state.query || this.state.document_id
-            };
-            title = this.state.search_query
-        }
-        else if(this.state.document_id){
+        if(this.state.document_id){
             query = {
                 doc_type: this.state.article_type,
                 find: this.state.find,
@@ -197,9 +212,6 @@ module.exports = React.createClass({
                 query: this.state.search_query
             };
             title = 'Search: '+ this.state.search_query
-            if(this.state.location){
-                title += ' '+this.state.location;
-            }
         }
         Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0');
     },
@@ -208,21 +220,35 @@ module.exports = React.createClass({
         // ID means they clicked or hit enter, so focus on next
         this.setState({search_query: value.search_query, document_id: value.id,
             article_type: value.type, find: value.find, query: value.query}, function(){
-            if(self.showLocation()){
+            /*if(self.showLocation() && self.refs.location){
                 // hack!
                 setTimeout(function(){
                     self.refs.location.getInputDOMNode().focus();
                 }, 0);
-            }
+            }*/
         });
     },
-    handleLocation: function(e){
+    handleFocus: function(e){
         e.stopPropagation();
-        this.setState({location: e.target.value});
+        this.setState({focus: e.target.value});
+    },
+    handleJumpTo: function(e){
+        e.stopPropagation();
+        this.setState({jump_to: e.target.value});
     },
     handleEnter: function(e){
         if (e.key === 'Enter') {
             this.submit(e);
+        }
+    },
+    handleLocationEnter: function(e){
+        if (e.key === 'Enter') {
+            this.submitLocation(e);
+        }
+    },
+    handleJumpToEnter: function(e){
+        if (e.key === 'Enter') {
+            this.submitJumpTo(e);
         }
     },
     // deprecated
@@ -282,6 +308,7 @@ module.exports = React.createClass({
             return <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
         }
     },
+    // NOTE TO SELF:  splitting of render into multiple functions begs to just split component up
     renderBody: function(){
         var active = this.getActive();
         if(this.state.browser.get('print_mode') ){
@@ -304,22 +331,44 @@ module.exports = React.createClass({
         }
         return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
     },
+    renderLocation: function(){
+        return <div className="locations">
+            <div className="form-col">
+                <div className="input-group">
+                 <input type="text" className="location form-control" placeholder="Jump To..." ref="jump_to" value={this.state.jump_to}
+                        onChange={this.handleJumpTo} onKeyPress={this.handleJumpToEnter}
+                        ref="jump_to"  />
+                     <span className="input-group-btn">
+                        <Button bsStyle={'info'} onClick={this.submitJumpTo} >Jump To</Button>
+                    </span>
+                </div>
+            </div>
+            <div className="form-col">
+                <div className="input-group">
+                    <input type="text" className="location form-control" placeholder="Focus..." ref="focus" value={this.state.focus}
+                        onChange={this.handleFocus} onKeyPress={this.handleFocusEnter}
+                        ref="focus"  />
+                     <span className="input-group-btn">
+                        <Button bsStyle={'info'} onClick={this.submitFocus} >Focus</Button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    },
     renderForm: function(){
         var formClasses = '';
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
-        return   <form className={formClasses}>
+        return  <form className={formClasses}>
                  <AutoComplete onUpdate={this.handleArticleChange} onKeyPress={this.handleEnter} className='main-search'  autoCapitalize="off" autoCorrect="off"
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
-                    { this.showLocation() ? <Input type="text" className="location" placeholder="Focus..." ref="location" value={this.state.location}
-                        onChange={this.handleLocation} onKeyPress={this.handleEnter}
-                        ref="location"  /> : null }
                         <span className="input-group-btn">
-                        <Button bsStyle={'primary'} onClick={this.submit} >Search</Button>
+                            <Button bsStyle={'primary'} onClick={this.submit} >{ this.showLocation() ? 'Open' : 'Search' }</Button>
                         </span>
                      </AutoComplete>
+                {  this.showLocation() ? this.renderLocation(): null }
                 </form>
     },
     render: function(){

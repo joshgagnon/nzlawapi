@@ -349,7 +349,7 @@ var ArticleSkeletonContent = React.createClass({
             return;
         }
         var target;
-
+        console.log(jump)
         if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
             if(!target.length){
