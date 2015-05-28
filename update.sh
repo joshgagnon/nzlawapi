@@ -20,6 +20,6 @@ sudo -u $2 python migration.py $1
 sudo -u $2 NODE_ENV=production gulp
 
 service browser-uwsgi restart
-service browser-uwsgi start
+service browser-uwsgi start || true
 
 python scripts/go_up.py
