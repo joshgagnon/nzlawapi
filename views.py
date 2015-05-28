@@ -77,7 +77,6 @@ def browser(**args):
     return render_template('browser.html')
 
 @Base.route('/published/<int:id>')
-@require_auth
 def published(id):
     with get_db().cursor() as cur:
         cur.execute('SELECT html from published_views where publish_id = %(id)s', {'id': id})

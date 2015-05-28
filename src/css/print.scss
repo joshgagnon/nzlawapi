@@ -7,7 +7,9 @@
                 margin-left:10px;
                 margin-right:10px;
             }
-
+            @media (min-width: $screen-sm-min) {
+                margin-left: $buttonbar-outer-width;
+            }
         }
         .controls{
             position: absolute;
