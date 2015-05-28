@@ -10,11 +10,10 @@ var MenuItem = require('react-bootstrap/lib/MenuItem');
 var Col= require('react-bootstrap/lib/Col');
 var PageStore = require('../stores/PageStore');
 var ViewerStore = require('../stores/ViewerStore');
-var SavedStates = require('../stores/SavedStates.js');
 var BrowserStore = require('../stores/BrowserStore.js');
 var PageStore = require('../stores/PageStore.js');
 var PrintStore = require('../stores/PrintStore.js');
-var ErrorStore = require('../stores/ErrorStore.js');
+
 var Actions = require('../actions/Actions');
 var SearchResults = require('./SearchResults.jsx');
 var ArticleSideBar = require('./ArticleSideBar.jsx');
@@ -24,7 +23,6 @@ var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
 var Immutable = require('immutable');
-var SaveDialog = require('./SaveDialog.jsx');
 var ErrorModal = require('./ErrorModal.jsx');
 var BrowserModals = require('./BrowserModals.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
@@ -51,21 +49,6 @@ $.fn.focusNextInputField = function() {
     });
 };
 
-var DialogStore = Reflux.createStore({
-    listenables: Actions,
-    onOpenSaveDialog: function(){
-        this.trigger({save_dialog: true});
-    },
-    onOpenLoadDialog: function(){
-        this.trigger({load_dialog: true});
-    },
-    onCloseSaveDialog: function(){
-        this.trigger({save_dialog: false});
-    },
-    onCloseLoadDialog: function(){
-        this.trigger({load_dialog: false});
-    },
-});
 
 // only current used for reset
 var FormStore = Reflux.createStore({
@@ -116,10 +99,8 @@ module.exports = React.createClass({
     mixins: [
         Reflux.listenTo(PageStore, 'onState'),
         Reflux.listenTo(ViewerStore, 'onState'),
-        Reflux.listenTo(DialogStore, 'onState'),
         Reflux.listenTo(BrowserStore, 'onState'),
         Reflux.listenTo(PrintStore, 'onState'),
-        Reflux.listenTo(ErrorStore, 'onState'),
         Reflux.listenTo(FormStore, 'onState'),
         ReactRouter.State,
         UndoMixin
@@ -132,9 +113,7 @@ module.exports = React.createClass({
             pages: Immutable.List(),
             views: ViewerStore.getDefaultData(),
             browser: BrowserStore.getInitialState().browser,
-            print: Immutable.List(),
-            save_dialog: false,
-            load_dialog: false,
+            print: Immutable.List()
         };
     },
     componentDidMount: function(){
@@ -401,9 +380,6 @@ module.exports = React.createClass({
         // TODO move all modals together
         return (<div className className={parentClass}>
                 <BrowserModals />
-                { this.state.errorText ? <ErrorModal errorTitle={this.state.errorTitle} errorText={this.state.errorText} /> : null }
-                { this.state.save_dialog ? <SaveDialog.Save /> : null }
-                { this.state.load_dialog ? <SaveDialog.Load /> : null }
                 { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
                 <Banner renderDropdown={this.renderDropdown}>
                     { this.renderForm() }

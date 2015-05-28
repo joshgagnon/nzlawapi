@@ -44,13 +44,13 @@ var ContextMenu = React.createClass({
     },
     newTab: function(){
         Actions.newPage({
-            title: this.props.context_menu.getIn(['data', 'location', 'repr']),
+            title: this.props.context_menu.getIn(['data', 'title']) + ' '+ this.props.context_menu.getIn(['data', 'location', 'repr']),
             query: this.props.context_menu.getIn(['data', 'query']).toJS()
         }, this.props.context_menu.get('viewer_id'));
     },
     addPrint: function(){
         Actions.addToPrint({
-            title: this.props.context_menu.getIn(['data', 'location', 'repr']),
+            title: this.props.context_menu.getIn(['data', 'title']) + ' '+ this.props.context_menu.getIn(['data', 'location', 'repr']),
             query: this.props.context_menu.getIn(['data', 'query']).toJS()
         });
     },

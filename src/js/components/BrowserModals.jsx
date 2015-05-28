@@ -7,15 +7,32 @@ var Modal = require('react-bootstrap/lib/Modal');
 var Actions = require('../actions/Actions.js');
 var _ = require('lodash');
 var PublishStore = require('../stores/PublishStore.js');
+var ErrorStore = require('../stores/ErrorStore.js');
+var SavedStates = require('../stores/SavedStates.js');
+var SaveDialog = require('./SaveDialog.jsx');
 
 var Button = require('react-bootstrap/lib/Button');
 var OverlayMixin = require('react-bootstrap/lib/OverlayMixin');
+
 // TODO move all modals here
 
+var DialogStore = Reflux.createStore({
+    listenables: Actions,
+    onOpenSaveDialog: function(){
+        this.trigger({save_dialog: true});
+    },
+    onOpenLoadDialog: function(){
+        this.trigger({load_dialog: true});
+    },
+    onCloseSaveDialog: function(){
+        this.trigger({save_dialog: false});
+    },
+    onCloseLoadDialog: function(){
+        this.trigger({load_dialog: false});
+    },
+});
 
 var PublishModal = React.createClass({
-
-
     close: function(){
         Actions.closePublishedUrl();
     },
@@ -42,9 +59,15 @@ var PublishModal = React.createClass({
 module.exports =  React.createClass({
     mixins:[
         Reflux.listenTo(PublishStore, 'onState'),
+        Reflux.listenTo(DialogStore, 'onState'),
+        Reflux.listenTo(ErrorStore, 'onState')
         ],
     getInitialState: function(){
-         return {publish: PublishStore.getInitialState().publish}
+         return {
+            publish: PublishStore.getInitialState().publish,
+            save_dialog: false,
+            load_dialog: false
+         }
     },
     onState: function(state){
         this.setState(state);
@@ -52,6 +75,9 @@ module.exports =  React.createClass({
     render: function(){
         return <div>
                 { this.state.publish.get('show') ? <PublishModal  key="publish" publish={this.state.publish} /> : null }
+                { this.state.errorText ? <ErrorModal errorTitle={this.state.errorTitle} errorText={this.state.errorText} /> : null }
+                { this.state.save_dialog ? <SaveDialog.Save /> : null }
+                { this.state.load_dialog ? <SaveDialog.Load /> : null }
             </div>
     }
 

@@ -310,7 +310,7 @@ def infer_life_time(node):
 
 def find_all_definitions(tree, definitions, document_id, expire=True, title=None):
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::table)][not(ancestor::amend)][not(ancestor::schedule.amendments)]")
-
+    parenthesis_pat = re.compile('.*(\(|\(the \(|\(a)$')
     def get_parent(node):
         try:
             return node.iterancestors('def-para').next()
@@ -325,7 +325,7 @@ def find_all_definitions(tree, definitions, document_id, expire=True, title=None
 
             # now if the preceeding text is a bracket, ignore this
             try:
-                if (node.xpath('preceding::text()[1]')[-1][-1] == '(' and
+                if (parenthesis_pat.match(node.xpath('preceding::text()[1]')[0]) and
                     node.xpath('following::text()[1]')[0][0] == ')'):
                     continue
             except IndexError:
