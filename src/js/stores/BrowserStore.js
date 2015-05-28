@@ -3,7 +3,6 @@
 var Reflux = require('reflux');
 var Actions = require('../actions/Actions');
 var _ = require('lodash');
-var $ = require('jquery');
 var Immutable = require('immutable');
 
 
@@ -40,9 +39,6 @@ module.exports = Reflux.createStore({
     },
     onToggleSplitMode: function(){
         this.browser = this.browser.set('split_mode', !this.browser.get('split_mode'));
-        if(this.browser.get('split_mode')){
-            this.browser = this.browser.set('print_mode', false);
-        }
         this.update();
     },
     onActivatePrintMode: function(){
@@ -57,9 +53,6 @@ module.exports = Reflux.createStore({
     },
     onTogglePrintMode: function(){
         this.browser = this.browser.set('print_mode', !this.browser.get('print_mode'));
-        if(this.browser.get('print_mode')){
-            this.browser = this.browser.set('split_mode', false);
-        }
         this.update();
     },
     onToggleSidebar: function(){
@@ -78,10 +71,11 @@ module.exports = Reflux.createStore({
         if(state.get('browser')){
             this.browser = state.get('browser');
         }
-        else{
-            this.browser = this.getInitialState().browser;
-        }
-
         this.update();
     },
+    onNewPage: function(){
+        if(this.browser.get('print_mode') && !this.browser.get('split_mode')){
+            this.onToggleSplitMode();
+        }
+    }
 });

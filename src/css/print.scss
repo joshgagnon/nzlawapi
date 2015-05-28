@@ -6,8 +6,15 @@
             margin-right:10px;
         }
         padding: 10px;
-        .row{
-            margin:0;
+        .nav{
+            z-index: $z-toolbars;
+            position: absolute;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            @media (min-width: $screen-sm-min) {
+                left: $buttonbar-outer-width;
+            }
         }
         .csspinner{
             min-height: 60px;
@@ -21,6 +28,7 @@
         .print-summaries{
               width: 80%;
               margin: 0 auto;
+              margin-top:60px;
               ul,li{
                 list-style: none;
                 padding: 0;
@@ -41,12 +49,24 @@
                 margin:0 8px;
             }
         }
+         .print-sections {
+            padding-left:10px;
+            @media (min-width: $screen-sm-min) {
+                padding-left: $buttonbar-outer-width;
+            }
+        }
+        .split &  .print-sections{
+            padding-left:10px
+        }
         .print-section {
-              padding: 0 15px;
+            padding: 0 15px;
             .btn-group{
                 position: absolute;
                 right: 10px;
                 opacity: 0;
+                a{
+                    padding:0 3px;
+                }
             }
             &:hover {
                   background-color: #efefef;
@@ -57,6 +77,7 @@
         }
         .btn-group{
             transition:.5s;
+            vertical-align: top;
             a{
                 cursor:pointer;
             }

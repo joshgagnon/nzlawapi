@@ -19,16 +19,14 @@
        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js" ></script>
     <![endif]-->
     <title>CataLex: Law Browser</title>
+
 </head>
 
 <body class="legislation_browser">
-
-<div>
-	{% block content %}
-		{{ content|safe }}
-	{% endblock %}
+  {% block content %}
+    {{ content|safe }}
+  {% endblock %}
     <script type="text/javascript" src="/build/js/{{ config['manifest']['app.js'] }}" ></script>
-</div>
 </body>
 
 </html>

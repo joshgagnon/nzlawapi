@@ -26,6 +26,7 @@ var JumpTo= require('./JumpTo.jsx');
 var Immutable = require('immutable');
 var SaveDialog = require('./SaveDialog.jsx');
 var ErrorModal = require('./ErrorModal.jsx');
+var BrowserModals = require('./BrowserModals.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var TabView = require('./TabView.jsx');
 var PrintView = require('./PrintView.jsx');
@@ -33,6 +34,7 @@ var UserControls = require('./UserControls.jsx');
 var Notifications = require('./Notifications.jsx');
 var ContextMenu = require('./ContextMenu.jsx');
 var ButtonBar = require('./ButtonBar.jsx');
+var Banner = require('./Banner.jsx');
 var MQ = require('./Responsive.jsx');
 var constants = require('../constants');
 var Utils = require('../utils');
@@ -94,6 +96,7 @@ var UndoMixin = {
         });
     }
 }
+
 var Modal = require('react-bootstrap/lib/Modal');
 var ArticleInfoTabs= require('./ArticleInfoTabs.jsx');
 
@@ -106,7 +109,6 @@ var PageDialog = React.createClass({
         </Modal>
     }
 });
-
 
 
 
@@ -136,6 +138,12 @@ module.exports = React.createClass({
         };
     },
     componentDidMount: function(){
+        this.__state = {};
+        this.aggSetState = _.debounce(function(){
+            this.setState(this.__state);
+            this.__state = {};
+        }.bind(this), 0)
+
         if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
 
             Actions.newPage({query: this.context.router.getCurrentQuery(), title: this.context.router.getCurrentQuery().title}, 'tab-0');
@@ -147,14 +155,13 @@ module.exports = React.createClass({
                 id: this.context.router.getCurrentParams().id}}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
+        else if(this.context.router.getCurrentParams().edit_id){
+            Actions.loadPrevious(['browser'], {browser: {print_mode: true, split_mode: false}});
+            Actions.fetchPublished(this.context.router.getCurrentParams().edit_id);
+        }
         else{
             Actions.loadPrevious();
         }
-        this.__state = {};
-        this.aggSetState = _.debounce(function(){
-            this.setState(this.__state);
-            this.__state = {};
-        }.bind(this), 0)
     },
 
     onState: function(state){
@@ -312,25 +319,30 @@ module.exports = React.createClass({
     // NOTE TO SELF:  splitting of render into multiple functions begs to just split component up
     renderBody: function(){
         var active = this.getActive();
-        if(this.state.browser.get('print_mode') ){
+        if(this.state.browser.get('print_mode') && this.state.browser.get('split_mode') ){
             return <div className="split print">
                 <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
-                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true}/>
-                </div>
+                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} />
+            </div>
+        }
+        else if(this.state.browser.get('print_mode')){
+            return <div className="print">
+                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} />
+            </div>
         }
         else if(this.state.browser.get('split_mode')){
             return <div className="split">
                 <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
-                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'} showCloseView={true}/>
-                </div>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'} showCloseView={true} />
+            </div>
         }
         else if (this.showSidebar(active)){
             return <div className="sidebar-visible">
-                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'}/>
+                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} />
                 { this.sidebar(active)}
-                </div>
+            </div>
         }
-        return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'}/>
+        return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} />
     },
     renderLocation: function(){
         return <div className="locations">
@@ -372,9 +384,13 @@ module.exports = React.createClass({
                 {  this.showLocation() ? this.renderLocation(): null }
                 </form>
     },
+    renderDropdown: function(){
+        var active = this.getActive();
+        return <ButtonBar page={active} page_dialog={this.canHaveSidebar(active)} user_controls={true} viewer_id='tab-0'/>;
+    },
     render: function(){
         var active = this.getActive();
-        var parentClass ="act_browser ";
+        var parentClass ="browser ";
 
         if(this.state.browser.get('underlines')){
             parentClass += ' underlines';
@@ -382,32 +398,21 @@ module.exports = React.createClass({
         if(this.state.browser.get('notes')){
             parentClass += ' notes';
         }
+        // TODO move all modals together
         return (<div className className={parentClass}>
+                <BrowserModals />
                 { this.state.errorText ? <ErrorModal errorTitle={this.state.errorTitle} errorText={this.state.errorText} /> : null }
-                <div className="container-fluid">
                 { this.state.save_dialog ? <SaveDialog.Save /> : null }
                 { this.state.load_dialog ? <SaveDialog.Load /> : null }
                 { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
-                 <nav className="navbar navbar-default navbar-fixed-top">
-                  <img className="chev-left hidden-xs" src="/build/images/left-chevron.png"/><img className="chev-right hidden-sm" src="/build/images/right-chevron.png"/>
-                    <div className="brand-wrap">
-                         <img src="/build/images/law-browser.png" alt="CataLex" className="logo img-responsive center-block hidden-xs"/>
-                         <MQ maxWidth={768}>
-                            <div className="logo-sml-button visible-xs-block">
-                                <img src="/build/images/law-browser-sml.png" alt="CataLex" className="logo-sml img-responsive center-block "/>
-                                <ButtonBar page={active} page_dialog={this.canHaveSidebar(active)} user_controls={true} viewer_id='tab-0'/>
-                            </div>
-                        </MQ>
-                    </div>
+                <Banner renderDropdown={this.renderDropdown}>
                     { this.renderForm() }
-
-                 <UserControls />
-                </nav>
-                </div>
+                    <UserControls />
+                </Banner>
             <MQ minWidth={768}>
                 <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0'/>
             </MQ>
-            { this.state.pages.count() ? this.renderBody() : null}
+            { this.renderBody() }
             <Notifications />
             <ContextMenu />
         </div>);

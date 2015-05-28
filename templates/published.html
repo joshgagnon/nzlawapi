@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+	{% block content %}
+	<div class="browser">
+	<div id="app"></div>
+	<div class="results-container">
+	<div class="legislation-result">
+	<div class="legislation">
+		{{ content|safe }}
+		</div>
+	</div>
+	</div>
+	</div>
+{% endblock %}

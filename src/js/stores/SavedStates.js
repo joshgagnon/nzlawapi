@@ -29,6 +29,12 @@ module.exports = Reflux.createStore({
         this.listenTo(Actions.renameSavedState, this.onRenameSavedState);
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
         this.listenTo(Actions.userAction, this.saveCurrent);
+        this.listenTo(Actions.publishPrint, this.onPublishPrint);
+        this.listenTo(Actions.publishPrint.completed, this.onPublishPrintCompleted);
+        this.listenTo(Actions.publishPrint.failure, this.onPublishPrintFailure);
+        this.listenTo(Actions.fetchPublished, this.onFetchPublished);
+        this.listenTo(Actions.fetchPublished.completed, this.onFetchPublishedCompleted);
+        this.listenTo(Actions.fetchPublished.failure, this.onFetchPublishedFailure);
         this.listenTo(Actions.reset, this.onReset);
         this.pages = Immutable.List();
         this.print = Immutable.List();
@@ -76,7 +82,7 @@ module.exports = Reflux.createStore({
             localStorage['current_view'] = JSON.stringify(this.prepState());
         }
     },
-    onLoadPrevious: function(filter){
+    onLoadPrevious: function(filter, overrides){
         if(localStorage && localStorage['current_view']){
             var data;
             try{
@@ -87,7 +93,11 @@ module.exports = Reflux.createStore({
             if(filter){
                 data = _.pick.apply(_, [data].concat(filter));
             }
-            Actions.setState(Immutable.fromJS(data));
+            var result = Immutable.fromJS(data);
+            if(overrides){
+                result = result.merge(overrides);
+            }
+            Actions.setState(result);
             Actions.loadedFromStorage();
         }
     },
@@ -197,7 +207,35 @@ module.exports = Reflux.createStore({
         Actions.setState(Immutable.fromJS({
             views:{}, pages:[]
         }));
-    }
+    },
+    onPublishPrint: function(html){
+        var state = this.prepState();
+        request.post('/publish', {state: state, html: html})
+            .promise()
+            .then(function(response){ Actions.publishPrint.completed(response.body); })
+            .catch(function(response){ Actions.publishPrint.failure(response.body); })
+            .done()
+    },
+
+    onPublishPrintCompleted: function(data){
+        Actions.showPublishedUrl(data.url);
+    },
+    onPublishPrintFailure: function(data){
+        Actions.notify('There was a problem sharing the document', true);
+    },
+    onFetchPublished: function(id){
+        request.get('/get_published_state/'+id)
+            .promise()
+            .then(function(response){ Actions.fetchPublished.completed(response.body); })
+            .catch(function(response){ Actions.fetchPublished.failure(response.body); })
+            .done()
+    },
+    onFetchPublishedCompleted: function(data){
+        Actions.setState(Immutable.fromJS(data));
+    },
+    onFetchPublishedFailure: function(data){
+      Actions.notify('There was a problem fetching the published document', true);
+    },
 });
 
 

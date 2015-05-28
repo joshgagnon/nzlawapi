@@ -71,6 +71,14 @@ def logout():
 @Base.route('/')
 @Base.route('/open_article/<sub>')
 @Base.route('/open_article/<sub>/<subsub>')
+@Base.route('/edit_published/<sub>')
 @require_auth
 def browser(**args):
     return render_template('browser.html')
+
+@Base.route('/published/<int:id>')
+@require_auth
+def published(id):
+    with get_db().cursor() as cur:
+        cur.execute('SELECT html from published_views where publish_id = %(id)s', {'id': id})
+        return render_template('published.html', content= unicode(cur.fetchone()[0].decode('utf-8')) )

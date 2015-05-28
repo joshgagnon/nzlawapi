@@ -5,6 +5,7 @@ var React = require('react/addons');
 var Reflux = require('reflux');
 var ReactRouter = require('react-router');
 var Browser = require('./components/Browser.jsx');
+var PublishedView = require('./components/PublishedView.jsx');
 
 
 React.initializeTouchEvents(true);
@@ -22,14 +23,17 @@ var App = React.createClass({
     }
 });
 
+
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App} >
-  <ReactRouter.Route name="open_article" path="/open_article/:query" handler={Browser}/>
-  <ReactRouter.Route name="open_article_subtype" path="/open_article/:doc_type/:id" handler={Browser}/>
+    <ReactRouter.Route name="open_article" path="/open_article/:query" handler={Browser}/>
+    <ReactRouter.Route name="open_article_subtype" path="/open_article/:doc_type/:id" handler={Browser}/>
+    <ReactRouter.Route name="published" path="/published/:id" handler={PublishedView}/>
+    <ReactRouter.Route name="edit_published" path="/edit_published/:edit_id" handler={Browser}/>
     <ReactRouter.DefaultRoute handler={Browser}/>
   </ReactRouter.Route>
 );
 
 ReactRouter.run(routes, ReactRouter.HistoryLocation, function (Handler) {
-  React.render(<Handler/>, document.body);
+  React.render(<Handler/>, document.getElementById('app'));
 });

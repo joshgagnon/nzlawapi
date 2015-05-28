@@ -24,14 +24,19 @@ $button-orange: #f26735;
 $buttonbar-outer-width:65px;
 $tabs-height:46px;
 $z-toolbars: 100;
-$z-buttonbar: 1500;
+$z-buttonbar: 700;
+$z-popover: 500;
 $screen-xs-height: 600px;
+
 body{
     margin:10px;
     // HACK FOR PRINT
 }
 
-.act_browser{
+
+
+
+.browser{
     font-family: "Ubuntu", "Helvetica Neue", Helvetica, Arial, sans-serif;
     position: absolute;
     top: 0;
@@ -78,7 +83,7 @@ body{
          }
     }
 
-
+.navbar{
     .input-group button{
         line-height: 20px;
     }
@@ -98,9 +103,13 @@ body{
             height:100%;
         }
     }
+
     .brand-wrap > div{
         height:100%;
     }
+}
+
+
 
 
     .summary{
@@ -117,10 +126,10 @@ body{
         }
     }
     .split .results-container,
-    .print .print-container{
+    .split .print-container{
         width:50%;
     }
-    .print .print-container,
+    .split .print-container,
     .split .results-container:nth-child(2){
         left:50%;
     }

@@ -17,7 +17,7 @@ module.exports = Reflux.createActions({
     'reset': {},
 
     'addToPrint': {},
-    'fetchPrint': {},
+    'fetchPrint': {children: ['completed', 'failure']},
     'removeFromPrint': {},
     'printMovePosition': {},
 
@@ -62,6 +62,11 @@ module.exports = Reflux.createActions({
     'openViewSplit': {},
     'closeView': {},
 
+    'publishPrint': {children: ['completed', 'failure']},
+    'fetchPublished': {children: ['completed', 'failure']},
+
+    'showPublishedUrl': {},
+    'closePublishedUrl': {},
 
     'togglePrintMode': {},
     'toggleSidebar': {},

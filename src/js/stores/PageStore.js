@@ -11,8 +11,11 @@ var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
 var PageStore = Reflux.createStore({
     listenables: Actions,
     init: function(){
-        this.pages = Immutable.List();
+        this.pages = this.getDefaultData();
         this.counter = 0;
+    },
+    getDefaultData: function(){
+        return Immutable.List()
     },
     getInitialState: function(){
         return {pages: this.pages};

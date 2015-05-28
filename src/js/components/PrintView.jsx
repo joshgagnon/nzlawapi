@@ -43,9 +43,11 @@ var PrintSegment = React.createClass({
                         <div ref={'body'} dangerouslySetInnerHTML={{__html: this.props.seg.get('html')}}/>
                     </div>
         }
-        else{
-            return <div className="csspinner traditional"></div>
+        else if (this.props.seg && this.props.seg.get('error')){
+            return <div className="alert alert-danger">An error occured while trying to fetch result</div>
         }
+        return <div className="csspinner traditional"></div>
+
     },
     componentDidMount: function(){
         this.fetch();
@@ -57,7 +59,6 @@ var PrintSegment = React.createClass({
     fetch: function(){
         if(this.props.seg && !this.props.seg.get('fetched')){
             Actions.fetchPrint(this.props.seg.get('id'));
-
         }
     },
 });
@@ -97,9 +98,9 @@ var PrintFull = React.createClass({
         for(var i=0; i<this.props.view.size; i++){
             if(this.refs[i].refs.body){
                 if(prev){
-                    this._to_hide = this._to_hide.concat(this.hideRepeats(prev, this.refs[i].refs.body.getDOMNode()));
+                    this._to_hide = this._to_hide.concat(this.hideRepeats(prev, React.findDOMNode(this.refs[i].refs.body)));
                 }
-                prev = this.refs[i].refs.body.getDOMNode();
+                prev = React.findDOMNode(this.refs[i].refs.body);
             }
             else{
                 prev = null;
@@ -138,7 +139,7 @@ var PrintFull = React.createClass({
         e.preventDefault();
     },
     render: function(){
-        return <div onClick={this.handleClick}>{this.props.view.map(function(k, i){
+        return <div className="print-sections" onClick={this.handleClick}>{this.props.view.map(function(k, i){
             return <PrintSegment seg={this.getPrint(k)} key={i} index={i} ref={i}/>
         }, this).toJS()}</div>
     }
@@ -165,22 +166,30 @@ module.exports = React.createClass({
     shouldComponentUpdate: function(newProps, newState){
         return (this.props.view !== newProps.view) || (this.props.print !== newProps.print);
     },
-
+    handlePublish: function(){
+        var html = this.props.view.map(function(k, i){
+            return React.findDOMNode(this.refs.full.refs[i].refs.body).innerHTML;
+        }, this).toJS().join('');
+        Actions.publishPrint(html);
+    },
     render: function(){
         var print_button = window && window.print && this.props.view.size;
         return  <div className="print-container legislation-result">
-                <div className="row"><div className="col-md-10">
+                <div className="nav"><div className="col-md-9">
                     <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
                     </div>
                     <div className="col-md-1">
                     <button onClick={window.print} className="btn btn btn-info">Print</button>
                     </div>
                     <div className="col-md-1">
-                    <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">&times;</button>
+                        <button onClick={this.handlePublish} className="btn btn btn-info">Share</button>
+                    </div>
+                    <div className="col-md-1">
+                        <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">Close Print</button>
                     </div>
                 </div>
                 <PrintOverview {...this.props} />
-                <PrintFull{...this.props} />
+                <PrintFull {...this.props} ref="full"/>
             </div>
     }
 
