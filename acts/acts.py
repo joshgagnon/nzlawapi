@@ -19,6 +19,7 @@ def instrument_skeleton_response(instrument):
         'document_id': instrument.id,
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
+        "path": instrument.attributes['path'],
         'format': 'skeleton',
         'heights': instrument.heights,
         'parts': {},
@@ -41,6 +42,7 @@ def instrument_full(instrument):
         'document_id': instrument.id,
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
+        "path": instrument.attributes['path'],
         'format': 'full',
         'query': {
             'doc_type': 'instrument',
@@ -59,6 +61,7 @@ def instrument_preview(instrument):
         'document_id': instrument.id,
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
+        "path": instrument.attributes['path'],
         'format': 'preview',
         'query': {
             'doc_type': 'instrument',
@@ -86,6 +89,7 @@ def instrument_location(instrument, location):
         'document_id': instrument.id,
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
+        "path": instrument.attributes['path'],
         'format': 'fragment',
         'query': {
             'doc_type': 'instrument',
@@ -107,6 +111,7 @@ def instrument_govt_location(instrument, id, link_text):
         'document_id': instrument.id,
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
+        "path": instrument.attributes['path'],
         'format': 'fragment',
         'query': {
             'doc_type': 'instrument',

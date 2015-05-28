@@ -33,8 +33,8 @@ module.exports = React.createClass({
         });
     },
     linkPDF: function(){
-        if(this.props.page && this.props.page.getIn(['content','attributes', 'path'])){
-            var url = this.props.page.getIn(['content','attributes', 'path']).replace('.xml', '.pdf');
+        if(this.props.page && this.props.page.getIn(['content', 'path'])){
+            var url = this.props.page.getIn(['content', 'path']).replace('.xml', '.pdf');
             return <li className="suboption">
                         <a target="_blank" href={this.base_url + url}  ><span className="fa fa-file-pdf-o" title="Full PDF"/><span className="sublabel">Full PDF</span>
                 </a></li>
@@ -43,7 +43,7 @@ module.exports = React.createClass({
     addToPrint: function(){
         if(this.props.page && (this.props.page.getIn(['content','format']) === 'fragment' ||  this.props.page.get('page_type') === constants.PAGE_TYPES.DEFINITION)){
             return <li className="suboption">
-                        <a onClick={this.handleAddToPrint} ><span className="fa fa-copy" title="Full PDF"/><span className="sublabel">Add To Print</span>
+                        <a onClick={this.handleAddToPrint} ><span className="fa fa-copy" title="Add To Print"/><span className="sublabel">Add To Print</span>
                 </a></li>
         }
     },
