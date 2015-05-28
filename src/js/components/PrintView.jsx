@@ -175,19 +175,22 @@ module.exports = React.createClass({
     render: function(){
         var print_button = window && window.print && this.props.view.size;
         return  <div className="print-container legislation-result">
-                <div className="nav"><div className="col-md-9">
+
+                    <div className="message">
                     <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
                     </div>
-                    <div className="col-md-1">
-                    <button onClick={window.print} className="btn btn btn-info">Print</button>
-                    </div>
-                    <div className="col-md-1">
+                    <div className="controls">
+                    <div className="btn-group">
+                        <button onClick={window.print} className="btn btn btn-info">Print</button>
+
+
                         <button onClick={this.handlePublish} className="btn btn btn-info">Share</button>
+
+
+                        <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">Close</button>
                     </div>
-                    <div className="col-md-1">
-                        <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">Close Print</button>
                     </div>
-                </div>
+
                 <PrintOverview {...this.props} />
                 <PrintFull {...this.props} ref="full"/>
             </div>

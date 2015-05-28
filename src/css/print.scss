@@ -1,9 +1,18 @@
     .print-container{
-        .alert{
-            padding: 4px;
-            text-align: center;
-            margin-left:10px;
-            margin-right:10px;
+        .message{
+            margin-right:200px;
+            .alert{
+                padding: 4px;
+                text-align: center;
+                margin-left:10px;
+                margin-right:10px;
+            }
+
+        }
+        .controls{
+            position: absolute;
+            right: 10px;
+            top:10px;
         }
         padding: 10px;
         .nav{
@@ -28,7 +37,7 @@
         .print-summaries{
               width: 80%;
               margin: 0 auto;
-              margin-top:60px;
+              margin-top:20px;
               ul,li{
                 list-style: none;
                 padding: 0;
