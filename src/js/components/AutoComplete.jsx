@@ -119,7 +119,8 @@ var AutoComplete = React.createClass({
         if (event.key === 'Enter' || event.key === 'Tab') {
             if(newIndex > -1) {
                 // Choosing an active item from the result list
-                this.clickResult(this.state.results[newIndex]);
+                console.log(this._results)
+                this.clickResult(this._results[newIndex]);
             }
             else {
                 // If this is an exact match we already know about search it directly
@@ -141,6 +142,8 @@ var AutoComplete = React.createClass({
     },
     groupCategories: function(results) {
         var groups = [];
+        var self = this;
+        this._results = []
         results.forEach(function(result) {
             for (var i = 0; i < groups.length; i++) {
                 if (groups[i].type === result.type) {
@@ -156,7 +159,13 @@ var AutoComplete = React.createClass({
         var order = ['bill', 'case', 'regulation','act'];
         groups.sort(function(a ,b){
             return order.indexOf(b.type)- order.indexOf(a.type)
+        });
+        groups.forEach(function(group){
+            group.entries.forEach(function(result){
+                 self._results.push(result);
+            });
         })
+
         return groups;
     },
     getHighlight: function(index, title, startIndex, endIndex){

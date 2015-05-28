@@ -470,15 +470,19 @@
 
 
     <xsl:template match="emphasis[@style='bold']">
-        <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
-          <xsl:if test="string-length(preceding-sibling::*[1]/.)">
-                <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+        <xsl:variable name="length" select="string-length(preceding::text()[1])"/>
+          <xsl:if test="string-length(preceding::text()[1])">
+                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
         </xsl:if>
         <span style="font-weight:bold"><xsl:apply-templates/></span>
     </xsl:template>
 
     <xsl:template match="emphasis[@style='italic']">
-        &#160;<span style="font-style:italic"><xsl:apply-templates/></span>
+        <xsl:variable name="length" select="string-length(preceding::text()[1])"/>
+          <xsl:if test="string-length(preceding::text()[1])">
+                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+        </xsl:if>
+       <span style="font-style:italic"><xsl:apply-templates/></span>
     </xsl:template>
 
 
@@ -574,10 +578,6 @@
     </xsl:template>
 
     <xsl:template match="text()">
-        <xsl:variable name="length" select="string-length(preceding-sibling::*[1])"/>
-          <xsl:if test="string-length(preceding-sibling::*[1]/.)">
-                <xsl:if test="string-length(translate(substring(., 1, 1), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
-        </xsl:if>
         <xsl:value-of select="."/>
     </xsl:template>
 
