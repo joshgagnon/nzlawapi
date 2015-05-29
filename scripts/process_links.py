@@ -48,7 +48,6 @@ def refs_and_subs(db, do_references, do_subordinates):
 
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         if do_references:
-            cur.execute(""" delete from document_references""")
             cur.execute(""" delete from section_references""")
         if do_subordinates:
             cur.execute(""" delete from subordinates""")
@@ -170,7 +169,7 @@ if __name__ == "__main__":
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute("select update_views()")
     run(db, config,
-    do_id_lookup= 'skip_ids' not in sys.argv[1:]),
+    do_id_lookup=('skip_ids' not in sys.argv[1:]),
     do_references= ('skip_references' not in sys.argv[1:]),
     do_subordinates=('skip_subordinates' not in sys.argv[1:]),
     do_links=('skip_links' not in sys.argv[1:]))

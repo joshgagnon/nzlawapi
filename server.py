@@ -72,7 +72,7 @@ app.logger.setLevel(logging.INFO)
 
 @app.teardown_appcontext
 def close_db(error):
-    if hasattr(g, 'db'):
+    if hasattr(g, 'db') and not g.db.closed:
         g.db.commit()
         g.db.close()
 
