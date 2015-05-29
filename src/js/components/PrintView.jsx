@@ -3,6 +3,7 @@ var $ = require('jquery');
 var React = require('react/addons');
 var Actions = require('../actions/Actions');
 var Glyphicon= require('react-bootstrap/lib/Glyphicon');
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 
 /*
@@ -158,14 +159,11 @@ var PrintOverview = React.createClass({
 });
 
 
-
 module.exports = React.createClass({
     propTypes: {
         view: React.PropTypes.object.isRequired
     },
-    shouldComponentUpdate: function(newProps, newState){
-        return (this.props.view !== newProps.view) || (this.props.print !== newProps.print);
-    },
+    mixins: [PureRenderMixin],
     handlePublish: function(){
         var html = this.props.view.map(function(k, i){
             return React.findDOMNode(this.refs.full.refs[i].refs.body).innerHTML;
@@ -175,20 +173,27 @@ module.exports = React.createClass({
     render: function(){
         var print_button = window && window.print && this.props.view.size;
         return  <div className="print-container legislation-result">
-
-                    <div className="message">
-                    <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
-                    </div>
-                    <div className="controls">
+                { this.props.showOpenColumns ?
+                    <div className="controls left">
                     <div className="btn-group">
-                        <button onClick={window.print} className="btn btn btn-info">Print</button>
+                        <button onClick={Actions.toggleSplitMode} className="btn btn btn-info">Current Session</button>
+                        </div></div> : null
+                }
+                { !this.props.view.size ?
+                    <div className="message">
+                        <div className="alert alert-info" role="alert">Add sections and definitions here to create a custom document</div>
+                    </div> : <div className="push-down"/>
 
+                }
 
-                        <button onClick={this.handlePublish} className="btn btn btn-info">Share</button>
+                    <div className="controls  right">
+                        <div className="btn-group">
+                            <button onClick={window.print} className="btn btn btn-info">Print</button>
 
+                            <button onClick={this.handlePublish} className="btn btn btn-info">Share</button>
 
-                        <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">Close</button>
-                    </div>
+                            <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">Close</button>
+                        </div>
                     </div>
 
                 <PrintOverview {...this.props} />

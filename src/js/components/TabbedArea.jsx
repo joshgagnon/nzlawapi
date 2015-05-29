@@ -82,8 +82,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
   setTabVisibility: function(){
     if(this.isMounted()){
       // something is not quite right
-        this.width = this.refs.tabs.getDOMNode().clientWidth;
-
+        this.width = React.findDOMNode(this.refs.tabs).clientWidth;
         var visible;
 
         if(this.width < this.props.min_width){
@@ -102,7 +101,9 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
           var total_width = _.reduce(tab_widths, function(s, t){ return s+t}, 0);
           var tab_count = this.props.children.length;
           visible = tab_count;
-
+          if(this.refs.close_all){
+            width -= React.findDOMNode(this.refs.close_all).clientWidth;
+          }
           while(visible > 0 && total_width > width){
               if(visible === tab_count){
                   width -= 80; //width of dropdown
@@ -138,7 +139,7 @@ var TabbedArea = React.createClass({displayName: "TabbedArea",
                 </DropdownButton>
     },
     renderCloseView: function(){
-      return <li role="button" href="#" className='pull-right close-all'><a onClick={this.props.closeView}>&times;</a></li>
+      return <li role="button" href="#" className='pull-right close-all' ref="close_all"><a onClick={this.props.closeView}>&times;</a></li>
     },
   renderNav: function(){
     var visible_tabs = this.state.visible_tabs || this.props.children.length;

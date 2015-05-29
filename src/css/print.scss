@@ -1,116 +1,137 @@
-    .print-container{
-        .message{
+.print-container{
+    .message{
+        margin-right: 0;
+        margin-top:40px;
+        .alert{
+            padding: 4px;
+            text-align: center;
+            margin-left:10px;
+            margin-right:10px;
+
+        }
+        @media (min-width: $screen-sm-min) {
+            margin-left: $buttonbar-outer-width;
+            margin-top:0;
             margin-right:200px;
-            .alert{
-                padding: 4px;
-                text-align: center;
-                margin-left:10px;
-                margin-right:10px;
-            }
+        }
+    }
+    .push-down{
+        height:35px;
+    }
+    .controls{
+        &.left + .message{
+            margin-left: 0px;
             @media (min-width: $screen-sm-min) {
-                margin-left: $buttonbar-outer-width;
+                margin-left: $buttonbar-outer-width + 150px;
             }
         }
-        .controls{
+
+        position: absolute;
+        top:10px;
+        &.left{
+            left:10px;
+            @media (min-width: $screen-sm-min) {
+                left: $buttonbar-outer-width + 10px;
+            }
+        }
+        &.right{
+            right: 10px;
+        }
+    }
+    padding: 10px;
+    .nav{
+        z-index: $z-toolbars;
+        position: absolute;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        @media (min-width: $screen-sm-min) {
+            left: $buttonbar-outer-width;
+        }
+    }
+    .csspinner{
+        min-height: 60px;
+        margin:10px;
+    }
+    @media print{
+        .print-summaries, .btn{
+            display:none !important;
+        }
+    }
+    .print-summaries{
+          width: 80%;
+          margin: 0 auto;
+          margin-top:20px;
+          ul,li{
+            list-style: none;
+            padding: 0;
+          }
+        .print-summary{
+            &:hover .btn-group{
+                opacity: 1;
+            }
+            .buttons{
+                float:right
+
+            }
+            padding:6px;
+              margin-bottom: 4px;
+        }
+        a{
+            font-size:16px;
+            margin:0 8px;
+        }
+    }
+     .print-sections {
+        padding-left:10px;
+        @media (min-width: $screen-sm-min) {
+            padding-left: $buttonbar-outer-width;
+        }
+    }
+    .split & .print-sections{
+        padding-left:10px
+    }
+    .print-section {
+        padding: 0 15px;
+        .btn-group{
             position: absolute;
             right: 10px;
-            top:10px;
-        }
-        padding: 10px;
-        .nav{
-            z-index: $z-toolbars;
-            position: absolute;
-            left: 0;
-            right: 0;
-            background-color: #fff;
-            @media (min-width: $screen-sm-min) {
-                left: $buttonbar-outer-width;
+            opacity: 0;
+            a{
+                padding:0 3px;
             }
         }
-        .csspinner{
-            min-height: 60px;
-            margin:10px;
+        &:hover {
+              background-color: #efefef;
+            .btn-group{
+                opacity: 1;
+            }
+        }
+    }
+    .btn-group{
+        transition:.5s;
+        vertical-align: top;
+        a{
+            cursor:pointer;
         }
         @media print{
-            .print-summaries, .btn{
-                display:none !important;
-            }
-        }
-        .print-summaries{
-              width: 80%;
-              margin: 0 auto;
-              margin-top:20px;
-              ul,li{
-                list-style: none;
-                padding: 0;
-              }
-            .print-summary{
-                &:hover .btn-group{
-                    opacity: 1;
-                }
-                .buttons{
-                    float:right
-
-                }
-                padding:6px;
-                  margin-bottom: 4px;
-            }
-            a{
-                font-size:16px;
-                margin:0 8px;
-            }
-        }
-         .print-sections {
-            padding-left:10px;
-            @media (min-width: $screen-sm-min) {
-                padding-left: $buttonbar-outer-width;
-            }
-        }
-        .split &  .print-sections{
-            padding-left:10px
-        }
-        .print-section {
-            padding: 0 15px;
-            .btn-group{
-                position: absolute;
-                right: 10px;
-                opacity: 0;
-                a{
-                    padding:0 3px;
-                }
-            }
-            &:hover {
-                  background-color: #efefef;
-                .btn-group{
-                    opacity: 1;
-                }
-            }
-        }
-        .btn-group{
-            transition:.5s;
-            vertical-align: top;
-            a{
-                cursor:pointer;
-            }
-            @media print{
-                display: none;
-            }
-
-        }
-
-
-        .legislation{
-            h1.title, h2.part,  h2.schedule, h2.head1, h2.schedule-group, .definition-result .legislation h2.schedule-amendments-group1, .definition-result .legislation h2.sop-part,  h2.part,  h2.schedule,  h2.head1,  h2.schedule-group,  h2.schedule-amendments-group1,  h2.sop-part {
-                margin-top:0.5em;
-            }
-            p.reprint-date{
-                font-size:1em;
-            }
-        }
-
-
-        .definition-result{
-            margin-top:20px;
+            display: none;
         }
 
     }
+
+    .legislation{
+        h1.title, h2.part,  h2.schedule, h2.head1, h2.schedule-group, .definition-result .legislation h2.schedule-amendments-group1, .definition-result .legislation h2.sop-part,  h2.part,  h2.schedule,  h2.head1,  h2.schedule-group,  h2.schedule-amendments-group1,  h2.sop-part {
+            margin-top:0.5em;
+        }
+        p.reprint-date{
+            font-size:1em;
+        }
+    }
+
+
+    .definition-result{
+        margin-top:20px;
+    }
+
+}

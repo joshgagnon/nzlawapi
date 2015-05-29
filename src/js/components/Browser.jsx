@@ -13,7 +13,6 @@ var ViewerStore = require('../stores/ViewerStore');
 var BrowserStore = require('../stores/BrowserStore.js');
 var PageStore = require('../stores/PageStore.js');
 var PrintStore = require('../stores/PrintStore.js');
-
 var Actions = require('../actions/Actions');
 var SearchResults = require('./SearchResults.jsx');
 var ArticleSideBar = require('./ArticleSideBar.jsx');
@@ -23,7 +22,6 @@ var TabPane = require('./TabPane.jsx');
 var Article = require('./Article.jsx');
 var JumpTo= require('./JumpTo.jsx');
 var Immutable = require('immutable');
-var ErrorModal = require('./ErrorModal.jsx');
 var BrowserModals = require('./BrowserModals.jsx');
 var AdvancedSearch = require('./AdvancedSearch.jsx');
 var TabView = require('./TabView.jsx');
@@ -160,8 +158,8 @@ module.exports = React.createClass({
                 document_id: this.state.query || this.state.document_id
             };
         var title = this.state.search_query + ' ' + this.state.jump_to;
-    Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0',
-        {position: {location: Utils.splitLocation(this.state.jump_to)}});
+        this.open({query: query, title: title, page_type: page_type}, 'tab-0',
+            {position: {location: Utils.splitLocation(this.state.jump_to)}});
 
     },
     submitFocus: function(e){
@@ -174,7 +172,7 @@ module.exports = React.createClass({
         };
         var title = this.state.search_query + ' '+this.state.focus;
 
-        Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0');
+        this.open({query: query, title: title, page_type: page_type}, 'tab-0');
     },
     fetch: function(){
         if(!this.state.search_query){
@@ -199,21 +197,26 @@ module.exports = React.createClass({
             };
             title = 'Search: '+ this.state.search_query
         }
-        Actions.newPage({query: query, title: title, page_type: page_type}, 'tab-0');
+        this.open({query: query, title: title, page_type: page_type}, 'tab-0');
+    },
+    open: function(page, view, options){
+        Actions.newPage(page, view, options);
+        this.setState({show_location: false});
+    },
+    handleFormFocus: function(){
+        if(this.state.document_id){
+            this.setState({show_location: true})
+        }
     },
     handleArticleChange: function(value){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
         this.setState({search_query: value.search_query,
             document_id: value.id, focus: '', jump_to: '',
-            article_type: value.type, find: value.find, query: value.query}, function(){
-            /*if(self.showLocation() && self.refs.location){
-                // hack!
-                setTimeout(function(){
-                    self.refs.location.getInputDOMNode().focus();
-                }, 0);
-            }*/
-        });
+            article_type: value.type, find: value.find,
+            show_location: !!value.id,
+            query: value.query});
+
     },
     handleFocus: function(e){
         e.stopPropagation();
@@ -222,11 +225,6 @@ module.exports = React.createClass({
     handleJumpTo: function(e){
         e.stopPropagation();
         this.setState({jump_to: e.target.value});
-    },
-    handleEnter: function(e){
-        if (e.key === 'Enter') {
-            this.submit(e);
-        }
     },
     handleFocusEnter: function(e){
         if (e.key === 'Enter') {
@@ -253,7 +251,7 @@ module.exports = React.createClass({
         this.setState(s);
     },
     showLocation: function(){
-        return !!this.state.document_id && (this.state.find === 'full' || this.state.find === "govt_location");
+        return this.state.show_location;
     },
     getActive: function(){
         var id = this.state.views.getIn(['tab-0' ,'active_page_id'])
@@ -305,8 +303,9 @@ module.exports = React.createClass({
             </div>
         }
         else if(this.state.browser.get('print_mode')){
+
             return <div className="print">
-                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} />
+                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} showOpenColumns={true} />
             </div>
         }
         else if(this.state.browser.get('split_mode')){
@@ -352,12 +351,12 @@ module.exports = React.createClass({
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
-        return  <form className={formClasses}>
-                 <AutoComplete onUpdate={this.handleArticleChange} onKeyPress={this.handleEnter} className='main-search'  autoCapitalize="off" autoCorrect="off"
+        return  <form className={formClasses} onFocus={this.handleFormFocus} >
+                 <AutoComplete onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
                         <span className="input-group-btn">
-                            <Button bsStyle={'primary'} onClick={this.submit} >{ this.showLocation() ? 'Open' : 'Search' }</Button>
+                            <button ref="search" className="btn btn-primary" onClick={this.submit} >{ this.showLocation() ? 'Open' : 'Search' }</button>
                         </span>
                      </AutoComplete>
                 {  this.showLocation() ? this.renderLocation(): null }
@@ -377,7 +376,6 @@ module.exports = React.createClass({
         if(this.state.browser.get('notes')){
             parentClass += ' notes';
         }
-        // TODO move all modals together
         return (<div className className={parentClass}>
                 <BrowserModals />
                 { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
@@ -385,8 +383,11 @@ module.exports = React.createClass({
                     { this.renderForm() }
                     <UserControls />
                 </Banner>
-            <MQ minWidth={768}>
-                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0'/>
+            <MQ minWidth={768} maxWidth={991}>
+                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0' user_controls={true} />
+            </MQ>
+            <MQ minWidth={992}>
+                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0'  />
             </MQ>
             { this.renderBody() }
             <Notifications />

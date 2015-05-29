@@ -118,17 +118,20 @@ var AutoComplete = React.createClass({
         // Handle enter key
         if (event.key === 'Enter' || event.key === 'Tab') {
             if(newIndex > -1) {
+                 event.preventDefault();
+                event.stopPropagation();
                 // Choosing an active item from the result list
-                console.log(this._results)
                 this.clickResult(this._results[newIndex]);
             }
             else {
+                 event.preventDefault();
                 // If this is an exact match we already know about search it directly
                 var search_query = this.props.search_value.search_query.trim().toLowerCase();
                 var matched_results = this.state.results.filter(function(result) {
                     return result.name.trim().toLowerCase() === search_query;
                 });
                 if(matched_results.length) {
+                    event.stopPropagation();
                     this.clickResult(matched_results[0]);
                 }
                 // Otherwise search on current text
@@ -201,6 +204,7 @@ var AutoComplete = React.createClass({
                 </li>;
     },
     clickResult: function(result) {
+        console.log('click', result.id)
         this.props.onUpdate({
             id: result.id,
             type: result.type,
