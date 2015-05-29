@@ -3,7 +3,8 @@ var Input = require('react-bootstrap/lib/Input');
 var ClickOut = require('../mixins/ClickOut');
 var _ = require('lodash');
 var request = require('../catalex-request');
-// TODO, scroll overflow on arrows
+var ClearInput = require('./ClearInput.jsx');
+
 
 var AutoComplete = React.createClass({
     propTypes: {
@@ -208,21 +209,27 @@ var AutoComplete = React.createClass({
             find: result.find,
             show: false
         });
-
     },
-
     getInputDOMNode: function(){
         return this.refs.search.getDOMNode();
+    },
+    clearSearch: function(){
+        this.props.onUpdate({
+            search_query: null,
+            id: null,
+            type: null
+        });
     },
     render: function() {
         var but_children = _.omit(this.props, 'children', 'className');
         return (
             <div className="autocomplete input-group">
-                <div className="input-group">
-                <input className={"form-control "+(this.props.className||'')} type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
-                    onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...but_children}/>
-                       { this.props.children }
-                    </div>
+                <div className="input-group has-clear">
+                    <input className={"form-control "+(this.props.className||'')} type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
+                        onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...but_children}/>
+                            <ClearInput clear={this.clearSearch} />
+                           { this.props.children }
+                        </div>
                 { this.state.show && this.state.results.length ?
                 <ul className="results" ref="dropdown">
                     {

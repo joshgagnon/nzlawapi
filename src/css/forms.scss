@@ -1,0 +1,29 @@
+
+.input-group.has-clear{
+	input::-ms-clear {
+        display: none;
+    }
+	span.form-control-clear {
+	  left: 0px;
+	  z-index: 3;
+	  cursor: pointer;
+	  pointer-events:auto;
+	  font-size:20px;
+	  color:$gray-light;
+	  display:none;
+	  &:hover{
+	  	color:$gray;
+	  }
+	}
+	input[type="text"].form-control{
+		border-bottom-left-radius:4px;
+		border-top-left-radius:4px;
+		&:focus{
+			padding-left:34px;
+		}
+	}
+	input[type="text"].form-control:focus + span.form-control-clear{
+		display:inline-block;
+	}
+
+}

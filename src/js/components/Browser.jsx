@@ -35,6 +35,7 @@ var MQ = require('./Responsive.jsx');
 var constants = require('../constants');
 var Utils = require('../utils');
 var ClickOut = require('../mixins/ClickOut')
+var ClearInput = require('./ClearInput.jsx');
 
 
 $.fn.focusNextInputField = function() {
@@ -337,20 +338,22 @@ module.exports = React.createClass({
     renderLocation: function(){
         return <div className="locations">
             <div className="form-col">
-                <div className="input-group">
+                <div className="input-group has-clear">
                  <input type="text" className="location form-control" placeholder="Jump To..." ref="jump_to" value={this.state.jump_to}
                         onChange={this.handleJumpTo} onKeyPress={this.handleJumpToEnter}
                         ref="jump_to"  />
+                    <ClearInput clear={function(){ this.setState({'jump_to': null})}.bind(this)} />
                      <span className="input-group-btn">
                         <Button bsStyle={'info'} onClick={this.submitJumpTo} >Jump To</Button>
                     </span>
                 </div>
             </div>
             <div className="form-col">
-                <div className="input-group">
+                <div className="input-group has-clear">
                     <input type="text" className="location form-control" placeholder="Focus..." ref="focus" value={this.state.focus}
                         onChange={this.handleFocus} onKeyPress={this.handleFocusEnter}
                         ref="focus"  />
+                    <ClearInput clear={function(){ this.setState({'focus': null})}.bind(this)} />
                      <span className="input-group-btn">
                         <Button bsStyle={'info'} onClick={this.submitFocus} >Focus</Button>
                     </span>
@@ -381,7 +384,6 @@ module.exports = React.createClass({
     render: function(){
         var active = this.getActive();
         var parentClass ="browser ";
-
         if(this.state.browser.get('underlines')){
             parentClass += ' underlines';
         }
