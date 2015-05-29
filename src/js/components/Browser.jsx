@@ -34,6 +34,8 @@ var Banner = require('./Banner.jsx');
 var MQ = require('./Responsive.jsx');
 var constants = require('../constants');
 var Utils = require('../utils');
+var ClickOut = require('../mixins/ClickOut')
+
 
 $.fn.focusNextInputField = function() {
     return this.each(function() {
@@ -101,7 +103,8 @@ module.exports = React.createClass({
         Reflux.listenTo(PrintStore, 'onState'),
         Reflux.listenTo(FormStore, 'onState'),
         ReactRouter.State,
-        UndoMixin
+        UndoMixin,
+        ClickOut
     ],
     contextTypes: {
         //router: React.PropTypes.func.isRequired
@@ -228,7 +231,7 @@ module.exports = React.createClass({
     },
     handleFocusEnter: function(e){
         if (e.key === 'Enter') {
-            this.submitLocation(e);
+            this.submitFocus(e);
         }
     },
     handleJumpToEnter: function(e){
@@ -293,6 +296,15 @@ module.exports = React.createClass({
             return <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
         }
     },
+    clickOutComponent: function(){
+        return this.refs.form;
+    },
+    handleClickOut: function(){
+         this.setState({show_location: false});
+    },
+    bindClickOut: function(){
+        return this.state.show_location;
+    },
     // NOTE TO SELF:  splitting of render into multiple functions begs to just split component up
     renderBody: function(){
         var active = this.getActive();
@@ -351,8 +363,8 @@ module.exports = React.createClass({
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
-        return  <form className={formClasses} onFocus={this.handleFormFocus} >
-                 <AutoComplete onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off"
+        return  <form ref="form" className={formClasses} onFocus={this.handleFormFocus} >
+                 <AutoComplete onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off" submit={this.fetch}
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
                         <span className="input-group-btn">
@@ -379,12 +391,12 @@ module.exports = React.createClass({
         return (<div className className={parentClass}>
                 <BrowserModals />
                 { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
-                <Banner renderDropdown={this.renderDropdown}>
+                <Banner renderDropdown={this.renderDropdown} extraClasses={ this.showLocation() ? ' expanded' : null}>
                     { this.renderForm() }
                     <UserControls />
                 </Banner>
             <MQ minWidth={768} maxWidth={991}>
-                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0' user_controls={true} />
+                { this.renderDropdown() }
             </MQ>
             <MQ minWidth={992}>
                 <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0'  />

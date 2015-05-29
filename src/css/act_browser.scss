@@ -83,31 +83,7 @@ body{
          }
     }
 
-.navbar{
-    .input-group button{
-        line-height: 20px;
-    }
 
-    .logo-sml-button{
-        cursor:pointer;
-        height:100%;
-        .buttonbar-wrapper{
-            display:none;
-            height:0;
-            transition: all 2s ease;
-            top: 40px;
-            padding-top:14px;
-        }
-        &:hover .buttonbar-wrapper{
-            display:block;
-            height:100%;
-        }
-    }
-
-    .brand-wrap > div{
-        height:100%;
-    }
-}
 
 
 
@@ -242,7 +218,12 @@ body{
       .modal-body{
         height: 80%;
         overflow: auto;
+        nav{
+            margin-left:-10px;
+            margin-right:-10px;
+        }
       }
+
 
 
 

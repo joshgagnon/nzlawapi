@@ -1,6 +1,6 @@
 var React = require('react/addons');
 var Input = require('react-bootstrap/lib/Input');
-var EventListener = require('react-bootstrap/lib/utils/EventListener');
+var ClickOut = require('../mixins/ClickOut');
 var _ = require('lodash');
 var request = require('../catalex-request');
 // TODO, scroll overflow on arrows
@@ -9,6 +9,7 @@ var AutoComplete = React.createClass({
     propTypes: {
         search_value: React.PropTypes.object.isRequired
     },
+    mixins: [ClickOut],
     getInitialState: function() {
         return {
             show: false,
@@ -58,37 +59,25 @@ var AutoComplete = React.createClass({
                 this._fetching = true;
                 this.debounceFetch(value);
             }
+            this.setState({
+                activeIndex: -1
+            });
         }
     },
-    handleDocumentClick: function(e) {
-        // If the click originated from within this component
-        // don't do anything.
-        if (React.findDOMNode(this).contains(e.target)) {
-            return;
-        }
-        this.setState({show: false});
+    clickOutComponent: function(){
+        return this;
     },
-    bindRootCloseHandlers: function() {
-        this._onDocumentClickListener =
-            EventListener.listen(document, 'click', this.handleDocumentClick);
+    handleClickOut: function(){
+         this.setState({show: false});
     },
-    unbindRootCloseHandlers: function() {
-        if (this._onDocumentClickListener) {
-            this._onDocumentClickListener.remove();
-            this._onDocumentClickListener = null;
-        }
+    bindClickOut: function(){
+        return this.state.results.length
     },
     componentDidUpdate: function(){
         if(this.refs.dropdown){
             var dropdownElement = this.refs.dropdown.getDOMNode();
             var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             dropdownElement.style.maxHeight = (windowHeight - dropdownElement.getBoundingClientRect().top - 15) + 'px';
-        }
-        if(!this.state.results.length && this._onDocumentClickListener){
-            this.unbindRootCloseHandlers();
-        }
-        else if(this.state.results.length && !this._onDocumentClickListener){
-            this.bindRootCloseHandlers();
         }
     },
     onFocus: function(e) {
@@ -102,22 +91,31 @@ var AutoComplete = React.createClass({
     onKeyDown: function(event) {
         // Handle arrow keys
         var newIndex = this.state.activeIndex;
-        if (event.key === 'ArrowDown')
+        if (event.key === 'ArrowDown'){
             newIndex++;
-        if (event.key === 'ArrowUp')
+        }
+        else if (event.key === 'ArrowUp'){
             newIndex--;
-
+        }
         if (newIndex !== this.state.activeIndex) {
-            if (newIndex < -1) newIndex = this.state.results.length - 1;
-            if (newIndex >= this.state.results.length) newIndex = 0;
-
+            if (newIndex < -1){
+                    newIndex = this.state.results.length - 1;
+            }
+            if (newIndex >= this.state.results.length){
+                newIndex = 0;
+            }
             this.setState({
                 activeIndex: newIndex
             });
         }
         // Handle enter key
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            if(newIndex > -1) {
+
+        if (event.key === 'Enter' || (this.state.show && event.key === 'Tab')) {
+            if(!this.state.show || newIndex === -1){
+                // submit
+                this.props.submit();
+            }
+            else if(newIndex > -1) {
                  event.preventDefault();
                 event.stopPropagation();
                 // Choosing an active item from the result list
@@ -134,12 +132,10 @@ var AutoComplete = React.createClass({
                     event.stopPropagation();
                     this.clickResult(matched_results[0]);
                 }
-                // Otherwise search on current text
-                else {
-                    // TODO: Fix the 'double-enter' bug, needs a proper refactor with Browser
-                }
             }
-
+            this.setState({ show: false });
+        }
+        if (event.key === 'Escape'){
             this.setState({ show: false });
         }
     },
@@ -204,7 +200,6 @@ var AutoComplete = React.createClass({
                 </li>;
     },
     clickResult: function(result) {
-        console.log('click', result.id)
         this.props.onUpdate({
             id: result.id,
             type: result.type,

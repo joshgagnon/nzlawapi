@@ -135,11 +135,14 @@
     .article-overlay {
         position: fixed;
         top: $top-bar-height-sm + 10px;
-        left:$buttonbar-outer-width;
+        left:10px;
         margin-right:10px;
         text-align: right;
         @media print{
             display:none;
+        }
+         @media (min-width: $screen-sm-min) {
+            left: $buttonbar-outer-width;
         }
         @media (min-width: $screen-md-min) {
             top: $top-bar-height + 10px;

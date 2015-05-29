@@ -8,127 +8,189 @@ $screen-chev-right-min: 1400px;
 $screen-show-user-controls-and-location-min: 1250px;
 
 .navbar{
-background-color: $deep-red;
-border-width:0;
-background-image: url(/build/images/hero-bg.jpg);
-height: $top-bar-height-sm;
-background-position: center center;
-background-repeat: no-repeat;
+    background-color: $deep-red;
+    border-width:0;
+    background-image: url(/build/images/hero-bg.jpg);
+    height: $top-bar-height-sm;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transition: height .2s ease-in-out;
 
-@media (min-width: $screen-md-min) {
-    height: $top-bar-height;
-}
-@media print{
-    display:none;
-}
-.brand-wrap{
-    position: absolute;
+    &.expanded{
+        height: $top-bar-height;
 
-    height: 80%;
-    left:8px;
-    top: 6px;
-    @media (min-width: $screen-sm-min) {
-        left:125px;
-    }
-    @media (min-width: $screen-md-min) {
-        left: 200px;
-        top: 20px;
-        height: 60%;
-    }
-    img{
-        height:100% !important;
-        width: auto !important;
-        display: block;
-    }
-}
-
-
-.chev-left{
-    width:auto;
-    height: 100%;
-    position: absolute;
-    left: 70px;
-}
-.chev-right{
-    width:auto;
-    height: 100%;
-    position: absolute;
-    right: 313px;
-    display:none;
-    @media (min-width: $screen-chev-right-min) {
-        display:block;
-    }
-}
- form{
-
-    position: absolute;
-    top: 8px;
-    right: 20px;
-    left: 60px;
-    text-align: right;
-    @media (min-width: $screen-sm-min) {
-        left: 240px;
-        right: 10px;
-    }
-
-    @media (min-width: $screen-md-min) {
-        left: 400px;
-        top: $top-bar-height/2 - (34/2);
-        min-width:300px;
-        max-width:600px;
-        transition: top 0.2s ease-in-out;
-
-        &.showing-location{
-            top: $top-bar-height/4 - (34/2);
-        }
-    }
-    .main-search, .location{
-        border-color: white;
-    }
-
-    @media (min-width: $screen-md-min) {
-        .navbar-form .input-group > .form-control {
-            width:auto;
-            background-color:black;
-        }
-    }
-    .locations {
-        margin-top:12px;
-        animation: fadein 0.2s;
-        .form-col{
-            width:50%;
-            float:left;
-            &:nth-child(1){
-                padding-right:10px;
+        .brand-wrap{
+            top: 28px;
+            display:none;
+             @media (min-width: $screen-sm-min) {
+                display:block;
+             }
+            @media (min-width: $screen-md-min) {
+                top: 20px;
+                height: 60px;
+                width: 150px;
             }
-            &:nth-child(2){
-                padding-left:10px;
+
+        }
+        .chev-left{
+            @media (min-width: $screen-sm-min) {
+                left:0;
+            }
+            @media (min-width: $screen-md-min) {
+                left:70px;
             }
         }
-        .input-group{
-
-        }
     }
-}
-form.showing-location + .user-controls{
+
+    @media (min-width: $screen-md-min) {
+        height: $top-bar-height;
+    }
+
+    @media print{
         display:none;
-    @media (min-width: $screen-show-user-controls-and-location-min) {
-        display:block;
+    }
+    .brand-wrap{
+        position: absolute;
+        width: 100px;
+        height: 40px;
+        left:8px;
+        top: 6px;
+        transition: top .2s ease-in-out;
+        @media (min-width: $screen-sm-min) {
+            left:125px;
+        }
+        @media (min-width: $screen-md-min) {
+            left: 200px;
+            top: 20px;
+            height: 60px;
+            width: 150px;
+        }
+        img{
+            height:100% !important;
+            width: 100% !important;
+            display: block;
+        }
     }
 
-}
-.user-controls {
-    right: 0;
-    position: absolute;
-    display:none;
-    animation: fadein 0.2s;
-    @media (min-width: $screen-md-min) {
-        display: block;
+    .input-group button{
+        line-height: 20px;
     }
-    a {
-    color: white;
-    padding: 4px;
+
+    .logo-sml-button{
+        cursor:pointer;
+        height:40px;
+        width: 40px;
+        .buttonbar-wrapper{
+            display:none;
+            height:0;
+            transition: all 2s ease;
+            top: 40px;
+            padding-top:14px;
+        }
+        &:hover .buttonbar-wrapper{
+            display:block;
+            height:100%;
+        }
     }
-}
+
+    .brand-wrap > div{
+        height:100%;
+    }
+
+    .chev-left{
+        width:auto;
+        height: 100%;
+        position: absolute;
+        left: 70px;
+        transition: left .2s ease-in-out;
+    }
+    .chev-right{
+        width:auto;
+        height: 100%;
+        position: absolute;
+        right: 313px;
+        display:none;
+        @media (min-width: $screen-chev-right-min) {
+            display:block;
+        }
+    }
+
+     form{
+
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        left: 60px;
+        text-align: right;
+        .main-search, .location{
+            border-color: white;
+        }
+
+        @media (min-width: $screen-md-min) {
+            .navbar-form .input-group > .form-control {
+                width:auto;
+                background-color:black;
+            }
+        }
+        .locations {
+            margin-top:12px;
+            animation: fadein 0.2s;
+            .form-col{
+                width:50%;
+                float:left;
+                &:nth-child(1){
+                    padding-right:5px;
+                }
+                &:nth-child(2){
+                    padding-left:5px;
+                }
+            }
+            .input-group{
+
+            }
+        }
+    }
+    &.expanded form{
+        left:10px;
+    }
+    &.expanded form, form{
+        @media (min-width: $screen-sm-min) {
+            left: 240px;
+            right: 10px;
+        }
+
+        @media (min-width: $screen-md-min) {
+            top: $top-bar-height/2 - (34/2);
+            left:400px;
+            min-width:300px;
+            max-width:600px;
+            transition: top 0.2s ease-in-out;
+
+            &.showing-location{
+                top: $top-bar-height/4 - (34/2);
+            }
+        }
+    }
+
+    form.showing-location + .user-controls{
+            display:none;
+        @media (min-width: $screen-show-user-controls-and-location-min) {
+            display:block;
+        }
+
+    }
+    .user-controls {
+        right: 0;
+        position: absolute;
+        display:none;
+        animation: fadein 0.2s;
+        @media (min-width: $screen-md-min) {
+            display: block;
+        }
+        a {
+        color: white;
+        padding: 4px;
+        }
+    }
 
 }
