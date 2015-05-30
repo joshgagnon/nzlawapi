@@ -136,7 +136,7 @@ def text_compare(t1, t2):
     return (t1 or '').strip() == (t2 or '').strip()
 
 
-def get_path(node):
+def get_path(node, force_part=False):
     result = unicode('')
     it = itertools.chain([node] if node.tag == 'label-para' else [], iter(node.iterancestors('label-para')))
     for n in it:
@@ -162,7 +162,21 @@ def get_path(node):
             if text:
                 result = u'%s %s' % (prov_str, text + result)
 
-    # need a iter for fake parts, ie head1 with label that says 'Part x'
+    if force_part:
+        it = itertools.chain([node] if node.tag == 'part' else [], iter(node.iterancestors('part')))
+        for n in it:
+            if len(n.xpath('./label')):
+                text = n.xpath('./label')[0].text
+                if text:
+                    result = u'part %s ' % n.xpath('./label')[0].text + result
+
+        it = itertools.chain([node] if node.tag == 'head1' else [], iter(node.iterancestors('head1')))
+        for n in it:
+            if len(n.xpath('./label')):
+                text = n.xpath('./label')[0].text
+                if text:
+                    text = re.sub('part ', '', text, flags=re.I)
+                    result = u'part %s ' % n.xpath('./label')[0].text + result
 
     it = itertools.chain([node] if node.tag == 'schedule' else [], iter(node.iterancestors('schedule')))
     for n in it:
@@ -173,7 +187,8 @@ def get_path(node):
 
 def generate_path_string(node, id=None, title=None):
     title = title or get_title(node.getroottree())
-    result = get_path(node)
+    # stupid stupid hack
+    result = get_path(node, force_part= (title == 'Income Tax Act 2007'))
     return (u'%s %s' % (title, result),
         'query?%s' % urllib.urlencode({
             'location': result.encode('utf-8'),

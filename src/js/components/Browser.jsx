@@ -36,7 +36,8 @@ var constants = require('../constants');
 var Utils = require('../utils');
 var ClickOut = require('../mixins/ClickOut')
 var ClearInput = require('./ClearInput.jsx');
-
+var HTML5Backend = require('react-dnd/modules/backends/HTML5');
+var DragDropContext = require('react-dnd').DragDropContext;
 
 $.fn.focusNextInputField = function() {
     return this.each(function() {
@@ -96,7 +97,7 @@ var PageDialog = React.createClass({
 
 
 
-module.exports = React.createClass({
+var Browser = React.createClass({
     mixins: [
         Reflux.listenTo(PageStore, 'onState'),
         Reflux.listenTo(ViewerStore, 'onState'),
@@ -205,7 +206,7 @@ module.exports = React.createClass({
     },
     open: function(page, view, options){
         Actions.newPage(page, view, options);
-        this.setState({show_location: false});
+        //this.setState({show_location: false});
     },
     handleFormFocus: function(){
         if(this.state.document_id){
@@ -367,7 +368,7 @@ module.exports = React.createClass({
             formClasses += 'showing-location';
         }
         return  <form ref="form" className={formClasses} onFocus={this.handleFormFocus} >
-                 <AutoComplete onUpdate={this.handleArticleChange} className='main-search'  autoCapitalize="off" autoCorrect="off" submit={this.fetch}
+                 <AutoComplete onUpdate={this.handleArticleChange} className='main-search' autoCapitalize="off" autoCorrect="off" submit={this.fetch}
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >
                         <span className="input-group-btn">
@@ -409,3 +410,5 @@ module.exports = React.createClass({
         </div>);
     }
 });
+
+module.exports = DragDropContext(HTML5Backend)(Browser)

@@ -525,7 +525,7 @@ var ArticleContent = React.createClass({
 });
 
 
- module.exports = React.createClass({
+var Article = React.createClass({
     mixins: [ArticleHandlers, Popovers],
     componentDidMount: function(){
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
@@ -591,3 +591,4 @@ var ArticleContent = React.createClass({
         </div>
     }
  });
+module.exports = Article;

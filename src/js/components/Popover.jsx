@@ -15,9 +15,42 @@ var utils = require('../utils');
 var $ = require('jquery');
 var _ = require('lodash');
 
-var DragDropMixin = require('react-dnd').DragDropMixin;
 var DropEffects= require('react-dnd').DropEffects;
 var PopoverFix = require('../mixins/PopoverFix');
+
+var DragSource = require('react-dnd').DragSource;
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+    connectDragPreview: connect.dragPreview(),
+  }
+}
+
+var popoverSource = {
+  beginDrag: function (props) {
+    return {'viewer_id': props.viewer_id, 'page_id': props.page_id,
+    'id': props.popoverPage.get('id'), 'left': props.popoverView.get('left'),
+    'top': props.popoverView.get('top')};
+  },
+  canDrag: function (props) {
+    return true;
+  },
+
+  endDrag: function (props, monitor, component) {
+    if (!monitor.didDrop()) {
+      return;
+    }
+
+    var item = monitor.getItem();
+
+    var dropResult = monitor.getDropResult();
+
+    Actions.popoverMove(item.viewer_id, item.page_id,
+        {dragged: true, left: dropResult.x + item.left, top: dropResult.y+item.top, id: item.id, time: (new Date()).getTime()});
+  }
+};
 
 var PopoverBehaviour = {
     needFetch: function(){
@@ -132,32 +165,20 @@ var PopoverBehaviour = {
     }
 }
 
-// USING PLAIN JS
-module.exports = {
-    Popover: React.createClass({
-        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, DragDropMixin, {stopScrollPropagation: utils.stopScrollPropagation}, PopoverFix],
+var Popover = React.createClass({
+        mixins: [BootstrapMixin, PopoverBehaviour, ArticleHandlers, {stopScrollPropagation: utils.stopScrollPropagation}, PopoverFix],
         propTypes: {
             popoverView: React.PropTypes.object.isRequired,
             popoverPage: React.PropTypes.object.isRequired,
-            getScrollContainer: React.PropTypes.func.isRequired
+            getScrollContainer: React.PropTypes.func.isRequired,
+            connectDragSource: React.PropTypes.func.isRequired,
+            isDragging: React.PropTypes.bool.isRequired,
+            connectDragPreview: React.PropTypes.func.isRequired
+
         },
         topOffset: 20,
         openLinksInTabs: true,
         scrollable_selector: '.popover-content > *',
-        statics: {
-        configureDragDrop: function(register) {
-          register(DRAG_TYPES.POPOVER, {
-            dragSource: {
-              beginDrag: function(component) {
-                return {
-                  effectAllowed: DropEffects.MOVE,
-                  item: component.props
-                };
-              }
-            }
-          });
-        }
-      },
         getInitialState: function() {
             return {
                 placement: 'bottom'
@@ -167,7 +188,7 @@ module.exports = {
             if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
                 Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
             }
-            this.reposition();  
+           this.reposition();  
         },
         componentDidUpdate: function() {
             if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
@@ -177,23 +198,31 @@ module.exports = {
         },
         reposition: function(){
             var self = this, left=this.props.popoverView.get('left') , top=this.props.popoverView.get('top');
-            var width = this.getDOMNode().clientWidth,
+            var width = this.getDOMNode().offsetWidth,
                 container_width = this.props.getScrollContainer()[0].clientWidth;
+
             var change = false;
-            if(left < 0){
-                change = true;
-                left = 0;
-            }
-            if(left + width > container_width){
-                left = (left + width) - container_width;
+            var margin = 50;
+            if(width + margin > container_width){
+                left = margin;
+                width = container_width - margin -4;
                 change = true;
             }
+            else if(left < margin){
+                change = true;
+                left = margin;
+            }
+            else if(left + width > container_width - margin){
+                left = container_width - width -2;
+                change = true;
+            }
+
             if(top<0){
                 top =  0;
                 change = true;
             }
             if(change){
-                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {left: left,top: top, id: this.props.popoverPage.get('id')});
+                Actions.popoverMove(this.props.viewer_id, this.props.page_id, {left: left,top: top, width: width, id: this.props.popoverPage.get('id')});
             }
         },
 
@@ -201,28 +230,37 @@ module.exports = {
              Actions.popoverClosed(this.props.viewer_id, this.props.page_id, this.props.popoverPage.get('id'));
         },
         render: function() {
+            var isDragging = this.props.isDragging;
+
             var measured = !!this.props.popoverView.get('top') || !!this.props.popoverView.get('left');
             var classes = 'popover cata-popover ' + this.state.placement;
             var style = {};
             style['left'] = this.props.popoverView.get('left');
             style['top'] = this.props.popoverView.get('top') + this.topOffset;
             style['display'] = measured ? 'block' : 'none';
+            if(this.props.popoverView.get('width')){
+                style['width']  = this.props.popoverView.get('width');
+                style['minWidth']  = this.props.popoverView.get('width');
+            }
             var arrowStyle = {};
             arrowStyle['left'] = this.props.popoverPage.get('arrowOffsetLeft');
             arrowStyle['top'] = this.props.popoverPage.get('arrowOffsetTop');
-            return (
-                <div className={classes} role="tooltip" style={style} >
+             return this.props.connectDragPreview(<div className={classes} role="tooltip" style={style} >
                     { !this.props.popoverView.get('dragged') ? <div className="arrow"  style={arrowStyle} /> : null }
-                    <h3 className="popover-title" {...this.dragSourceFor(DRAG_TYPES.POPOVER)}>{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>
+                    { this.props.connectDragSource(<h3 className="popover-title" >{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>) }
                     <div className="popover-close" onClick={this.close}>&times;</div>
                     <div className='popover-content' onWheel={this.stopScrollPropagation} >
                         {this.renderBody() }
                     </div>
                     {this.renderFooter() }
-                </div>
-            );
+                </div>);
           }
-    }),
+    });
+
+// USING PLAIN JS
+module.exports = {
+    Popover: DragSource(DRAG_TYPES.POPOVER, popoverSource, collect)(Popover),
+
     MobilePopover:  React.createClass({
         mixins: [PopoverBehaviour, ArticleHandlers],
         componentDidMount: function(){

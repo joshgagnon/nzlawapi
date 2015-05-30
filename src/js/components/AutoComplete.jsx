@@ -82,7 +82,7 @@ var AutoComplete = React.createClass({
         }
     },
     onFocus: function(e) {
-        if(e.target === this.getInputDOMNode()){
+        if(e.target === this.getInputDOMNode() && !this.props.search_value.id){
             this.setState({show: true});
         }
     },

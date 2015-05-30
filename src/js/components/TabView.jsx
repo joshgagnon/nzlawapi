@@ -14,19 +14,25 @@ var SectionReferences = require('./SectionReferences.jsx');
 var UnknownError = require('./Warnings.jsx').UnknownError;
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var DRAG_TYPES = require('../constants').DRAG_TYPES;
-var DragDropMixin = require('react-dnd').DragDropMixin;
+var DropTarget = require('react-dnd').DropTarget;
+//var DragDropMixin = require('react-dnd').DragDropMixin;
 
-function makeDropTarget(context) {
+
+var target = {
+  drop: function (props, monitor) {
+    return monitor.getDifferenceFromInitialOffset();
+  },
+  canDrop: function(props, monitor){
+    return monitor.getItem().viewer_id === props.viewer_id;
+  }
+};
+
+function collect(connect, monitor) {
   return {
-    acceptDrop: function(component, item) {
-      var delta = context.getCurrentOffsetDelta();
-      var left = Math.round(item.popoverView.get('left')+ delta.x);
-      var top = Math.round(item.popoverView.get('top') + delta.y);
-      Actions.popoverMove(item.viewer_id, item.page_id, {dragged: true, left: left, top: top, id: item.popoverPage.get('id'), time: (new Date()).getTime()});
-    }
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
   };
 }
-
 
 var LoadUnknown = React.createClass({
     request: function(){
@@ -49,15 +55,15 @@ var LoadUnknown = React.createClass({
     }
 })
 
-module.exports = React.createClass({
-        mixins: [DragDropMixin],
+var TabView = React.createClass({
+       /* mixins: [DragDropMixin],
     statics: {
     configureDragDrop: function(register, context) {
         register(DRAG_TYPES.POPOVER, {
             dropTarget: makeDropTarget(context)
           });
         }
-    },
+    },*/
     handleTab: function(active){
         Actions.showPage(this.props.viewer_id, active);
     },
@@ -110,19 +116,19 @@ module.exports = React.createClass({
     renderTabs: function(){
         var self = this;
         return  <TabbedArea activeKey={this.props.view.get('active_page_id')}
-                onSelect={this.handleTab}
-                onClose={this.closeTab}
-                viewer_id={this.props.viewer_id}
-                showCloseView={this.props.showCloseView }
-                closeView={this.closeView } >
-                { this.props.pages.map(function(page){
-                        return !page.get('print_only') ?
-                             <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
-                                { this.renderPage(page) }
-                            </TabPane> : null
-                      }, this).toJS() //can remove in react 0.13
-            }
-            </TabbedArea>
+                    onSelect={this.handleTab}
+                    onClose={this.closeTab}
+                    viewer_id={this.props.viewer_id}
+                    showCloseView={this.props.showCloseView }
+                    closeView={this.closeView } >
+                    { this.props.pages.map(function(page){
+                            return !page.get('print_only') ?
+                                 <TabPane key={page.get('id')} eventKey={page.get('id')} tab={page.get('full_title') || page.get('title')} >
+                                    { this.renderPage(page) }
+                                </TabPane> : null
+                          }, this).toJS()
+                }
+                </TabbedArea>
     },
     renderModals: function(){
         var active = this.props.view.get('active_page_id');
@@ -135,13 +141,13 @@ module.exports = React.createClass({
                 viewer_id={this.props.viewer_id}
                 page_id={active} />;
     },
-    render: function(){
+    renderInner: function(){
         var classes = "results-container ";
         if(this.modalVisible()){
             classes += 'showing-modal ';
         }
         if(this.props.pages.size >= 2){
-            return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
+            return <div className={classes} >
                 { this.modalVisible() ? this.renderModals() : null }
                 { this.renderTabs() }
             </div>
@@ -149,7 +155,7 @@ module.exports = React.createClass({
         }
         else if(this.props.pages.size === 1){
             var page = this.props.pages.get(0);
-            return <div className={classes} {...this.dropTargetFor(DRAG_TYPES.POPOVER)}>
+            return <div className={classes} >
                 { this.modalVisible() ? this.renderModals() : null }
                  { this.props.showCloseView ?
                     <div className="view-control">
@@ -163,6 +169,11 @@ module.exports = React.createClass({
         else{
             return <div className="results-empty"/>
         }
+    },
+    render: function(){
+        return this.props.connectDropTarget(this.renderInner());
     }
 
 });
+
+module.exports = DropTarget(DRAG_TYPES.POPOVER, target, collect)(TabView);

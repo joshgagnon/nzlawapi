@@ -88,5 +88,9 @@ module.exports = Reflux.createActions({
     'closeNotification' : {},
 
     'clearError': {},
-    'setError': {}
+    'setError': {},
+
+    'tourStart': {},
+    'tourNext': {},
+    'tourEnd': {}
 });

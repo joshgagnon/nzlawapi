@@ -289,14 +289,14 @@ module.exports = React.createClass({
         }
     },
     renderStub: function(){
-        return <div className="container">
+        return <div className="">
                 <div className="toggle-row">
                     <a role="button"  onClick={Actions.toggleAdvanced.bind(null, this.props.viewer_id, this.props.page_id)}>Advanced Search</a>
                 </div>
             </div>
     },
     renderForm: function(){
-        return <div className="container" onKeyDown={this.onKeyDown}>
+        return <div className="" onKeyDown={this.onKeyDown}>
             {/* <form className="form-horizontal">
                 <div className="form-group">
                     <label className="control-label col-sm-2"><span>Query Type</span></label>
