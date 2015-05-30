@@ -56,14 +56,6 @@ var LoadUnknown = React.createClass({
 })
 
 var TabView = React.createClass({
-       /* mixins: [DragDropMixin],
-    statics: {
-    configureDragDrop: function(register, context) {
-        register(DRAG_TYPES.POPOVER, {
-            dropTarget: makeDropTarget(context)
-          });
-        }
-    },*/
     handleTab: function(active){
         Actions.showPage(this.props.viewer_id, active);
     },

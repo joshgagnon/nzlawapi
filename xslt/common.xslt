@@ -170,12 +170,12 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:if test="not(ancestor::amend) and label!='' ">
-                <xsl:attribute name="data-location-breadcrumb">Part <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
+                <xsl:attribute name="data-location-breadcrumb">part <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
                 </xsl:if>
 
             <h2 class="part">
                 <xsl:if test="not(ancestor::amend) and label!='' ">
-                    <span class="label">Part <xsl:value-of select="label"/></span><br/>
+                    <span class="label">part <xsl:value-of select="label"/></span><br/>
                 </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>
@@ -642,7 +642,14 @@
             <xsl:value-of select="@id"/>
         </xsl:attribute>
         <xsl:if test="label != '' and starts-with(label, 'Part ')">
-               <xsl:attribute name="data-location">, <xsl:value-of select="normalize-space(label)"/></xsl:attribute>
+            <xsl:variable name="part">
+              <xsl:call-template name="string-replace-all">
+                <xsl:with-param name="text" select="label" />
+                <xsl:with-param name="replace" select="'Part '" />
+                <xsl:with-param name="by" select="''" />
+              </xsl:call-template>
+          </xsl:variable>
+               <xsl:attribute name="data-location">, part <xsl:value-of select="normalize-space($part)"/></xsl:attribute>
         </xsl:if>
             <h2 class="head1">
                  <xsl:if test="label != ''">

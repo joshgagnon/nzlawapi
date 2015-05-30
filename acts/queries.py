@@ -448,6 +448,8 @@ def prep_instrument(result, replace, db):
         heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         heights = result.get('heights')
+    #from links import analyze_new_links
+    #analyze_new_links(get_unprocessed_instrument(result.get('id'), db=db), db)
     return Instrument(
         id=result.get('id'),
         document=document,

@@ -26,7 +26,7 @@ def strip_html(result):
     return result
 
 
-instrument_query = """SELECT title, exists(select 1 from latest_instruments i where i.id=%(id)s) as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+instrument_query = """SELECT title, exists(select 1 from newest i where i.id=%(id)s) as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
         i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
         i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
         i.instructing_office, i.number, processed_document as document, (i.type = 'bill' and bill_enacted) as bill_enacted

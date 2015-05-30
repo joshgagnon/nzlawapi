@@ -176,7 +176,7 @@ def get_path(node, force_part=False):
                 text = n.xpath('./label')[0].text
                 if text:
                     text = re.sub('part ', '', text, flags=re.I)
-                    result = u'part %s ' % n.xpath('./label')[0].text + result
+                    result = u'part %s ' % text + result
 
     it = itertools.chain([node] if node.tag == 'schedule' else [], iter(node.iterancestors('schedule')))
     for n in it:

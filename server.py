@@ -50,7 +50,6 @@ with open('build/manifest.json') as m:
     app.config['manifest'] =json.loads(m.read())
 
 if app.config.get('LOG_FILE'):
-
     handler = RotatingFileHandler(
     app.config['LOG_FILE'],
     'a',

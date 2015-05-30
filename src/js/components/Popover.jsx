@@ -197,6 +197,7 @@ var Popover = React.createClass({
             this.reposition();
         },
         reposition: function(){
+            // dumb, use boundingrectangle
             var self = this, left=this.props.popoverView.get('left') , top=this.props.popoverView.get('top');
             var width = this.getDOMNode().offsetWidth,
                 container_width = this.props.getScrollContainer()[0].clientWidth;
@@ -275,6 +276,34 @@ module.exports = {
         },
         close: function() {
              this.props.closeAll();
+        },
+        render: function(){
+            var classes = 'cata-popover';
+            return <div className={classes}>
+                    <h3 className="popover-title">{this.props.popoverPage.get('title')}</h3>
+                    <div className="popover-close" onClick={this.close}>&times;</div>
+                    <div className='popover-content'>
+                        {this.renderBody() }
+                    </div>
+                    { this.renderFooter() }
+
+                </div>
+        }
+    }),
+    TabletPopover:  React.createClass({
+        mixins: [PopoverBehaviour, ArticleHandlers],
+        componentDidMount: function(){
+            if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
+                Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
+            }
+        },
+        componentDidUpdate: function(){
+            if(!this.getLocalContent() && !this.props.popoverPage.get('fetched')){
+                Actions.requestPopoverData(this.props.page_id, this.props.popoverPage.get('id'));
+            }
+        },
+        close: function() {
+            this.props.closeAll();
         },
         render: function(){
             var classes = 'cata-popover';

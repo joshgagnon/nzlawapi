@@ -46,10 +46,36 @@ var MobilePopovers = React.createClass({
     }
 });
 
+var TabletPopovers = React.createClass({
+    // Mobile only renders the last one
+    shouldComponentUpdate: function(newProps){
+        return (this.props.popoverView !== newProps.popoverView) || (this.props.popoverData !== newProps.popoverData)
+    },
+    closeAll: function(){
+       /* this.props.popoverView.map(function(view, key){
+            Actions.popoverClosed(this.props.viewer_id, this.props.page_id, key);
+        }, this);*/
+    },
+    render: function(){
+        var last = this.props.popoverView
+                    .sort(function(a, b){ return (a.get('time')||0) - (b.get('time')||0)})
+                    .keySeq().last();
+        if(last !== undefined){
+            var pop = this.props.popoverData.get(last)
+            return <div className="tablet-popovers">
+                    <Popover.MobilePopover popoverPage={pop} popoverView={this.props.popoverView.get(last)}  page_id={this.props.page_id}
+                    getScrollContainer={this.props.getScrollContainer} closeAll={this.closeAll}/>
+                </div>
+        }
+        return <div/>
+    }
+});
+
+
 
 module.exports = {
     renderFullPopovers: function(props){
-        return <MQ minWidth={480}>
+        return <MQ minWidth={1200}>
             { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
             <Popovers
                 {...props}
@@ -60,8 +86,20 @@ module.exports = {
             : null }
         </MQ>
     },
+    renderTabletPopovers: function(props){
+        return <MQ minWidth={480} maxWidth={1199}>
+            { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
+            <TabletPopovers
+                {...props}
+                popoverData={this.props.page.get('popovers')}
+                popoverView={this.props.view.getIn(['popovers', this.props.page.get('id')])}
+                viewer_id={this.props.viewer_id}
+                page_id={this.props.page.get('id')} />
+            : null }
+        </MQ>
+    },
     renderMobilePopovers: function(){
-        return <MQ maxWidth={480}>
+        return <MQ maxWidth={479}>
             { this.props.view.getIn(['popovers', this.props.page.get('id')]) ?
             <MobilePopovers
                 popoverData={this.props.page.get('popovers')}

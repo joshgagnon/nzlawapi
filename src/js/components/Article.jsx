@@ -43,7 +43,7 @@ $.fn.isOnScreen = function(tolerance){
     return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
 };
 
-var id_parent_el = '.part[id], .subpart[id], .schedule[id], .crosshead[id], div.prov[id], .form[id]';
+var id_parent_el = '.part[id], .subpart[id], .schedule[id], .crosshead[id], div.prov[id], .form[id], .head1[id]';
 
 var ArticleSkeletonContent = React.createClass({
     mixins: [
