@@ -88,7 +88,12 @@
               border-radius: 0;
             }
         .popover-content{
-
+          &>*{
+                position: absolute;
+                bottom: 38px;
+                top: 32px;
+                    width: 100%;
+            }
         }
         .popover-footer{
           position: absolute;

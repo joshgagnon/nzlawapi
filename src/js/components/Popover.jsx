@@ -120,7 +120,7 @@ var PopoverBehaviour = {
                 </div>
         }
         else{
-            return <div className='csspinner traditional' />
+            return <div><div className='csspinner traditional' /></div>;
         }
     },
     addToPrint: function(){

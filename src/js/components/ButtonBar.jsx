@@ -36,7 +36,7 @@ module.exports = React.createClass({
         if(this.props.page && this.props.page.getIn(['content', 'path'])){
             var url = this.props.page.getIn(['content', 'path']).replace('.xml', '.pdf');
             return <li className="suboption">
-                        <a target="_blank" href={this.base_url + url}  ><span className="fa fa-file-pdf-o" title="Full PDF"/><span className="sublabel">Full PDF</span>
+                        <a target="_blank" href={this.base_url + url}  ><span className="fa fa-file-pdf-o" title="Offical PDF"/><span className="sublabel">Official PDF</span>
                 </a></li>
         }
     },
