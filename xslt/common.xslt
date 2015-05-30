@@ -175,7 +175,7 @@
 
             <h2 class="part">
                 <xsl:if test="not(ancestor::amend) and label!='' ">
-                    <span class="label">part <xsl:value-of select="label"/></span><br/>
+                    <span class="label">Part <xsl:value-of select="label"/></span><br/>
                 </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>

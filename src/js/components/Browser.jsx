@@ -234,11 +234,13 @@ var Browser = React.createClass({
     handleFocusEnter: function(e){
         if (e.key === 'Enter') {
             this.submitFocus(e);
+            this.prevent(e);
         }
     },
     handleJumpToEnter: function(e){
         if (e.key === 'Enter') {
             this.submitJumpTo(e);
+            this.prevent(e);
         }
     },
     // deprecated
@@ -362,12 +364,16 @@ var Browser = React.createClass({
             </div>
         </div>
     },
+    prevent: function(e){
+        e.preventDefault();
+        e.stopPropagation()
+    },
     renderForm: function(){
         var formClasses = '';
         if(this.showLocation()){
             formClasses += 'showing-location';
         }
-        return  <form ref="form" className={formClasses} onFocus={this.handleFormFocus} >
+        return  <form ref="form" className={formClasses} onFocus={this.handleFormFocus} onSubmit={this.prevent}>
                  <AutoComplete onUpdate={this.handleArticleChange} className='main-search' autoCapitalize="off" autoCorrect="off" submit={this.fetch}
                     search_value={{search_query: this.state.search_query, id: this.state.document_id, type: this.state.article_type }}
                     ref="autocomplete" >

@@ -21,7 +21,7 @@ var DefinitionResult = React.createClass({
 });
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers, PageMixins, GetMore],
+    mixins: [ArticleHandlers, PageMixins, GetMore],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },
@@ -50,8 +50,6 @@ module.exports = React.createClass({
             <div className="search-results legislation-result" onClick={this.interceptLink}>
                 <div className="search-count">{total} Results Found</div>
                 {resultContent}
-                { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
-                { this.renderMobilePopovers() }
             </div>
     );
     }

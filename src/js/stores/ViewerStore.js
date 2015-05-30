@@ -131,7 +131,17 @@ module.exports =  Reflux.createStore({
         this.prepPage(viewer_id, page_id);
         var open = this.views.getIn([viewer_id, 'popovers', page_id], Immutable.Map())
         var obj = {};
-        obj[link_data.id] = _.pick(link_data, 'left', 'top', 'time');
+        obj[link_data.id] = _.pick(link_data, 'left', 'top', 'time', 'stack');
+        if(obj[link_data.id].stack === null){
+                var prev = open
+                    .sort(function(a, b){ return (a.get('time')||0) - (b.get('time')||0)})
+                    .keySeq().last();
+                if(prev){
+                    obj[link_data.id].stack  = this.views.getIn([viewer_id, 'popovers', page_id, prev, 'stack']) ? 0 : 1;
+                }
+
+            obj.stack
+        }
         if(!obj[link_data.id].time){
             obj[link_data.id].time = (new Date()).getTime();
         }

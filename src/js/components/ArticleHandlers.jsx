@@ -70,12 +70,14 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                                 doc_type: 'instrument',
                                 find: location_string ? 'location' : 'preview',
                                 location: location_string,
-                                link_text: $(e.target).text()
+                                link_text: $(e.target).text(),
+                                stack: this.popoverStack ? this.popoverStack() : null
                             },
                             query_string: '/link/'+url
                         });
                 }
                 if(link.attr('data-link-id') && link.attr('data-query')){
+
                     Actions.popoverOpened(this.props.viewer_id, page_id,
                         {
                             type: POPOVER_TYPES.LINK,
@@ -84,7 +86,8 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                             left: link.position().left + this.overlayOffset().left - popover_offset,
                             top:link.position().top+ this.overlayOffset().top,
                             fetched: false,
-                            query_string: link.attr('data-query')
+                            query_string: link.attr('data-query'),
+                            stack: this.popoverStack ? this.popoverStack() : null
                         });
                 }
                 else if(link.attr('data-def-id')){
@@ -101,7 +104,8 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                         top:link.position().top + this.overlayOffset().top,
                         source_sel: '[data-def-idx="'+link.attr('data-def-idx')+'"]',
                         fetched: false,
-                        query_string: url
+                        query_string: url,
+                        stack: this.popoverStack ? this.popoverStack() : null
                     });
                 }
             }

@@ -170,7 +170,7 @@ var Popover = React.createClass({
         propTypes: {
             popoverView: React.PropTypes.object.isRequired,
             popoverPage: React.PropTypes.object.isRequired,
-            getScrollContainer: React.PropTypes.func.isRequired,
+           // getScrollContainer: React.PropTypes.func.isRequired,
             connectDragSource: React.PropTypes.func.isRequired,
             isDragging: React.PropTypes.bool.isRequired,
             connectDragPreview: React.PropTypes.func.isRequired
@@ -304,6 +304,9 @@ module.exports = {
         },
         close: function() {
             this.props.closeAll();
+        },
+        popoverStack: function(){
+            return this.props.popoverView.get('stack') ? 0 : 1;
         },
         render: function(){
             var classes = 'cata-popover';

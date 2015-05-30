@@ -11,7 +11,7 @@ var Popovers = require('./Popovers.jsx');
 var GetMore = require('../mixins/GetMore')
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers, PageMixins, GetMore],
+    mixins: [ArticleHandlers, PageMixins, GetMore],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },
@@ -23,6 +23,7 @@ module.exports = React.createClass({
     },
     render: function() {
         var resultContent;
+        var width = 1200;
         if(this.props.page.getIn(['content', 'search_results'])) {
             if(this.props.page.getIn(['content', 'search_results', 'hits'])) {
                 resultContent = this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i) {
@@ -49,8 +50,7 @@ module.exports = React.createClass({
             <div className="search-results legislation-result" onClick={this.interceptLink}>
                 <div className="search-count">{total} Results Found</div>
                 {resultContent}
-                { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
-                { this.renderMobilePopovers() }
+                <Popovers width={width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} get_container={this.getContainer} />
             </div>
     );
     }

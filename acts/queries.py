@@ -170,8 +170,8 @@ def process_skeleton(id, tree, db=None):
             cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
 
     db.commit()
-
-    insert_instrument_es(id, db)
+    # TODO
+    #insert_instrument_es(id, db)
 
     return skeleton
 

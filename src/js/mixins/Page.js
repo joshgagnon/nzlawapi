@@ -16,6 +16,9 @@ module.exports = {
     getScrollContainer: function(){
         return $(React.findDOMNode(this)).parents('.tab-content, .results-container');
     },
+    getContainer: function(){
+        return React.findDOMNode(this);
+    },
     overlayOffset: function(){
         return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
     },

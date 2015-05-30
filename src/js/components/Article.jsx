@@ -11,6 +11,7 @@ var ArticleHandlers = require('./ArticleHandlers.jsx')
 var Utils = require('../utils');
 var Immutable = require('immutable');
 var ArticleLocation= require('./BreadCrumbs.jsx').ArticleLocation;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var _ = require('lodash');
 var $ = require('jquery');
@@ -526,16 +527,21 @@ var ArticleContent = React.createClass({
 
 
 var Article = React.createClass({
-    mixins: [ArticleHandlers, Popovers],
+    mixins: [ArticleHandlers, PureRenderMixin],
+    getInitialState: function(){
+        return {width: null}
+    },
     componentDidMount: function(){
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
        }
+       this.setState({width: React.findDOMNode(this).clientWidth});
     },
     componentDidUpdate: function(){
        if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
             Actions.requestPage(this.props.page.get('id'));
        }
+       this.setState({width: React.findDOMNode(this).clientWidth});
     },
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
@@ -550,6 +556,9 @@ var Article = React.createClass({
         // to do, remove $
         return $(this.getDOMNode()).closest('.tab-content, .results-container')
     },
+    getContainer: function(){
+        return React.findDOMNode(this);
+    },
     overlayOffset: function(){
         return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
     },
@@ -560,6 +569,7 @@ var Article = React.createClass({
         return this.props.page.getIn(['content', 'title'])
     },
     render: function(){
+        var width = this.state.width;
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>
         }
@@ -572,22 +582,21 @@ var Article = React.createClass({
            { this.warningsAndErrors() }
             <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} container={this} content={this.props.page.get('content') }/>
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
-           <ArticleSkeletonContent ref="content"
-                getScrollContainer={this.getScrollContainer}
-                content={this.props.page.get('content') }
-                parts={this.props.page.get('parts') }
-                viewer_id={this.props.viewer_id}
-                view={this.props.view}
-                page_id={this.props.page.get('id')} />    :
-          <ArticleContent ref="content"
-                getScrollContainer={this.getScrollContainer}
-                content={this.props.page.get('content') }
-                viewer_id={this.props.viewer_id}
-                view={this.props.view}
-                page_id={this.props.page.get('id')} /> }
+               <ArticleSkeletonContent ref="content"
+                    getScrollContainer={this.getScrollContainer}
+                    content={this.props.page.get('content') }
+                    parts={this.props.page.get('parts') }
+                    viewer_id={this.props.viewer_id}
+                    view={this.props.view}
+                    page_id={this.props.page.get('id')} />    :
+              <ArticleContent ref="content"
+                    getScrollContainer={this.getScrollContainer}
+                    content={this.props.page.get('content') }
+                    viewer_id={this.props.viewer_id}
+                    view={this.props.view}
+                    page_id={this.props.page.get('id')} /> }
 
-            { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
-            { this.renderMobilePopovers() }
+            <Popovers width={width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
         </div>
     }
  });

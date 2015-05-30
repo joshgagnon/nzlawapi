@@ -13,7 +13,7 @@ var PageMixins = require('../mixins/Page');
 var $ = require('jquery');
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, Popovers, PageMixins],
+    mixins: [ArticleHandlers, PageMixins],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },
@@ -24,14 +24,12 @@ module.exports = React.createClass({
         return null;
     },
     render: function(){
-
+        // TODO, popovers?
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html_content']) ?
                     <div ref="content" className="legislation-result" >
                         <div dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
-                                     { this.renderFullPopovers({getScrollContainer: this.getScrollContainer}) }
-                                    { this.renderMobilePopovers() }
                     </div> :
                     null }
 
