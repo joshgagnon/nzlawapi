@@ -42,7 +42,7 @@ var ArticleSkeletonContent = React.createClass({
         ArticleLocation
     ],
     scroll_threshold: 4000,
-    fetch_threshold: 10000,
+    fetch_threshold: 5000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
@@ -243,7 +243,7 @@ var ArticleSkeletonContent = React.createClass({
                 }
                 change = change || local_change;
                 // replace with above and below threadhols
-                if(this.fetch(distance)){
+                if(this.fetch(distance) && requested_parts.length < 20){
                     requested_parts.push(k);
                 }
             }, this);
