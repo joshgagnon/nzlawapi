@@ -67,6 +67,7 @@ var PageStore = Reflux.createStore({
         // beware of necessary tranformsation
         // consider just hashing that object above
         // or, could add NaN or some other hack to mark 'dirty' pages, maybe after user interaction
+
         return this.pages.find(function(p){
             if(page_data.query_string && page_data.query_string===p.get('query_string')){
                 return true;

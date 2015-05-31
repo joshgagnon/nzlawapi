@@ -119,7 +119,7 @@ module.exports =  Reflux.createStore({
         this.prepPage(viewer_id, page_id);
         this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id});
         if(options){
-            this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id], _.omit(options, 'positions'));
+            this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id], options);
             this.views = this.views.mergeDeepIn([viewer_id, 'positions', page_id], options.position);
         }
         this.update();

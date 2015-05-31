@@ -11,9 +11,11 @@ var Immutable = require('immutable');
 var DefinitionError = require('./Warnings.jsx').DefinitionError;
 var PageMixins = require('../mixins/Page');
 var $ = require('jquery');
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, PageMixins],
+    mixins: [ArticleHandlers, PageMixins, PureRenderMixin],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },
@@ -24,7 +26,7 @@ module.exports = React.createClass({
         return null;
     },
     render: function(){
-        // TODO, popovers?
+
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html_content']) ?
@@ -32,6 +34,7 @@ module.exports = React.createClass({
                         <div dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html_content'])}} />
                     </div> :
                     null }
+                <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
 
             </div>
     }

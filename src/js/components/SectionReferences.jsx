@@ -11,9 +11,11 @@ var Immutable = require('immutable');
 var SectionReferenceError = require('./Warnings.jsx').SectionReferenceError;
 var PageMixins = require('../mixins/Page');
 var $ = require('jquery');
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, PageMixins],
+    mixins: [ArticleHandlers, PageMixins, PureRenderMixin],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },
@@ -24,13 +26,13 @@ module.exports = React.createClass({
         return null;
     },
     render: function(){
-        var width = 1000;
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html']) ?
                     <div ref="content" className="legislation-result" >
                         <div dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html'])}} />
-   <Popovers width={width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} get_container={this.getContainer} />
+
+                    <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
 
                     </div> :
                     null }

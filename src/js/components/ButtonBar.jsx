@@ -114,12 +114,12 @@ module.exports = React.createClass({
                     <span className="sublabel">Notes</span>
                 </a>
             </li>
-            <li className="suboption">
+            { this.props.show_split ? <li className="suboption">
                 <a onClick={Actions.toggleSplitMode}>
                     <span className="fa fa-columns"  title="Columns"/>
                     <span className="sublabel">Columns</span>
                 </a>
-            </li>
+            </li> : null }
             { this.props.sidebar ? <li className="suboption">
                 <a onClick={Actions.toggleSidebar}>
                     <span className="fa fa-list-ul"  title="Side Bar"/>

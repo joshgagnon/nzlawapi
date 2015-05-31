@@ -3,6 +3,7 @@
 
      min-width:500px;
 
+     font-size:14px;
 
      .popover-content{
       padding: 0;
@@ -68,6 +69,7 @@
   $mobile-popover-height: 50%;
   $popover-title-height: 30px;
   $popover-footer-height: 40px;
+
   .tablet-popovers,
   .mobile-popovers {
     .cata-popover{
@@ -80,12 +82,12 @@
         height: $mobile-popover-height;
         max-height: 200px;
         background-color: white;
-        border-top: 1px solid  #ebebeb;
+       // border: 1px solid  #ebebeb;
         .popover-title {
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-              border-radius: 0;
+              //border-radius: 0;
             }
         .popover-content{
           &>*{
@@ -94,6 +96,9 @@
                 top: 32px;
                     width: 100%;
             }
+        }
+        .popover-close{
+            top: 2px;
         }
         .popover-footer{
           position: absolute;
@@ -105,48 +110,61 @@
     }
   }
 
+.tablet-popovers:first-child:not(:last-child){
+      .cata-popover{
+
+      .popover-title {
+              border-radius: 5px 0 0 0;
+      }
+  }
+}
+
+.tablet-popovers ~ .tablet-popovers:last-child{
+      .cata-popover{
+
+    .popover-title {
+            border-radius: 0 5px 0 0;
+    }
+  }
+}
   .tablet-popovers.left{
     .cata-popover{
-     border-right: 1px solid  #ebebeb;
+     //border-right: 1px solid  #ebebeb;
     right:50%;
        left:50px;
      }
   }
   .tablet-popovers.right{
     .cata-popover{
-    border-left: 1px solid  #ebebeb;
+    //border-left: 1px solid  #ebebeb;
     left:50%;
     right:20px;
   }
   }
+
+
   .tablet-popovers.left + .tablet-popovers.right{
     .cata-popover{
-    border-left: 0px solid #ebebeb;
+    //border-left: 0px solid #ebebeb;
   }
   }
 
-.split .results-container{
+.split .results-container:first-child{
   .mobile-popovers{
     .cata-popover{
-    width:50%;
+      right:50%;
   }
   }
+}
 
-  &:nth-child(1){
-    .mobile-popovers, .tablet-popovers.left{
-      .cata-popover{
-       left:50px;
-     }
-      }
+.split .results-container:last-child{
+  .mobile-popovers{
+    .cata-popover{
+      left:50%;
   }
-  &:nth-child(2){
-    .mobile-popovers{
-      .cata-popover{
-        left:50%;
-      }
   }
 }
-}
+
 @media (min-width: $screen-sm-min){
   .results-container{
     .mobile-popovers{

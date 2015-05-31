@@ -170,8 +170,8 @@ def process_skeleton(id, tree, db=None):
             cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
 
     db.commit()
-    # TODO
-    #insert_instrument_es(id, db)
+
+    insert_instrument_es(id, db)
 
     return skeleton
 
@@ -256,7 +256,7 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
     current_app.logger.info('Processing: %s' % row.get('title'))
     if not tree:
         tree = etree.fromstring(row.get('document'), parser=large_parser)
-    if not latest:
+    if not row.get('latest', True):
         tree.attrib['old-version'] = 'true'
 
     definitions = Definitions()

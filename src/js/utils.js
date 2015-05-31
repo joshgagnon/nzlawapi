@@ -80,6 +80,18 @@ module.exports = {
             return '[data-location="'+loc+'"]'
         }).join(' ');
 
+    },
+    rangeDistance: function(x, y){
+        var result = 0;
+        var inv = 1;
+        if(x[0] > y[0]){
+            var tmp = y;
+            y = x;
+            x = tmp;
+            inv = -1;
+         }
+         if(x[1] < y[0]){ result = y[0] - x[1]; }
+         return result * inv;
     }
 
 }

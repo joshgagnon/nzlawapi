@@ -74,6 +74,9 @@
               height: 41px;
           }
         }
+        .close-all ~ .drops{
+                width: calc(100% - 50px);
+        }
         .dropdown-menu{
             right:0;
         }

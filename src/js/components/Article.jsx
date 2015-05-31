@@ -12,7 +12,7 @@ var Utils = require('../utils');
 var Immutable = require('immutable');
 var ArticleLocation= require('./BreadCrumbs.jsx').ArticleLocation;
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
-
+var PageMixin = require('../mixins/Page')
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -33,16 +33,6 @@ function stopPropagation(e){
 }
 
 
-$.fn.isOnScreen = function(tolerance){
-    tolerance = tolerance || 0;
-    var viewport = {};
-    viewport.top = $(window).scrollTop();
-    viewport.bottom = viewport.top + $(window).height();
-    var bounds = {};
-    bounds.top = this.offset().top;
-    bounds.bottom = bounds.top + this.outerHeight();
-    return ((bounds.top <= viewport.bottom + tolerance) && (bounds.bottom >= viewport.top - tolerance));
-};
 
 var id_parent_el = '.part[id], .subpart[id], .schedule[id], .crosshead[id], div.prov[id], .form[id], .head1[id]';
 
@@ -101,7 +91,7 @@ var ArticleSkeletonContent = React.createClass({
     },
     setupSkeletonScroll: function(){
         var $parent = this.getScrollContainer();
-        this.debounce_scroll = _.debounce(this.updateSkeletonScroll, 10);
+        this.debounce_scroll = _.debounce(this.updateSkeletonScroll, 100);
         $parent.on('scroll', this.debounce_scroll);
         this.debounce_visibility = _.debounce(this.setSubVisibility, 300);
         $parent.on('scroll',  this.debounce_visibility);
@@ -184,7 +174,7 @@ var ArticleSkeletonContent = React.createClass({
         var upper = this.props.content.getIn(['heights', this.state.widths[Math.min(height_ratio.key+1, this.state.widths.length-1)]+'']).toJS();
         for(var i=0;i < lower.length; i++){
             var key = i+''
-            this.calculated_heights[key] = (lower[i] -upper[i] ) * height_ratio.coeff  + lower[i];
+            this.calculated_heights[key] = Math.floor((lower[i] -upper[i] ) * height_ratio.coeff  + lower[i]);
             if(!this.measured_heights[key]){
                 this._refs[key].style.height=this.calculated_heights[key]+'px';
             }
@@ -208,6 +198,23 @@ var ArticleSkeletonContent = React.createClass({
                 });
         this.updateSkeletonScroll()
     },
+    distance: function(k, top, height){
+        var part_top = this._skeleton_locations[k].root;
+        var part_height = this.measured_heights[k] || this.calculated_heights[k];
+        return Utils.rangeDistance([part_top, part_top+part_height], [top, top+height]);
+    },
+    show: function(distance){
+        if(distance >= 0){
+            return distance < this.scroll_threshold;
+        }
+        return -distance/8 < this.scroll_threshold;
+    },
+    fetch: function(distance){
+        if(distance >= 0){
+            return distance < this.fetch_threshold;
+        }
+        return -distance/8 < this.fetch_threshold;
+    },
     setSubVisibility: function(){
         if(this.isMounted()){
             var self = this;
@@ -217,7 +224,8 @@ var ArticleSkeletonContent = React.createClass({
             var requested_parts = [];
              var resize_index =  this._part_count;
             _.each(this._refs, function(r, k){
-                var show = $(r).isOnScreen(self.scroll_threshold);
+                var distance = this.distance(k, top, height);
+                var show = this.show(distance);
                 var local_change = false;
                 if(this._visible[k] !== show){
                     local_change = true;
@@ -235,7 +243,7 @@ var ArticleSkeletonContent = React.createClass({
                 }
                 change = change || local_change;
                 // replace with above and below threadhols
-                if($(r).isOnScreen(self.fetch_threshold)){
+                if(this.fetch(distance)){
                     requested_parts.push(k);
                 }
             }, this);
@@ -253,6 +261,7 @@ var ArticleSkeletonContent = React.createClass({
     showPart: function(k, parts){
         var height_change = false;
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
+
             var scroll_el = this.getScrollContainer()[0]
             var container_height = scroll_el.scrollHeight;
             var old_height = this._refs[k].offsetHeight;
@@ -260,11 +269,12 @@ var ArticleSkeletonContent = React.createClass({
            this._refs[k].classList.remove('csspinner');
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
             this.measured_heights[k] =  this._refs[k].offsetHeight;
+
             if(old_height !== this.measured_heights[k]){
                 height_change = true;
                 var scroll = scroll_el.scrollTop;
 
-                if(scroll + scroll_el.clientHeight > this._refs[k].offsetTop + this.measured_heights[k]){
+                if(scroll  > this._refs[k].offsetTop + this.measured_heights[k]){
                    this.getScrollContainer().scrollTop(scroll - (container_height - scroll_el.scrollHeight)) ;
                 }
             }
@@ -527,21 +537,12 @@ var ArticleContent = React.createClass({
 
 
 var Article = React.createClass({
-    mixins: [ArticleHandlers, PureRenderMixin],
-    getInitialState: function(){
-        return {width: null}
+    mixins: [ArticleHandlers, PureRenderMixin, PageMixin],
+    getDocumentId: function(target){
+        return this.props.page.getIn(['content', 'document_id'])
     },
-    componentDidMount: function(){
-       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
-            Actions.requestPage(this.props.page.get('id'));
-       }
-       this.setState({width: React.findDOMNode(this).clientWidth});
-    },
-    componentDidUpdate: function(){
-       if(!this.props.page.get('fetching') && !this.props.page.get('fetched')){
-            Actions.requestPage(this.props.page.get('id'));
-       }
-       this.setState({width: React.findDOMNode(this).clientWidth});
+    getTitle: function(target){
+        return this.props.page.getIn(['content', 'title'])
     },
     warningsAndErrors: function(){
         if(this.props.page.getIn(['content', 'error'])){
@@ -552,24 +553,7 @@ var Article = React.createClass({
         }
         return null;
     },
-    getScrollContainer: function(){
-        // to do, remove $
-        return $(this.getDOMNode()).closest('.tab-content, .results-container')
-    },
-    getContainer: function(){
-        return React.findDOMNode(this);
-    },
-    overlayOffset: function(){
-        return {'left': this.getScrollContainer().scrollLeft(), 'top': this.getScrollContainer().scrollTop()};
-    },
-    getDocumentId: function(target){
-        return this.props.page.getIn(['content', 'document_id'])
-    },
-    getTitle: function(target){
-        return this.props.page.getIn(['content', 'title'])
-    },
     render: function(){
-        var width = this.state.width;
         if(!this.props.page.get('content')){
             return <div className="search-results"><div className="full-csspinner" /></div>
         }
@@ -596,7 +580,7 @@ var Article = React.createClass({
                     view={this.props.view}
                     page_id={this.props.page.get('id')} /> }
 
-            <Popovers width={width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
+            <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
         </div>
     }
  });

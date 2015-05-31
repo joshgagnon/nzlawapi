@@ -38,19 +38,9 @@ var ClickOut = require('../mixins/ClickOut')
 var ClearInput = require('./ClearInput.jsx');
 var HTML5Backend = require('react-dnd/modules/backends/HTML5');
 var DragDropContext = require('react-dnd').DragDropContext;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
-$.fn.focusNextInputField = function() {
-    return this.each(function() {
-        var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
-        var index = fields.index( this );
-
-        if ( index > -1 && ( index + 1 ) < fields.length ) {
-            fields.eq( index + 1 ).focus();
-        }
-        return false;
-    });
-};
-
+var SPLIT_MIN = 768;
 
 // only current used for reset
 var FormStore = Reflux.createStore({
@@ -106,7 +96,8 @@ var Browser = React.createClass({
         Reflux.listenTo(FormStore, 'onState'),
         ReactRouter.State,
         UndoMixin,
-        ClickOut
+        ClickOut,
+        PureRenderMixin
     ],
     contextTypes: {
         //router: React.PropTypes.func.isRequired
@@ -116,7 +107,8 @@ var Browser = React.createClass({
             pages: Immutable.List(),
             views: ViewerStore.getDefaultData(),
             browser: BrowserStore.getInitialState().browser,
-            print: Immutable.List()
+            print: Immutable.List(),
+            width: null
         };
     },
     componentDidMount: function(){
@@ -144,8 +136,24 @@ var Browser = React.createClass({
         else{
             Actions.loadPrevious();
         }
+         this.setState({width: React.findDOMNode(this).clientWidth});
+         this.checkWidth();
     },
+    componentDidUpdate: function(){
+         this.setState({width: React.findDOMNode(this).clientWidth});
+         this.checkWidth();
+    },
+    checkWidth: function(){
+        if(this.state.width && this.state.width < SPLIT_MIN){
+            if(this.state.browser.get('split_mode')){
+                Actions.deactivateSplitMode();
+                if(this.state.browser.get('print_mode')){
+                    Actions.deactivatePrintMode();
+                }
+            }
 
+        }
+    },
     onState: function(state){
         // this will bite us in the ass at some point
         this.__state = _.extend(this.__state, state);
@@ -206,19 +214,22 @@ var Browser = React.createClass({
     },
     open: function(page, view, options){
         Actions.newPage(page, view, options);
-        //this.setState({show_location: false});
     },
     handleFormFocus: function(){
         if(this.state.document_id){
             this.setState({show_location: true})
         }
     },
+    typeToDocType: function(value){
+        return 'instrument';
+    },
     handleArticleChange: function(value){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
         this.setState({search_query: value.search_query,
             document_id: value.id, focus: '', jump_to: '',
-            article_type: value.type, find: value.find,
+            article_type: this.typeToDocType(value.type),
+            find: value.find,
             show_location: !!value.id,
             query: value.query});
 
@@ -321,7 +332,7 @@ var Browser = React.createClass({
         else if(this.state.browser.get('print_mode')){
 
             return <div className="print">
-                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} showOpenColumns={true} />
+                <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} showOpenColumns={this.state.width > SPLIT_MIN} />
             </div>
         }
         else if(this.state.browser.get('split_mode')){
@@ -386,7 +397,7 @@ var Browser = React.createClass({
     },
     renderDropdown: function(){
         var active = this.getActive();
-        return <ButtonBar page={active} page_dialog={this.canHaveSidebar(active)} user_controls={true} viewer_id='tab-0'/>;
+        return <ButtonBar page={active} page_dialog={this.canHaveSidebar(active)} user_controls={true} viewer_id='tab-0' show_split={false}/>;
     },
     render: function(){
         var active = this.getActive();
@@ -408,7 +419,7 @@ var Browser = React.createClass({
                 { this.renderDropdown() }
             </MQ>
             <MQ minWidth={992}>
-                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0'  />
+                <ButtonBar page={active} sidebar={this.canHaveSidebar(active)} viewer_id='tab-0' show_split={this.state.width>SPLIT_MIN}  />
             </MQ>
             { this.renderBody() }
             <Notifications />

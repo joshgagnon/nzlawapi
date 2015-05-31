@@ -67,12 +67,16 @@
             padding: 0;
           }
         .print-summary{
+            float:left;
+            width:100%;
             &:hover .btn-group{
                 opacity: 1;
             }
             .buttons{
                 float:right
-
+            }
+            .title{
+                float:left;
             }
             padding:6px;
               margin-bottom: 4px;
