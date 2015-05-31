@@ -42,7 +42,7 @@ var ArticleSkeletonContent = React.createClass({
         ArticleLocation
     ],
     scroll_threshold: 4000,
-    fetch_threshold: 5000,
+    fetch_threshold: 4000,
     propTypes: {
        content: React.PropTypes.object.isRequired,
     },
@@ -207,13 +207,13 @@ var ArticleSkeletonContent = React.createClass({
         if(distance >= 0){
             return distance < this.scroll_threshold;
         }
-        return (-distance)/8 < this.scroll_threshold;
+        return (-distance)*8 < this.scroll_threshold;
     },
     fetch: function(distance){
         if(distance >= 0){
             return distance < this.fetch_threshold;
         }
-        return (-distance)/8 < this.fetch_threshold;
+        return (-distance)*8 < this.fetch_threshold;
     },
     setSubVisibility: function(){
         if(this.isMounted()){
@@ -225,6 +225,7 @@ var ArticleSkeletonContent = React.createClass({
              var resize_index =  this._part_count;
             _.each(this._refs, function(r, k){
                 var distance = this.distance(k, top, height);
+
                 var show = this.show(distance);
                 var local_change = false;
                 if(this._visible[k] !== show){
@@ -243,7 +244,7 @@ var ArticleSkeletonContent = React.createClass({
                 }
                 change = change || local_change;
                 // replace with above and below threadhols
-                if(this.fetch(distance) && requested_parts.length < 20){
+                if(this.fetch(distance)){
                     requested_parts.push(k);
                 }
             }, this);
