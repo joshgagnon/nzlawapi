@@ -326,6 +326,10 @@ var ArticleSkeletonContent = React.createClass({
         if(this.props.parts !== newProps.parts){
             this.updateParts(newProps.parts);
         }
+        var newPosition = newProps.view.getIn(['settings', this.props.page_id, 'position']);
+        if(newPosition && this.props.view.getIn(['settings', this.props.page_id, 'position']) !== newPosition){
+            this.onJumpTo(this.props.viewer_id, newPosition.toJS());
+        }
         return this.props.content !== newProps.content;
     },
     render: function(){
@@ -355,6 +359,7 @@ var ArticleSkeletonContent = React.createClass({
         }
     },
     onJumpTo: function(viewer_id, jump){
+        console.log(jump)
         this._delayed_jump;
         if(viewer_id!== this.props.viewer_id){
             return;
@@ -451,6 +456,10 @@ var ArticleContent = React.createClass({
     },
 
     shouldComponentUpdate: function(newProps, newState){
+        var newPosition = newProps.view.getIn(['settings', this.props.page_id, 'position']);
+        if(newPosition && this.props.view.getIn(['settings', this.props.page_id, 'position']) !== newPosition){
+            this.onJumpTo(this.props.viewer_id, newPosition.toJS());
+        }
         return this.props.content !== newProps.content;
     },
     render: function(){
