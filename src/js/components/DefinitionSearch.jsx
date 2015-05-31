@@ -9,6 +9,7 @@ var ArticleHandlers = require('./ArticleHandlers.jsx');
 var PageMixins = require('../mixins/Page');
 var GetMore = require('../mixins/GetMore');
 var Popovers = require('./Popovers.jsx');
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var DefinitionResult = React.createClass({
     render: function() {
@@ -21,12 +22,13 @@ var DefinitionResult = React.createClass({
 });
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, PageMixins, GetMore],
+    mixins: [ArticleHandlers, PageMixins, GetMore, PureRenderMixin],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },
     render: function() {
         var resultContent;
+
         if(this.props.page.getIn(['content', 'search_results'])) {
             if(this.props.page.getIn(['content', 'search_results', 'hits'])) {
                 resultContent = this.props.page.getIn(['content', 'search_results', 'hits']).map(function(r, i) {
@@ -49,6 +51,8 @@ module.exports = React.createClass({
         return (
             <div className="search-results legislation-result" onClick={this.interceptLink}>
                 <div className="search-count">{total} Results Found</div>
+                <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
+
                 {resultContent}
             </div>
     );

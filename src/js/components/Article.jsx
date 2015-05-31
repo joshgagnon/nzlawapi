@@ -207,13 +207,13 @@ var ArticleSkeletonContent = React.createClass({
         if(distance >= 0){
             return distance < this.scroll_threshold;
         }
-        return -distance/8 < this.scroll_threshold;
+        return (-distance)/8 < this.scroll_threshold;
     },
     fetch: function(distance){
         if(distance >= 0){
             return distance < this.fetch_threshold;
         }
-        return -distance/8 < this.fetch_threshold;
+        return (-distance)/8 < this.fetch_threshold;
     },
     setSubVisibility: function(){
         if(this.isMounted()){
@@ -251,6 +251,7 @@ var ArticleSkeletonContent = React.createClass({
             if(resize_index < this._part_count){
                 this.recalculateOffsets(resize_index);
             }
+
             if(change){
                 Actions.getMorePage(this.props.page_id,
                     {requested_parts: requested_parts});
@@ -261,7 +262,7 @@ var ArticleSkeletonContent = React.createClass({
     showPart: function(k, parts){
         var height_change = false;
         if(parts.getIn([k, 'html']) && !this._refs[k].innerHTML){
-
+            // TODO get running offset
             var scroll_el = this.getScrollContainer()[0]
             var container_height = scroll_el.scrollHeight;
             var old_height = this._refs[k].offsetHeight;
@@ -273,7 +274,6 @@ var ArticleSkeletonContent = React.createClass({
             if(old_height !== this.measured_heights[k]){
                 height_change = true;
                 var scroll = scroll_el.scrollTop;
-
                 if(scroll  > this._refs[k].offsetTop + this.measured_heights[k]){
                    this.getScrollContainer().scrollTop(scroll - (container_height - scroll_el.scrollHeight)) ;
                 }
@@ -359,7 +359,6 @@ var ArticleSkeletonContent = React.createClass({
         }
     },
     onJumpTo: function(viewer_id, jump){
-        console.log(jump)
         this._delayed_jump;
         if(viewer_id!== this.props.viewer_id){
             return;

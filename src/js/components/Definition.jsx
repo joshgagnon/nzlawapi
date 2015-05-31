@@ -26,7 +26,6 @@ module.exports = React.createClass({
         return null;
     },
     render: function(){
-
         return <div className="result-container" onClick={this.interceptLink}>
                 { this.warningsAndErrors() }
                 {this.props.page.getIn(['content','html_content']) ?
