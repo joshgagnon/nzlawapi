@@ -55,6 +55,7 @@ module.exports = Reflux.createActions({
     'removeSaveFolder': {},
     'renameSavedState': {},
 
+    'activateUnderlines': {},
     'toggleUnderlines': {},
     'toggleNotes': {},
 

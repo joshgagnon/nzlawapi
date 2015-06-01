@@ -24,6 +24,11 @@ module.exports = Reflux.createStore({
     update: function(){
         this.trigger({browser: this.browser});
     },
+    onActivateUnderlines: function(){
+        if(!this.browser.get('underlines')){
+            this.onToggleUnderlines();
+        }
+    },
     onToggleUnderlines: function(){
         this.browser = this.browser.set('underlines', !this.browser.get('underlines'));
         this.update();

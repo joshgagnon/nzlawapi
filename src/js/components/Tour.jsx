@@ -153,6 +153,7 @@ var TourStore = Reflux.createStore({
     onTourStart: function(state){
         Actions.pushState();
         Actions.reset();
+        Actions.activateUnderlines();
         this.tour = this.tour.set('running', true).set('position', 0);
         this.trigger({'tour': this.tour});
     },
