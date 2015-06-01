@@ -4,6 +4,8 @@ CONFIG_FILE=dev.py celery -A celeries  worker -l info --concurrency=4 -Ofair
 
 # QUICK WGSI START FOR DEV
 uwsgi --socket 127.0.0.1:5665 --module server --callable app --pyargv prod.py
+#OR
+git pull origin && NODE_ENV="production" gulp && uwsgi --socket 127.0.0.1:5665 --module server --callable app --pyargv prod.py
 
 PROCESSING STEPS
 

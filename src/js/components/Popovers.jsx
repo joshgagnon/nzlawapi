@@ -6,7 +6,7 @@ var _ = require('lodash');
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var Popovers = React.createClass({
-
+    mixins: [PureRenderMixin],
     render: function(){
         return <div>{ this.props.popoverView
                     .sort(function(a, b){ return (a.get('time')||0) - (b.get('time')||0)})
@@ -21,6 +21,7 @@ var Popovers = React.createClass({
 
 
 var MobilePopovers = React.createClass({
+    mixins: [PureRenderMixin],
     // Mobile only renders the last one
 
     closeAll: function(){
@@ -45,6 +46,7 @@ var MobilePopovers = React.createClass({
 });
 
 var TabletPopovers = React.createClass({
+    mixins: [PureRenderMixin],
 
     closeLeft: function(){
         this.props.popoverView.map(function(view, key){
@@ -107,10 +109,11 @@ module.exports = React.createClass({
                 getScrollContainer: this.props.getScrollContainer,
                 page_id: this.props.page.get('id')};
          if(this.props.width && this.props.view.getIn(['popovers', this.props.page.get('id')])){
-            if(this.props.width < 800){
+            console.log(this.props.width)
+            if(this.props.width < 600){
                 return <MobilePopovers {...props}/>
             }
-            else if(this.props.width < 1200){
+            else if(this.props.width < 900){
                 return <TabletPopovers {...props}/>
             }
             else{
