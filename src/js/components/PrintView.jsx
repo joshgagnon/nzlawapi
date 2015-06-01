@@ -190,7 +190,7 @@ module.exports = React.createClass({
                         <div className="btn-group">
                             <button onClick={window.print} className="btn btn btn-info">Print</button>
 
-                            <button onClick={this.handlePublish} className="btn btn btn-info">Share</button>
+                            <button onClick={this.handlePublish} className="btn btn btn-info share">Share</button>
 
                             <button onClick={Actions.closeView.bind(null, 'print')} className="btn btn btn-info">Close</button>
                         </div>

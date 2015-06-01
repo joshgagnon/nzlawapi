@@ -25,6 +25,8 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                 var selector = _.map(location.locs, function(loc){
                     return '[data-location="'+loc+'"]';
                 }).join(' ') + ' .focus-link';
+                var left = $(e.target).position().left + this.overlayOffset().left;
+                var top = $(e.target).position().top+ this.overlayOffset().top;
                 if(this.getDocumentId(e.target) && !$target.is('.def-para')){
                     Actions.contextMenuOpened(this.props.viewer_id, page_id, {
                             title: this.getTitle(),
@@ -33,8 +35,8 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                             target_path: target_path,
                             id: target_path,
                             source_sel: selector,
-                            left: $(e.target).position().left + this.overlayOffset().left - popover_offset,
-                            top: $(e.target).position().top+ this.overlayOffset().top,
+                            left: left - popover_offset,
+                            top: top,
                             query: {
                                 document_id: this.getDocumentId(e.target),
                                 location: location.repr,
@@ -42,7 +44,7 @@ var POPOVER_TYPES = require('../constants').POPOVER_TYPES;
                                 find: 'location'
                             },
                         },
-                        {left: e.pageX, top: e.pageY});
+                        {left: e.pageX || left, top: e.pageY || top});
                 }
             }
             else if(link.length){

@@ -3,6 +3,9 @@
 var Reflux = require('reflux');
 
 module.exports = Reflux.createActions({
+    'pushState': {},
+    'popState': {},
+
     'queryChange': {},
 
     'newPage': {},
@@ -92,5 +95,7 @@ module.exports = Reflux.createActions({
 
     'tourStart': {},
     'tourNext': {},
-    'tourEnd': {}
+    'tourStop': {},
+
+    'setSearchForm': {}
 });

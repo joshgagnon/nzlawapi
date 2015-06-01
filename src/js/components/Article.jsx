@@ -576,7 +576,7 @@ var Article = React.createClass({
                 { this.warningsAndErrors() }
                 </div>
         }
-        return <div className="legislation-result" onClick={this.interceptLink}>
+        return <div className="legislation-result" onClick={this.interceptLink} data-page-id={this.props.page.get('id')}>
            { this.warningsAndErrors() }
             <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} container={this} content={this.props.page.get('content') }/>
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?

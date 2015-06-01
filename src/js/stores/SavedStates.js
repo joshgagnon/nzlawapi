@@ -30,6 +30,8 @@ module.exports = Reflux.createStore({
         this.listenTo(Actions.loadPrevious, this.onLoadPrevious);
         this.listenTo(Actions.userAction, this.saveCurrent);
         this.listenTo(Actions.publishPrint, this.onPublishPrint);
+        this.listenTo(Actions.pushState, this.onPushState);
+        this.listenTo(Actions.popState, this.onPopState);
         this.listenTo(Actions.publishPrint.completed, this.onPublishPrintCompleted);
         this.listenTo(Actions.publishPrint.failure, this.onPublishPrintFailure);
         this.listenTo(Actions.fetchPublished, this.onFetchPublished);
@@ -40,6 +42,7 @@ module.exports = Reflux.createStore({
         this.print = Immutable.List();
         this.views = Immutable.Map();
         this.browser = Immutable.Map();
+        this.stack = [];
     },
     updatePages: function(pages){
         this.pages = pages.pages;
@@ -76,6 +79,15 @@ module.exports = Reflux.createStore({
             pages: _.map(_.filter(this.pages.toJS(), pickPage), prepPage),
             browser: this.browser.toJS(),
             print: _.map(this.print.toJS(), prepPrint)};
+    },
+    onPushState: function(){
+        this.stack.push(Immutable.fromJS(this.prepState()));
+    },
+    onPopState: function(){
+        var state = this.stack.pop();
+        if(state){
+            Actions.setState(state);
+        }
     },
     saveCurrent: function(){
         if(localStorage){

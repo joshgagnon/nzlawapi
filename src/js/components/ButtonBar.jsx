@@ -24,7 +24,6 @@ module.exports = React.createClass({
         }
     },
     handleAddToPrint: function(){
-
         Actions.addToPrint({
             title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']) || this.props.page.get('title'),
             query: this.props.page.getIn(['content', 'query']) || this.props.page.getIn(['query']),
@@ -48,15 +47,15 @@ module.exports = React.createClass({
         }
     },
     renderPrint: function(){
-        return <li><div className="button">
+        return <li className="print-button"><div className="button">
             <a><span className="fa fa-print" title="Print"/></a>
             </div>
             <ul className="children">
                 <li className="title"><span>Print Options</span></li>
                 { this.linkPDF() }
                 { this.addToPrint() }
-                <li className="suboption">
-                <a onClick={Actions.togglePrintMode}>
+                <li className="suboption toggle-print">
+                <a onClick={Actions.togglePrintMode} >
                     <span className="fa fa-file-text-o" title="Your Print Document"/>
                     <span className="sublabel">Your Print Document</span>
                 </a></li>

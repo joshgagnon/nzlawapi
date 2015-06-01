@@ -497,7 +497,7 @@
              <xsl:attribute name="data-def-idx">
                <xsl:value-of select="@def-idx"/>
             </xsl:attribute>
-             <xsl:attribute name="href">/open_definition/<xsl:value-of select="@def-ids"/></xsl:attribute>
+             <xsl:attribute name="href">/open_definition/<xsl:value-of select="@def-ids"/>/<xsl:value-of select="@def-ex-ids"/></xsl:attribute>
             <xsl:value-of select="."/>
         </a>
     </xsl:template>

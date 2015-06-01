@@ -85,7 +85,8 @@
                 display: inline-block;
             }
         }
-        li:hover {
+        li:hover,
+        li.activated {
             .button{
                 background-color:$deep-red;
                 padding-right:100px;
@@ -108,7 +109,8 @@
                     color:$deep-red;
                 }
             }
-            .suboption:hover{
+            .suboption:hover,
+            .suboption.activated{
                    background-color:transparent;
                    a, .fa{
                         color:#fff;

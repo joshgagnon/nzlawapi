@@ -225,7 +225,6 @@ var AutoComplete = React.createClass({
         });
     },
     render: function() {
-        console.log('redner')
         var but_children = _.omit(this.props, 'children', 'className');
         return (
             <div className="autocomplete input-group">

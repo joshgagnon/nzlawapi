@@ -119,7 +119,7 @@ var PageStore = Reflux.createStore({
         options = options || {};
         var page = this.getById(page_id);
 
-        if(!page.get('query') && !page.get('query_string')) return;
+        if(page || (!page.get('query') && !page.get('query_string'))) return;
 
         if(!page.get('fetching') && !page.get('fetched') && !page.get('error')){
             var get;
@@ -360,7 +360,7 @@ var PageStore = Reflux.createStore({
 
     onRequestSubResource: function(resource, page_id){
         var page = this.getById(page_id);
-        if(_.values(RESOURCE_TYPES).indexOf(resource) >= 0){
+        if(page && _.values(RESOURCE_TYPES).indexOf(resource) >= 0){
             if(!page.getIn([resource, 'fetching']) && !page.getIn([resource, 'fetched']) && !page.get('error')){
                 this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), resource], {fetching: true});
                 request.get('/'+resource+'/'+page.get('content').get('document_id'))

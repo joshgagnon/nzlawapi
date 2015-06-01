@@ -76,7 +76,8 @@ var ContextMenu = React.createClass({
             });
     },
     render: function(){
-        return <div className="context-menu fade" style={this.props.context_menu.get('position').toJS()} >
+        var style = this.props.context_menu.get('position').toJS();
+        return <div className="context-menu fade" style={style} >
             <ul><li><ul className="children">
             <li className="title"><span >{this.props.context_menu.getIn(['data', 'location', 'repr'])}</span></li>
             <li className="suboption">
@@ -85,7 +86,7 @@ var ContextMenu = React.createClass({
                     <span className="sublabel">Open In New Tab</span>
                 </a>
             </li>
-            <li className="suboption">
+            <li className="suboption add-to-print">
                 <a onClick={this.addPrint} >
                     <span className="fa fa-copy" title="Add To Print"/>
                     <span className="sublabel">Add To Print</span>

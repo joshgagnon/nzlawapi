@@ -13,6 +13,7 @@ var ViewerStore = require('../stores/ViewerStore');
 var BrowserStore = require('../stores/BrowserStore.js');
 var PageStore = require('../stores/PageStore.js');
 var PrintStore = require('../stores/PrintStore.js');
+var SearchFormStore = require('../stores/SearchFormStore.js');
 var Actions = require('../actions/Actions');
 var SearchResults = require('./SearchResults.jsx');
 var ArticleSideBar = require('./ArticleSideBar.jsx');
@@ -32,6 +33,7 @@ var ContextMenu = require('./ContextMenu.jsx');
 var ButtonBar = require('./ButtonBar.jsx');
 var Banner = require('./Banner.jsx');
 var MQ = require('./Responsive.jsx');
+var Tour = require('./Tour.jsx');
 var constants = require('../constants');
 var Utils = require('../utils');
 var ClickOut = require('../mixins/ClickOut')
@@ -41,19 +43,6 @@ var DragDropContext = require('react-dnd').DragDropContext;
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var SPLIT_MIN = 768;
-
-// only current used for reset
-var FormStore = Reflux.createStore({
-    listenables: Actions,
-    onReset: function(state){
-        this.trigger({
-            article_type: null,
-            search_query: null,
-            location: null,
-            find: null
-        });
-    }
-});
 
 
 var UndoMixin = {
@@ -93,7 +82,7 @@ var Browser = React.createClass({
         Reflux.listenTo(ViewerStore, 'onState'),
         Reflux.listenTo(BrowserStore, 'onState'),
         Reflux.listenTo(PrintStore, 'onState'),
-        Reflux.listenTo(FormStore, 'onState'),
+        Reflux.listenTo(SearchFormStore, 'onState'),
         ReactRouter.State,
         UndoMixin,
         ClickOut,
@@ -362,11 +351,10 @@ var Browser = React.createClass({
         return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} />
     },
     renderLocation: function(){
-        console.log('rerender')
         return <div className="locations">
             <div className="form-col">
                 <div className="input-group has-clear">
-                 <input type="text" className="location form-control" placeholder="Jump To..." ref="jump_to" value={this.state.jump_to}
+                 <input type="text" className="jump_to form-control" placeholder="Jump To..." ref="jump_to" value={this.state.jump_to}
                         onChange={this.handleJumpTo} onKeyPress={this.handleJumpToEnter}
                         ref="jump_to"  />
                     <ClearInput clear={this.clearJumpTo} />
@@ -377,7 +365,7 @@ var Browser = React.createClass({
             </div>
             <div className="form-col">
                 <div className="input-group has-clear">
-                    <input type="text" className="location form-control" placeholder="Focus..." ref="focus" value={this.state.focus}
+                    <input type="text" className="focus form-control" placeholder="Focus..." ref="focus" value={this.state.focus}
                         onChange={this.handleFocus} onKeyPress={this.handleFocusEnter}
                         ref="focus"  />
                     <ClearInput clear={this.clearFocus} />
@@ -437,6 +425,7 @@ var Browser = React.createClass({
             { this.renderBody() }
             <Notifications />
             <ContextMenu />
+            <Tour />
         </div>);
     }
 });

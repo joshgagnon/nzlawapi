@@ -77,5 +77,9 @@ module.exports = Reflux.createStore({
         if(this.browser.get('print_mode') && !this.browser.get('split_mode')){
             this.onToggleSplitMode();
         }
+    },
+    onReset: function(){
+        this.browser = this.browser.set('split_mode', false).set('print_mode', false);
+        this.update();
     }
 });
