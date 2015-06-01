@@ -188,20 +188,20 @@ var ArticleSkeletonContent = React.createClass({
     },
     recalculateOffsets: function(index){
         var self = this;
-        for(var i=index;i < this._part_count.length; i++){
+        for(var i=index;i < this._part_count; i++){
             var key = i+''
             this._skeleton_locations[key].root = this._refs[key].offsetTop;
         }
-        this._ordered_skeleton = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
+        this._ordered_skeleton_skeleton = _.keys(self._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
                 .map(function(p){
                     return {value: p, height: self._skeleton_locations[p].root}
                 });
-        this.updateSkeletonScroll()
+        this.updateSkeletonScroll();
     },
     distance: function(k, top, height){
         var part_top = this._skeleton_locations[k].root;
         var part_height = this.measured_heights[k] || this.calculated_heights[k];
-        return Utils.rangeDistance([part_top, part_top+part_height], [top, top+height]);
+        return Utils.rangeDistance([top, top+height],[part_top, part_top+part_height]);
     },
     show: function(distance){
         if(distance >= 0){
@@ -228,13 +228,19 @@ var ArticleSkeletonContent = React.createClass({
 
                 var show = this.show(distance);
                 var local_change = false;
+                if(k=="123"){
+                    //console.log(distance, show, top, r, this._skeleton_locations[k].root);
+                }
                 if(this._visible[k] !== show){
                     local_change = true;
                 }
                 this._visible[k] = show;
                 if(local_change){
                     if(show){
-                        if(this.showPart(k, this.props.parts) && (k|0) < resize_index){
+                        var resized = this.showPart(k, this.props.parts);
+                        //console.log(resized, (k|0) , resize_index)
+
+                        if(resized && (k|0) < resize_index){
                             resize_index = k|0;
                         }
                     }
@@ -271,7 +277,6 @@ var ArticleSkeletonContent = React.createClass({
            this._refs[k].classList.remove('csspinner');
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
             this.measured_heights[k] =  this._refs[k].offsetHeight;
-
             if(old_height !== this.measured_heights[k]){
                 height_change = true;
                 var scroll = scroll_el.scrollTop;

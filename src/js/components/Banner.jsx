@@ -1,8 +1,9 @@
 var React = require('react/addons');
 var MQ = require('./Responsive.jsx');
-
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 module.exports = React.createClass({
+    mixins: [PureRenderMixin],
     render: function(){
       var classes = 'navbar navbar-default navbar-fixed-top';
       if(this.props.extraClasses){

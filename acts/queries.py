@@ -460,11 +460,13 @@ def prep_instrument(result, replace, db):
 
 
 def get_instrument_object(id=None, db=None, replace=False):
-    with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
-        query = """SELECT * from get_processed_instrument(%(id)s) """
-        cur.execute(query, {'id': id})
-        return prep_instrument(dict(cur.fetchone()), replace, db)
-
+    try:
+        with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+            query = """SELECT * from get_processed_instrument(%(id)s) """
+            cur.execute(query, {'id': id})
+            return prep_instrument(dict(cur.fetchone()), replace, db)
+    except TypeError:
+        raise CustomException('Document does not exist')
 
 def get_unprocessed_instrument(id=None, db=None):
     with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:

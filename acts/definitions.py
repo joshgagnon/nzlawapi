@@ -310,7 +310,7 @@ def infer_life_time(node):
 
 def find_all_definitions(tree, definitions, document_id, expire=True, title=None):
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::table)][not(ancestor::amend)][not(ancestor::schedule.amendments)]")
-    parenthesis_pat = re.compile('.*(\(|\(the \(|\(a)$')
+    parenthesis_pat = re.compile('.*(\(|\(the |\(a )$')
     def get_parent(node):
         try:
             return node.iterancestors('def-para').next()

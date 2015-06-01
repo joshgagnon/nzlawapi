@@ -15,6 +15,7 @@ var UnknownError = require('./Warnings.jsx').UnknownError;
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var DRAG_TYPES = require('../constants').DRAG_TYPES;
 var DropTarget = require('react-dnd').DropTarget;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 //var DragDropMixin = require('react-dnd').DragDropMixin;
 
 
@@ -56,18 +57,19 @@ var LoadUnknown = React.createClass({
 })
 
 var TabView = React.createClass({
+    mixins: [PureRenderMixin],
     handleTab: function(active){
         Actions.showPage(this.props.viewer_id, active);
     },
     closeTab: function(id){
         Actions.removePage(id);
     },
-    shouldComponentUpdate: function(newProps, newState){
+    /*shouldComponentUpdate: function(newProps, newState){
         // browser changes layout, which tabs need to collapse properly
         return (this.props.view !== newProps.view ||
             this.props.pages !== newProps.pages ||
             this.props.browser !== newProps.browser );
-    },
+    },*/
     modalVisible: function(){
         var active = this.props.view.get('active_page_id');
         return !!this.props.view.getIn(['section_summaries', active]);

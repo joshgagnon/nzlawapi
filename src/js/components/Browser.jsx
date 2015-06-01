@@ -223,7 +223,7 @@ var Browser = React.createClass({
     typeToDocType: function(value){
         return 'instrument';
     },
-    handleArticleChange: function(value){
+    handleArticleChange: function(value, callback){
         var self = this;
         // ID means they clicked or hit enter, so focus on next
         this.setState({search_query: value.search_query,
@@ -231,7 +231,7 @@ var Browser = React.createClass({
             article_type: this.typeToDocType(value.type),
             find: value.find,
             show_location: !!value.id,
-            query: value.query});
+            query: value.query}, callback);
 
     },
     handleFocus: function(e){
@@ -253,6 +253,18 @@ var Browser = React.createClass({
             this.submitJumpTo(e);
             this.prevent(e);
         }
+    },
+    clearJumpTo: function(){
+        var self = this;
+        this.setState({jump_to: null}, function(){
+            React.findDOMNode(self.refs.jump_to).focus();
+        });
+    },
+    clearFocus: function(){
+        var self = this;
+        this.setState({'focus': null}, function(){
+            React.findDOMNode(self.refs.focus).focus();
+        });
     },
     // deprecated
     reset: function(){
@@ -350,13 +362,14 @@ var Browser = React.createClass({
         return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} />
     },
     renderLocation: function(){
+        console.log('rerender')
         return <div className="locations">
             <div className="form-col">
                 <div className="input-group has-clear">
                  <input type="text" className="location form-control" placeholder="Jump To..." ref="jump_to" value={this.state.jump_to}
                         onChange={this.handleJumpTo} onKeyPress={this.handleJumpToEnter}
                         ref="jump_to"  />
-                    <ClearInput clear={function(){ this.setState({'jump_to': null})}.bind(this)} />
+                    <ClearInput clear={this.clearJumpTo} />
                      <span className="input-group-btn">
                         <Button bsStyle={'info'} onClick={this.submitJumpTo} >Jump To</Button>
                     </span>
@@ -367,7 +380,7 @@ var Browser = React.createClass({
                     <input type="text" className="location form-control" placeholder="Focus..." ref="focus" value={this.state.focus}
                         onChange={this.handleFocus} onKeyPress={this.handleFocusEnter}
                         ref="focus"  />
-                    <ClearInput clear={function(){ this.setState({'focus': null})}.bind(this)} />
+                    <ClearInput clear={this.clearFocus} />
                      <span className="input-group-btn">
                         <Button bsStyle={'info'} onClick={this.submitFocus} >Focus</Button>
                     </span>

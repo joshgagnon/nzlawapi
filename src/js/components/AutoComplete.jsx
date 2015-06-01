@@ -4,13 +4,13 @@ var ClickOut = require('../mixins/ClickOut');
 var _ = require('lodash');
 var request = require('../catalex-request');
 var ClearInput = require('./ClearInput.jsx');
-
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var AutoComplete = React.createClass({
     propTypes: {
         search_value: React.PropTypes.object.isRequired
     },
-    mixins: [ClickOut],
+    mixins: [ClickOut,PureRenderMixin],
     getInitialState: function() {
         return {
             show: false,
@@ -33,6 +33,7 @@ var AutoComplete = React.createClass({
              .then(function(response){
                     self._fetching = false;
                     self.bindRootCloseHandlers();
+
                     self.setState({
                         results: response.body.results,
                         groups: self.groupCategories(response.body.results)
@@ -42,7 +43,7 @@ var AutoComplete = React.createClass({
     },
     onChange: function(event) {
         /* if typing, it means no autocomplete article was selected */
-        if(this.refs.search.getDOMNode() === event.target){
+        if(React.findDOMNode(this.refs.search) === event.target){
             var value = event.target.value;
             this.props.onUpdate({
                 search_query: value,
@@ -76,13 +77,13 @@ var AutoComplete = React.createClass({
     },
     componentDidUpdate: function(){
         if(this.refs.dropdown){
-            var dropdownElement = this.refs.dropdown.getDOMNode();
+            var dropdownElement = React.findDOMNode(this.refs.dropdown);
             var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             dropdownElement.style.maxHeight = (windowHeight - dropdownElement.getBoundingClientRect().top - 15) + 'px';
         }
     },
     onFocus: function(e) {
-        if(e.target === this.getInputDOMNode() && !this.props.search_value.id){
+        if(e.target === this.getInputDOMNode() && !this.props.search_value.id && this.props.search_value.search_query){
             this.setState({show: true});
         }
     },
@@ -211,16 +212,20 @@ var AutoComplete = React.createClass({
         });
     },
     getInputDOMNode: function(){
-        return this.refs.search.getDOMNode();
+        return React.findDOMNode(this.refs.search);
     },
     clearSearch: function(){
+        var self = this;
         this.props.onUpdate({
             search_query: null,
             id: null,
             type: null
+        }, function(){
+             React.findDOMNode(self.refs.search).focus();
         });
     },
     render: function() {
+        console.log('redner')
         var but_children = _.omit(this.props, 'children', 'className');
         return (
             <div className="autocomplete input-group">

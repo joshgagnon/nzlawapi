@@ -5,10 +5,13 @@ var NotificationStore = require('../stores/NotificationStore.js');
 var Immutable = require('immutable');
 var Actions = require('../actions/Actions');
 var FadeMixin = require('react-bootstrap/lib/FadeMixin');
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 
 var Notification = React.createClass({
     mixins:[
-        FadeMixin
+        FadeMixin,
+        PureRenderMixin
         ],
     render: function(){
         var classes = "notification alert fade";
