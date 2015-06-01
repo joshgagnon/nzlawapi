@@ -32,7 +32,7 @@ module.exports = React.createClass({
                     <div ref="content" className="legislation-result" >
                         <div dangerouslySetInnerHTML={{__html: this.props.page.getIn(['content','html'])}} />
 
-                    <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
+                        <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />
 
                     </div> :
                     null }

@@ -213,7 +213,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
                  <xsl:if test="not(ancestor::amend)">
-                <xsl:attribute name="data-location-breadcrumb">Subpart <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
+                <xsl:attribute name="data-location-breadcrumb">subpart <xsl:value-of select="label"/><xsl:text> </xsl:text></xsl:attribute>
                 </xsl:if>
             <h3 class="subpart">
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
