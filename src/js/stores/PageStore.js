@@ -119,7 +119,7 @@ var PageStore = Reflux.createStore({
         options = options || {};
         var page = this.getById(page_id);
 
-        if(page || (!page.get('query') && !page.get('query_string'))) return;
+        if(!page || (!page.get('query') && !page.get('query_string'))) return;
 
         if(!page.get('fetching') && !page.get('fetched') && !page.get('error')){
             var get;
