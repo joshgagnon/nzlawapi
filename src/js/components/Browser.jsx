@@ -41,6 +41,7 @@ var ClearInput = require('./ClearInput.jsx');
 var HTML5Backend = require('react-dnd/modules/backends/HTML5');
 var DragDropContext = require('react-dnd').DragDropContext;
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+var EventListener = require('react-bootstrap/lib/utils/EventListener');
 
 var SPLIT_MIN = 768;
 
@@ -125,22 +126,30 @@ var Browser = React.createClass({
         else{
             Actions.loadPrevious();
         }
-         this.setState({width: React.findDOMNode(this).clientWidth});
+        this._window_listener = EventListener.listen(window, 'resize', this.checkWidth);
          this.checkWidth();
     },
     componentDidUpdate: function(){
-         this.setState({width: React.findDOMNode(this).clientWidth});
          this.checkWidth();
     },
+    componentDidUnmount: function(){
+        this._window_listener.remove();
+    },
     checkWidth: function(){
-        if(this.state.width && this.state.width < SPLIT_MIN){
-            if(this.state.browser.get('split_mode')){
-                Actions.deactivateSplitMode();
-                if(this.state.browser.get('print_mode')){
-                    Actions.deactivatePrintMode();
-                }
-            }
+        var width = React.findDOMNode(this).clientWidth;
 
+        if(width !== this.state.width){
+            this.setState({width: width}, function(){
+                if(this.state.width && this.state.width < SPLIT_MIN){
+                    if(this.state.browser.get('split_mode')){
+                        Actions.deactivateSplitMode();
+                        if(this.state.browser.get('print_mode')){
+                            Actions.deactivatePrintMode();
+                        }
+                    }
+
+                }
+            }.bind(this));
         }
     },
     onState: function(state){

@@ -57,7 +57,6 @@ var TabletPopovers = React.createClass({
         },this);
     },
     closeRight: function(){
-        console.log('close')
         this.props.popoverView.map(function(view, key){
             if(view.get('stack')){
                 console.log('right')
@@ -109,7 +108,6 @@ module.exports = React.createClass({
                 getScrollContainer: this.props.getScrollContainer,
                 page_id: this.props.page.get('id')};
          if(this.props.width && this.props.view.getIn(['popovers', this.props.page.get('id')])){
-            console.log(this.props.width)
             if(this.props.width < 600){
                 return <MobilePopovers {...props}/>
             }
