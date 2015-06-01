@@ -4,7 +4,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var Actions = require('../actions/Actions');
 var Reflux = require('reflux');
-var Immutable= require('Immutable');
+var Immutable = require('immutable');
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 var constants = require('../constants');
 
