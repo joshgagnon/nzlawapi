@@ -9,9 +9,11 @@ var ArticleHandlers = require('./ArticleHandlers.jsx');
 var PageMixins = require('../mixins/Page');
 var Popovers = require('./Popovers.jsx');
 var GetMore = require('../mixins/GetMore')
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 
 module.exports = React.createClass({
-    mixins: [ArticleHandlers, PageMixins, GetMore],
+    mixins: [ArticleHandlers, PageMixins, GetMore, PureRenderMixin],
     propTypes: {
         page: React.PropTypes.object.isRequired
     },

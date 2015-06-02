@@ -15,6 +15,10 @@ var FormHelper = {
         var value = {}, nest=this.nestValues
         _.each(this.refs, function(r, k){
             var gotValue = r.getValue ? r.getValue() : React.findDOMNode(r).value;
+
+            if(r.isCheckboxOrRadio && r.isCheckboxOrRadio()){
+                gotValue = r.getInputDOMNode().checked;
+            }
             if(_.isObject(gotValue) && !nest){
                 _.extend(value, gotValue);
             }
@@ -22,6 +26,7 @@ var FormHelper = {
                 value[k] = gotValue;
             }
         });
+
         return _.pick(_.extend({}, this.state, value), _.identity);
     },
     componentWillReceiveProps: function(nextProps){
@@ -31,11 +36,11 @@ var FormHelper = {
     },
     getFields: function(){
         // assumes this.props.query is a populated immutablejs object
-        var fields = (this.states || []).concat(this.types || []).concat(this.filters || []);
+        var fields = this.stateFields;
         var all_null = _.object(_.map(fields, function(f){
             return [f, null];
         }));
-        return _.extend(all_null, _.pick.apply(null, [this.props.query.toJS()].concat(this.stateFields)))
+        return _.extend(all_null, _.pick.apply(null, [this.props.query.toJS()].concat(fields)))
     }
 };
 
@@ -158,6 +163,7 @@ var LegislationSearch = React.createClass({
         FormHelper
     ],
     getInitialState: function(){
+        this.stateFields = this.filters;
         return  this.props.query ? this.getFields() : this.initialCheckboxState(
             ['principal_acts', 'legislative_instruments'],
             [].concat(this.types, this.status, this.filters)
@@ -175,8 +181,8 @@ var InstrumentSearch= React.createClass({
     stateFields: ['contains_type', 'contains', 'title', 'year', 'definition', 'legislation_types'],
 
     getInitialState: function(){
-        return this.props.query ?
-            this.getFields() : {contains_type: 'all_words'};
+        return _.extend(this.props.query ?
+            this.getFields() : {},  {contains_type: 'all_words'});
     },
 
     render: function(){
@@ -187,7 +193,7 @@ var InstrumentSearch= React.createClass({
                 <Input type="text" label={strings.definitions} ref="definition" valueLink={this.linkState('definition')} labelClassName="col-sm-2" wrapperClassName="col-sm-10" />
                 <Input type="text" label={strings.year} ref="year" valueLink={this.linkState('year')} labelClassName="col-sm-2" wrapperClassName="col-sm-10" help="For example: '1993', or '1991-2001'" />
                  <hr/>
-               <LegislationSearch ref="leg_search"/>
+               <LegislationSearch ref="leg_search"  query={this.props.query}/>
             </form>
             </div>
 

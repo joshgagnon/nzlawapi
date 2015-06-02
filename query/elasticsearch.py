@@ -83,7 +83,7 @@ def query_all(args):
                                     "query": query,
                                      "type": "phrase",
                                      "operator":   "and",
-                                    "fields": ["title", "title.english", "title.ngram", "full_citation", "document^3"]
+                                    "fields": ["title^3", "title.english", "document^3"]
                                 }
                             }]
                         }
@@ -171,6 +171,7 @@ def common(args):
     must_filters = []
     not_filters = [{"term": {"latest": False}}]
     instrument_filters(args, must_filters, not_filters)
+
     #bills(args, must_filters, not_filters)
     #other(args, must_filters, not_filters)
 
@@ -182,7 +183,7 @@ def common(args):
             }
         if len(not_filters):
             body['filter']["bool"]["must_not"] = {
-                "or": not_filters
+                "and": not_filters
             }
 
     if args.get('title'):
@@ -191,6 +192,7 @@ def common(args):
             "fields": ['title' ,'title.english', 'title.ngram'],
             "default_operator": 'AND'}
         })
+
     if args.get('contains'):
         query.append({"has_child": {
             "child_type": "part",
@@ -229,11 +231,15 @@ def common(args):
                 "filter": body['filter']
                 }
             }
+
     return doc_type, search_type, body
 
 def instrument_filters(args, must_filters, not_filters):
     if args.get('principal_acts'):
-        must_filters.append({"term": {"type": "act"}})
+        must_filters.append({"and": [
+            {"term": {"principal": True}},
+            {"term": {"type": "act"}}
+            ]})
     if args.get('legislative_instruments'):
         must_filters.append({"term": {"type": "regulation"}})
     if args.get('amendment_acts'):
@@ -241,14 +247,18 @@ def instrument_filters(args, must_filters, not_filters):
             {"term": {"principal": False}},
             {"term": {"type": "act"}}
             ]})
-    if args.get('legislative_instruments'):
+    if args.get('bills_and_sops'):
         must_filters.append({"term": {"type": "bill"}})
         must_filters.append({"term": {"type": "sop"}})
     if not args.get('include_repealed'):
-        must_not_filters.append({"term": {"repealed": True}})
+        not_filters.append({"term": {"repealed": True}})
 
     if not args.get('not_yet_in_force'):
-        must_not_filters.append({"term": {"date_first_valid": 'lte now'}})
+        not_filters.append({"range": {
+          "date_first_valid": {
+             "lte" : "now"
+          }
+        }});
 
 
 def query_instrument_fields(args):

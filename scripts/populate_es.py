@@ -124,6 +124,7 @@ def index(db, es):
                     "terminated": { "type": "string", "index": "not_analyzed" },
                     "offical": { "type": "string", "index": "not_analyzed" },
                     "path": { "type": "string", "index": "not_analyzed" },
+                    "date_first_valid": { "type": "date"},
                 }
             },
             'definition': {
