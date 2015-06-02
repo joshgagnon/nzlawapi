@@ -169,10 +169,10 @@ def common(args):
     }
 
     must_filters = []
-    not_filters = []
-    acts(args, must_filters, not_filters)
-    bills(args, must_filters, not_filters)
-    other(args, must_filters, not_filters)
+    not_filters = [{"term": {"latest": False}}]
+    instrument_filters(args, must_filters, not_filters)
+    #bills(args, must_filters, not_filters)
+    #other(args, must_filters, not_filters)
 
     if len(must_filters) or len(not_filters):
         body['filter'] = {"bool": {}}
@@ -231,130 +231,24 @@ def common(args):
             }
     return doc_type, search_type, body
 
-
-def acts(args, must_filters, not_filters):
-    if args.get('acts'):
-        act_type_filter = []
-        act_status_filter = []
-        act_filter = [{"term": {"type": "act"}}]
-        for arg_name, act_type in [
-            ('act_public', 'public'), ('act_local', 'local'),
-            ('act_private', 'private'), ('act_provincial', 'provincial'),
-            ('act_imperial', 'imperial')
-        ]:
-            if args.get(arg_name):
-                act_type_filter.append({"term": {"subtype": act_type}})
-
-        if args.get('act_principal'):
-            act_status_filter.append({"and": [
-                # doesn't seem to gel with legislation.govt results
-                # {"not": {"term": {"stage": "not-in-force"}}},
-                {"not": {"term": {"title": "amendment"}}},
-                {"range": {"date_first_valid": {"lte": "now"}}}
+def instrument_filters(args, must_filters, not_filters):
+    if args.get('principal_acts'):
+        must_filters.append({"term": {"type": "act"}})
+    if args.get('legislative_instruments'):
+        must_filters.append({"term": {"type": "regulation"}})
+    if args.get('amendment_acts'):
+        must_filters.append({"and": [
+            {"term": {"principal": False}},
+            {"term": {"type": "act"}}
             ]})
-        if args.get('act_not_in_force'):
-            act_status_filter.append({"range": {"date_first_valid": {"gt": "now"}}})
+    if args.get('legislative_instruments'):
+        must_filters.append({"term": {"type": "bill"}})
+        must_filters.append({"term": {"type": "sop"}})
+    if not args.get('include_repealed'):
+        must_not_filters.append({"term": {"repealed": True}})
 
-        if args.get('act_amendment_in_force'):
-            act_status_filter.append({"and":[
-                # {"not": {"term": {"stage": "not-in-force"}}},
-                {"term": {"title": "amendment"}},
-                {"range": {"date_first_valid": {"lte": "now"}}}
-            ]})
-        if not args.get('act_repealed'):
-            act_filter.append({"term": {"repealed": False}})
-        else:
-            act_status_filter.append({"term": {"repealed": True}})
-
-        if args.get('act_as_enacted'):
-            act_status_filter.append({"term": {"in_amend": False}})
-
-        if len(act_type_filter):
-            act_type_filter.append({"not": {"exists": {"field": "subtype"}}})
-            act_filter.append({"or": act_type_filter})
-        if len(act_status_filter):
-            act_filter.append({"or": act_status_filter})
-
-        must_filters.append({
-            "and": act_filter
-        })
-    else:
-        not_filters.append({"term": {"type": "act"}})
-
-
-def bills(args, must_filters, not_filters):
-    if args.get('bills'):
-        bill_filter = [{"term": {"type": "bill"}}]
-        bill_type_filter = []
-        bill_status_filter = []
-        for arg_name, bill_type in [
-            ('bill_government', 'government'), ('bill_local', 'local'),
-            ('bill_private', 'private'), ('bill_members', 'member')
-        ]:
-            if args.get(arg_name):
-                bill_type_filter.append({"term": {"subtype": bill_type}})
-
-        if args.get('current_bills'):
-            bill_status_filter.append({"term": {"bill_enacted": False}})
-            bill_status_filter.append({"not": {"exists": {"field": "terminated"}}})
-
-        if args.get('enacted_bills'):
-            bill_status_filter.append({"term": {"bill_enacted": True}})
-            bill_status_filter.append({"not": {"exists": {"field": "terminated"}}})
-
-        if args.get('terminated_bills'):
-            bill_status_filter.append({"exists": {"field": "terminated"}})
-
-        if len(bill_type_filter):
-            bill_type_filter.append({"not": {"exists": {"field": "subtype"}}})
-            bill_filter.append({"or": bill_type_filter})
-
-        if len(bill_status_filter):
-            bill_filter.append({"or": bill_status_filter})
-
-        must_filters.append({
-            "and": bill_filter
-        })
-    else:
-        not_filters.append({"term": {"type": "bill"}})
-
-
-def other(args, must_filters, not_filters):
-    if args.get('other'):
-        other_filter = [{"or": [{"term": {"type": "regulation"}}, {"term": {"type": "sop"}}]}]
-        other_status_filter = []
-        if args.get('other_principal'):
-            other_status_filter.append({"and":[
-                # doesn't seem to gel with legislation.govt results
-                # {"not": {"term": {"stage": "not-in-force"}}},
-                {"not": {"term": {"title.std": "amendment"}}},
-                {"range": {"date_first_valid": {"lte": "now"}}}
-            ]})
-
-        if args.get('other_not_in_force'):
-            other_status_filter.append({"range": {"date_first_valid": {"gt": "now"}}})
-
-        if args.get('other_amendment_force'):
-            other_status_filter.append({"and":[
-                # {"not": {"term": {"stage": "not-in-force"}}},
-                {"term": {"title.std": "amendment"}},
-                {"range": {"date_first_valid": {"lte": "now"}}}
-            ]})
-
-        if not args.get('other_revoked'):
-            other_filter.append({"term": {"repealed": False}})
-
-        if args.get('other_as_made'):
-            other_status_filter.append({"term": {"in_amend": False}})
-
-        if len(other_status_filter):
-            other_filter.append({"or": other_status_filter})
-
-        must_filters.append({
-            "and": other_filter
-        })
-    else:
-        not_filters.append({"or": [{"term": {"type": "regulation"}}, {"term": {"type": "sop"}}]})
+    if not args.get('not_yet_in_force'):
+        must_not_filters.append({"term": {"date_first_valid": 'lte now'}})
 
 
 def query_instrument_fields(args):

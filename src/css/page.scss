@@ -207,7 +207,10 @@
         @media (min-width: $screen-sm-min) {
             padding-left: $buttonbar-outer-width;
         }
-
+        & > div{
+            max-width: $screen-lg-min;
+            margin: 0 auto;
+        }
 
         .btn-toolbar{
             text-align:center;

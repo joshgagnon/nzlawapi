@@ -26,13 +26,14 @@ def strip_html(result):
     return result
 
 
-instrument_query = """SELECT title, exists(select 1 from newest i where i.id=%(id)s) as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
+instrument_query = """SELECT title, exists(select 1 from newest n where n.id=i.id) as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
         i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
         i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
-        i.instructing_office, i.number, processed_document as document, (i.type = 'bill' and bill_enacted) as bill_enacted
+        i.instructing_office, i.number, processed_document as document, s.bill_enacted, (title not ilike '%amendment%') as principal, refs, base_score, skeleton
         FROM instruments i join documents d on i.id = d.id
         LEFT OUTER JOIN (select govt_id, true as bill_enacted from instruments l where l.type = 'act' or  l.type = 'regulation' group by govt_id) sub on i.govt_id = sub.govt_id
-        where i.id = %(id)s """
+        JOIN scores s on i.id = s.id
+        """
 
 
 def update_document_es(document_id, db=None):
@@ -40,7 +41,7 @@ def update_document_es(document_id, db=None):
     db = db or get_db()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         current_app.logger.info('Insert document into es')
-        cur.execute(instrument_query, {"id": document_id})
+        cur.execute(instrument_query + " where i.id = %(id)s ", {"id": document_id})
         result = cur.fetchone()
         result = strip_html(result)
         es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])

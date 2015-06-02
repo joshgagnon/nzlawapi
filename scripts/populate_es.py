@@ -110,8 +110,12 @@ def index(db, es):
                         "type": "string",
                         "term_vector" : "with_positions_offsets"
                     },
-
+                    "skeleton": {
+                        "type":      "string",
+                        "analyzer": "html_analyzer_highlightable",
+                    },
                     "latest": { "type": "boolean", "index": "not_analyzed" },
+                    "principal": { "type": "boolean", "index": "not_analyzed" },
                     "stage": { "type": "string", "index": "not_analyzed" },
                     "type": { "type": "string", "index": "not_analyzed" },
                     "repealed": { "type": "string", "index": "not_analyzed" },
@@ -161,21 +165,14 @@ def index(db, es):
     })
 
 def instruments(db, es):
-    from acts.instrument_es import strip_html
+    from acts.instrument_es import strip_html, instrument_query
 
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         cur.execute('select count(*) as count from instruments')
         total = cur.fetchone()['count']
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur:
         print 'Instruments'
-        cur.execute("""SELECT title, exists(select 1 from newest n where n.id=i.id) as latest, i.id as id, i.govt_id, i.version, i.type,  i.date_first_valid, i.date_as_at, i.stage,
-            i.date_assent, i.date_gazetted, i.date_terminated, i.date_imprint, i.year , i.repealed,
-            i.in_amend, i.pco_suffix, i.raised_by, i.subtype, i.terminated, i.date_signed, i.imperial, i.official, i.path,
-            i.instructing_office, i.number, base_score, refs,  document as document, bill_enacted
-            FROM instruments i
-            JOIN documents d on d.id = i.id
-            JOIN scores s on i.id = s.id
-            """)
+        cur.execute(instrument_query)
         results = cur.fetchmany(5)
         count = 0.0
         while len(results):

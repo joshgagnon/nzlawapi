@@ -5,6 +5,7 @@ module.exports = {
     'acts': 'Acts',
     'bill': 'Bill',
     'bills': 'Bills',
+    'filters': 'Filters',
     'document_types': {
     	'regulation': 'Legislative Instrument',
     	'act': 'Act',
@@ -49,7 +50,7 @@ module.exports = {
     },
 
 
-    'act_principal': 'Principal Acts in force',
+   /* 'act_principal': 'Principal Acts in force',
     'act_not_in_force': 'Acts not yet in force',
     'act_amendment_in_force': 'Amendment Acts in force',
     'act_as_enacted': 'As-enacted Acts',
@@ -74,5 +75,12 @@ module.exports = {
     'other_not_in_force': 'Legislative Instruments not yet in force',
     'other_amendment_force': 'Amendment Legislative Instruments in force',
     'other_as_made': 'As-made Legislative Instruments',
-    'other_revoked': 'Revoked Legislative Instruments'
+    'other_revoked': 'Revoked Legislative Instruments' */
+
+    'principal_acts': 'Principal Acts',
+    'legislative_instruments': 'Legislative Instruments',
+    'amendment_acts': 'Amendment Acts',
+    'bills_and_sops': 'Bills and SOPs',
+    'include_repealed': 'Include Repealed Legislation',
+    'not_yet_in_force': 'Legislation Not Yet in Force'
 };
