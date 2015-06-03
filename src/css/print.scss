@@ -59,13 +59,22 @@
         }
     }
     .print-summaries{
-          width: 80%;
+        float:left;
+          width: 100%;
           margin: 0 auto;
           margin-top:20px;
+          ul{
+            list-style: none;
+            max-width: 1000px;
+            margin: 0 auto;
+          }
           ul,li{
             list-style: none;
             padding: 0;
           }
+        @media (min-width: $screen-sm-min) {
+            padding-left: $buttonbar-outer-width;
+        }
         .print-summary{
             float:left;
             width:100%;
@@ -88,6 +97,7 @@
     }
      .print-sections {
         padding-left:10px;
+        float:left;
         @media (min-width: $screen-sm-min) {
             padding-left: $buttonbar-outer-width;
         }

@@ -14,7 +14,7 @@ module.exports = {
        }
        this.setState({width: React.findDOMNode(this).clientWidth});
       this._window_listener = EventListener.listen(window, 'resize', _.debounce(function(){
-          if(!this.isMounted){
+          if(!this.isMounted()){
             return;
           }
           var el = React.findDOMNode(this);

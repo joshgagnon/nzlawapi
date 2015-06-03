@@ -129,14 +129,28 @@ module.exports = React.createClass({
         </li>
     },
     renderSearch: function(){
-        return <li onClick={this.toggleAdvanced}>
-            <div className="button">
-                <a><span className="fa fa-search" title="Search" /></a>
-            </div>
-            <ul className="children">
-                <li className="title"><a>Advanced Search</a></li>
-            </ul>
-        </li>
+        // TODO, contains search
+        /*
+        if(this.props.page.getIn(['content','document_id'])){
+            return <li onClick={this.toggleAdvanced}>
+                <div className="button">
+                    <a><span className="fa fa-search" title="Search" /></a>
+                </div>
+                <ul className="children">
+                    <li className="title"><a>Advanced Search</a></li>
+                </ul>
+            </li>
+        }
+        else{*/
+            return <li onClick={this.toggleAdvanced}>
+                <div className="button">
+                    <a><span className="fa fa-search" title="Search" /></a>
+                </div>
+                <ul className="children">
+                    <li className="title"><a>Advanced Search</a></li>
+                </ul>
+            </li>
+
     },
     render: function(){
         return <div className="buttonbar-wrapper">
