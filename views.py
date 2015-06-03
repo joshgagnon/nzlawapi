@@ -65,7 +65,7 @@ def login():
 @Base.route('/logout')
 def logout():
     del session['user_id']
-    return redirect('/')
+    return redirect(current_app.config.get('USERS_LOGOUT_URL'))
 
 
 @Base.route('/')
