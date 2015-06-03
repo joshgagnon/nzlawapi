@@ -13,7 +13,6 @@ Query = Blueprint('query', __name__, template_folder='templates')
 
 
 @Query.route('/article_auto_complete')
-@require_auth
 def article_auto_complete():
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -28,7 +27,6 @@ def article_auto_complete():
 
 @Query.route('/definition/<string:ids>')
 @Query.route('/definition/<string:ids>/<string:exids>')
-@require_auth
 def get_definition_route(ids, exids=None):
     try:
         return jsonify(get_definition(ids.split(';'), exids.split(';') if exids else None))
@@ -38,7 +36,6 @@ def get_definition_route(ids, exids=None):
 
 @Query.route('/link/<string:key>')
 @Query.route('/link/<string:doc_type>/<string:key>')
-@require_auth
 def get_link_route(doc_type=None, key=None):
     if doc_type is None or doc_type == 'instrument':
         return jsonify(query_instrument({'find': 'preview', 'id': key}))
@@ -47,33 +44,28 @@ def get_link_route(doc_type=None, key=None):
 
 
 @Query.route('/references/<int:document_id>')
-@require_auth
 def get_references_route(document_id):
     return jsonify(get_references(document_id))
 
 
 # deprecated
 @Query.route('/section_references')
-@require_auth
 def get_section_references_route():
     return jsonify(get_section_references(
         request.args.get('document_id'), request.args.get('govt_ids').split(','), request.args.get('target_path')))
 
 
 @Query.route('/versions/<int:document_id>')
-@require_auth
 def get_versions_route(document_id):
     return jsonify(get_versions(document_id))
 
 
 @Query.route('/contents/<int:document_id>')
-@require_auth
 def get_contents_route(document_id):
     return jsonify(get_contents(document_id))
 
 
 @Query.route('/summary/<int:document_id>')
-@require_auth
 def get_summary_route(document_id):
     return jsonify(get_summary(document_id))
 
@@ -97,7 +89,6 @@ def get_definition(ids, exids):
 
 
 @Query.route('/definitions/<string:term>')
-@require_auth
 def query_definitions(term):
     offset = request.args.get('offset', '0')  # TODO: Use this
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -112,14 +103,12 @@ def query_definitions(term):
 
 
 @Query.route('/case/file/<path:filename>')
-@require_auth
 def case_file(filename):
     case_path = current_app.config['CASE_DIR']
     return send_from_directory(case_path, filename)
 
 
 @Query.route('/query')
-@require_auth
 def query():
     args = request.args
     query_type = args.get('doc_type')

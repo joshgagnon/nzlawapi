@@ -24,8 +24,8 @@ def require_auth(f):
                     # This session either didn't originate on this device/IP or has been dropped due to other active sessions.
                     # To make CORS easier to deal with, superagent doesn't differentiate XHR requests with any headers
                     # Therefore do hard redirect or not based on destination
-                    if request.path == '/':
-                        return redirect(current_app.config.get('USERS_LOGIN_URL'))
+                    if request.path == '/' or request.path.startswith('/open') or request.path.startswith('/edit') :
+                        return redirect('/logout')
                     else:
                         return jsonify({'error': 'Please log in to continue using Law Browser'}), 403
 
