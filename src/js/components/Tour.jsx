@@ -161,7 +161,15 @@ var TourStore = Reflux.createStore({
         this.tour = this.tour.set('running', false);
         this.trigger({'tour': this.tour});
         Actions.popState();
+        Actions.setSearchForm({
+            article_type: null,
+            search_query: '',
+            document_id: null,
+            find: null,
+            show_location: false
+        });
         Actions.userAction();
+
 
     },
     onTourNext: function(){
