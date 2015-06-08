@@ -65,7 +65,7 @@ handler.setFormatter(Formatter(
 handler.setLevel(logging.DEBUG)
 app.logger.addHandler(handler)
 logging.getLogger('werkzeug').addHandler(handler)
-app.logger.setLevel(logging.INFO)
+app.logger.setLevel(logging.INFO) # TODO, control from config
 
 
 

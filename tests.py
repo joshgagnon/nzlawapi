@@ -101,56 +101,62 @@ class TestDefinitions(unittest.TestCase):
         self.parser = etree.XMLParser(remove_blank_text=True)
 
     def test_definition_extraction(self):
-        tree = etree.parse('tests/3_definitions.xml', parser=self.parser)
-        definitions = Definitions()
-        find_all_definitions(tree, definitions, document_id=0, expire=False)
-        self.assertEqual(len(definitions.items()), 3)
-        self.assertTrue(('accounting period', 'accounting periods') in definitions.active)
-        self.assertTrue(('address for service', 'address for services', 'addresses for service', 'addresses for services') in definitions.active)
-        self.assertTrue(('annual meeting', 'annual meetings') in definitions.active)
+        with app.test_request_context():
+            tree = etree.parse('tests/3_definitions.xml', parser=self.parser)
+            definitions = Definitions()
+            find_all_definitions(tree, definitions, document_id=0, expire=False)
+            self.assertEqual(len(definitions.items()), 3)
+            self.assertTrue(('accounting period', 'accounting periods') in definitions.active)
+            self.assertTrue(('address for service', 'address for services', 'addresses for service', 'addresses for services') in definitions.active)
+            self.assertTrue(('annual meeting', 'annual meetings') in definitions.active)
 
     def test_definition_transience_simple(self):
-        tree = etree.parse('tests/transient_defs.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree, document_id=0)
-        tree = process_definitions(tree, definitions)
-        self.assertEqual(len(definitions.active), 1)  # one global
-        self.assertEqual(len(definitions.items()), 4)
+        with app.test_request_context():
+            tree = etree.parse('tests/transient_defs.xml', parser=self.parser)
+            tree, definitions = populate_definitions(tree, document_id=0)
+            tree = process_definitions(tree, definitions)
+            self.assertEqual(len(definitions.active), 1)  # one global
+            self.assertEqual(len(definitions.items()), 4)
+
 
     def test_definition_redefinitions(self):
-        tree = etree.parse('tests/redefinitions.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree, document_id=0)
-        tree, _ = process_definitions(tree, definitions)
-        self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
-        self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-ids'], '0-xxx')
-        self.assertEqual(tree.xpath('.//catalex-def')[1].attrib['def-ids'], '0-yyy')
-        self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-ids'], '0-xxx')
-        self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-ids'], '0-zzz')
+        with app.test_request_context():
+            tree = etree.parse('tests/redefinitions.xml', parser=self.parser)
+            tree, definitions = populate_definitions(tree, document_id=0)
+            tree, _ = process_definitions(tree, definitions)
+            self.assertEqual(len(tree.xpath('.//catalex-def')), 4)
+            self.assertEqual(tree.xpath('.//catalex-def')[0].attrib['def-ids'], '0-xxx')
+            self.assertEqual(tree.xpath('.//catalex-def')[1].attrib['def-ids'], '0-yyy')
+            self.assertEqual(tree.xpath('.//catalex-def')[2].attrib['def-ids'], '0-xxx')
+            self.assertEqual(tree.xpath('.//catalex-def')[3].attrib['def-ids'], '0-zzz')
 
     def test_case_and_plurals(self):
-        tree = etree.parse('tests/plural_charcase_defs.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree, document_id=0)
-        tree, _ = process_definitions(tree, definitions)
-        self.assertEqual(len(definitions.items()), 6)
-        self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_start"]/catalex-def-def')), 0)
-        self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_end"]/catalex-def')), 0)
-        self.assertEqual(len(tree.xpath('.//*[@cid="case_correct"]/catalex-def')), 1)
-        self.assertEqual(len(tree.xpath('.//*[@cid="case_plural_correct"]/catalex-def')), 1)
-        self.assertEqual(len(tree.xpath('.//*[@cid="plural_correct"]/catalex-def')), 1)
-        self.assertEqual(len(tree.xpath('.//*[@cid="plural_wrong"]/catalex-def')), 0)
-        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_correct"]/catalex-def')), 1)
-        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct"]/catalex-def')), 1)
-        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_2"]/catalex-def')), 2)
-        self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_3"]/catalex-def')), 4)
-        self.assertEqual(len(tree.xpath('.//catalex-def')), 12)
+        with app.test_request_context():
+            tree = etree.parse('tests/plural_charcase_defs.xml', parser=self.parser)
+            tree, definitions = populate_definitions(tree, document_id=0)
+            tree, _ = process_definitions(tree, definitions)
+            self.assertEqual(len(definitions.items()), 6)
+            self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_start"]/catalex-def-def')), 0)
+            self.assertEqual(len(tree.xpath('.//*[@cid="case_wrong_end"]/catalex-def')), 0)
+            self.assertEqual(len(tree.xpath('.//*[@cid="case_correct"]/catalex-def')), 1)
+            self.assertEqual(len(tree.xpath('.//*[@cid="case_plural_correct"]/catalex-def')), 1)
+            self.assertEqual(len(tree.xpath('.//*[@cid="plural_correct"]/catalex-def')), 1)
+            self.assertEqual(len(tree.xpath('.//*[@cid="plural_wrong"]/catalex-def')), 0)
+            self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_correct"]/catalex-def')), 1)
+            self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct"]/catalex-def')), 1)
+            self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_2"]/catalex-def')), 2)
+            self.assertEqual(len(tree.xpath('.//*[@cid="complex_plural_possessive_correct_3"]/catalex-def')), 4)
+            self.assertEqual(len(tree.xpath('.//catalex-def')), 12)
 
     def test_complex(self):
-        tree = etree.parse('tests/companiesact_gutted.xml', parser=self.parser)
-        tree, definitions = populate_definitions(tree, document_id=0)
-        tree, _ = process_definitions(tree, definitions)
-        for d in definitions.pool:
-            if d.full_word in ['shareholder', 'holder of the shares']:
-                self.assertIn('DLM320498', d.expiry_tags)
-                self.assertIn('DLM1624955', d.expiry_tags)
+        with app.test_request_context():
+            tree = etree.parse('tests/companiesact_gutted.xml', parser=self.parser)
+            tree, definitions = populate_definitions(tree, document_id=0)
+            tree, _ = process_definitions(tree, definitions)
+            for d in definitions.pool:
+                if d.full_word in ['shareholder', 'holder of the shares']:
+                    self.assertIn('DLM320498', d.expiry_tags)
+                    self.assertIn('DLM1624955', d.expiry_tags)
 
 
 def transform_eqn(filename, parser):
@@ -274,7 +280,7 @@ class InstrumentTest(unittest.TestCase):
 
     def test_companies_act_more(self):
         with app.test_request_context():
-            parts = query_instrument({'document_id': '%s' % self.document_id, 'find': 'more', 'parts': '4,5,6'})
+            parts = query_instrument({'id': '%s' % self.document_id, 'find': 'more', 'parts': '4,5,6'})
             self.assertIsNotNone(parts['parts'])
             # self.assertEqual(len(parts['parts']), 3)  # TODO: Uncomment when REPROCESS_DOCS = True works for test harness
 

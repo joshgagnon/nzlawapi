@@ -10,6 +10,7 @@ import re
 import os
 import uuid
 import json
+from flask import current_app
 
 lmtzr = WordNetLemmatizer()
 
@@ -106,6 +107,7 @@ class Definitions(object):
         self.tag_pool = defaultdict(list)
         self.active = defaultdict(list)
         self.regex = None
+        self.aho = None
         self.titles = []
 
     def get_active(self, key):
@@ -155,6 +157,7 @@ class Definitions(object):
             for definition in self.tag_pool[tag]:
                 self.active[definition.keys].append(definition)
                 self.regex = None
+                self.aho = None
 
     def expire_tag(self, tag):
         if tag in self.tag_pool:
@@ -163,6 +166,7 @@ class Definitions(object):
                 if not len(self.active[definition.keys]):
                     del self.active[definition.keys]
                 self.regex = None
+                self.aho = None
 
     def ordered_defs(self):
         current = map(lambda x: x[-1], self.active.values())
@@ -310,7 +314,7 @@ def infer_life_time(node):
 
 def find_all_definitions(tree, definitions, document_id, expire=True, title=None):
     nodes = tree.xpath(".//def-term[not(ancestor::skeletons)][not(ancestor::history)][not(ancestor::table)][not(ancestor::amend)][not(ancestor::schedule.amendments)]")
-    parenthesis_pat = re.compile('.*(\(|\(the |\(a )$')
+    parenthesis_pat = re.compile('.*(\(|\(the |\(a )$', flags=re.DOTALL)
     def get_parent(node):
         try:
             return node.iterancestors('def-para').next()
@@ -395,6 +399,7 @@ def process_definitions(tree, definitions):
     domxml = node_replace(domxml, definitions, create_def, lower=False, monitor=monitor)
     tree = etree.fromstring(domxml.toxml(), parser=etree.XMLParser(huge_tree=True))
     domxml.unlink()
+    current_app.logger.debug('Found %d instrument definitions' % monitor.i)
     definitions.apply_definitions(tree)
     return tree, definitions
 

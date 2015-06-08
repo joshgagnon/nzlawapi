@@ -257,6 +257,58 @@ def node_replace(domxml, store, create_wrapper, lower=False, monitor=None, ignor
     return domxml
 
 
+# This is faster in some cases, but doesn't have the case logic yet
+def node_replace_aho(domxml, store, create_wrapper, lower=False, monitor=None, ignore_fields=None):
+    ignore_fields = ignore_fields or ['a',  'extref', 'intref', 'skeleton', 'history-note', 'title', 'heading', 'def-term', 'cataref']
+
+    def process_node(parent):
+        for node in parent.childNodes[:]:  # better clone, as we will modify
+            if monitor and not monitor.cont():
+                return
+            if node.nodeType == node.ELEMENT_NODE and node.tagName in ignore_fields:
+                continue
+            elif store.use_life_cycle and node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+                store.enable_tag(node.getAttribute('id'))
+            if node.nodeType == node.TEXT_NODE:
+                aho = store.get_aho()
+                line = node.nodeValue
+                count = 0
+                lines = []
+
+                line = line.lower() if lower else line
+                matches = aho.findall_long(line)
+                for match in matches:
+                    if not match or match[0] is None:
+                        break
+                    if monitor:
+                        monitor.match()
+                    try:
+                        result = match[2]
+                        span = match
+                        lines += [line[:match[0]], create_wrapper(domxml, line[span[0]:span[1]], result, count), line[span[1]:]]
+                        count += 1
+                    # key error will occur if case doesn't match
+                    except KeyError:
+                        offset = match.match(2)[0]+1
+                    except (MatchError):
+                        break
+                else:
+                    lines = [line]
+                lines = filter(lambda x: x, lines)
+                new_nodes = map(lambda x: domxml.createTextNode(x) if isinstance(x, basestring) else x, lines)
+
+                if count and len(new_nodes) > 0:
+                    [parent.insertBefore(n, node) for n in new_nodes]
+                    parent.removeChild(node)
+            else:
+                process_node(node)
+
+            if store.use_life_cycle and node.nodeType == node.ELEMENT_NODE and node.getAttribute('id'):
+                store.expire_tag(node.getAttribute('id'))
+
+    process_node(domxml)
+    return domxml
+
 def etree_to_dict(t, end=None):
     d = {'children' : map(lambda x: etree_to_dict(x, end),
         [c for c in t if not end or not t.attrib.get(end)]), 'tag': t.tag}

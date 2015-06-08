@@ -68,6 +68,7 @@ def get_links(db=None):
             self.active = {}
             self.id_to_title = {}
             self.regex = None
+            self.aho = None
 
         def add(self, title, id):
             self.active[unicode(title.decode('utf-8'))] = {'id': id, 'title': title}
@@ -84,6 +85,12 @@ def get_links(db=None):
             if not self.regex:
                 self.regex = self.combined_reg()
             return self.regex
+
+        def get_aho(self):
+            if not self.aho:
+                self.aho = NoAho()
+                [self.aho.add(x) for x in self.active]
+            return self.aho
 
         def get_active(self, key):
             if key not in self.active:
@@ -131,6 +138,7 @@ def process_instrument_links(tree, db=None, links=None):
     domxml = minidom.parseString(remove_nbsp(etree.tostring(tree, method="html", encoding="UTF-8")))
     domxml = node_replace(domxml, links, create_link, monitor=mon)
     tree = etree.fromstring(domxml.toxml(), parser=large_parser)
+    current_app.logger.debug('Found %d instrument links' % mon.i)
     domxml.unlink()
     # next find every link to this doc, replace links
     return tree

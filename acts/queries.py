@@ -9,6 +9,7 @@ from instrument_es import insert_instrument_es
 from links import process_instrument_links
 from flask import render_template, current_app
 import datetime
+import time
 import json
 import tempfile
 import os
@@ -17,7 +18,6 @@ import shutil
 import codecs
 from copy import deepcopy
 import re
-
 
 large_parser = etree.XMLParser(huge_tree=True)
 
@@ -262,19 +262,22 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
     definitions = Definitions()
 
     format_dates(tree)
-
+    start = time.time()
     tree = strategy['links'](tree, db)
-
+    current_app.logger.debug('Populated Links in %.2f seconds' % (time.time() - start))
     title = unicode(row.get('title').decode('utf-8'))
-
+    start = time.time()
     tree, definitions = populate_definitions(tree, definitions=definitions,
         title=title, expire=True, document_id=row.get('id'))
 
+    current_app.logger.debug('Populated Definitions in %.2f seconds' % (time.time() - start))
     definitions = add_parent_definitions(row, definitions=definitions, db=db,
         strategy=strategy)
-
     # now mark them
+
+    start = time.time()
     tree, definitions = process_definitions(tree, definitions)
+    current_app.logger.debug('Found Definitions in %.2f seconds' % (time.time() - start))
 
     with (db or get_db()).cursor() as cur:
         query = """UPDATE documents d SET processed_document =  %(doc)s
@@ -432,6 +435,7 @@ def prep_instrument(result, replace, db):
     tree = None
     definitions = None
     redo_skele = False
+
     if replace or not result.get('processed_document'):
         tree, definitions = process_instrument(
             row=get_unprocessed_instrument(result.get('id'), db=db),
@@ -448,8 +452,7 @@ def prep_instrument(result, replace, db):
         heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
     else:
         heights = result.get('heights')
-    #from links import analyze_new_links
-    #analyze_new_links(get_unprocessed_instrument(result.get('id'), db=db), db)
+
     return Instrument(
         id=result.get('id'),
         document=document,
