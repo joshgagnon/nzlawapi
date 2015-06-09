@@ -170,9 +170,11 @@ def process_skeleton(id, tree, db=None):
             cur.execute('INSERT INTO document_parts (document_id, num, title, data) VALUES ' + args_str)
 
     db.commit()
-
-    insert_instrument_es(id, db)
-
+    try:
+        insert_instrument_es(id, db)
+    except Exception, e:
+        current_app.logger.error('Could not load %d into elasticsearch' % id)
+        current_app.logger.error(e)
     return skeleton
 
 
@@ -439,7 +441,7 @@ def prep_instrument(result, replace, db):
     if replace or not result.get('processed_document'):
         tree, definitions = process_instrument(
             row=get_unprocessed_instrument(result.get('id'), db=db),
-            db=db, latest=result.get('latest'), refresh=True)
+            db=db, latest=result.get('latest'), refresh=replace)
         document = etree.tostring(tree, encoding='UTF-8', method="html")
         redo_skele = True
     else:

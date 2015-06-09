@@ -40,8 +40,9 @@ def update_document_es(document_id, db=None):
     es = current_app.extensions['elasticsearch']
     db = db or get_db()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        current_app.logger.info('Insert document into es')
-        cur.execute(instrument_query + " where i.id = %(id)s ", {"id": document_id})
+        current_app.logger.info('Update document into es')
+        _query = instrument_query.replace('%', '%%');
+        cur.execute(_query + " where i.id = %(id)s ", {"id": document_id})
         result = cur.fetchone()
         result = strip_html(result)
         es.index(index='legislation', doc_type='instrument', body=result, id=result['id'])

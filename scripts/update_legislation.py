@@ -79,15 +79,15 @@ def run(db, config):
         cur.execute("select update_views()")
 
         # analyze the new links
-
+    db.commit()
     for updated_id in updated_ids:
         analyze_new_links(get_unprocessed_instrument(updated_id, db=db), db)
     # process the docs
-
+    db.commit()
     for updated_id in updated_ids:
         # this will trigger definitions, skeletonizing and elastic search insertion
         get_instrument_object(updated_id, db=db)
-
+    db.commit()
     update_old_versions_es(updated_ids, db=db)
     db.commit()
 
