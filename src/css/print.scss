@@ -98,6 +98,7 @@
      .print-sections {
         padding-left:10px;
         float:left;
+        width:100%;
         @media (min-width: $screen-sm-min) {
             padding-left: $buttonbar-outer-width;
         }
