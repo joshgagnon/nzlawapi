@@ -1,10 +1,9 @@
 from acts.acts import query_instrument
 from acts.queries import get_references, get_versions, get_section_references, get_contents, get_summary
-from cases.cases import query_case
+from cases.queries import query_case
 from elasticsearch import query_instrument_fields, query_case_fields, query_all
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
-from security.auth import require_auth
 from db import get_db
 import psycopg2
 

@@ -188,6 +188,9 @@ def find_parent_instrument(tree, document_id, title, id_lookup, titles):
 def reparse_link_texts(tree, target_id, target_govt_id, source_id=None, db=None):
     """ find links whose href is misrepresented by its text """
     """ ie, "section 2(e) and 3(b)(i)"" will be default only point to s 2 """
+
+    """ TODO, slow as balls, instead, build a minimum tree from structure, search that.  should take
+        impossibly small fraction of time """
     inserts = []
     db = db or get_db()
     with db.cursor(cursor_factory=extras.RealDictCursor, name="link_cursor") as cur:

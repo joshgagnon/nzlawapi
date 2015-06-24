@@ -50,6 +50,7 @@ with open('build/manifest.json') as m:
     app.config['manifest'] =json.loads(m.read())
 
 if app.config.get('LOG_FILE'):
+    # todo, find why no work on server (looks on my machine)
     handler = RotatingFileHandler(
     app.config['LOG_FILE'],
     'a',

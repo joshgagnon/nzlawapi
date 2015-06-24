@@ -9,6 +9,9 @@ from flask import current_app
 import logging
 import re
 
+# https://github.com/nsoranzo/bioblend/commit/d25456033e04f0c0ccf08355044ba6c5ec1a0d9d
+from requests.packages.urllib3.exceptions import ProtocolError
+
 def strip_html(result):
     result = dict(result)
     tree = etree.fromstring(result['document'], parser=large_parser)
@@ -49,27 +52,31 @@ def update_document_es(document_id, db=None):
 
 
 def insert_instrument_es(document_id, db=None):
-    es = current_app.extensions['elasticsearch']
-    db = db or get_db()
-    update_document_es(document_id, db)
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        current_app.logger.info('Insert definitions into es')
-        cur.execute(""" SELECT document_id, html, id, full_word FROM definitions
-            where document_id = %(id)s """, {"id": document_id})
-        results = cur.fetchall()
-        helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
-            "_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
+    try:
+        es = current_app.extensions['elasticsearch']
+        db = db or get_db()
+        update_document_es(document_id, db)
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+            current_app.logger.info('Insert definitions into es')
+            cur.execute(""" SELECT document_id, html, id, full_word FROM definitions
+                where document_id = %(id)s """, {"id": document_id})
+            results = cur.fetchall()
+            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
+                "_source": dict(x), "_index":'legislation', "_type": 'definition'}, results))
 
-    with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        current_app.logger.info('Insert parts into es')
-        cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as html, title FROM document_parts
-                        where document_id = %(id)s """, {"id": document_id})
-        results = cur.fetchall()
-        helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
-            "_source": dict(x), "_index":'legislation', "_type": 'part'}, results))
-    # close transactions
-    db.commit()
-    es.indices.refresh(index="legislation")
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
+            current_app.logger.info('Insert parts into es')
+            cur.execute(""" SELECT document_id, document_id || '-' || num as id, num, data as html, title FROM document_parts
+                            where document_id = %(id)s """, {"id": document_id})
+            results = cur.fetchall()
+            helpers.bulk(es, map(lambda x: {"_id": x['id'], "_parent": x['document_id'],
+                "_source": dict(x), "_index":'legislation', "_type": 'part'}, results))
+        # close transactions
+        db.commit()
+        es.indices.refresh(index="legislation")
+    except (exceptions.Timeout, exceptions.BulkError, exceptions.ConnectionError, exceptions.ElasticHttpError, ProtocolError), e:
+        current_app.logger.error('Could not connect to elasticsearch (id: %d)' % id)
+        current_app.logger.error(e)
     return
 
 def update_old_versions_es(document_ids, db=None):
