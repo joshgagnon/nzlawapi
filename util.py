@@ -143,13 +143,19 @@ def get_path(node, force_part=False):
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
             if text:
-                result = '(%s)' % text + result
+                if '.' in text:
+                    result = u'%s' % text + result
+                else:
+                    result = u'(%s)' % text + result
     it = itertools.chain([node] if node.tag == 'subprov' else [],  iter(node.iterancestors('subprov')))
     for n in it:
         if len(n.xpath('./label')):
             text = n.xpath('./label')[0].text
             if text:
-                result = u'(%s)' % text + result
+                if '.' in text:
+                    result = u'%s' % text + result
+                else:
+                    result = u'(%s)' % text + result
 
     prov_str = 's'
     if len(node.xpath('ancestor::schedule')):
@@ -161,6 +167,8 @@ def get_path(node, force_part=False):
             text = n.xpath('./label')[0].text
             if text:
                 result = u'%s %s' % (prov_str, text + result)
+            else:
+                result = u'%s %s' % (prov_str, result)
 
     if force_part:
         it = itertools.chain([node] if node.tag == 'part' else [], iter(node.iterancestors('part')))
@@ -182,6 +190,7 @@ def get_path(node, force_part=False):
     for n in it:
         if len(n.xpath('./label')):
             result = u'sch %s' % (n.xpath('./label')[0].text or '') + result
+    result = re.sub(r'\s+', ' ', result)
     return result
 
 

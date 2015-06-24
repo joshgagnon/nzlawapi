@@ -63,6 +63,7 @@ def labelize(string):
 
 
 def nodes_from_path_string(tree, path):
+    print path
     path = path.lower().strip()
     pattern = re.compile('(schedule|section|regulation|clause|rule|subpart|part|sch|pt|reg|rr|hcr|ss|s|r|cl)[, ]{,2}(.*)')
     part_pattern = re.compile('([a-z\d]+),? ?(subpart|regulation|clause|rule|section|part|pt|reg|rr|hcr|ss|s|cl|r)?')
@@ -97,6 +98,10 @@ def nodes_from_path_string(tree, path):
                         # try empty label, ie unnumbered schedule
                         tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
                         remainder = path[len(parts[0]):]
+                        #print remainder
+                        remainder = re.sub('^ ?1?,?', '', remainder)
+                        #print remainder
+
 
                 return nodes_from_path_string(tree, remainder)
             else:
@@ -116,7 +121,7 @@ def nodes_from_path_string(tree, path):
                         i += 1
     except IndexError, e:
         raise CustomException("Path not found")
-    current_app.logger.debug("Path: %s %s" % (",".join(keys), path))
+    current_app.logger.info("Path: %s %s" % (",".join(keys), path))
     return find_sub_node(tree, keys)
 
 
