@@ -6,6 +6,8 @@ from lxml import etree
 from utils import text_to_num
 from flask import current_app
 
+IGNORE_TRAVERSAL_TAGS = ('amend', 'end', 'def-para')
+
 
 def cull_tree(nodes_to_keep):
     """ Culls nodes that aren't in the direct line of anything in the nodes_to_keep """
@@ -63,7 +65,6 @@ def labelize(string):
 
 
 def nodes_from_path_string(tree, path):
-    print path
     path = path.lower().strip()
     pattern = re.compile('(schedule|section|regulation|clause|rule|subpart|part|sch|pt|reg|rr|hcr|ss|s|r|cl)[, ]{,2}(.*)')
     part_pattern = re.compile('([a-z\d]+),? ?(subpart|regulation|clause|rule|section|part|pt|reg|rr|hcr|ss|s|cl|r)?')
@@ -98,9 +99,7 @@ def nodes_from_path_string(tree, path):
                         # try empty label, ie unnumbered schedule
                         tree = tree.xpath(".//%s" % (tag_names[parts[0]]))[0]
                         remainder = path[len(parts[0]):]
-                        #print remainder
                         remainder = re.sub('^ ?1?,?', '', remainder)
-                        #print remainder
 
 
                 return nodes_from_path_string(tree, remainder)
@@ -141,7 +140,7 @@ def find_sub_node(tree, keys, limit_tags=['part', 'subpart'], force_tag=None):
                 tag = force_tag if force_tag else '*'
                 nodes = node.xpath(xpath_query % (tag, labelize(label)))
                 nodes = filter(lambda x: x.tag not in limit_tags and
-                    not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(('amend', 'end'))), nodes)
+                    not len(set(map(lambda t: t.tag, x.iterancestors())).intersection(IGNORE_TRAVERSAL_TAGS)), nodes)
                 return shallowest(nodes)
 
             except IndexError:
@@ -371,5 +370,42 @@ def decide_govt_or_path(tree, govt_id, string, nodes_by_id=None):
     except CustomException, e:
         nodes = [govt_node]
     return nodes
+
+
+def create_document_tree(root):
+    doc_tree = []
+    tags = ['part', 'schedule', 'head1', 'subpart', 'prov', 'subprov', 'form', 'label-para']
+
+    def get_label(element, schedule):
+        text = '1'
+        if element.find('./label') is not None:
+            text = element.find('./label').text
+        if element.tag in ['part', 'head1']:
+            text = re.sub('part ', '', text)
+            text = 'part %s' % text
+        if element.tag in ['subpart']:
+            text = 'subpart %s' % text
+        if element.tag in ['schedule']:
+            text = 'sch %s' % text
+        if element.tag in ['prov']:
+            text = '%s %s' % ('cl' if schedule else 's', text)
+        if element.tag in ['form']:
+            text = 'form %s' % text
+        if element.tag in ['label-para', 'sub-prov']:
+            text = '(%s)' % text
+        return text
+
+    def recurse(element, schedule=False):
+        result = []
+        for child in list(element):
+            if child.tag not in IGNORE_TRAVERSAL_TAGS:
+                r = recurse(child, schedule or child.tag == 'schedule')
+                result += r[1] if r[0] is None else [r]
+        if element.tag in tags:
+            return (get_label(element, schedule), result)
+        return (None, result)
+
+
+    return recurse(root)[1]
 
 

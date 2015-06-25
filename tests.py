@@ -10,11 +10,11 @@ from flask import json
 from acts.definitions import *
 from acts.acts import *
 from acts.traversal import *
-from util import xml_compare, generate_path_string
+from acts.tests import *
+from util import xml_compare, generate_path_string, remove_nbsp
 from db import connect_db_config
 from migration import run as run_migration
 from query.query import *
-
 from acts import tests
 
 
@@ -49,7 +49,7 @@ def init_database(filename):
 
     return conn
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestQueries(unittest.TestCase):
 
     def setUp(self):
@@ -94,7 +94,7 @@ class TestQueries(unittest.TestCase):
         self.assertEqual(len(find_node_by_query(self.tree, 'constitution')), 910)
         self.assertEqual(len(find_node_by_query(self.tree, 'fistycuffs')), 0)
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestDefinitions(unittest.TestCase):
 
     def setUp(self):
@@ -170,7 +170,7 @@ def transform_eqn(filename, parser):
 def print_error(msg):
     print msg
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestEquations(unittest.TestCase):
 
     def setUp(self):
@@ -182,7 +182,7 @@ class TestEquations(unittest.TestCase):
             expected = etree.parse(os.path.join('tests/equations', f.replace('.xml', '.html')), parser=self.parser)
             self.assertTrue(xml_compare(result, expected.getroot(), print_error))
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class TestPathExtraction(unittest.TestCase):
     def setUp(self):
         self.parser = etree.XMLParser(remove_blank_text=True)
@@ -198,7 +198,7 @@ class TestPathExtraction(unittest.TestCase):
         el = tree.xpath('.//*[@id="aaa"]')[0]
         self.assertEqual(generate_path_string(el)[0], 'Test Act 666 sch 1 cl 1(1)')
 
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class AutocompleteTest(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
@@ -232,7 +232,7 @@ class AutocompleteTest(unittest.TestCase):
 
 # TODO, assumes data in db, but in a hurry
 # TODO, replace companies act with much much smaller act, everywhere
-#@unittest.skip("demonstrating skipping")
+@unittest.skip("demonstrating skipping")
 class InstrumentTest(unittest.TestCase):
 
     def setUp(self):
@@ -285,9 +285,24 @@ class InstrumentTest(unittest.TestCase):
             # self.assertEqual(len(parts['parts']), 3)  # TODO: Uncomment when REPROCESS_DOCS = True works for test harness
 
 
+#@unittest.skip("demonstrating skipping")
+class DocumentTreeTest(unittest.TestCase):
+
+    def setUp(self):
+        self.parser = etree.XMLParser(remove_blank_text=True)
+
+
+    def test_tree_generation(self):
+        with open('tests/companiesact.xml') as fp:
+            tree = etree.fromstring(remove_nbsp(fp.read()), parser=self.parser)
+        document_tree = create_document_tree(tree)
+        with open('tests/companiesact_doc_tree.json') as fp:
+            self.assertEqual(json.dumps(document_tree), fp.read().strip())
+
+
 if __name__ == '__main__':
-    # Warn against potentially dropping the live database
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
+    # Warn against potentially dropping the live database
     if config.DB.find('test') == -1:
         print 'About to drop database "' + config.DB + '" - Proceed? [y/N]'
         confirm = raw_input().lower()

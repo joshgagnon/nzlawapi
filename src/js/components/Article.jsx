@@ -443,7 +443,7 @@ var ArticleContent = React.createClass({
             return store[i].target;
         };
         this.debounce_scroll = _.debounce(function(){
-            if(self.isMounted()){
+            if(self.isMounted() && self.locations && self.locations.length){
                 var offset = self.getScrollContainer().offset().top +  self.getScrollContainer().position().top;
                 var $el = $(find_current(self.locations));
                 var result = Utils.getLocation($el).repr;

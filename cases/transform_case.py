@@ -14,6 +14,11 @@ import importlib
 from collections import defaultdict
 from lxml import etree, html
 from flask import current_app
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
+from pdfminer.pdfpage import PDFPage
+from cStringIO import StringIO
 
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
@@ -26,14 +31,14 @@ courtfile_variants = [
     'B \d+IM\d+',
     '\d{2,}\/\d{2,}',
     '\d{4}-\d{3}-\d{6}',
-    'AP \d{2}\/\d{4}'
+    'AP \d{2}\/\d{4}']
 
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
 
 def generate_parsable_html(filename, tmp):
     outname = os.path.join(tmp, 'out.html')
-    cmd = """%s -p -c -noframes %s %s"""
+    cmd = """%s -p -c -noframes "%s" %s"""
     print cmd % (current_app.config['PDFTOHTML'], filename, outname)
     p = Popen(cmd % (current_app.config['PDFTOHTML'], filename, outname), shell=True, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
@@ -481,6 +486,7 @@ def intituling(soup):
 def process_case(filename):
     tmp = mkdtemp()
     html = generate_parsable_html(filename, tmp)
+    print html
     soup = BeautifulSoup(html)
     intit_dict = intituling(soup)
     print intit_dict

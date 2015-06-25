@@ -12,7 +12,7 @@ var constants = require('../constants');
 var tour_data = [
     {
         'title': 'Welcome',
-        'text': 'Welcome to Catalex Law Browser.  Type in here to search our database.',
+        'text': 'Welcome to Catalex Law Browser.  Hit the Next buttons to be guided through a quick of Law Browser\'s features.  This is our main search bar, where you can select legislation or do a general search',
         'selector': '.main-search',
         'position': 'bottom',
         'offset': {top:40},
@@ -71,7 +71,6 @@ var tour_data = [
         'position': 'right',
         'offset': {left: 100, top:-50},
         'action': function(link){
-            console.log(link.offset().top, link.offset().left);
             var e = new MouseEvent('click', {
                  'view': window,
                  'bubbles': true,

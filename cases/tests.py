@@ -4,19 +4,30 @@ import sys
 import os
 import re
 from util import xml_compare
-from cases import transform_case
+
 
 path = 'tests/cases'
 
 
 class CaseConversion(unittest.TestCase):
-    for test_file in os.list(path) if test_file.endswith('xml') and not test_file.startswith('template.'):
-        transform_case.process_case(test_file)
+    def test_transform(self):
+        with app.test_request_context():
+            for test_file in os.listdir(path):
+                print test_file
+                if test_file.endswith('xml') and not test_file.startswith('template.'):
+                    process_case(os.path.join(path, test_file.replace('.xml', '.pdf')))
+
+
+class PluralsTest(unittest.TestCase):
+
+    def test_plural_sets(self):
+        print 'myma'
+
 
 
 if __name__ == '__main__':
-    sys.path.append(os.getcwd())
-    config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
-    # Make server routes available in testing mode
-    # Run the tests
+    sys.path.insert(0, os.getcwd())
+    from transform_case import process_case
+    from server import app
+
     unittest.main(argv=[sys.argv[0]])

@@ -5,8 +5,6 @@ import os
 import re
 
 
-
-
 class TestLinkParsing(unittest.TestCase):
 
     def test_transform(self):
@@ -17,8 +15,8 @@ class TestLinkParsing(unittest.TestCase):
                     link_to_canonical(line),
                     unicode(expected_lines[i].strip(), 'utf-8').replace(u"\u00A0", u' '))
 
-class PluralsTest(unittest.TestCase):
 
+class PluralsTest(unittest.TestCase):
 
     def test_plural_sets(self):
         self.assertEqual(key_set('Capital letters'), ('Capital letter', 'Capital letters'))
@@ -27,7 +25,6 @@ class PluralsTest(unittest.TestCase):
         self.assertEqual(key_set('fish'), ('fish', 'fishes'))
         self.assertEqual(key_set('sheep'), ('sheep', 'sheeps'))
         self.assertEqual(key_set('child'), ('child', 'children', 'childrens','childs'))
-
 
 
 if __name__ == '__main__':
@@ -39,6 +36,9 @@ if __name__ == '__main__':
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
 
     # Make server routes available in testing mode
-
     # Run the tests
     unittest.main(argv=[sys.argv[0]])
+
+else:
+    from traversal import *
+    from definitions import key_set
