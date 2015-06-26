@@ -1,13 +1,7 @@
 "use strict";
 var React = require('react/addons');
-var Reflux = require('reflux');
-var Actions = require('../actions/Actions');
 var Popovers = require('./Popovers.jsx');
 var ArticleHandlers = require('./ArticleHandlers.jsx');
-var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
-var ArticleError = require('./Warnings.jsx').ArticleError;
-var Utils = require('../utils');
-var Immutable = require('immutable');
 var SectionReferenceError = require('./Warnings.jsx').SectionReferenceError;
 var PageMixins = require('../mixins/Page');
 var $ = require('jquery');

@@ -207,6 +207,8 @@ def generate_path_string(node, id=None, title=None):
             }), result)
 
 
+
+
 class MatchError(Exception):
     pass
 
@@ -330,7 +332,9 @@ def etree_to_dict(t, end=None):
     return d
 
 def remove_nbsp(input):
-    return unicode(input, 'utf-8').replace(u"\u00A0", u' ').replace(u"\u2060", u'').encode('utf-8')
+    if isinstance(input, str):
+        input = unicode(input, 'utf-8')
+    return input.replace(u"\u00A0", u' ').replace(u"\u2060", u'').encode('utf-8')
 
 
 def safe_date(string, date_format='%Y-%m-%d'):
@@ -338,3 +342,9 @@ def safe_date(string, date_format='%Y-%m-%d'):
         return datetime.datetime.strptime(string, date_format).date()
     except:
         return None
+
+
+def format_govt_date(date):
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    return '%s %s %s' % (date.day, months[date.month-1], date.year)
+

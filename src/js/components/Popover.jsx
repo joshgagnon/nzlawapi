@@ -52,6 +52,7 @@ var popoverSource = {
   }
 };
 
+
 var PopoverBehaviour = {
     needFetch: function(){
         return !this.getLocalContent() && !this.props.popoverPage.get('fetched') && !this.props.popoverPage.get('error');
@@ -69,7 +70,8 @@ var PopoverBehaviour = {
                             null }
                     </div>
                 </div>
-        }else if(this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION || this.props.popoverPage.get('type') == POPOVER_TYPES.SECTION_REFERENCES){
+        }else if(this.props.popoverPage.get('type') === POPOVER_TYPES.DEFINITION ||
+                this.props.popoverPage.get('type') == POPOVER_TYPES.SECTION_REFERENCES){
             return <div className="popover-footer">
                     <div className="row">
                         <Button bsSize="small" bsStyle="primary" onClick={this.addToPrint}>Add To Print</Button >

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from db import get_db
-from util import CustomException, get_title, tohtml, safe_date
+from util import CustomException, get_title, tohtml, safe_date, format_govt_date
 import psycopg2
 from psycopg2 import extras
 from lxml import etree
@@ -18,6 +18,8 @@ import shutil
 import codecs
 from copy import deepcopy
 import re
+import urllib
+
 
 large_parser = etree.XMLParser(huge_tree=True)
 
@@ -73,6 +75,8 @@ def measure_heights(html):
 
 
 def process_skeleton(id, tree, db=None):
+    """ whoever wrote this is an asshole """
+    """ don't check git blame  """
     parts = []
     format_dates(tree)
     html = tohtml(tree)
@@ -385,12 +389,27 @@ def section_references(args):
         title='%s %s' % (title, args.get('target_path')), external=external, internal=internal)}
 
 
+def section_versions(args):
+    document_id = int(args.get('document_id'))
+    versions = get_versions(document_id)
+    title = filter(lambda x: x['id'] == document_id, versions['versions'])[0]['title']
+    for v in versions['versions']:
+        v['url'] = 'query?%s' % urllib.urlencode({
+            'location': args.get('target_path'),
+            'doc_type': 'instrument',
+            'find': 'location',
+            'document_id': v['id']
+            })
+        v['formatted_date'] = format_govt_date(v['date_as_at'])
+    return {'html': render_template('section_versions.html', versions=versions['versions'],
+        title='%s %s' % (title, args.get('target_path')), path=args.get('target_path'))}
+
+
 def get_versions(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute("""select * from get_versions(%(id)s)""", {'id': document_id})
         return {'versions': map(lambda x: dict(x), cur.fetchall())}
-
 
 
 def get_contents(document_id):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 import os
 import importlib
@@ -16,7 +17,7 @@ from db import connect_db_config
 from migration import run as run_migration
 from query.query import *
 from acts import tests
-
+import codecs
 
 def init_database(filename):
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
@@ -287,7 +288,6 @@ class InstrumentTest(unittest.TestCase):
 
 #@unittest.skip("demonstrating skipping")
 class DocumentTreeTest(unittest.TestCase):
-
     def setUp(self):
         self.parser = etree.XMLParser(remove_blank_text=True)
 
@@ -298,6 +298,7 @@ class DocumentTreeTest(unittest.TestCase):
         document_tree = create_document_tree(tree)
         with open('tests/companiesact_doc_tree.json') as fp:
             self.assertEqual(json.dumps(document_tree), fp.read().strip())
+
 
 
 if __name__ == '__main__':

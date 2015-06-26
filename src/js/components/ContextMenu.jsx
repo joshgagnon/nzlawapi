@@ -75,6 +75,25 @@ var ContextMenu = React.createClass({
                 }
             });
     },
+    findOtherVersions: function(){
+        Actions.popoverOpened(
+            this.props.context_menu.get('viewer_id'),
+            this.props.context_menu.get('page_id'), {
+                id: this.props.context_menu.getIn(['data', 'id']),
+                type: POPOVER_TYPES.SECTION_VERSIONS,
+                title: this.props.context_menu.getIn(['data', 'title']) + ' '+ this.props.context_menu.getIn(['data', 'location', 'repr']),
+                source_sel: this.props.context_menu.getIn(['data', 'source_sel']),
+                fetched: false,
+                left: this.props.context_menu.getIn(['data', 'left']),
+                top: this.props.context_menu.getIn(['data', 'top']),
+                query: {
+                    document_id: this.props.context_menu.getIn(['data', 'query', 'document_id']),
+                    find: 'section_versions',
+                    doc_type: 'instrument',
+                    target_path: this.props.context_menu.getIn(['data', 'target_path']),
+                }
+            });
+    },
     render: function(){
         var style = this.props.context_menu.get('position').toJS();
         return <div className="context-menu fade" style={style} >
@@ -96,6 +115,12 @@ var ContextMenu = React.createClass({
                 <a onClick={this.findReferences} >
                     <span className="fa fa-search" title="Find References"/>
                     <span className="sublabel">Find References</span>
+                </a>
+            </li>
+            <li className="suboption">
+                <a onClick={this.findOtherVersions} >
+                    <span className="fa fa-cubes" title="Other Versions"/>
+                    <span className="sublabel">Other Versions</span>
                 </a>
             </li>
             </ul>

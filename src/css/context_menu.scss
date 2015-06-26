@@ -6,6 +6,10 @@
 	  text-align: center;
 	  z-index: 1500;
 	li {
+		line-height:24px;
+		.sublabel{
+			line-height:18px;
+		}
 	 .children{
 		display:block;
 		left:0;
@@ -14,7 +18,7 @@
 			}
 		}
 	     .suboption{
-             font-size:24px;
+             font-size:18px;
            background-color:#eee;
            transition: all 0.2s ease;
             a, .fa{
@@ -36,7 +40,7 @@
 	        top: 0px;
 	    }
 	   .suboption{
-             font-size:24px;
+             font-size:18px;
         }
 	}
 

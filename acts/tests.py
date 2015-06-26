@@ -11,6 +11,7 @@ class TestLinkParsing(unittest.TestCase):
         with open('tests/link_examples.txt') as links, open('tests/links_manually_fixed.txt') as expected:
             expected_lines = expected.readlines()
             for i, line in enumerate(links.readlines()):
+                # TODO, use utils remove_nbsp
                 self.assertEqual(
                     link_to_canonical(line),
                     unicode(expected_lines[i].strip(), 'utf-8').replace(u"\u00A0", u' '))

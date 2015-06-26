@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<act act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.first.valid="2007-09-18" date.terminated="nulldate" description="" hard.copy.reprint="nulldate" id="DLM319569" instructing.office="Economic Development" irdnumbering="no" prospective.consolidation="F" prospective.consolidation.base.version="" prospective.consolidation.based.on="" sonz="" stage="reprint" terminated="" xml:lang="en-NZ" year="1993" year.imprint="2014">
+	<body id="DLM319573" prov-type="section" xml:lang="en-NZ">
+		<part act.no="105" act.type="public" date.as.at="2014-09-11" date.assent="1993-09-28" date.first.valid="2007-09-18" date.terminated="nulldate" description="" hard.copy.reprint="nulldate" id="DLM320460" irdnumbering="no" prospective.consolidation="F" prospective.consolidation.based.on="" sonz="" stage="reprint" terminated="" toc="yes" xml:lang="en-NZ" year="1993">
+			<prov id="DLM1624957" irdnumbering="no" skeleton="no" toc="yes">
+				<label auto.number="no" denominator="yes">112C</label>
+				<heading>Timing of transfer of shares</heading>
+				<prov.body>
+					<subprov skeleton="no">
+						<label auto.number="no" denominator="yes">1</label>
+						<para>
+							<text>On the day on which a board gives notice under
+								<citation jurisdiction="nz">
+									<intref href="DLM320497">section 111(2)(e)</intref></citation>that the board agrees to the purchase of shares by the company,—</text>
+							<label-para skeleton="no">
+								<label auto.number="no" denominator="yes">a</label>
+								<para>
+									<text>the legal title to those shares passes to the company; and</text>
+								</para>
+							</label-para>
+						</para>
+					</subprov>
+					<subprov skeleton="no">
+						<label auto.number="no" denominator="yes">2</label>
+						<para>
+							<text>However, for the purposes of
+								<citation jurisdiction="nz">
+									<intref href="DLM320498">sections 112</intref>
+									and
+									<intref href="DLM1624955">112A</intref></citation>,
+								<def-term id="DLM1624958">shareholder</def-term>
+								and
+								<def-term id="DLM1624959">holder of the shares</def-term>
+								means the person who held the legal title to the shares immediately before the board gave notice under
+								<citation jurisdiction="nz">
+									<intref href="DLM320497">section 111(2)(e)</intref></citation>that the board agrees to the purchase of those shares by the company.</text>
+						</para>
+					</subprov>
+				</prov.body>
+			</prov>
+		</part>
+	</body>
+</act>

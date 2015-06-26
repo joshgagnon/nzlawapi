@@ -93,10 +93,15 @@
         .popover-content{
           &>*{
                 position: absolute;
-                bottom: 38px;
+                bottom: 0;
                 top: 32px;
-                    width: 100%;
+                width: 100%;
             }
+        }
+        .popover-footer ~ .popover-content{
+          &>*{
+            bottom: 38px;
+          }
         }
         .popover-close{
             top: 2px;

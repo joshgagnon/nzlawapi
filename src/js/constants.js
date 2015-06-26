@@ -19,7 +19,8 @@ module.exports = {
 		LINK: 'link',
 		LOCATION: 'location',
 		SECTION_SUMMARY: 'section_summary',
-		SECTION_REFERENCES: 'section_references'
+		SECTION_REFERENCES: 'section_references',
+		SECTION_VERSIONS: 'other_versions',
 	},
 	CONTEXT_MENU_TYPES: {
 		LOCATION: 'location'

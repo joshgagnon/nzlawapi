@@ -6,7 +6,7 @@ from traversal import cull_tree, \
     nodes_from_path_string, limit_tree_size, link_to_canonical
 from lxml import etree
 from flask import current_app
-from queries import get_instrument_object, get_latest_instrument_object, fetch_parts, section_references
+from queries import get_instrument_object, get_latest_instrument_object, fetch_parts, section_references, section_versions
 from query.elasticsearch import query_contains
 
 
@@ -135,6 +135,8 @@ def query_instrument(args):
         return query_contains(args)
     if find == 'section_references':
         return section_references(args)
+    if find == 'section_versions':
+        return section_versions(args)
     if find == 'more':
         return instrument_more(args.get('document_id'), args.get('parts').split(','))
 

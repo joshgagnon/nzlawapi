@@ -35,7 +35,6 @@
     "immutable": "^3.7.1",
     "jquery": "^2.1.1",
     "lodash": "^3.3.0",
-    "prettydiff": "^1.12.8",
     "promise": "^6.1.0",
     "react": "0.13.x",
     "react-bootstrap": "^0.18.0",
