@@ -93,6 +93,9 @@ var PopoverBehaviour = {
             return true;
         }*/
     },
+    hasFooter: function(){
+        return this.props.popoverPage.get('type') !== POPOVER_TYPES.SECTION_VERSIONS;
+    },
     renderBody: function(){
         var html;
         var fragment = this.props.popoverPage.get('format') === 'fragment';
@@ -248,11 +251,15 @@ var Popover = React.createClass({
             var arrowStyle = {};
             arrowStyle['left'] = this.props.popoverPage.get('arrowOffsetLeft');
             arrowStyle['top'] = this.props.popoverPage.get('arrowOffsetTop');
+            var contentClass = 'popover-content';
+            if(!this.hasFooter()){
+                contentClass += ' no-footer';
+            }
              return this.props.connectDragPreview(<div className={classes} role="tooltip" style={style} >
                     { !this.props.popoverView.get('dragged') ? <div className="arrow"  style={arrowStyle} /> : null }
                     { this.props.connectDragSource(<h3 className="popover-title" >{this.props.popoverPage.get('full_title') || this.props.popoverPage.get('title')}</h3>) }
                     <div className="popover-close" onClick={this.close}>&times;</div>
-                    <div className='popover-content' onWheel={this.stopScrollPropagation} >
+                    <div className={contentClass} onWheel={this.stopScrollPropagation} >
                         {this.renderBody() }
                     </div>
                     {this.renderFooter() }

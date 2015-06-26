@@ -393,15 +393,18 @@ def section_versions(args):
     document_id = int(args.get('document_id'))
     versions = get_versions(document_id)
     title = filter(lambda x: x['id'] == document_id, versions['versions'])[0]['title']
+    version_list = []
     for v in versions['versions']:
-        v['url'] = 'query?%s' % urllib.urlencode({
-            'location': args.get('target_path'),
-            'doc_type': 'instrument',
-            'find': 'location',
-            'document_id': v['id']
-            })
-        v['formatted_date'] = format_govt_date(v['date_as_at'])
-    return {'html': render_template('section_versions.html', versions=versions['versions'],
+        if v['id'] != document_id:
+            v['url'] = 'query?%s' % urllib.urlencode({
+                'location': args.get('target_path'),
+                'doc_type': 'instrument',
+                'find': 'location',
+                'document_id': v['id']
+                })
+            v['formatted_date'] = format_govt_date(v['date_as_at'])
+            version_list.append(v)
+    return {'html': render_template('section_versions.html', versions=version_list,
         title='%s %s' % (title, args.get('target_path')), path=args.get('target_path'))}
 
 
