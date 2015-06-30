@@ -11,11 +11,11 @@ from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 import shutil
 import importlib
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from lxml import etree, html
 from flask import current_app
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import XMLConverter
+from pdfminer.converter import XMLConverter, HTMLConverter
 from pdfminer.converter import PDFPageAggregator, PDFConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
@@ -39,8 +39,34 @@ courtfile_variants = [
 
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
+
+Match = namedtuple('Match', 'string open close')
+
+class DocStateMachine(object):
+    def __init__(self, inputs, doc):
+        self.inputs = inputs
+        self.positions = [0] * len(inputs)
+        self.doc = doc
+
+    def step(self, char):
+        for i in xrange(len(self.inputs)):
+            if self.inputs[i].string[self.positions[i]] == char:
+                self.positions[i] += 1
+                if len(self.inputs[i].string) == self.positions[i]:
+                    self.positions[i] = 0
+                    if self.inputs[i].open:
+                        self.doc.open_tag(self.inputs[i].open)
+                    if self.inputs[i].close:
+                        self.doc.close_tag(self.inputs[i].close, post_flush=True)
+            else:
+                self.positions[i] = 0
+
+
+
 class DocState(object):
+
     CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f\n]')
+
     has_new_line = False
     bbox = None
     prev_bbox = None
@@ -58,10 +84,13 @@ class DocState(object):
         'quote': 145,
         'quote_size': 11.0,
         'superscript': 8.0,
+        'fudge': 2.0,
+        'right_align_thresholds': [300, 520]
     }
 
 
     def __init__(self):
+        self.state = DocStateMachine([Match(string='[1]', open=None, close='intituling')], self)
         self.body = StringIO()
         self.footer = StringIO()
         self.buffer = StringIO()
@@ -71,15 +100,27 @@ class DocState(object):
         self.switch_footer()
         self.open_tag('footer')
         self.switch_body()
-        #self.open_tag('intituling')
+        self.open_tag('intituling')
 
 
     def para_threshold(self):
+
+        def right_aligned(bbox):
+            return (bbox[0] > self.thresholds['right_align_thresholds'][0] and
+                bbox[2] > self.thresholds['right_align_thresholds'][1])
+
         if not self.prev_bbox:
             return True
+        #if self.is_footer():
+        #    print self.prev_bbox[3] - self.bbox[3]
+        #    return self.prev_bbox[3] - self.bbox[3] > 4
         if self.bbox[1] > self.thresholds['para_top']:
             return False
-        return self.prev_bbox[3] - self.bbox[3] > self.thresholds['para']
+        # If lines are sufficently apart vertically
+        # Or lines dont overlap horizonitally
+        # Or lines are right aligned but not left aligned
+        return (self.prev_bbox[3] - self.bbox[3] > self.thresholds['para'] or
+                self.prev_bbox[2] < self.bbox[0])
 
     def new_line(self, bbox):
         self.has_new_line = True
@@ -88,21 +129,24 @@ class DocState(object):
 
 
     def open_tag(self, tag):
+        self.flush()
         self.tag_stack.append(tag)
         self.out.write('\n<%s>\n' % tag)
 
+
+    def close_tag(self, tag, post_flush=False):
+        if not post_flush:
+            self.flush()
+        while tag in self.tag_stack:
+            _tag = self.tag_stack.pop()
+            self.out.write('\n</%s>\n' % _tag)
+        if post_flush:
+            self.flush()
 
     def flush(self):
         self.out.write(self.buffer.getvalue())
         self.buffer.close()
         self.buffer = StringIO()
-
-    def close_tag(self, tag):
-        self.flush()
-        while tag in self.tag_stack:
-            _tag = self.tag_stack.pop()
-            self.out.write('\n</%s>\n' % _tag)
-
 
     def handle_new_line(self):
         self.has_new_line = False
@@ -133,6 +177,9 @@ class DocState(object):
 
             elif self.last_char != ' ':
                 self.write_text(' ')
+        else:
+            self.close_tag('intituling_field')
+            self.open_tag('intituling_field')
 
 
     def is_superscript(self):
@@ -151,10 +198,12 @@ class DocState(object):
         return self.close_tag('intituling')
 
     def switch_footer(self):
+        self.flush()
         self.out = self.footer
         self.tag_stack = self.foot_stack
 
     def switch_body(self):
+        self.flush()
         self.out = self.body
         self.tag_stack = self.body_stack
 
@@ -165,7 +214,7 @@ class DocState(object):
         self.switch_footer()
         for tag in self.tag_stack[::-1]:
             self.close_tag(tag)
-        return self.body.getvalue() #+ self.footer.getvalue()
+        return self.body.getvalue() + self.footer.getvalue()
 
     def is_bold(self, font):
         return 'bold' in font.lower()
@@ -184,8 +233,9 @@ class DocState(object):
 
         if self.has_new_line:
             self.handle_new_line()
-
+        self.state.step(enc(text, 'utf-8'))
         self.buffer.write(enc(text, 'utf-8'))
+
         self.last_char = text
         return
 
@@ -279,7 +329,7 @@ def generate_parsable_html(path, tmp):
     codec = 'utf-8'
 
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=True, char_margin=10)
+    laparams = LAParams(detect_vertical=True, char_margin=9)
     # Create a PDF page aggregator object.
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -288,7 +338,7 @@ def generate_parsable_html(path, tmp):
     with open(path, 'rb') as fp:
         parser = PDFParser(fp)
         document = PDFDocument(parser)
-        device = Converter(rsrcmgr, retstr, codec='ascii' , laparams = laparams)
+        device = Converter(rsrcmgr, retstr, codec='utf-8' , laparams = laparams)
 
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
