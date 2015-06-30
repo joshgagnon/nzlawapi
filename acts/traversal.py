@@ -78,7 +78,6 @@ def nodes_from_path_string(tree, path):
                 # match up 'cl ' or 's ', 'section ' or 'clause ' then until '('
                 label = ''
                 remainder = parts[1].strip()
-
                 if remainder:
                     # total hack job, but must support subpart/part/schedule ranges
                     if range_pattern.match(remainder):
@@ -120,7 +119,7 @@ def nodes_from_path_string(tree, path):
                         i += 1
     except IndexError, e:
         raise CustomException("Path not found")
-    current_app.logger.info("Path: %s %s" % (",".join(keys), path))
+    current_app.logger.info("Path: %s Original: %s" % (",".join(keys), path))
     return find_sub_node(tree, keys)
 
 

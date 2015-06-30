@@ -15,11 +15,15 @@ from collections import defaultdict
 from lxml import etree, html
 from flask import current_app
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import TextConverter
+from pdfminer.converter import XMLConverter
+from pdfminer.converter import PDFPageAggregator, PDFConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
-
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup
+from pdfminer.utils import bbox2str, enc
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
@@ -35,8 +39,275 @@ courtfile_variants = [
 
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
+class DocState(object):
+    CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f\n]')
+    has_new_line = False
+    bbox = None
+    prev_bbox = None
+    size = None
+    font = None
+    body = None
+    footer = None
+    last_char = None
 
-def generate_parsable_html(filename, tmp):
+    thresholds = {
+        'para': 30,
+        'para_top': 710.0,
+        'footer': 100,
+        'footer_size': 10,
+        'quote': 145,
+        'quote_size': 11.0,
+        'superscript': 8.0,
+    }
+
+
+    def __init__(self):
+        self.body = StringIO()
+        self.footer = StringIO()
+        self.buffer = StringIO()
+        self.out = self.body
+        self.body_stack = []
+        self.foot_stack = []
+        self.switch_footer()
+        self.open_tag('footer')
+        self.switch_body()
+        #self.open_tag('intituling')
+
+
+    def para_threshold(self):
+        if not self.prev_bbox:
+            return True
+        if self.bbox[1] > self.thresholds['para_top']:
+            return False
+        return self.prev_bbox[3] - self.bbox[3] > self.thresholds['para']
+
+    def new_line(self, bbox):
+        self.has_new_line = True
+        self.prev_bbox = self.bbox
+        self.bbox = bbox
+
+
+    def open_tag(self, tag):
+        self.tag_stack.append(tag)
+        self.out.write('\n<%s>\n' % tag)
+
+
+    def flush(self):
+        self.out.write(self.buffer.getvalue())
+        self.buffer.close()
+        self.buffer = StringIO()
+
+    def close_tag(self, tag):
+        self.flush()
+        while tag in self.tag_stack:
+            _tag = self.tag_stack.pop()
+            self.out.write('\n</%s>\n' % _tag)
+
+
+    def handle_new_line(self):
+        self.has_new_line = False
+
+        if self.is_footer():
+            self.switch_footer()
+        else:
+            self.switch_body()
+
+        if self.is_quote():
+            if 'quote' not in self.tag_stack:
+                self.open_tag('quote')
+
+        elif 'quote' in self.tag_stack:
+            self.close_tag('quote')
+
+        if self.is_superscript():
+            self.open_tag('superscript')
+        else:
+            self.close_tag('superscript')
+
+        if not self.is_intituling():
+            if not self.is_quote() and self.para_threshold():
+                self.close_tag('paragraph')
+
+            if 'paragraph' not in self.tag_stack:
+                self.open_tag('paragraph')
+
+            elif self.last_char != ' ':
+                self.write_text(' ')
+
+
+    def is_superscript(self):
+        return self.size < self.thresholds['superscript']
+
+    def is_quote(self):
+        return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
+
+    def is_footer(self):
+        return self.bbox[1] < self.thresholds['footer'] and (self.size and self.size < self.thresholds['footer_size'])
+
+    def is_intituling(self):
+        return 'intituling' in self.body_stack
+
+    def handle_hline(self, item):
+        return self.close_tag('intituling')
+
+    def switch_footer(self):
+        self.out = self.footer
+        self.tag_stack = self.foot_stack
+
+    def switch_body(self):
+        self.out = self.body
+        self.tag_stack = self.body_stack
+
+    def finalize(self):
+        self.switch_body()
+        for tag in self.tag_stack[::-1]:
+            self.close_tag(tag)
+        self.switch_footer()
+        for tag in self.tag_stack[::-1]:
+            self.close_tag(tag)
+        return self.body.getvalue() #+ self.footer.getvalue()
+
+    def is_bold(self, font):
+        return 'bold' in font.lower()
+
+    def write_text(self, text, item=None):
+        text = self.CONTROL.sub(u'', text)
+        if item and text.strip():
+            if hasattr(item, 'size'):
+                if self.size != item.size:
+                    self.size = item.size
+                    self.has_new_line = True
+            if hasattr(item, 'fontname'):
+                if self.font != item.fontname:
+                    self.font = item.fontname
+                    self.has_new_line = True
+
+        if self.has_new_line:
+            self.handle_new_line()
+
+        self.buffer.write(enc(text, 'utf-8'))
+        self.last_char = text
+        return
+
+
+class Converter(PDFConverter):
+
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
+             laparams=None, imagewriter=None):
+        PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
+        self.imagewriter = imagewriter
+        self.doc = DocState()
+        return
+
+    def receive_layout(self, ltpage):
+
+        def get_text(item):
+            if isinstance(item, LTTextBox):
+                for child in item:
+                    return ''.join(get_text(child))
+
+            elif isinstance(item, LTChar):
+                return item.get_text()
+
+            elif isinstance(item, LTText):
+                return item.get_text()
+            return ''
+
+
+        def render(item):
+            if isinstance(item, LTPage):
+                for child in item:
+                    render(child)
+
+            elif isinstance(item, LTLine):
+                #self.doc.out.write('<line linewidth="%d" bbox="%s" />\n' %
+                #                 (item.linewidth, bbox2str(item.bbox)))
+                self.doc.handle_hline(item)
+
+            elif isinstance(item, LTRect):
+                self.doc.handle_hline(item)
+
+            elif isinstance(item, LTCurve):
+                self.doc.out.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
+                                 (item.linewidth, bbox2str(item.bbox), item.get_pts()))
+
+            elif isinstance(item, LTFigure):
+                self.doc.out.write('<figure name="%s" bbox="%s">\n' %
+                                 (item.name, bbox2str(item.bbox)))
+                for child in item:
+                    render(child)
+                self.doc.out.write('</figure>\n')
+
+            elif isinstance(item, LTTextLine):
+                # only a new if some content
+                if get_text(item).strip():
+                    self.doc.new_line(item.bbox)
+                    for child in item:
+                        render(child)
+
+            elif isinstance(item, LTTextBox):
+                for child in item:
+                    render(child)
+
+            elif isinstance(item, LTChar):
+                self.doc.write_text(item.get_text(), item)
+
+            elif isinstance(item, LTText):
+                for t in item.get_text():
+                    self.doc.write_text(t, item)
+            elif isinstance(item, LTImage):
+                if self.imagewriter is not None:
+                    name = self.imagewriter.export_image(item)
+                    self.doc.out.write('<image src="%s" width="%d" height="%d" />\n' %
+                                     (enc(name), item.width, item.height))
+                else:
+                    self.doc.out.write('<image width="%d" height="%d" />\n' %
+                                     (item.width, item.height))
+            else:
+                assert 0, item
+            return
+        render(ltpage)
+        return
+
+    def get_result(self):
+        return self.doc.finalize()
+
+
+def generate_parsable_html(path, tmp):
+    rsrcmgr = PDFResourceManager()
+    retstr = StringIO()
+    codec = 'utf-8'
+
+    # Set parameters for analysis.
+    laparams = LAParams(detect_vertical=True, char_margin=10)
+    # Create a PDF page aggregator object.
+    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    password = ''
+    path = canoncialize_pdf(path, tmp)
+    with open(path, 'rb') as fp:
+        parser = PDFParser(fp)
+        document = PDFDocument(parser)
+        device = Converter(rsrcmgr, retstr, codec='ascii' , laparams = laparams)
+
+        interpreter = PDFPageInterpreter(rsrcmgr, device)
+
+        for page in PDFPage.create_pages(document):
+            interpreter.process_page(page)
+
+        print re.sub(' +', ' ', device.get_result())
+        #print retstr.getvalue()
+
+
+def canoncialize_pdf(path, tmp):
+    output = os.path.join(tmp, 'out.pdf')
+    cmd = """gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -sOutputFile=%s '%s'"""
+    p = Popen(cmd % (output, path), shell=True, stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate()
+    return output
+
+
+def generate_parsable_html1(filename, tmp):
     outname = os.path.join(tmp, 'out.html')
     cmd = """%s -p -c -noframes "%s" %s"""
     print cmd % (current_app.config['PDFTOHTML'], filename, outname)
@@ -486,7 +757,6 @@ def intituling(soup):
 def process_case(filename):
     tmp = mkdtemp()
     html = generate_parsable_html(filename, tmp)
-    print html
     soup = BeautifulSoup(html)
     intit_dict = intituling(soup)
     print intit_dict
