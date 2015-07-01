@@ -28,17 +28,6 @@ from pdfminer.utils import bbox2str, enc
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
 
-courtfile_variants = [
-    '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
-    'T NO\. S\d{4,}',
-    '(S|T)\d{4,}',
-    'B \d+IM\d+',
-    '\d{2,}\/\d{2,}',
-    '\d{4}-\d{3}-\d{6}',
-    'AP \d{2}\/\d{4}']
-
-courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
-
 
 Match = namedtuple('Match', 'string open close')
 
@@ -54,13 +43,16 @@ class DocStateMachine(object):
                 self.positions[i] += 1
                 if len(self.inputs[i].string) == self.positions[i]:
                     self.positions[i] = 0
-                    if self.inputs[i].open:
-                        self.doc.open_tag(self.inputs[i].open)
                     if self.inputs[i].close:
-                        self.doc.close_tag(self.inputs[i].close, post_flush=True)
+                        self.doc.close_tag(self.inputs[i].close, flush=False)
+                    if self.inputs[i].open:
+                        self.doc.open_tag(self.inputs[i].open, flush=False)
             else:
                 self.positions[i] = 0
 
+    def reset(self):
+        for i in xrange(len(self.inputs)):
+            self.positions[i] = 0
 
 
 class DocState(object):
@@ -90,7 +82,11 @@ class DocState(object):
 
 
     def __init__(self):
-        self.state = DocStateMachine([Match(string='[1]', open=None, close='intituling')], self)
+        self.state = DocStateMachine([
+            Match(string='[1]', open='body,paragraph', close='intituling'),
+            Match(string='REASON', open='body,paragraph', close='intituling')
+
+            ], self)
         self.body = StringIO()
         self.footer = StringIO()
         self.buffer = StringIO()
@@ -110,17 +106,20 @@ class DocState(object):
                 bbox[2] > self.thresholds['right_align_thresholds'][1])
 
         if not self.prev_bbox:
-            return True
-        #if self.is_footer():
-        #    print self.prev_bbox[3] - self.bbox[3]
-        #    return self.prev_bbox[3] - self.bbox[3] > 4
+            return False
         if self.bbox[1] > self.thresholds['para_top']:
             return False
         # If lines are sufficently apart vertically
         # Or lines dont overlap horizonitally
-        # Or lines are right aligned but not left aligned
-        return (self.prev_bbox[3] - self.bbox[3] > self.thresholds['para'] or
+        return ((self.prev_bbox[3] - self.bbox[3]) > self.thresholds['para'] or
                 self.prev_bbox[2] < self.bbox[0])
+
+    def line_threshold(self):
+        if not self.prev_bbox:
+            return False
+
+        return (self.prev_bbox[3] - self.bbox[3]) > 4
+
 
     def new_line(self, bbox):
         self.has_new_line = True
@@ -128,20 +127,24 @@ class DocState(object):
         self.bbox = bbox
 
 
-    def open_tag(self, tag):
-        self.flush()
-        self.tag_stack.append(tag)
-        self.out.write('\n<%s>\n' % tag)
+    def open_tag(self, tag, flush=True, attributes=None):
+        if flush:
+            self.flush()
+        for t in tag.split(','):
+            if t not in self.tag_stack:
+                self.tag_stack.append(t)
+                if attributes:
+                    self.out.write('<%s %s>' % (t, attributes))
+                else:
+                    self.out.write('<%s>' % t)
 
 
-    def close_tag(self, tag, post_flush=False):
-        if not post_flush:
+    def close_tag(self, tag, flush=True):
+        if tag in self.tag_stack and flush:
             self.flush()
         while tag in self.tag_stack:
             _tag = self.tag_stack.pop()
-            self.out.write('\n</%s>\n' % _tag)
-        if post_flush:
-            self.flush()
+            self.out.write('</%s>' % _tag)
 
     def flush(self):
         self.out.write(self.buffer.getvalue())
@@ -156,19 +159,12 @@ class DocState(object):
         else:
             self.switch_body()
 
-        if self.is_quote():
-            if 'quote' not in self.tag_stack:
-                self.open_tag('quote')
+        if self.is_footer():
+            self.open_tag('footer_page')
+            self.close_tag('footer_field')
+            self.open_tag('footer_field')
 
-        elif 'quote' in self.tag_stack:
-            self.close_tag('quote')
-
-        if self.is_superscript():
-            self.open_tag('superscript')
-        else:
-            self.close_tag('superscript')
-
-        if not self.is_intituling():
+        elif not self.is_intituling():
             if not self.is_quote() and self.para_threshold():
                 self.close_tag('paragraph')
 
@@ -179,7 +175,21 @@ class DocState(object):
                 self.write_text(' ')
         else:
             self.close_tag('intituling_field')
-            self.open_tag('intituling_field')
+            self.open_tag('intituling_field',
+                attributes='left="%d" bold="%s"' % (self.bbox[0], '1' if self.is_bold(self.font) else '0'))
+
+    def handle_style(self):
+        if self.is_superscript():
+            self.open_tag('superscript')
+        else:
+            self.close_tag('superscript')
+
+        if self.is_quote():
+            if 'quote' not in self.tag_stack:
+                self.open_tag('quote')
+
+        elif 'quote' in self.tag_stack:
+            self.close_tag('quote')
 
 
     def is_superscript(self):
@@ -189,7 +199,7 @@ class DocState(object):
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
 
     def is_footer(self):
-        return self.bbox[1] < self.thresholds['footer'] and (self.size and self.size < self.thresholds['footer_size'])
+        return self.bbox and self.bbox[1] < self.thresholds['footer'] and (self.size and self.size < self.thresholds['footer_size'])
 
     def is_intituling(self):
         return 'intituling' in self.body_stack
@@ -198,12 +208,16 @@ class DocState(object):
         return self.close_tag('intituling')
 
     def switch_footer(self):
-        self.flush()
-        self.out = self.footer
-        self.tag_stack = self.foot_stack
+        if self.out != self.footer:
+            self.flush()
+            self.out = self.footer
+            self.tag_stack = self.foot_stack
+            # transistion from body/footer, clear prev
+            self.prev_bbox = None
 
     def switch_body(self):
-        self.flush()
+        if self.out == self.footer:
+            self.close_tag('footer_page')
         self.out = self.body
         self.tag_stack = self.body_stack
 
@@ -214,7 +228,8 @@ class DocState(object):
         self.switch_footer()
         for tag in self.tag_stack[::-1]:
             self.close_tag(tag)
-        return self.body.getvalue() + self.footer.getvalue()
+        return ('<?xml version="1.0" encoding="uft-8" ?>' +
+            '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
 
     def is_bold(self, font):
         return 'bold' in font.lower()
@@ -225,17 +240,16 @@ class DocState(object):
             if hasattr(item, 'size'):
                 if self.size != item.size:
                     self.size = item.size
-                    self.has_new_line = True
+
             if hasattr(item, 'fontname'):
                 if self.font != item.fontname:
                     self.font = item.fontname
-                    self.has_new_line = True
 
         if self.has_new_line:
             self.handle_new_line()
-        self.state.step(enc(text, 'utf-8'))
+        self.handle_style()
         self.buffer.write(enc(text, 'utf-8'))
-
+        self.state.step(enc(text, 'utf-8'))
         self.last_char = text
         return
 
@@ -323,7 +337,7 @@ class Converter(PDFConverter):
         return self.doc.finalize()
 
 
-def generate_parsable_html(path, tmp):
+def generate_parsable_xml(path, tmp):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
     codec = 'utf-8'
@@ -345,8 +359,7 @@ def generate_parsable_html(path, tmp):
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
 
-        print re.sub(' +', ' ', device.get_result())
-        #print retstr.getvalue()
+        return re.sub(' +', ' ', device.get_result())
 
 
 def canoncialize_pdf(path, tmp):
@@ -357,16 +370,139 @@ def canoncialize_pdf(path, tmp):
     return output
 
 
-def generate_parsable_html1(filename, tmp):
-    outname = os.path.join(tmp, 'out.html')
-    cmd = """%s -p -c -noframes "%s" %s"""
-    print cmd % (current_app.config['PDFTOHTML'], filename, outname)
-    p = Popen(cmd % (current_app.config['PDFTOHTML'], filename, outname), shell=True, stdout=PIPE, stderr=PIPE)
-    out, err = p.communicate()
-    if out.rstrip():
-        print filename, err
-    with open(outname) as f:
-        return f.read()
+def massage_xml(soup):
+    print soup.find('intituling').prettify()
+    full_citation_el = soup.find('footer_field')
+    court_el = find_court_el(soup)
+    court_file_el = find_court_file_el(soup)
+    neutral_el = find_neutral_el(soup)
+    bench = find_bench(soup)
+    judgment = find_judgment(soup)
+    counsel = find_counsel(soup)
+    waistband = find_waistband(soup)
+    print 'court:', court_el.text
+    print 'courtfile:', court_file_el.text
+    print 'neutral:', neutral_el.text
+    print 'bench:', bench
+    print 'judgment:', judgment
+    print 'counsel:', counsel
+    print 'waistband:', waistband
+
+
+def get_left(el):
+    return float(el.attrs['left'])
+
+
+def get_bold(el):
+    return float(el.attrs['bold'])
+
+
+def find_reg_el(soup, reg):
+    for e in soup.find_all('intituling_field'):
+        if reg.match(e.text):
+            return e
+
+
+def find_until(el, reg=None, use_position=True):
+    results = []
+    left = get_left(el)
+    bold = get_bold(el)
+    while el.next_sibling and not (reg and reg.match(el.next_sibling.text)) and (not use_position or get_left(el.next_sibling) == left) and get_bold(el.next_sibling) == bold:
+        results.append(el.next_sibling)
+        el = el.next_sibling
+    return results
+
+
+def find_court_el(soup):
+    reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
+    return find_reg_el(soup, reg)
+
+
+def find_court_file_el(soup):
+    courtfile_variants = [
+        '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
+        'T NO\. S\d{4,}',
+        '(S|T)\d{4,}',
+        'B \d+IM\d+',
+        '\d{2,}\/\d{2,}',
+        '\d{4}-\d{3}-\d{6}',
+        'AP \d{2}\/\d{4}']
+
+    courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
+    return find_reg_el(soup, courtfile_num)
+
+
+def find_neutral_el(soup):
+    reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
+    return find_reg_el(soup, reg)
+
+
+def find_bench(soup):
+    reg = re.compile(r'court: ', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    results = [start] + find_until(start, re.compile('\w+:'))
+    return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
+
+
+def find_judgment(soup):
+    reg = re.compile(r'judgment: ', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    return re.sub(reg, '', start.text)
+
+
+def find_counsel(soup):
+    reg = re.compile(r'counsel: ', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
+    return map(lambda x: re.sub(reg, '',  x.text), results)
+
+
+def find_waistband(soup):
+    reg = re.compile(r'JUDGMENT OF THE COURT', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    results = [start]+ find_until(start, None, use_position=False)
+    return filter(None, map(lambda x: x.text, results))
+
+
+def parse_betweenasdf(soup):
+    results = {}
+    between = ['AND BETWEEN', 'BETWEEN']
+    el = (e for e in soup.find_all('div') if e.text in between).next()
+    plantiff_patterns = [
+        re.compile('.*Plaintiff[s]?'),
+        re.compile('.*Applicant[s]?'),
+        re.compile('.*Appellant[s]?'),
+        re.compile('.*Insolvent[s]?')
+    ]
+    # while not at next section
+
+    while el.text in between:
+        # look back to get court_num
+        try:
+            court_num = (e for e in el.previous_siblings if courtfile_num.match(e.text)).next().text
+        except:
+            court_num = "UNKNOWN"
+        el = next_tag(el, 'div')
+        plantiff = []
+        defendant = []
+        while True:
+            parties, el = consecutive_align(el)
+            if any((p.match(parties[-1]) for p in plantiff_patterns)):
+                plantiff += parties
+            else:
+                defendant += parties
+            if el.text != 'AND':
+                break
+            el = next_tag(el, 'div')
+
+        results[court_num] = {
+            'plantiffs': plantiff,
+            'defendants': defendant
+        }
+
+    return results
+
+
 
 
 class NoText(Exception):
@@ -449,14 +585,7 @@ def full_citation(soup):
     return ' '.join(result)
 
 
-def court(soup):
-    reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
-    el = (e for e in soup.select('div  span') if reg.match(e.text)).next()
-    next_el = next_tag(el.parent.parent, 'div').find('span')
-    result = [el.text]
-    if not courtfile_num.match(next_el.text):
-        result +=  [next_el.text]
-    return result
+
 
 
 def get_left_position(el):
@@ -806,9 +935,9 @@ def intituling(soup):
 
 def process_case(filename):
     tmp = mkdtemp()
-    html = generate_parsable_html(filename, tmp)
-    soup = BeautifulSoup(html)
-    intit_dict = intituling(soup)
+    xml = generate_parsable_xml(filename, tmp)
+    soup = BeautifulSoup(xml)
+    intit_dict = massage_xml(soup)
     print intit_dict
     shutil.rmtree(tmp)
     return results
