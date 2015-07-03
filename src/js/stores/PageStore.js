@@ -8,6 +8,7 @@ var request = require('../catalex-request');
 var PAGE_TYPES = require('../constants').PAGE_TYPES;
 var RESOURCE_TYPES = require('../constants').RESOURCE_TYPES;
 
+
 var PageStore = Reflux.createStore({
     listenables: Actions,
     init: function(){

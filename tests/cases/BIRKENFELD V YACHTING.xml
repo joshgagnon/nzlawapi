@@ -5,11 +5,13 @@
 	<court-file>SC 72/2006</court-file>
 	<neutral-citation>[2006] NZSC 93</neutral-citation>
 	<parties>
-		<plantiff>
-			<qualifier>BETWEEN</qualifier>
-			<value>KIMBERLEY BIRKENFELD</value>
-			<descriptor>Applicant</descriptor>
-		</plantiff>
+		<plantiffs>
+			<plantiff>
+				<qualifier>BETWEEN</qualifier>
+				<value>KIMBERLEY BIRKENFELD</value>
+				<descriptor>Applicant</descriptor>
+			</plantiff>
+		</plantiffs>
 		<defendants>
 			<defendant>
 				<qualifier>AND</qualifier>
@@ -24,7 +26,6 @@
 	<judgment>10 November 2006</judgment>
 	<waistband>
 	<title>JUDGMENT OF THE COURT</title>
-	<post-divider>
 		<list>
 			<entry>
 			<label>A</label>
@@ -35,7 +36,6 @@
 			<text>The applicant must pay the respondent costs of $1,500 together with reasonable disbursements, to be fixed if necessary by the Registrar.</text>
 			</entry>
 		</list>
-	</post-divider>
 	</waistband>
 	<solicitor>Phillips Fox, Auckland for Respondent</solicitor>
 	</intituling>
@@ -61,13 +61,10 @@
 
 		<paragraph><label>4</label>
 			<text>The RIB comes within the statutory definition but Ms Birkenfeld submitted that the statutory definition should be read down to confine its scope, at least for the purposes of limitation of liability, to vessels engaged in trade. She argued that Part 7 of the Maritime Transport Act gives effect to the Convention on Limitation of Liability for Maritime Claims<footnote>1</footnote> and that the rationale of the Convention is that the public interest in encouraging navigation for trading purposes outweighs the public interest in compensating without limitation persons injured by trading vessels.</text>
-			<footnote-text><key>1</key><text>London, 19 November 1976</text></footnote-text>
 		</paragraph>
 
 		<paragraph><label>5</label>
 			<text>Ms Birkenfeld argued further that the extent of limited liability is calculated in accordance with s 87 by reference to weight, and weight is calculated in accordance with the International Convention on Tonnage Measurement of Ships.<footnote>2</footnote> She submitted that since ships of less than 24 metres are excepted from the Tonnage Convention<footnote>3</footnote> they must therefore be excluded from the ambit of s 87. The RIB is less than 24 metres long. Further, as is indicated by art 15(2), the Limitation Convention envisages limitation of liability for sea-going ships and the RIB is, she submitted, not a sea-going ship.</text>
-			<footnote-text><key>2</key><text>London, 19 November 1976.</text></footnote-text>
-			<footnote-text><key>3</key><text>Article 4(1)(b).</text></footnote-text>
 		</paragraph>
 
 		<paragraph><label>6</label>
@@ -83,6 +80,10 @@
 		</paragraph>
 
 	</body>
-
+	<footer>
+			<footnote-text><key>1</key><text>London, 19 November 1976.</text></footnote-text>
+			<footnote-text><key>2</key><text>London, 23 June 1969.</text></footnote-text>
+			<footnote-text><key>3</key><text>Article 4(1)(b).</text></footnote-text>
+	</footer>
 </case>
 

@@ -113,6 +113,7 @@ def xml_compare(x1, x2, reporter=None):
     cl1 = x1.getchildren()
     cl2 = x2.getchildren()
     if len(cl1) != len(cl2):
+        print cl1, cl2
         if reporter:
             reporter('children length differs, %i != %i'
                      % (len(cl1), len(cl2)))

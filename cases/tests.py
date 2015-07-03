@@ -4,7 +4,7 @@ import sys
 import os
 import re
 from util import xml_compare
-
+from lxml import etree
 
 path = 'tests/cases'
 
@@ -15,7 +15,11 @@ class CaseConversion(unittest.TestCase):
             for test_file in os.listdir(path):
                 print test_file
                 if test_file.endswith('xml') and not test_file.startswith('template.'):
-                    process_case(os.path.join(path, test_file.replace('.xml', '.pdf')))
+                    result = process_case(os.path.join(path, test_file.replace('.xml', '.pdf')))
+                    expected = etree.parse(open(os.path.join(path, test_file))).getroot()
+                    def p(x):
+                        print x
+                    self.assertTrue(xml_compare(etree.fromstring(result), expected, p))
 
 
 class PluralsTest(unittest.TestCase):

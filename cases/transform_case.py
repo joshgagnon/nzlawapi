@@ -1,5 +1,5 @@
 from __future__ import division
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, element
 import os
 import json
 import re
@@ -85,7 +85,6 @@ class DocState(object):
         self.state = DocStateMachine([
             Match(string='[1]', open='body,paragraph', close='intituling'),
             Match(string='REASON', open='body,paragraph', close='intituling')
-
             ], self)
         self.body = StringIO()
         self.footer = StringIO()
@@ -176,13 +175,14 @@ class DocState(object):
         else:
             self.close_tag('intituling_field')
             self.open_tag('intituling_field',
-                attributes='left="%d" bold="%s"' % (self.bbox[0], '1' if self.is_bold(self.font) else '0'))
+                attributes='left="%d" top="%d" bold="%s"' % (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
 
     def handle_style(self):
         if self.is_superscript():
             self.open_tag('superscript')
-        else:
+        elif 'superscript' in self.tag_stack:
             self.close_tag('superscript')
+            self.buffer.write(' ')
 
         if self.is_quote():
             if 'quote' not in self.tag_stack:
@@ -228,8 +228,7 @@ class DocState(object):
         self.switch_footer()
         for tag in self.tag_stack[::-1]:
             self.close_tag(tag)
-        return ('<?xml version="1.0" encoding="uft-8" ?>' +
-            '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
+        return ( '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
 
     def is_bold(self, font):
         return 'bold' in font.lower()
@@ -340,10 +339,9 @@ class Converter(PDFConverter):
 def generate_parsable_xml(path, tmp):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
-    codec = 'utf-8'
 
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=True, char_margin=9)
+    laparams = LAParams(detect_vertical=True, char_margin=7)
     # Create a PDF page aggregator object.
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -369,36 +367,130 @@ def canoncialize_pdf(path, tmp):
     out, err = p.communicate()
     return output
 
+def reorder_intituling(soup):
+    """ reorder the intituling_fields by 'top' attribute  """
+    intituling = soup.find('intituling')
+    fields = intituling.find_all('intituling_field')
+
+    fields = sorted(fields, key=lambda x: float(x.attrs['top']), reverse=True)
+    intituling.clear()
+    for f in fields:
+        intituling.append(f)
+    return soup
 
 def massage_xml(soup):
-    print soup.find('intituling').prettify()
-    full_citation_el = soup.find('footer_field')
-    court_el = find_court_el(soup)
-    court_file_el = find_court_file_el(soup)
-    neutral_el = find_neutral_el(soup)
-    bench = find_bench(soup)
-    judgment = find_judgment(soup)
-    counsel = find_counsel(soup)
-    waistband = find_waistband(soup)
-    print 'court:', court_el.text
-    print 'courtfile:', court_file_el.text
-    print 'neutral:', neutral_el.text
-    print 'bench:', bench
-    print 'judgment:', judgment
-    print 'counsel:', counsel
-    print 'waistband:', waistband
+
+    soup = reorder_intituling(soup)
+
+    intituling = generate_intitular(soup)
+
+    body = generate_body(soup)
+
+    footer = generate_footer(soup)
+
+    case = soup.new_tag('case')
+    case.append(intituling)
+    case.append(body)
+    case.append(footer)
+
+    return case
+
+
+def generate_body(soup):
+    reg = re.compile('^\[(\d+)\]')
+    body = soup.find('body')
+    for paragraph in body:
+        number = reg.match(paragraph.text)
+        if number:
+            first = paragraph.strings.next()
+            first.replace_with(re.sub(reg, '', first))
+            label = soup.new_tag("label")
+            label.string = number.group(1)
+            paragraph.insert(0, label)
+            # next, wrap everything thats not quotes in text element
+        else:
+            paragraph.name = 'title'
+            continue
+
+        children = []
+        current = soup.new_tag("text")
+        for child in paragraph.contents[:]:
+            if isinstance(child, element.Tag) and child.name not in ['superscript']:
+                if len(current.contents):
+                    children.append(current)
+                    current = soup.new_tag("text")
+                children.append(child)
+            else:
+                if isinstance(child, element.NavigableString):
+                    child.string = child.string.strip()
+                current.append(child)
+        if len(current.contents):
+            children.append(current)
+        paragraph.clear()
+        for child in children:
+            paragraph.append(child)
+
+    for superscript in body.find_all('superscript'):
+        superscript.name = 'footnote'
+        superscript.string = superscript.string.strip()
+
+    return body
+
+
+def generate_intitular(soup):
+    print soup.prettify()
+    intituling = soup.new_tag('intituling')
+
+    full_citation = soup.new_tag('full-citation')
+    full_citation.string = soup.find('footer_field').text
+    intituling.append(full_citation)
+
+    court = soup.new_tag('court')
+    court.string = find_court(soup)
+    intituling.append(court)
+
+    court_file = soup.new_tag('court-file')
+    court_file.string = find_court_file(soup)
+    intituling.append(court_file)
+
+    neutral = soup.new_tag('neutral-citation')
+    neutral.string = find_neutral(soup)
+    intituling.append(neutral)
+
+    intituling.append(parties(soup))
+    for c in find_counsel(soup):
+        counsel = soup.new_tag('counsel')
+        counsel.string = c
+        intituling.append(counsel)
+
+    bench = soup.new_tag('bench')
+    bench.string = find_bench(soup)
+    intituling.append(bench)
+
+    judgment = soup.new_tag('judgment')
+    judgment.string = find_judgment(soup)
+    intituling.append(judgment)
+
+
+    intituling.append(waistband(soup))
+
+    solicitor = soup.new_tag('solicitor')
+    solicitor.string = find_solicitor(soup)
+    intituling.append(solicitor)
+
+    return intituling
 
 
 def get_left(el):
-    return float(el.attrs['left'])
+    return float(el.attrs.get('left', 0))
 
 
 def get_bold(el):
-    return float(el.attrs['bold'])
+    return el.attrs.get('bold')
 
 
-def find_reg_el(soup, reg):
-    for e in soup.find_all('intituling_field'):
+def find_reg_el(soup, reg, field='intituling_field'):
+    for e in soup.find_all(field):
         if reg.match(e.text):
             return e
 
@@ -413,12 +505,12 @@ def find_until(el, reg=None, use_position=True):
     return results
 
 
-def find_court_el(soup):
+def find_court(soup):
     reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
-    return find_reg_el(soup, reg)
+    return find_reg_el(soup, reg).text
 
 
-def find_court_file_el(soup):
+def find_court_file(soup):
     courtfile_variants = [
         '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
         'T NO\. S\d{4,}',
@@ -429,80 +521,158 @@ def find_court_file_el(soup):
         'AP \d{2}\/\d{4}']
 
     courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
-    return find_reg_el(soup, courtfile_num)
+    return find_reg_el(soup, courtfile_num).text
 
 
-def find_neutral_el(soup):
+def find_neutral(soup):
     reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
-    return find_reg_el(soup, reg)
+    return find_reg_el(soup, reg).text
 
 
 def find_bench(soup):
-    reg = re.compile(r'court: ', flags=re.IGNORECASE)
+    reg = re.compile(r'court:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     results = [start] + find_until(start, re.compile('\w+:'))
     return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
 
 
 def find_judgment(soup):
-    reg = re.compile(r'judgment: ', flags=re.IGNORECASE)
+    reg = re.compile(r'judgment:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     return re.sub(reg, '', start.text)
 
 
 def find_counsel(soup):
-    reg = re.compile(r'counsel: ', flags=re.IGNORECASE)
+    reg = re.compile(r'counsel:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
     return map(lambda x: re.sub(reg, '',  x.text), results)
 
 
+def find_solicitor(soup):
+    reg = re.compile(r'solicitors?:', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg, field="footer_field")
+    results = find_until(start, None, use_position=False)
+    return results[0].text
+
+
+def waistband(soup):
+    waistband_dict = find_waistband(soup)
+    waistband = soup.new_tag('waistband')
+    title = soup.new_tag('title')
+    title.string = waistband_dict['title']
+    waistband.append(title)
+    waistband_list = soup.new_tag('list')
+    waistband.append(waistband_list)
+
+    for e in waistband_dict['list']:
+        entry = soup.new_tag('entry')
+        label = soup.new_tag('label')
+        label.string = e['label']
+        text = soup.new_tag('text')
+        text.string= e['text']
+        entry.append(label)
+        entry.append(text)
+        waistband_list.append(entry)
+
+    return waistband
+
+
 def find_waistband(soup):
     reg = re.compile(r'JUDGMENT OF THE COURT', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    results = [start]+ find_until(start, None, use_position=False)
-    return filter(None, map(lambda x: x.text, results))
+    parts = [start]+ find_until(start, None, use_position=False)
+    parts = filter(None, map(lambda x: x.text, parts))
+    entries = []
+    entry = {}
+    # for now assume alphabetical list
+    char = 'A'
+    line = ''
+    for p in parts[1:]:
+        if p.startswith('%s ' % char):
+            entry = {'label': char, 'text':  p[2:]}
+            entries.append(entry)
+            char = chr(ord(char) + 1)
+        else:
+           entry['text'] += ' ' + p
+    if line:
+        entries.append({'label': char, 'text': line})
+    result = {'title': parts[0], 'list': entries}
+
+    return result
 
 
-def parse_betweenasdf(soup):
-    results = {}
-    between = ['AND BETWEEN', 'BETWEEN']
-    el = (e for e in soup.find_all('div') if e.text in between).next()
-    plantiff_patterns = [
-        re.compile('.*Plaintiff[s]?'),
-        re.compile('.*Applicant[s]?'),
-        re.compile('.*Appellant[s]?'),
-        re.compile('.*Insolvent[s]?')
-    ]
-    # while not at next section
+def parties(soup):
+    parties = soup.new_tag('parties')
+    plantiffs = soup.new_tag('plantiffs')
+    defendants = soup.new_tag('defendants')
+    parties.append(plantiffs)
+    parties.append(defendants)
 
-    while el.text in between:
-        # look back to get court_num
-        try:
-            court_num = (e for e in el.previous_siblings if courtfile_num.match(e.text)).next().text
-        except:
-            court_num = "UNKNOWN"
-        el = next_tag(el, 'div')
-        plantiff = []
-        defendant = []
-        while True:
-            parties, el = consecutive_align(el)
-            if any((p.match(parties[-1]) for p in plantiff_patterns)):
-                plantiff += parties
+    def party(row, name):
+        el = soup.new_tag(name)
+        descriptor = soup.new_tag('descriptor')
+        descriptor.string = p['descriptor']
+        qualifier = soup.new_tag('qualifier')
+        qualifier.string = p['qualifier']
+        value = soup.new_tag('value')
+        value.string = p['value']
+        el.append(qualifier)
+        el.append(value)
+        el.append(descriptor)
+        return el
+
+    party_dict = find_parties(soup)
+
+    for p in party_dict['plantiffs']:
+        plantiffs.append(party(p, 'plantiff'))
+
+    for p in party_dict['defendants']:
+        defendants.append(party(p, 'defendant'))
+
+    return parties
+
+
+def find_parties(soup):
+    parties = {'plantiffs': [], 'defendants': []}
+    reg = re.compile(r'BETWEEN', flags=re.IGNORECASE)
+    between = find_reg_el(soup, reg)
+    plantiffs = between.next_sibling
+    plantiffs = [plantiffs] + find_until(plantiffs)
+    #for plantiff in plantiffs:
+    parties['plantiffs'].append({
+        'qualifier': between.text,
+        'value': ' '.join(map(lambda x: x.text, plantiffs[:-1])),
+        'descriptor': plantiffs[-1].text
+        })
+    defendant_descriptor = plantiffs[-1].next_sibling
+    defendants = defendant_descriptor.next_sibling
+    defendants = [defendants] + find_until(defendants)
+    #for defendant in defendants:
+    parties['defendants'].append({
+        'qualifier': defendant_descriptor.text,
+        'value': ' '.join(map(lambda x: x.text, defendants[:-1])),
+        'descriptor': defendants[-1].text
+        })
+    return parties
+
+
+def generate_footer(soup):
+    footer = soup.new_tag('footer')
+    for f in soup.find_all('footer_field')[1:]:
+        if not soup.find('superscript'):
+            continue
+        footnote = soup.new_tag('footnote-text')
+        for child in f.contents[:]:
+            if child.name == 'superscript':
+                child.name = 'key'
+                footnote.append(child)
             else:
-                defendant += parties
-            if el.text != 'AND':
-                break
-            el = next_tag(el, 'div')
-
-        results[court_num] = {
-            'plantiffs': plantiff,
-            'defendants': defendant
-        }
-
-    return results
-
-
+                text = soup.new_tag('text')
+                text.append(child.strip())
+                footnote.append(text)
+        footer.append(footnote)
+    return footer
 
 
 class NoText(Exception):
@@ -669,17 +839,6 @@ def parse_versus(soup):
     return results
 
 
-def parties(soup):
-    between = ['AND BETWEEN', 'BETWEEN']
-    if any([e for e in soup.find_all('div') if e.text in between]):
-        return parse_between(soup)
-    elif any([e for e in soup.find_all('div') if e.text.lower() == 'v']):
-        return parse_versus(soup)
-    else:
-        result = {}
-        result[court_file(soup)] = {}
-        return result
-
 
 def element_after_column(soup, strings):
     el = (e for e in soup.find_all('div') if e.text in strings).next()
@@ -778,48 +937,6 @@ def first_el_after_bar(soup, bars):
     return (div for div in el.find_next_siblings('div')
         if top < get_top_position(div) < top + line_gap).next()
 
-
-
-def waistband_el(soup, path):
-    results = []
-    bars = find_bars(soup, path)
-    underscore = re.compile('^_+$')
-    line_height = 10
-    if len(bars) == 2:
-        el = first_el_after_bar(soup, bars)
-        while get_page(el) < bars[1][0] or \
-            (get_page(el) == bars[1][0] and get_top_position(el) + line_height < bars[1][1]):
-            if len(results) and underscore.match(el.text):
-                 el = next_tag(el, 'div')
-                 break
-            results.append(el.text)
-            el = next_tag(el, 'div')
-    elif len(bars) == 1: # if no second bar, get bold
-        el = first_el_after_bar(soup, bars)
-        if is_bold(el):
-            letters = re.compile(r'.*[a-zA-Z].*')
-            while is_bold(el):
-                if letters.match(el.text):
-                    results.append(el.text)
-                el = next_tag(el, 'div')
-        else:
-            while not underscore.match(el.text):
-                results.append(el.text)
-                el = next_tag(el, 'div')
-    else: #maybe they used underscores
-        try:
-            el = next_tag((el for el in soup.find_all('div') if underscore.match(el.text)).next(), 'div')
-            while not underscore.match(el.text):
-                results.append(el.text)
-                el = next_tag(el, 'div')
-        except StopIteration: #bastards, they forgot every kind
-            results = []
-            el = (el for el in soup.find_all('div') if el.text == '[1]').next()
-    return [' '.join(results), el]
-
-
-def waistband(soup, path):
-    return waistband_el(soup, path)[0]
 
 
 def counsel(soup):
@@ -936,9 +1053,8 @@ def intituling(soup):
 def process_case(filename):
     tmp = mkdtemp()
     xml = generate_parsable_xml(filename, tmp)
-    soup = BeautifulSoup(xml)
-    intit_dict = massage_xml(soup)
-    print intit_dict
+    soup = BeautifulSoup(xml, "xml")
+    results = massage_xml(soup)
     shutil.rmtree(tmp)
-    return results
-
+    print results.prettify()
+    return unicode(results)
