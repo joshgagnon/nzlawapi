@@ -72,7 +72,7 @@ class DocState(object):
         'para': 30,
         'para_top': 710.0,
         'footer': 100,
-        'footer_size': 10,
+        'footer_size': 11,
         'quote': 145,
         'quote_size': 11.0,
         'superscript': 8.0,
