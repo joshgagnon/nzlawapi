@@ -433,7 +433,7 @@ def get_summary(document_id):
     db = get_db()
     with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(""" SELECT title, type, subtype, number, version,
-            to_char( date_assent, 'dd Month YYYY') as date_assent,  to_char(date_first_valid, 'dd Month YYYY') as date_first_valid
+            to_char( date_assent, 'dd Month YYYY') as date_assent,  to_char(date_first_valid, 'dd Month YYYY') as date_first_valid, year
             from instruments WHERE id = %(document_id)s""",
             {'document_id': document_id})
         attributes = cur.fetchone()
@@ -448,9 +448,19 @@ def get_summary(document_id):
             join instruments i on n.id = i.id where s.child_id = %(document_id)s
             and title != 'Interpretation Act 1999' """,
             {'document_id': document_id})
-        parent = cur.fetchone()
 
-        return {'attributes': attributes, 'amending': amending, 'parent': parent}
+        parent = cur.fetchone()
+        cur.execute(""" select ii.title, ii.id from instruments i
+            join subordinates s on i.govt_id = s.parent_id
+        join newest n on s.child_id = n.id
+            join instruments ii  on ii.id = n.id
+            where i.id = %(document_id)s
+            and ii.type = 'regulation'
+            and i.title != 'Interpretation Act 1999'
+            order by ii.year desc """,
+            {'document_id': document_id})
+        subordinate = cur.fetchall()
+        return {'attributes': attributes, 'amending': amending, 'parent': parent, 'subordinate': subordinate}
 
 
 def prep_instrument(result, replace, db):

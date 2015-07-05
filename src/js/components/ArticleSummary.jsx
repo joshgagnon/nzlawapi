@@ -65,7 +65,7 @@ module.exports = React.createClass({
             title: title
         }, this.props.viewer_id)
     },
-    renderTable: function(){
+    renderAmending: function(){
         var amending = this.props.article.getIn(['summary', 'amending']);
         if(amending && amending.size){
             return <div><h5>Amendments</h5>
@@ -76,6 +76,20 @@ module.exports = React.createClass({
                             return <tr key={i}><td><a onClick={this.handleLinkClick.bind(this, r.get('id'),this.props.article.getIn(['query', 'doc_type']), r.get('title'))}
                                 href={"/open_article/"+r.get('type')+'/'+r.get('id')}>{r.get('title')}</a></td>
                                 <td>{r.get('count')}</td></tr>
+                        }, this).toJS() }
+                        </tbody></table></div>
+        }
+    },
+    renderSubordinate: function(){
+        var amending = this.props.article.getIn(['summary', 'subordinate']);
+        if(amending && amending.size){
+            return <div><h5>Subordinates</h5>
+            <table className="table summary-table">
+            <thead><tr><th>Title</th><th>Count</th></tr></thead>
+            <tbody>
+                        { amending.map(function(r, i){
+                            return <tr key={i}><td><a onClick={this.handleLinkClick.bind(this, r.get('id'),this.props.article.getIn(['query', 'doc_type']), r.get('title'))}
+                                href={"/open_article/"+r.get('type')+'/'+r.get('id')}>{r.get('title')}</a></td></tr>
                         }, this).toJS() }
                         </tbody></table></div>
         }
@@ -105,7 +119,8 @@ module.exports = React.createClass({
             }.bind(this))}
             </dl>
             { this.renderParent() }
-            { this.renderTable() }
+            { this.renderAmending() }
+            { this.renderSubordinate() }
         </div>
     },
 });

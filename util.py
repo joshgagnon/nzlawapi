@@ -346,6 +346,8 @@ def safe_date(string, date_format='%Y-%m-%d'):
 
 
 def format_govt_date(date):
-    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    return '%s %s %s' % (date.day, months[date.month-1], date.year)
+    if date:
+        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        return '%s %s %s' % (date.day, months[date.month-1], date.year)
+    return None
 
