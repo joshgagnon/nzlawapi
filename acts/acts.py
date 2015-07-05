@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util import CustomException, tohtml, generate_path_string
+from util import CustomException, tohtml, generate_path_string, format_govt_date
 from traversal import cull_tree, \
     decide_govt_or_path, find_document_id_by_govt_id, \
     nodes_from_path_string, limit_tree_size, link_to_canonical
@@ -20,6 +20,7 @@ def instrument_skeleton_response(instrument):
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
         "path": instrument.attributes['path'],
+        "date_as_at_str": format_govt_date(instrument.attributes['date_as_at']),
         'format': 'skeleton',
         'heights': instrument.heights,
         'parts': {},
@@ -43,6 +44,7 @@ def instrument_full(instrument):
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
         "path": instrument.attributes['path'],
+        "date_as_at_str": format_govt_date(instrument.attributes['date_as_at']),
         'format': 'full',
         'query': {
             'doc_type': 'instrument',
@@ -62,6 +64,7 @@ def instrument_preview(instrument):
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
         "path": instrument.attributes['path'],
+        "date_as_at_str": format_govt_date(instrument.attributes['date_as_at']),
         'format': 'preview',
         'query': {
             'doc_type': 'instrument',
@@ -90,6 +93,7 @@ def instrument_location(instrument, location):
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
         "path": instrument.attributes['path'],
+        "date_as_at_str": format_govt_date(instrument.attributes['date_as_at']),
         'format': 'fragment',
         'query': {
             'doc_type': 'instrument',
@@ -112,6 +116,7 @@ def instrument_govt_location(instrument, id, link_text):
         'doc_type': 'instrument',
         "latest": instrument.attributes['latest'],
         "path": instrument.attributes['path'],
+        "date_as_at_str": format_govt_date(instrument.attributes['date_as_at']),
         'format': 'fragment',
         'query': {
             'doc_type': 'instrument',

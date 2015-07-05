@@ -70,13 +70,14 @@ module.exports = React.createClass({
         if(amending && amending.size){
             return <div><h5>Amendments</h5>
             <table className="table summary-table">
-                        <tr><th>Title</th><th>Count</th></tr>
+            <thead><tr><th>Title</th><th>Count</th></tr></thead>
+            <tbody>
                         { amending.map(function(r, i){
                             return <tr key={i}><td><a onClick={this.handleLinkClick.bind(this, r.get('id'),this.props.article.getIn(['query', 'doc_type']), r.get('title'))}
                                 href={"/open_article/"+r.get('type')+'/'+r.get('id')}>{r.get('title')}</a></td>
                                 <td>{r.get('count')}</td></tr>
                         }, this).toJS() }
-                        </table></div>
+                        </tbody></table></div>
         }
     },
     renderParent: function(){

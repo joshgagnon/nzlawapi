@@ -14,7 +14,7 @@ var DynamicArticleBreadCrumbs = require('./BreadCrumbs.jsx');
 var utils = require('../utils');
 var $ = require('jquery');
 var _ = require('lodash');
-
+var NotLatestVersion = require('./Warnings.jsx').NotLatestVersion;
 var DropEffects= require('react-dnd').DropEffects;
 var PopoverFix = require('../mixins/PopoverFix');
 
@@ -119,8 +119,10 @@ var PopoverBehaviour = {
             if(fragment){
                 classes = 'fragment ';
             }
+
             return <div className={classes}   onClick={this.interceptLink}>
                     {fragment ? <DynamicArticleBreadCrumbs {...this.props} content={this.props.popoverPage} container={this} use_popover={true} /> : null }
+                    {fragment && !this.props.popoverPage.get('latest') ? <NotLatestVersion msg={ 'Date as at: '+this.props.popoverPage.get('date_as_at_str')} /> : null }
                     <div dangerouslySetInnerHTML={{__html: html}}/>
                 </div>
         }

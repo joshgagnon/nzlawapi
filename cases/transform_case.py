@@ -59,6 +59,7 @@ class DocState(object):
 
     CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f\n]')
 
+    calibrated = False
     has_new_line = False
     bbox = None
     prev_bbox = None
@@ -70,9 +71,9 @@ class DocState(object):
 
     thresholds = {
         'para': 30,
-        'para_top': 710.0,
+        #'para_top': 710.0,
         'footer': 100,
-        'footer_size': 11,
+        'footer_size': 10,
         'quote': 145,
         'quote_size': 11.0,
         'superscript': 8.0,
@@ -106,8 +107,11 @@ class DocState(object):
 
         if not self.prev_bbox:
             return False
-        if self.bbox[1] > self.thresholds['para_top']:
-            return False
+
+        if self.bbox[1] > self.prev_bbox[1]:
+            return True
+
+        #    return False
         # If lines are sufficently apart vertically
         # Or lines dont overlap horizonitally
         return ((self.prev_bbox[3] - self.bbox[3]) > self.thresholds['para'] or
@@ -177,6 +181,8 @@ class DocState(object):
             self.open_tag('intituling_field',
                 attributes='left="%d" top="%d" bold="%s"' % (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
 
+
+
     def handle_style(self):
         if self.is_superscript():
             self.open_tag('superscript')
@@ -191,6 +197,10 @@ class DocState(object):
         elif 'quote' in self.tag_stack:
             self.close_tag('quote')
 
+        if not self.calibrated and self.size:
+            self.thresholds['footer_size'] = self.size - 2
+            self.calibrated = True
+
 
     def is_superscript(self):
         return self.size < self.thresholds['superscript']
@@ -199,7 +209,9 @@ class DocState(object):
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
 
     def is_footer(self):
-        return self.bbox and self.bbox[1] < self.thresholds['footer'] and (self.size and self.size < self.thresholds['footer_size'])
+        return (
+            #self.bbox and self.bbox[1] < self.thresholds['footer'] and
+            (self.size and self.size < self.thresholds['footer_size']))
 
     def is_intituling(self):
         return 'intituling' in self.body_stack
@@ -341,7 +353,7 @@ def generate_parsable_xml(path, tmp):
     retstr = StringIO()
 
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=True, char_margin=7)
+    laparams = LAParams(detect_vertical=True, char_margin=6)
     # Create a PDF page aggregator object.
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -378,28 +390,23 @@ def reorder_intituling(soup):
         intituling.append(f)
     return soup
 
+
 def massage_xml(soup):
-
     soup = reorder_intituling(soup)
-
     intituling = generate_intitular(soup)
-
     body = generate_body(soup)
-
     footer = generate_footer(soup)
-
     case = soup.new_tag('case')
     case.append(intituling)
     case.append(body)
     case.append(footer)
-
     return case
 
 
 def generate_body(soup):
     reg = re.compile('^\[(\d+)\]')
     body = soup.find('body')
-    for paragraph in body:
+    for paragraph in body.contents[:]:
         number = reg.match(paragraph.text)
         if number:
             first = paragraph.strings.next()
@@ -407,11 +414,18 @@ def generate_body(soup):
             label = soup.new_tag("label")
             label.string = number.group(1)
             paragraph.insert(0, label)
-            # next, wrap everything thats not quotes in text element
-        else:
-            paragraph.name = 'title'
-            continue
 
+        elif paragraph.text.upper() == paragraph.text:
+            paragraph.name = 'title'
+        else:
+            # we must stich this paragraph to the previous one
+            paragraph.previous_sibling.append(' ')
+            for child in paragraph.contents[:]:
+                paragraph.previous_sibling.append(child)
+            paragraph.decompose()
+
+    for paragraph in body.find_all('paragraph', recursive=False):
+        # next, wrap everything thats not quotes in text element
         children = []
         current = soup.new_tag("text")
         for child in paragraph.contents[:]:
@@ -442,7 +456,7 @@ def generate_intitular(soup):
     intituling = soup.new_tag('intituling')
 
     full_citation = soup.new_tag('full-citation')
-    full_citation.string = soup.find('footer_field').text
+    full_citation.string = find_full_citation(soup)
     intituling.append(full_citation)
 
     court = soup.new_tag('court')
@@ -454,8 +468,9 @@ def generate_intitular(soup):
     intituling.append(court_file)
 
     neutral = soup.new_tag('neutral-citation')
-    neutral.string = find_neutral(soup)
-    intituling.append(neutral)
+    if neutral:
+        neutral.string = find_neutral(soup)
+        intituling.append(neutral)
 
     intituling.append(parties(soup))
     for c in find_counsel(soup):
@@ -474,16 +489,19 @@ def generate_intitular(soup):
 
     intituling.append(waistband(soup))
 
-    solicitor = soup.new_tag('solicitor')
-    solicitor.string = find_solicitor(soup)
-    intituling.append(solicitor)
+    for solicitor in solicitors(soup):
+        print solicitor
+        intituling.append(solicitor)
 
     return intituling
 
 
+def find_full_citation(soup):
+    fields = soup.find('footer_page').find_all('footer_field')
+    return ' '.join(map(lambda x: x.text, fields))
+
 def get_left(el):
     return float(el.attrs.get('left', 0))
-
 
 def get_bold(el):
     return el.attrs.get('bold')
@@ -526,8 +544,10 @@ def find_court_file(soup):
 
 def find_neutral(soup):
     reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
-    return find_reg_el(soup, reg).text
-
+    try:
+        return find_reg_el(soup, reg).text
+    except AttributeError:
+        return None
 
 def find_bench(soup):
     reg = re.compile(r'court:', flags=re.IGNORECASE)
@@ -543,17 +563,26 @@ def find_judgment(soup):
 
 
 def find_counsel(soup):
-    reg = re.compile(r'counsel:', flags=re.IGNORECASE)
+    reg = re.compile(r'(counsel:|appearances:)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
     return map(lambda x: re.sub(reg, '',  x.text), results)
 
 
-def find_solicitor(soup):
+def solicitors(soup):
+    solicitors = []
+    for s in find_solicitors(soup):
+        solicitor = soup.new_tag('solicitor')
+        solicitor.string = s
+        solicitors.append(solicitor)
+    return solicitors
+
+
+def find_solicitors(soup):
     reg = re.compile(r'solicitors?:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg, field="footer_field")
     results = find_until(start, None, use_position=False)
-    return results[0].text
+    return map(lambda x: x.text, results)
 
 
 def waistband(soup):
@@ -562,18 +591,23 @@ def waistband(soup):
     title = soup.new_tag('title')
     title.string = waistband_dict['title']
     waistband.append(title)
-    waistband_list = soup.new_tag('list')
-    waistband.append(waistband_list)
 
-    for e in waistband_dict['list']:
-        entry = soup.new_tag('entry')
-        label = soup.new_tag('label')
-        label.string = e['label']
+    if 'list' in waistband_dict:
+        waistband_list = soup.new_tag('list')
+        waistband.append(waistband_list)
+        for e in waistband_dict['list']:
+            entry = soup.new_tag('entry')
+            label = soup.new_tag('label')
+            label.string = e['label']
+            text = soup.new_tag('text')
+            text.string= e['text']
+            entry.append(label)
+            entry.append(text)
+            waistband_list.append(entry)
+    else:
         text = soup.new_tag('text')
-        text.string= e['text']
-        entry.append(label)
-        entry.append(text)
-        waistband_list.append(entry)
+        text.string= waistband_dict['text']
+        waistband.append(text)
 
     return waistband
 
@@ -584,20 +618,22 @@ def find_waistband(soup):
     parts = [start]+ find_until(start, None, use_position=False)
     parts = filter(None, map(lambda x: x.text, parts))
     entries = []
-    entry = {}
+    entry = {'text': ''}
     # for now assume alphabetical list
     char = 'A'
     line = ''
     for p in parts[1:]:
+
         if p.startswith('%s ' % char):
             entry = {'label': char, 'text':  p[2:]}
             entries.append(entry)
             char = chr(ord(char) + 1)
         else:
            entry['text'] += ' ' + p
-    if line:
-        entries.append({'label': char, 'text': line})
-    result = {'title': parts[0], 'list': entries}
+    if len(entries) == 0:
+        result = {'title': parts[0], 'text': entry['text']}
+    else:
+        result = {'title': parts[0], 'list': entries}
 
     return result
 
@@ -714,16 +750,6 @@ def style_to_dict(line):
 def font_size(el):
     return int(re.match(r'\d+', el_class_style(el).get('font-size', '16px')).group())
 
-
-def is_bold(el):
-    return el_class_style(el).get('font-weight') == 'bold'
-
-
-def neutral_cite(soup):
-    try:
-        return neutral_cite_el(soup).text
-    except StopIteration:
-        pass
 
 
 def neutral_cite_el(soup):
@@ -1002,53 +1028,10 @@ def appeal_result(soup, path):
     return results
 
 
-def mangle_format(soup):
-    flat_soup = BeautifulSoup('<div/>').select('div')[0]
-    # first give all bg images page numbers
-    for div in soup.select('body > div'):
-        div.find('img').attrs['name'] = div.find_previous_sibling('a').attrs['name']
-    [flat_soup.append(x) for x in soup.select('body > div > *')]
-    # remove things with white text.
-    [el.extract() for el in flat_soup.select('div') if el_class_style(el).get('color') == '#ffffff']
-    #confirm text exists
-    text_re = re.compile('[a-zA-Z]+')
-    if not text_re.search(flat_soup.text):
-        raise NoText('contains no text')
-    return flat_soup
-
-
 def iso_date(value):
     if value:
         return datetime.datetime(*map(int, re.split('\D', value)[:-1]))
 
-
-def intituling(soup):
-    flat_soup = mangle_format(soup)
-
-    results = {
-        'neutral_citation': json_dict.get('MNC') or neutral_cite(flat_soup),
-        'court': court(flat_soup),
-        'full_citation': json_dict.get('CaseName') or full_citation(flat_soup),
-        'parties': parties(flat_soup),
-        'counsel': counsel(flat_soup),
-        'judgment': judgment(flat_soup),
-        'waistband': waistband(flat_soup, tmp),
-        'hearing': hearing(flat_soup),
-        'received': received(flat_soup),
-        'matter': matter(flat_soup),
-        'charge': charge(flat_soup),
-        'plea': plea(flat_soup),
-        'bench': bench(flat_soup)
-        #'file_number': json_dict.get('FileNumber'),
-        #'location': json_dict.get('Location'),
-        #'appearances': json_dict.get('Appearances'),
-        #'jurisdiction': json_dict.get('Jurisdiction'),
-        #'judgment_date': iso_date(json_dict.get('JudgmentDate')),
-        #'document': generate_pretty_html(filename, config, tmp)
-    }
-    if is_appeal(results):
-        results['appeal_result'] = appeal_result(flat_soup, tmp)
-    return results
 
 def process_case(filename):
     tmp = mkdtemp()
