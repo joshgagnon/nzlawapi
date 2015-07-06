@@ -1,0 +1,12 @@
+<div class="section-versions">
+    <span>Other Versions for {{ title }}</span></br/>
+    {% if versions|length %}
+    <ul>
+        {%- for ref in versions -%}
+            <li><a data-query="{{ref['url']|safe}}" data-link-id="ext-{{path.replace(' ', '-')}}-{{ref['id']}}" href={{'/open_article/'+ref['url']|safe}}><span>Version {{ref['version']}}</span> - <span>{{ref['formatted_date']}}</span></a></li>
+        {%- endfor -%}
+    </ul>
+    {% else %}
+        <span class="section-ref-empty">There are no other versions of this section.</span>
+    {% endif %}
+</div>
