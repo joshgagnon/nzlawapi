@@ -203,13 +203,13 @@ var ArticleSkeletonContent = React.createClass({
         var part_height = this.measured_heights[k] || this.calculated_heights[k];
         return Utils.rangeDistance([top, top+height],[part_top, part_top+part_height]);
     },
-    show: function(distance){
+    showDistance: function(distance){
         if(distance >= 0){
             return distance < this.scroll_threshold;
         }
-        return (-distance)*8 < this.scroll_threshold;
+        return (-distance)*4 < this.scroll_threshold;
     },
-    fetch: function(distance){
+    fetchDistance: function(distance){
         if(distance >= 0){
             return distance < this.fetch_threshold;
         }
@@ -223,14 +223,12 @@ var ArticleSkeletonContent = React.createClass({
             var change = false;
             var requested_parts = [];
              var resize_index =  this._part_count;
+             // consider early exit
             _.each(this._refs, function(r, k){
                 var distance = this.distance(k, top, height);
 
-                var show = this.show(distance);
+                var show = this.showDistance(distance);
                 var local_change = false;
-                if(k=="123"){
-                    //console.log(distance, show, top, r, this._skeleton_locations[k].root);
-                }
                 if(this._visible[k] !== show){
                     local_change = true;
                 }
@@ -249,8 +247,8 @@ var ArticleSkeletonContent = React.createClass({
                     }
                 }
                 change = change || local_change;
-                // replace with above and below threadhols
-                if(this.fetch(distance)){
+
+                if(this.fetchDistance(distance)){
                     requested_parts.push(k);
                 }
             }, this);
@@ -302,12 +300,17 @@ var ArticleSkeletonContent = React.createClass({
         }
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
+            if(this._refs[k] && this._refs[k].hasChildNodes()){
+                this.hidePart(k);
+                this._visible[k] = false;
+                this.debounce_visibility();
+            }
         }
         return height_change;
     },
     hidePart: function(k){
         this._refs[k].innerHTML = '';
-        // Hiding should not change document height by mroe than a rounding error
+        // Hiding should not change document height by more than a rounding error
         this._refs[k].style.height = (this.measured_heights[k] || this.calculated_heights[k]) + 'px';
         this._refs[k].classList.remove('csspinner');
     },
@@ -326,6 +329,7 @@ var ArticleSkeletonContent = React.createClass({
         if(resize_index < this._part_count){
             this.recalculateOffsets(resize_index);
         }
+        // if our parts have been destroyed, we must refetch
     },
     shouldComponentUpdate: function(newProps, newState){
         // total hack job, perhaps move to direct pagestore listener
@@ -577,7 +581,7 @@ var Article = React.createClass({
                 </div>
         }
         return <div className="legislation-result" onClick={this.interceptLink} data-page-id={this.props.page.get('id')}>
-           { this.warningsAndErrors() }
+            { this.warningsAndErrors() }
             <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} container={this} content={this.props.page.get('content') }/>
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
                <ArticleSkeletonContent ref="content"

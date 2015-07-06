@@ -37,11 +37,11 @@ def contains_query(args, field='document'):
                 "fields": fields,
                 "default_operator": 'OR'
             }}
-    if args.get('contains_type') == 'exact':
-        return {
-            "match_phrase": {
-                field: args.get('contains')
-            }}
+    #if args.get('contains_type') == 'exact':\]
+    return {
+        "match_phrase": {
+            field: args.get('contains')
+        }}
 
 
 def get_sort(args):
@@ -285,18 +285,34 @@ def query_instrument_fields(args):
         raise CustomException('There was a problem with your query')
 
 
-def query_contains(args):
+
+def query_contains (args):
     try:
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset')
+        doc_id = args.get('id', args.get('document_id'))
+        query_filter = {"term": {"_parent": doc_id }}
+        print doc_id
+        if args.get('parts'):
+            parts = map(lambda x: '%s-%s' % (doc_id, x), args.get('parts').split(','))
+            print parts
+            query_filter = {
+                'bool': {"should": query_filter,
+
+                        "must": {
+                            "ids": {
+                            'values': parts
+                            }
+                        }}
+            }
         body = {
                 "size": 25,
                 "from": offset,
                 "fields": ['title'],
                 "sort": ['num'],
                 "query": contains_query(args, 'html'),
-                "filter":  {"term": {"_parent": args.get('id')}},
-                 "highlight": {
+                "filter":  query_filter,
+                "highlight": {
                     "pre_tags": ["<span class='search_match'>"],
                     "post_tags": ["</span>"],
                     "fields": {'html': {"number_of_fragments": 0}},
@@ -304,11 +320,15 @@ def query_contains(args):
                     #{"fragment_size" : 200, "number_of_fragments" : 100}}
                 }
             }
+        if args.get('parts'):
+            body['highlight']['require_field_match'] = False
         results = es.search(
             index="legislation",
             doc_type='part',
             body=body)
+        print body
         return {'type': 'search', 'search_type': 'contains_result', 'search_results': results['hits'], 'title': 'Advanced Search'}
     except Exception, e:
         print e
         raise CustomException('There was a problem with your query')
+

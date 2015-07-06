@@ -136,7 +136,6 @@ var PageStore = Reflux.createStore({
             if(!options.skip_update){
                 this.update();
             }
-
         }
     },
     onRequestPageCompleted: function(page_id, data){
@@ -288,7 +287,6 @@ var PageStore = Reflux.createStore({
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'popovers', popover.id], popover);
         this.update();
     },
-
     onRequestPopoverData: function(page_id, popover_id){;
         var page = this.getById(page_id);
         if(page){
@@ -358,7 +356,6 @@ var PageStore = Reflux.createStore({
         }
     },
 
-
     onRequestSubResource: function(resource, page_id){
         var page = this.getById(page_id);
         if(page && _.values(RESOURCE_TYPES).indexOf(resource) >= 0){
@@ -387,6 +384,14 @@ var PageStore = Reflux.createStore({
                     _.extend({error: true, fetched: true, fetching: false}, data));
             this.update();
         }
+    },
+
+    onHighlightParts: function(page_id, viewer_id, term){
+        var page = this.getById(page_id);
+        var parts = page.get('parts').toJS();
+        this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'query'], {highlight: term});
+        this.pages = this.pages.setIn([this.getIndex(page_id), 'parts'], Immutable.Map());
+        this.update();
     }
 });
 

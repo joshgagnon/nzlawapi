@@ -141,6 +141,7 @@
         left:10px;
         margin-right:10px;
         text-align: right;
+        z-index:$z-toolbars;
         @media print{
             display:none;
         }

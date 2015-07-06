@@ -133,6 +133,22 @@ def instrument_more(document_id, parts):
     }
 
 
+def query_to_more(args, es_results):
+    results = {}
+    found = set()
+    for hit in es_results['search_results']['hits']:
+        results[hit['_id'].split('-', 1)[1]] = hit['highlight']['html'][0]
+        found.add(hit['_id'].split('-', 1)[1])
+
+    missing = set(unicode(args.get('parts')).split(',')).difference(found)
+    print missing
+    if(len(missing)):
+
+        results.update(instrument_more(args.get('document_id'), missing)['parts'])
+
+    return {'parts': results}
+
+
 def query_instrument(args):
     find = args.get('find')
 
@@ -143,7 +159,15 @@ def query_instrument(args):
     if find == 'section_versions':
         return section_versions(args)
     if find == 'more':
-        return instrument_more(args.get('document_id'), args.get('parts').split(','))
+        if args.get('highlight'):
+            highlight = args.get('highlight')
+            highlight_args = {
+                'document_id': args.get('id', args.get('document_id')),
+                'parts': args.get('parts'),
+                'contains': highlight}
+            return query_to_more(highlight_args, query_contains(highlight_args))
+        else:
+            return instrument_more(args.get('document_id'), args.get('parts').split(','))
 
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):

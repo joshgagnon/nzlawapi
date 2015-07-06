@@ -5,6 +5,7 @@ var Actions = require('../actions/Actions');
 var Utils = require('../utils');
 var Immutable = require('immutable');
 var DynamicArticleBreadCrumbs = require('./BreadCrumbs.jsx');
+var Find = require('./Find.jsx');
 
 
 
@@ -17,6 +18,7 @@ var ArticleOverlay= React.createClass({
         return <div className="article-overlay">
                  { this.props.page.getIn(['content','format']) === 'fragment' ?
                      <DynamicArticleBreadCrumbs {...this.props}/> : null }
+                     <Find {...this.props}/>
             </div>
     }
 });
