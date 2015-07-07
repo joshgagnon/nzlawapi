@@ -1,7 +1,26 @@
 .article-overlay{
 	.find{
-	  width: 200px;
-	  float: right;
-	  margin: 10px 0 0 0;
+	  width: 300px;
+	  position: fixed;
+	  margin: 0 20px 0 0;
+       top: $top-bar-height-sm +6px;
+	  right:0;
+        @media (min-width: $screen-md-min) {
+            top: $top-bar-height +6px;
+        }
+	  .sml{
+	  	padding-left:4px;
+	  	padding-right:4px;
+	  }
+	  .form-group{
+	  	margin-bottom:0;
+	  }
 	}
+}
+
+.tab-content .article-overlay .find{
+    top: $tabs-height + $top-bar-height-sm;
+    @media (min-width: $screen-md-min) {
+        top: $tabs-height + $top-bar-height +6px;
+    }
 }

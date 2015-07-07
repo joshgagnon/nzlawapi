@@ -1,3 +1,4 @@
+"use strict";
 var React = require('react/addons');
 var Actions = require('../actions/Actions');
 var Input = require('react-bootstrap/lib/Input');
@@ -12,12 +13,7 @@ module.exports = React.createClass({
       React.addons.LinkedStateMixin
     ],
     getInitialState: function(){
-        return {find_term: ''};
-    },
-    onPositionChange: function(value){
-        if(value && this.refs.find.getInputDOMNode() !== document.activeElement){
-            this.setState({find_term: value.get('repr') });
-        }
+        return {find_term: this.props.page.getIn(['query', 'highlight']) || ''};
     },
     onKeyDown: function(event){
          if (event.key === 'Enter'){
@@ -28,12 +24,34 @@ module.exports = React.createClass({
         if(e){
             e.preventDefault();
         }
-        Actions.highlightParts(this.props.page.get('id'), this.props.viewer_id, this.state.find_term);
+        Actions.findTerm(this.props.page.get('id'), this.props.viewer_id,
+            this.state.find_term, {position: this.props.view.getIn(['positions', this.props.page.get('id')]).toJS()});
+    },
+    next: function(e){
+        Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
+    },
+    prev: function(e){
+        Actions.articleJumpTo(this.props.viewer_id, {prev_highlight: true});
+    },
+    close: function(e){
+        //Actions.closeFind(this.props.viewer_id);
     },
     render: function(){
-        return <div className={"find"}><Input  ref="find" name="find" type="text" onKeyDown={this.onKeyDown}
-            bsStyle={this.state.jumpToError ? 'error': null}
-            valueLink={this.linkState('find_term')}
-            buttonAfter={<Button type="input" bsStyle="info" onClick={this.submit}>Find</Button>} /></div>
+        return <div className="find">
+                <div className="form-group" >
+                    <div className="input-group">
+                    <span className="input-group-btn">
+                        <button type="input" className="btn btn-info sml" onClick={this.close}><span className="fa fa-close"></span></button>
+                        </span>
+                        <input name="find" type="text" className="form-control" valueLink={this.linkState('find_term')} onKeyDown={this.onKeyDown} />
+                        <span className="input-group-btn">
+                            <button type="input" className="btn btn-info" onClick={this.submit}>Find</button>
+                            <button type="input" className="btn btn-info sml" onClick={this.prev}><span className="fa fa-chevron-up"></span></button>
+                            <button type="input" className="btn btn-info sml" onClick={this.next}><span className="fa fa-chevron-down"></span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
     }
 })
+

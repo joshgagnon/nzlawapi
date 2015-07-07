@@ -7,12 +7,11 @@ from traversal import cull_tree, \
 from lxml import etree
 from flask import current_app
 from queries import get_instrument_object, get_latest_instrument_object, fetch_parts, section_references, section_versions
-from query.elasticsearch import query_contains
+from query.elasticsearch import query_contains, query_contains_skeleton
 
 
-def instrument_skeleton_response(instrument):
-    # maybe, bake in first couple of parts
-    return {
+def instrument_skeleton_response(instrument, args={}):
+    result = {
         'html_content': instrument.skeleton,
         'title': instrument.title,
         'full_title': instrument.title,
@@ -30,12 +29,24 @@ def instrument_skeleton_response(instrument):
             'find': 'full'
         }
     }
+    if args.get('highlight'):
+        highlight = args.get('highlight')
+        highlight_args = {
+            'document_id': args.get('id', args.get('document_id')),
+            'parts': args.get('parts'),
+            'contains': highlight}
+        result['title'] = '%s Find: %s' % (result['title'], args.get('highlight'))
+        result.update(query_contains_skeleton(highlight_args))
+
+    return result
 
 
-def instrument_full(instrument):
+
+
+def instrument_full(instrument, args={}):
     "who doesn't love magic numbers?"
     if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
-        return instrument_skeleton_response(instrument)
+        return instrument_skeleton_response(instrument, args)
     return {
         'html_content': etree.tostring(tohtml(instrument.get_tree()), encoding='UTF-8', method="html"),
         'title': instrument.title,
@@ -127,10 +138,18 @@ def instrument_govt_location(instrument, id, link_text):
     }
 
 
-def instrument_more(document_id, parts):
-    return {
-        'parts': fetch_parts(document_id, parts=map(lambda p: int(p), parts))
-    }
+def instrument_more(document_id, parts, args={}):
+    if args.get('highlight'):
+        highlight = args.get('highlight')
+        highlight_args = {
+            'document_id': args.get('id', args.get('document_id')),
+            'parts': args.get('parts'),
+            'contains': highlight}
+        return query_to_more(highlight_args, query_contains(highlight_args))
+    else:
+        return {
+            'parts': fetch_parts(document_id, parts=map(lambda p: int(p), parts))
+        }
 
 
 def query_to_more(args, es_results):
@@ -151,7 +170,6 @@ def query_to_more(args, es_results):
 
 def query_instrument(args):
     find = args.get('find')
-
     if find == 'contains':
         return query_contains(args)
     if find == 'section_references':
@@ -159,28 +177,20 @@ def query_instrument(args):
     if find == 'section_versions':
         return section_versions(args)
     if find == 'more':
-        if args.get('highlight'):
-            highlight = args.get('highlight')
-            highlight_args = {
-                'document_id': args.get('id', args.get('document_id')),
-                'parts': args.get('parts'),
-                'contains': highlight}
-            return query_to_more(highlight_args, query_contains(highlight_args))
-        else:
-            return instrument_more(args.get('document_id'), args.get('parts').split(','))
+        return instrument_more(args.get('document_id'), args.get('parts').split(','), args)
 
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
-        id = args.get('id', args.get('document_id'))
-        if isinstance(id, basestring) and id.startswith('DLM'):
-            govt_id = id
-            id = find_document_id_by_govt_id(id)
-            instrument = get_instrument_object(id)
+        doc_id = args.get('id', args.get('document_id'))
+        if isinstance(doc_id, basestring) and doc_id.startswith('DLM'):
+            govt_id = doc_id
+            doc_id = find_document_id_by_govt_id(doc_id)
+            instrument = get_instrument_object(doc_id)
             if instrument.attributes['govt_id'] != govt_id:
                 find = 'govt_location'
                 govt_location = govt_id
         else:
-            instrument = get_instrument_object(id)
+            instrument = get_instrument_object(doc_id)
     elif args.get('title'):
         instrument = get_latest_instrument_object(args.get('title'))
     else:
@@ -197,7 +207,7 @@ def query_instrument(args):
             raise CustomException('No location specified')
         return instrument_govt_location(instrument, govt_location, args.get('link_text'))
     """ default is full instrument """
-    return instrument_full(instrument)
+    return instrument_full(instrument, args)
 
 
 def query_acts(args):

@@ -96,20 +96,23 @@ var ArticleSkeletonContent = React.createClass({
         this.debounce_visibility = _.debounce(this.setSubVisibility, 300);
         $parent.on('scroll',  this.debounce_visibility);
     },
+    getCurrentPartKey: function(top){
+        var key = _.sortedIndex(this._ordered_skeleton, {height: top}, 'height');
+        // get current hook
+        key = Math.min(Math.max(0, key-1), this._ordered_skeleton.length-1 );
+        var part = key+'';
+        // the current focus is a child of a hook, get it from precalculated index
+        // if between hooks, get next id
+        while(top > this._refs[part].offsetTop + this._refs[part].clientHeight && key<this._ordered_skeleton.length-1){
+            key++;
+        }
+        return key;
+    },
     updateSkeletonScroll: function(){
         var self = this;
         var find_current_part = function(top){
-
-            var key = _.sortedIndex(self._ordered_skeleton, {height: top}, 'height');
-            // get current hook
-            key = Math.min(Math.max(0, key-1), self._ordered_skeleton.length-1 );
+            var key = self.getCurrentPartKey(top);
             var part = key+'';
-            // the current focus is a child of a hook, get it from precalculated index
-            // if between hooks, get next id
-            while(top > self._refs[part].offsetTop + self._refs[part].clientHeight && key<self._ordered_skeleton.length-1){
-                key++;
-                part = key+'';
-            }
             // if we haven't processesed children or there are no children
             if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length){
                 return self._refs[part];
@@ -301,7 +304,7 @@ var ArticleSkeletonContent = React.createClass({
         else if(!parts.getIn([k, 'html'])){
             this._refs[k].classList.add('csspinner');
             if(this._refs[k] && this._refs[k].hasChildNodes()){
-                this.hidePart(k);
+                //this.hidePart(k);
                 this._visible[k] = false;
                 this.debounce_visibility();
             }
@@ -394,6 +397,67 @@ var ArticleSkeletonContent = React.createClass({
                 node = new_node;
             }
             target = node;
+        }
+        else if((jump.next_highlight || jump.prev_highlight) &&
+            this.props.content.getIn(['part_matches']) && this.props.content.getIn(['part_matches']).size){
+            var key = this.getCurrentPartKey(this.getScrollContainer().scrollTop());
+            var current_index = -1;
+            var current = $('#current_match');
+            var direction = jump.next_highlight ? 1 : -1;
+            var already_included = {};
+            var top, index;
+            var matches = $('.search_match').map(function(){
+                var el = $(this), key = el.parents('[data-hook]').attr('data-hook');
+                already_included[key] = true;
+                return {top: this.offsetTop, left: this.offsetLeft, key: key, el: el};
+            });
+            this.props.content.get('part_matches').map(function(key){
+                if(!already_included[key]){
+                    matches.push({key:key, top: this._refs[key].offsetTop, left: 0});
+                }
+            }, this);
+            matches = matches.sort(function(a, b){
+                if(a.top !== b.top){
+                    return a.top - b.top;
+                }
+                return a.left - b.left;
+            });
+            if(current.length){
+                current.removeAttr('id');
+                top = current[0].offsetTop;
+                current_index = _.findIndex(matches, function(m){
+                    return m.el && m.el.is(current);
+                });
+            }
+            else{
+                top = this.getScrollContainer().scrollTop();
+            }
+            var clamp = function(){
+                if(index >= matches.length){
+                    index = 0;
+                }
+                if(index < 0){
+                    index = matches.length -1;
+                }
+            }
+            index = _.sortedIndex(matches, {top: top}, 'top');
+            index += direction;
+            clamp();
+
+            if(current_index >=0 && matches[index].top === top ){
+                index = current_index + direction;
+                clamp();
+            }
+
+            if(matches[index].el){
+                current = $(matches[index].el);
+                current.attr('id', 'current_match');
+                target = current;
+            }
+            else{
+                this._delayed_jump = {ref: matches[index].key, jump: jump};
+                target = $(this._refs[matches[index].key]);
+            }
         }
         if(target && target.length){
             var container = this.getScrollContainer();
@@ -526,7 +590,21 @@ var ArticleContent = React.createClass({
         else if(jump.id){
             target = $(this.getDOMNode()).find(jump.id);
         }
+        else if(jump.next_highlight || jump.prev_highlight){
+            var current = $('#current_match');
+            var direction = jump.next_highlight ? 1 : -1;
+            if(!current.length){
+                current = $('.search_match').first();
+            }
+            else{
+                current.removeAttr('id');
+                var $els = $('.search_match');
+                current = $els.eq(($els.index(current) + direction) % $els.length);
+            }
+            current.attr('id', 'current_match');
+            target = current;
 
+        }
         if(this.props.content.get('format') !== 'fragment' && (target && target.length)){
             var container = this.getScrollContainer();
             container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
@@ -582,7 +660,13 @@ var Article = React.createClass({
         }
         return <div className="legislation-result" onClick={this.interceptLink} data-page-id={this.props.page.get('id')}>
             { this.warningsAndErrors() }
-            <ArticleOverlay page={this.props.page} viewer_id={this.props.viewer_id} container={this} content={this.props.page.get('content') }/>
+            <ArticleOverlay
+                page={this.props.page}
+                viewer_id={this.props.viewer_id}
+                view={this.props.view}
+                container={this} // ?
+                content={this.props.page.get('content') }/>
+
             { this.props.page.getIn(['content', 'format']) === 'skeleton' ?
                <ArticleSkeletonContent ref="content"
                     getScrollContainer={this.getScrollContainer}

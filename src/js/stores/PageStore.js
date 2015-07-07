@@ -114,7 +114,6 @@ var PageStore = Reflux.createStore({
             Immutable.fromJS(_.extend({}, this.getById(page_id).toJS(),
                 {content: {}, fetching: false, fetched: false, finished: false, error: null}, page)));
         Actions.requestPage(page_id, options);
-
     },
     onRequestPage: function(page_id, options){
         options = options || {};
@@ -385,13 +384,20 @@ var PageStore = Reflux.createStore({
             this.update();
         }
     },
-
-    onHighlightParts: function(page_id, viewer_id, term){
+    onFindTerm: function(page_id, viewer_id, term){
         var page = this.getById(page_id);
-        var parts = page.get('parts').toJS();
+        if(page){
+            var page_data = page.toJS();
+            _.extend(page_data, {id: null, parts: {}, fetched: false, fetching: false, skeleton: null})
+            page_data.query.highlight = term;
+            page_data.content.part_matches = [];
+            this.onNewPage(page_data, viewer_id);
+        }
+        /*var parts = page.get('parts').toJS();
         this.pages = this.pages.mergeDeepIn([this.getIndex(page_id), 'query'], {highlight: term});
         this.pages = this.pages.setIn([this.getIndex(page_id), 'parts'], Immutable.Map());
-        this.update();
+        this.update();*/
+
     }
 });
 

@@ -3,7 +3,9 @@
 .search_match{
     background-color:#ffff00;
 }
-
+#current_match{
+    background-color:#FFB800;
+}
 
 .view-control {
   position: absolute;
@@ -139,7 +141,7 @@
         position: fixed;
         top: $top-bar-height-sm;
         left:10px;
-        margin-right:10px;
+        right:16px;
         text-align: right;
         z-index:$z-toolbars;
         @media print{

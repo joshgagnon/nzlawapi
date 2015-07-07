@@ -286,19 +286,16 @@ def query_instrument_fields(args):
 
 
 
-def query_contains (args):
+def query_contains(args):
     try:
         es = current_app.extensions['elasticsearch']
         offset = args.get('offset')
         doc_id = args.get('id', args.get('document_id'))
         query_filter = {"term": {"_parent": doc_id }}
-        print doc_id
         if args.get('parts'):
             parts = map(lambda x: '%s-%s' % (doc_id, x), args.get('parts').split(','))
-            print parts
             query_filter = {
                 'bool': {"should": query_filter,
-
                         "must": {
                             "ids": {
                             'values': parts
@@ -306,8 +303,6 @@ def query_contains (args):
                         }}
             }
         body = {
-                "size": 25,
-                "from": offset,
                 "fields": ['title'],
                 "sort": ['num'],
                 "query": contains_query(args, 'html'),
@@ -322,12 +317,57 @@ def query_contains (args):
             }
         if args.get('parts'):
             body['highlight']['require_field_match'] = False
+            body["size"] = 10000
+        else:
+            body["size"] = 25
+            body["from"] = offset
         results = es.search(
             index="legislation",
             doc_type='part',
             body=body)
-        print body
         return {'type': 'search', 'search_type': 'contains_result', 'search_results': results['hits'], 'title': 'Advanced Search'}
+    except Exception, e:
+        print e
+        raise CustomException('There was a problem with your query')
+
+
+def query_contains_skeleton(args):
+    try:
+        es = current_app.extensions['elasticsearch']
+        doc_id = args.get('id', args.get('document_id'))
+        results = {}
+        body = {
+            "fields": [],
+            "query": contains_query(args, 'skeleton'),
+            "filter": {"term": {"_id": doc_id }},
+            "highlight": {
+                "pre_tags": ["<span class='search_match'>"],
+                "post_tags": ["</span>"],
+                "fields": {'skeleton': {"number_of_fragments": 0}},
+                "require_field_match": False
+            }
+        }
+        es_results = es.search(
+            index="legislation",
+            doc_type='instrument',
+            body=body)
+        try:
+            results['html_content'] = es_results['hits']['hits'][0]['highlight']['skeleton'][0]
+        except IndexError:
+            pass
+        body = {
+            "fields": [],
+            "size": 10000,
+            "query": contains_query(args, 'html'),
+            "filter": {"term": {"_parent": doc_id }}
+            }
+        es_results = es.search(
+            index="legislation",
+            doc_type='part',
+            body=body)
+        print sorted(map(lambda x: x['_id'].split('-', 1)[1], es_results['hits']['hits']), key=lambda x: int(x))
+        results['part_matches'] = sorted(map(lambda x: x['_id'].split('-', 1)[1], es_results['hits']['hits']), key=lambda x: int(x))
+        return results
     except Exception, e:
         print e
         raise CustomException('There was a problem with your query')

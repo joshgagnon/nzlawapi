@@ -68,6 +68,9 @@ body{
                 .article-overlay{
                     right: $sidebar-outer-width;
                 }
+                .find{
+                    right: $sidebar-outer-width;
+                }
             }
         }
     }
@@ -118,7 +121,10 @@ body{
 
         left:calc(50% + #{$buttonbar-outer-width} ) !important;
     }
+    .split .results-container:nth-child(1) .find{
 
+        right:50% !important;
+    }
 
     @media print{
         .split .results-container{
