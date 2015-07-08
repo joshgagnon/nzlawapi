@@ -18,7 +18,7 @@ var ArticleOverlay= React.createClass({
         return <div className="article-overlay">
                  { this.props.page.getIn(['content','format']) === 'fragment' ?
                      <DynamicArticleBreadCrumbs {...this.props}/> : null }
-                     <Find {...this.props}/>
+                { this.props.view.getIn(['settings', this.props.page.get('id'), 'find']) ? <Find {...this.props}/> : null }
             </div>
     }
 });

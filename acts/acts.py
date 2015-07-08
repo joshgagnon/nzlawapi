@@ -34,17 +34,17 @@ def instrument_skeleton_response(instrument, args={}):
         highlight_args = {
             'document_id': args.get('id', args.get('document_id')),
             'parts': args.get('parts'),
-            'contains': highlight}
+            'contains': highlight
+        }
         result['title'] = '%s Find: %s' % (result['title'], args.get('highlight'))
         result.update(query_contains_skeleton(highlight_args))
 
     return result
 
 
-
 def instrument_full(instrument, args={}):
     "who doesn't love magic numbers?"
-    if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
+    if current_app.config.get('USE_SKELETON') and (instrument.length > 100000 or args.get('highlight')):
         return instrument_skeleton_response(instrument, args)
 
     return {

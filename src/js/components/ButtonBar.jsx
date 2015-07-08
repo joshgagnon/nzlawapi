@@ -23,6 +23,9 @@ module.exports = React.createClass({
             }, this.props.viewer_id, {advanced_search: true});
         }
     },
+    toggleFind: function(){
+        Actions.toggleFind('tab-0', this.props.page.get('id'));
+    },
     handleAddToPrint: function(){
         Actions.addToPrint({
             title: this.props.page.getIn(['content','full_title']) || this.props.page.getIn(['content','title']) || this.props.page.get('title'),
@@ -130,8 +133,28 @@ module.exports = React.createClass({
     },
     renderSearch: function(){
         // TODO, contains search
-        /*
-        if(this.props.page.getIn(['content','document_id'])){
+        if(this.props.page && this.props.page.getIn(['content','document_id']) && this.props.page.getIn(['content','format']) !== 'fragment'){
+            return  <li><div className="button">
+                    <a><span className="fa fa-search" title="Search"></span></a>
+                </div>
+                <ul className="children">
+                    <li className="title"><span>Search</span></li>
+                   <li className="suboption">
+                        <a onClick={this.toggleAdvanced}>
+                            <span className="fa fa-search" title="Columns"/>
+                            <span className="sublabel">Advanced Search</span>
+                        </a>
+                    </li>
+                    <li className="suboption">
+                        <a onClick={this.toggleFind}>
+                            <span className="fa fa-binoculars"  title="Find In Document" />
+                            <span className="sublabel">Find In Document</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        else{
             return <li onClick={this.toggleAdvanced}>
                 <div className="button">
                     <a><span className="fa fa-search" title="Search" /></a>
@@ -141,16 +164,6 @@ module.exports = React.createClass({
                 </ul>
             </li>
         }
-        else{*/
-            return <li onClick={this.toggleAdvanced}>
-                <div className="button">
-                    <a><span className="fa fa-search" title="Search" /></a>
-                </div>
-                <ul className="children">
-                    <li className="title"><a>Advanced Search</a></li>
-                </ul>
-            </li>
-
     },
     render: function(){
         return <div className="buttonbar-wrapper">

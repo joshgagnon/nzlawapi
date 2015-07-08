@@ -34,7 +34,7 @@ module.exports = React.createClass({
         Actions.articleJumpTo(this.props.viewer_id, {prev_highlight: true});
     },
     close: function(e){
-        //Actions.closeFind(this.props.viewer_id);
+        Actions.toggleFind(this.props.viewer_id, this.props.page.get('id'));
     },
     render: function(){
         return <div className="find">

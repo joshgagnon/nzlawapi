@@ -115,6 +115,12 @@ module.exports =  Reflux.createStore({
             {advanced_search: !this.views.getIn([viewer_id, 'settings', page_id,'advanced_search'])});
         this.update();
     },
+    onToggleFind: function(viewer_id, page_id){
+        this.prepPage(viewer_id, page_id);
+        this.views = this.views.mergeDeepIn([viewer_id, 'settings', page_id ],
+            {find: !this.views.getIn([viewer_id, 'settings', page_id,'find'])});
+        this.update();
+    },
     onShowPage: function(viewer_id, page_id, options){
         this.prepPage(viewer_id, page_id);
         this.views = this.views.mergeDeepIn([viewer_id], {active_page_id: page_id});
