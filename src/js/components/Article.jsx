@@ -80,11 +80,17 @@ var ArticleSkeletonContent = React.createClass({
             }
 
         }
+        if(this.props.highlight){
+            Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
+        }
     },
     componentDidUpdate: function(){
         this.popRefs();
         this.resizeSkeleton();
         this.setSubVisibility();
+        if(this.props.highlight){
+            Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
+        }
     },
     getScrollContainer: function(){
         return this.props.getScrollContainer();
@@ -493,6 +499,14 @@ var ArticleContent = React.createClass({
             if(this.props.view.getIn(['positions', this.props.page_id])){
                 this.onJumpTo(this.props_viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS());
             }
+            if(this.props.highlight){
+                Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
+            }
+        }
+    },
+    componentDidUpdate: function(){
+        if(this.props.highlight){
+            Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
         }
     },
     getScrollContainer: function(){
@@ -661,6 +675,7 @@ var Article = React.createClass({
                 { this.warningsAndErrors() }
                 </div>
         }
+        var highlight = this.props.page.getIn(['query', 'highlight']);
         return <div className="legislation-result" onClick={this.interceptLink} data-page-id={this.props.page.get('id')}>
             { this.warningsAndErrors() }
             <ArticleOverlay
@@ -677,12 +692,14 @@ var Article = React.createClass({
                     parts={this.props.page.get('parts') }
                     viewer_id={this.props.viewer_id}
                     view={this.props.view}
+                    highlight={highlight}
                     page_id={this.props.page.get('id')} />    :
               <ArticleContent ref="content"
                     getScrollContainer={this.getScrollContainer}
                     content={this.props.page.get('content') }
                     viewer_id={this.props.viewer_id}
                     view={this.props.view}
+                    highlight={highlight}
                     page_id={this.props.page.get('id')} /> }
 
             <Popovers width={this.state.width} viewer_id={this.props.viewer_id} view={this.props.view} page={this.props.page} getScrollContainer={this.getScrollContainer} />

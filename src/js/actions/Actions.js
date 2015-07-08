@@ -31,7 +31,8 @@ module.exports = Reflux.createActions({
     'requestSubResource': {children: ['completed', 'failure']},
 
     'findTerm': {},
-    'toggleFind': {},
+    'showFind': {},
+    'closeFind': {},
 
     'sectionSummaryOpened': {},
     'sectionSummaryClosed': {},

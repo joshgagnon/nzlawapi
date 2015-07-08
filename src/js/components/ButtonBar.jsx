@@ -23,8 +23,8 @@ module.exports = React.createClass({
             }, this.props.viewer_id, {advanced_search: true});
         }
     },
-    toggleFind: function(){
-        Actions.toggleFind('tab-0', this.props.page.get('id'));
+    showFind: function(){
+        Actions.showFind('tab-0', this.props.page.get('id'));
     },
     handleAddToPrint: function(){
         Actions.addToPrint({
@@ -146,7 +146,7 @@ module.exports = React.createClass({
                         </a>
                     </li>
                     <li className="suboption">
-                        <a onClick={this.toggleFind}>
+                        <a onClick={this.showFind}>
                             <span className="fa fa-binoculars"  title="Find In Document" />
                             <span className="sublabel">Find In Document</span>
                         </a>

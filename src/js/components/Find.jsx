@@ -24,7 +24,7 @@ module.exports = React.createClass({
         if(e){
             e.preventDefault();
         }
-        Actions.findTerm(this.props.page.get('id'), this.props.viewer_id,
+        Actions.findTerm(this.props.viewer_id, this.props.page.get('id'),
             this.state.find_term, {position: this.props.view.getIn(['positions', this.props.page.get('id')]).toJS()});
     },
     next: function(e){
@@ -34,7 +34,7 @@ module.exports = React.createClass({
         Actions.articleJumpTo(this.props.viewer_id, {prev_highlight: true});
     },
     close: function(e){
-        Actions.toggleFind(this.props.viewer_id, this.props.page.get('id'));
+        Actions.closeFind(this.props.viewer_id, this.props.page.get('id'));
     },
     render: function(){
         return <div className="find">
