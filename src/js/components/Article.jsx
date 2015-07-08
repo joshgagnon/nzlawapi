@@ -609,6 +609,9 @@ var ArticleContent = React.createClass({
             var container = this.getScrollContainer();
             container.animate({scrollTop: container.scrollTop()+target.position().top + 4}, jump.noscroll ? 0: 300);
         }
+        else if(jump.next_highlight || jump.prev_highlight){
+            //
+        }
         else{
             // GO TO FULL
             Actions.newPage({

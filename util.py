@@ -10,6 +10,11 @@ import time
 import datetime
 
 
+xslt = {
+    'transform': os.path.join('xslt', 'transform.xslt'),
+    'highlight': os.path.join('xslt', 'highlight.xslt')
+}
+
 
 def timing(f):
     def wrap(*args, **kwargs):
@@ -74,17 +79,35 @@ def levenshtein(s1, s2):
     return previous_row[-1]
 
 
-def tohtml(tree, transform=os.path.join('xslt', 'transform.xslt')):
-    xslt = etree.parse(transform)
+def tohtml(tree, transform=xslt['transform'], **kwargs):
+    xslt = etree.parse(transform).getroot()
+
     transform = etree.XSLT(xslt)
-    return transform(tree)
+    """
+        xslt_tree = etree.XML('''\
+        <xsl:stylesheet version="1.0"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+         <xsl:param name="transform" />
+        <xsl:template match="/">
+             <foo><xsl:value-of select="$transform" /></foo>
+         </xsl:template>
+        </xsl:stylesheet>''')
+        print xslt_tree, xslt
+        transform = etree.XSLT(xslt_tree)
+        doc_root = etree.XML('<a><b>Text</b></a>')
+
+        result = transform(doc_root, highlight="5")
+        print str(result)
+    """
+    return transform(tree, **kwargs)
+
 
 def get_title(tree):
     title = etree.tostring(tree.xpath('.//billref|.//title')[0], method="text", encoding="UTF-8")
     return unicode(title.decode('utf-8'))
 
 
-#https://bitbucket.org/ianb/formencode/src/tip/formencode/doctest_xml_compare.py#cl-70
+# https://bitbucket.org/ianb/formencode/src/tip/formencode/doctest_xml_compare.py#cl-70
 def xml_compare(x1, x2, reporter=None):
     if x1.tag != x2.tag:
         if reporter:

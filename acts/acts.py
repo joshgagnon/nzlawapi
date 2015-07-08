@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util import CustomException, tohtml, generate_path_string, format_govt_date
+from util import CustomException, tohtml, generate_path_string, format_govt_date, xslt
 from traversal import cull_tree, \
     decide_govt_or_path, find_document_id_by_govt_id, \
     nodes_from_path_string, limit_tree_size, link_to_canonical
@@ -42,11 +42,11 @@ def instrument_skeleton_response(instrument, args={}):
 
 
 
-
 def instrument_full(instrument, args={}):
     "who doesn't love magic numbers?"
     if current_app.config.get('USE_SKELETON') and instrument.length > 100000:
         return instrument_skeleton_response(instrument, args)
+
     return {
         'html_content': etree.tostring(tohtml(instrument.get_tree()), encoding='UTF-8', method="html"),
         'title': instrument.title,
@@ -85,7 +85,7 @@ def instrument_preview(instrument):
     }
 
 
-def instrument_location(instrument, location):
+def instrument_location(instrument, location, args):
     def massage():
         return nodes_from_path_string(instrument.get_tree(), link_to_canonical(location))
     try:
@@ -96,6 +96,7 @@ def instrument_location(instrument, location):
         tree = massage()
     full_location, _, path = generate_path_string(tree[0])
     tree = cull_tree(tree)
+    # print etree.tostring(tohtml(tree, transform=xslt['highlight'], highlight="Act", a="test"), encoding='UTF-8', method="html")
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'title': instrument.title,
@@ -115,7 +116,7 @@ def instrument_location(instrument, location):
     }
 
 
-def instrument_govt_location(instrument, id, link_text):
+def instrument_govt_location(instrument, id, link_text, args):
     tree = decide_govt_or_path(instrument.get_tree(), id, link_text)
     full_location, _, location = generate_path_string(tree[0])
     tree = cull_tree(tree)
@@ -201,11 +202,11 @@ def query_instrument(args):
 
     elif find == 'location':
         if args.get('location'):
-            return instrument_location(instrument, args.get('location'))
+            return instrument_location(instrument, args.get('location'), args)
     elif find == 'govt_location':
         if not govt_location:
             raise CustomException('No location specified')
-        return instrument_govt_location(instrument, govt_location, args.get('link_text'))
+        return instrument_govt_location(instrument, govt_location, args.get('link_text'), args)
     """ default is full instrument """
     return instrument_full(instrument, args)
 
