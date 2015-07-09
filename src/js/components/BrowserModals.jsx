@@ -8,6 +8,7 @@ var Actions = require('../actions/Actions.js');
 var _ = require('lodash');
 var PublishStore = require('../stores/PublishStore.js');
 var ErrorStore = require('../stores/ErrorStore.js');
+var ErrorModal = require('./ErrorModal.jsx');
 var SavedStates = require('../stores/SavedStates.js');
 var SaveDialog = require('./SaveDialog.jsx');
 
