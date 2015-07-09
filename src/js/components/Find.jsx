@@ -24,8 +24,12 @@ module.exports = React.createClass({
         if(e){
             e.preventDefault();
         }
+        var options;
+        if(this.props.view.getIn(['positions', this.props.page.get('id')])){
+            options = {position: this.props.view.getIn(['positions', this.props.page.get('id')]).toJS()}
+        }
         Actions.findTerm(this.props.viewer_id, this.props.page.get('id'),
-            this.state.find_term, {position: this.props.view.getIn(['positions', this.props.page.get('id')]).toJS()});
+            this.state.find_term, options);
     },
     next: function(e){
         Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
