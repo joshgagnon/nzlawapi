@@ -162,7 +162,6 @@ var ArticleSkeletonContent = React.createClass({
        });
     },
     resizeSkeleton: function(){
-        console.time("concatenation");
         var self = this;
         if(!this.isMounted()){
             return;
@@ -205,7 +204,6 @@ var ArticleSkeletonContent = React.createClass({
                 .map(function(p){
                     return {value: p, height: self._skeleton_locations[p].root}
                 });
-        console.timeEnd("concatenation");
     },
     recalculateOffsets: function(index){
         var self = this;

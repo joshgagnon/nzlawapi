@@ -10,7 +10,11 @@ import logging
 import re
 
 # https://github.com/nsoranzo/bioblend/commit/d25456033e04f0c0ccf08355044ba6c5ec1a0d9d
-from requests.packages.urllib3.exceptions import ProtocolError
+try:
+    from requests.packages.urllib3.exceptions import ProtocolError
+except:
+    class ProtocolError(Exception):
+        pass
 
 def strip_html(result):
     result = dict(result)
