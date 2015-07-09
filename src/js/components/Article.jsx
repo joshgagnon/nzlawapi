@@ -110,8 +110,9 @@ var ArticleSkeletonContent = React.createClass({
         var part = key+'';
         // the current focus is a child of a hook, get it from precalculated index
         // if between hooks, get next id
-        while(this._refs[part] && top > this._refs[part].offsetTop + this._refs[part].clientHeight && key<this._ordered_skeleton.length-1){
+        while((top > (this._refs[part].offsetTop + this._refs[part].clientHeight)) && key<this._ordered_skeleton.length-1){
             key++;
+            part = key+'';
         }
         return key;
     },
@@ -256,8 +257,6 @@ var ArticleSkeletonContent = React.createClass({
                 if(local_change){
                     if(show){
                         var resized = this.showPart(k, this.props.parts);
-                        //console.log(resized, (k|0) , resize_index)
-
                         if(resized && (k|0) < resize_index){
                             resize_index = k|0;
                         }
@@ -291,8 +290,8 @@ var ArticleSkeletonContent = React.createClass({
             var scroll_el = this.getScrollContainer()[0]
             var container_height = scroll_el.scrollHeight;
             var old_height = this._refs[k].offsetHeight;
-           this._refs[k].style.height = 'auto';
-           this._refs[k].classList.remove('csspinner');
+            this._refs[k].style.height = 'auto';
+            this._refs[k].classList.remove('csspinner');
             this._refs[k].innerHTML = parts.getIn([k, 'html']);
             this.measured_heights[k] =  this._refs[k].offsetHeight;
             if(old_height !== this.measured_heights[k]){
