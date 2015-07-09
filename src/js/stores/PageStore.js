@@ -389,9 +389,10 @@ var PageStore = Reflux.createStore({
         var page = this.getById(page_id);
         if(page){
             var page_data = page.toJS();
-            _.extend(page_data, {parts: {}, fetched: false, fetching: false, skeleton: null})
+            _.extend(page_data, {parts: {}, fetched: false, fetching: false, content: null})
             page_data.query.highlight = term;
-            page_data.content.part_matches = [];
+            //page_data.content.part_matches = [];
+            //page_data.content.html_content = null;
             //this.onNewPage(page_data, viewer_id, {find: true});
             Actions.replacePage(page_id, page_data);
             Actions.showFind(viewer_id, page_id);
@@ -406,9 +407,10 @@ var PageStore = Reflux.createStore({
         var page = this.getById(page_id);
         if(page){
             var page_data = page.toJS();
-            _.extend(page_data, {parts: {}, fetched: false, fetching: false, skeleton: null})
+            _.extend(page_data, {parts: {}, fetched: false, fetching: false, content: null})
             page_data.query.highlight = null;
-            page_data.content.part_matches = [];
+            //page_data.content.part_matches = [];
+            //page_data.content.html_content = null;
             Actions.replacePage(page_id, page_data);
         }
     }

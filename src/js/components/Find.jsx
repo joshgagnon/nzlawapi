@@ -36,6 +36,9 @@ module.exports = React.createClass({
     close: function(e){
         Actions.closeFind(this.props.viewer_id, this.props.page.get('id'));
     },
+    componentDidMount: function(e){
+        React.findDOMNode(this.refs.input).focus();
+    },
     render: function(){
         return <div className="find">
                 <div className="form-group" >
@@ -43,7 +46,7 @@ module.exports = React.createClass({
                     <span className="input-group-btn">
                         <button type="input" className="btn btn-info sml" onClick={this.close}><span className="fa fa-close"></span></button>
                         </span>
-                        <input name="find" type="text" className="form-control" valueLink={this.linkState('find_term')} onKeyDown={this.onKeyDown} />
+                        <input name="find" type="text" ref="input" className="form-control" valueLink={this.linkState('find_term')} onKeyDown={this.onKeyDown} />
                         <span className="input-group-btn">
                             <button type="input" className="btn btn-info" onClick={this.submit}>Find</button>
                             <button type="input" className="btn btn-info sml" onClick={this.prev}><span className="fa fa-chevron-up"></span></button>

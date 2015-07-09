@@ -499,9 +499,9 @@ var ArticleContent = React.createClass({
             if(this.props.view.getIn(['positions', this.props.page_id])){
                 this.onJumpTo(this.props_viewer_id, this.props.view.getIn(['positions', this.props.page_id]).toJS());
             }
-            if(this.props.highlight){
+            /*if(this.props.highlight){
                 Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
-            }
+            }*/
         }
     },
     componentDidUpdate: function(){
