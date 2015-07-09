@@ -365,7 +365,6 @@ def query_contains_skeleton(args):
             index="legislation",
             doc_type='part',
             body=body)
-        print sorted(map(lambda x: x['_id'].split('-', 1)[1], es_results['hits']['hits']), key=lambda x: int(x))
         results['part_matches'] = sorted(map(lambda x: x['_id'].split('-', 1)[1], es_results['hits']['hits']), key=lambda x: int(x))
         return results
     except Exception, e:

@@ -96,7 +96,6 @@ def instrument_location(instrument, location, args):
         tree = massage()
     full_location, _, path = generate_path_string(tree[0])
     tree = cull_tree(tree)
-    # print etree.tostring(tohtml(tree, transform=xslt['highlight'], highlight="Act", a="test"), encoding='UTF-8', method="html")
     return {
         'html_content': etree.tostring(tohtml(tree), encoding='UTF-8', method="html"),
         'title': instrument.title,
@@ -161,9 +160,7 @@ def query_to_more(args, es_results):
         found.add(hit['_id'].split('-', 1)[1])
 
     missing = set(unicode(args.get('parts')).split(',')).difference(found)
-    print missing
     if(len(missing)):
-
         results.update(instrument_more(args.get('document_id'), missing)['parts'])
 
     return {'parts': results}

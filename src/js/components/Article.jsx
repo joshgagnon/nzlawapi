@@ -57,6 +57,7 @@ var ArticleSkeletonContent = React.createClass({
         this._child_ids = {}
         this._child_locations = {};
         this._skeleton_locations = {};
+        this._ordered_skeleton = [];
         return {
             widths: widths,
             height_ratio: Immutable.fromJS({key: 0, coeff: 1})
@@ -105,11 +106,11 @@ var ArticleSkeletonContent = React.createClass({
     getCurrentPartKey: function(top){
         var key = _.sortedIndex(this._ordered_skeleton, {height: top}, 'height');
         // get current hook
-        key = Math.min(Math.max(0, key-1), this._ordered_skeleton.length-1 );
+        key = Math.min(Math.max(0, key-1), this._ordered_skeleton.length-1);
         var part = key+'';
         // the current focus is a child of a hook, get it from precalculated index
         // if between hooks, get next id
-        while(top > this._refs[part].offsetTop + this._refs[part].clientHeight && key<this._ordered_skeleton.length-1){
+        while(this._refs[part] && top > this._refs[part].offsetTop + this._refs[part].clientHeight && key<this._ordered_skeleton.length-1){
             key++;
         }
         return key;
@@ -118,6 +119,9 @@ var ArticleSkeletonContent = React.createClass({
         var self = this;
         var find_current_part = function(top){
             var key = self.getCurrentPartKey(top);
+            if(key < 0){
+                return
+            }
             var part = key+'';
             // if we haven't processesed children or there are no children
             if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length){
@@ -157,12 +161,13 @@ var ArticleSkeletonContent = React.createClass({
        });
     },
     resizeSkeleton: function(){
+        console.time("concatenation");
         var self = this;
         if(!this.isMounted()){
             return;
         }
         _.each(self._refs, function(v, k){
-            if(self.props.content.getIn(['parts', k]) && v.innerHTML){
+            if(v.innerHTML){
                 self.measured_heights[k] = v.clientHeight;
             }
         });
@@ -185,15 +190,21 @@ var ArticleSkeletonContent = React.createClass({
             var key = i+''
             this.calculated_heights[key] = Math.floor((lower[i] -upper[i] ) * height_ratio.coeff  + lower[i]);
             if(!this.measured_heights[key]){
-                this._refs[key].style.height=this.calculated_heights[key]+'px';
+                // invalidate layout
+                this._refs[key].style.height = this.calculated_heights[key]+'px';
             }
             this._skeleton_locations[key] = this._skeleton_locations[key] || {};
+        }
+        // I've broken this into two loops to prevent layout thrashing.  2s to 50ms for a large doc
+        for(var i=0;i < lower.length; i++){
+            var key = i+''
             this._skeleton_locations[key].root = this._refs[key].offsetTop;
         }
         this._ordered_skeleton = _.keys(this._skeleton_locations).sort(function(a,b){return (a|0)-(b|0)})
                 .map(function(p){
                     return {value: p, height: self._skeleton_locations[p].root}
                 });
+        console.timeEnd("concatenation");
     },
     recalculateOffsets: function(index){
         var self = this;
