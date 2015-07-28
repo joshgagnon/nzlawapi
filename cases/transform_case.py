@@ -399,7 +399,8 @@ def massage_xml(soup):
     case = soup.new_tag('case')
     case.append(intituling)
     case.append(body)
-    case.append(footer)
+    if footer:
+        case.append(footer)
     return case
 
 
@@ -467,20 +468,30 @@ def generate_intitular(soup):
     court_file.string = find_court_file(soup)
     intituling.append(court_file)
 
-    neutral = soup.new_tag('neutral-citation')
-    if neutral:
-        neutral.string = find_neutral(soup)
+    neutral_string = find_neutral(soup)
+    if neutral_string:
+        neutral = soup.new_tag('neutral-citation')
+        neutral.string = neutral_string
         intituling.append(neutral)
 
     intituling.append(parties(soup))
+
+    hearing_string = find_hearing(soup)
+    if hearing_string:
+        hearing = soup.new_tag('hearing')
+        hearing.string = hearing_string
+        intituling.append(hearing)
+
     for c in find_counsel(soup):
         counsel = soup.new_tag('counsel')
         counsel.string = c
         intituling.append(counsel)
 
-    bench = soup.new_tag('bench')
-    bench.string = find_bench(soup)
-    intituling.append(bench)
+    bench_string = find_bench(soup)
+    if bench_string:
+        bench = soup.new_tag('bench')
+        bench.string = bench_string
+        intituling.append(bench)
 
     judgment = soup.new_tag('judgment')
     judgment.string = find_judgment(soup)
@@ -496,12 +507,26 @@ def generate_intitular(soup):
     return intituling
 
 
-def find_full_citation(soup):
+def full_citation_lines(soup):
     fields = soup.find('footer_page').find_all('footer_field')
-    return ' '.join(map(lambda x: x.text, fields))
+    strings = map(lambda x: x.text, fields)
+    # find first line that has capitals up until the first number, doesn't contain solicitors
+    capitals = re.compile('^[A-Z ]{2,}[0-9]*')
+    solicitors = re.compile(r'^solicitors?:?', flags=re.IGNORECASE)
+    for i, s in enumerate(strings):
+        if not solicitors.match(s) and capitals.match(s):
+            break
+    return strings[i:]
+
+
+def find_full_citation(soup):
+    strings = full_citation_lines(soup)
+    return ' '.join(strings)
+
 
 def get_left(el):
     return float(el.attrs.get('left', 0))
+
 
 def get_bold(el):
     return el.attrs.get('bold')
@@ -528,6 +553,14 @@ def find_court(soup):
     return find_reg_el(soup, reg).text
 
 
+def find_registry(soup):
+    court_reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
+    court = find_reg_el(soup, reg)
+    registry = find_until(start, None, use_position=True)
+    if registry:
+        return registry.text
+
+
 def find_court_file(soup):
     courtfile_variants = [
         '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
@@ -552,9 +585,21 @@ def find_neutral(soup):
 def find_bench(soup):
     reg = re.compile(r'court:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    results = [start] + find_until(start, re.compile('\w+:'))
-    return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
+    if start:
+        results = [start] + find_until(start, re.compile('\w+:'))
+        return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
+    else:
+        return None
 
+
+def find_hearing(soup):
+    reg = re.compile(r'hearing:', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    if start:
+        results = [start] + find_until(start, re.compile('\w+:'))
+        return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
+    else:
+        return None
 
 def find_judgment(soup):
     reg = re.compile(r'judgment:', flags=re.IGNORECASE)
@@ -571,18 +616,22 @@ def find_counsel(soup):
 
 def solicitors(soup):
     solicitors = []
+    full_citation = full_citation_lines(soup)
     for s in find_solicitors(soup):
-        solicitor = soup.new_tag('solicitor')
-        solicitor.string = s
-        solicitors.append(solicitor)
+        if s not in full_citation:
+            solicitor = soup.new_tag('solicitor')
+            solicitor.string = s
+            solicitors.append(solicitor)
     return solicitors
 
 
 def find_solicitors(soup):
-    reg = re.compile(r'solicitors?:', flags=re.IGNORECASE)
+    reg = re.compile(r'^solicitors?:?', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg, field="footer_field")
     results = find_until(start, None, use_position=False)
-    return map(lambda x: x.text, results)
+    strings = map(lambda x: x.text, results)
+    strings = filter(lambda x: not x.startswith('('), strings)
+    return strings
 
 
 def waistband(soup):
@@ -613,7 +662,7 @@ def waistband(soup):
 
 
 def find_waistband(soup):
-    reg = re.compile(r'JUDGMENT OF THE COURT', flags=re.IGNORECASE)
+    reg = re.compile(r'^JUDGMENT OF ', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     parts = [start]+ find_until(start, None, use_position=False)
     parts = filter(None, map(lambda x: x.text, parts))
@@ -708,7 +757,9 @@ def generate_footer(soup):
                 text.append(child.strip())
                 footnote.append(text)
         footer.append(footnote)
-    return footer
+    if footer.findChildren():
+        return footer
+    return None
 
 
 class NoText(Exception):
