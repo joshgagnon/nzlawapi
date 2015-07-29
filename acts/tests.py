@@ -91,6 +91,8 @@ class FullTransformTest(unittest.TestCase):
                         expected_prov = sub.sub('', etree.tostring(prov, method="text", encoding="utf-8"))
                         result_prov = sub.sub('', etree.tostring(results[i], method="text", encoding="utf-8"))
                         self.assertEqual(result_prov, expected_prov)
+                        # we add too many links for this to work
+                        #self.assertTrue(xml_compare(prov, results[i], print_error, do_attr=False))
 
 
 

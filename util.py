@@ -113,6 +113,7 @@ def xml_compare(x1, x2, reporter=None, do_attr=True):
     if x1.tag != x2.tag:
         if reporter:
             print etree.tostring(x1)
+            print etree.tostring(x2)
             reporter('Tags do not match: %s and %s' % (x1.tag, x2.tag))
         return False
     for name, value in x1.attrib.items():

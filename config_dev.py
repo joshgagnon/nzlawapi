@@ -28,5 +28,5 @@ MAX_SESSIONS_PER_USER = 2
 SESSION_SECRET = 'secret_here'
 SSO_SHARED_SECRET = 'put_secret_here'
 
-#USE_SKELETON = True
+USE_SKELETON = False
 NO_AUTH = True

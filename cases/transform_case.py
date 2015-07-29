@@ -69,6 +69,7 @@ class DocState(object):
     footer = None
     last_char = None
 
+    # train these numbers
     thresholds = {
         'para': 30,
         #'para_top': 710.0,
