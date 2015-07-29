@@ -160,29 +160,6 @@ class TestDefinitions(unittest.TestCase):
                     self.assertIn('DLM1624955', d.expiry_tags)
 
 
-def transform_eqn(filename, parser):
-    transform = etree.XSLT(etree.parse('xslt/equations_root.xslt'))
-    tree = etree.parse(filename, parser=parser)
-    # using method="html" leaves col tags unclosed, and therefore creates malformed documents which can't be read by fromstring
-    # TODO: is there a fix for this, or do we even need fromstring(tosting())?
-    return etree.fromstring(etree.tostring(transform(tree), encoding='UTF-8', method="xml"), parser=parser)
-
-
-def print_error(msg):
-    print msg
-
-#@unittest.skip("demonstrating skipping")
-class TestEquations(unittest.TestCase):
-
-    def setUp(self):
-        self.parser = etree.XMLParser(remove_blank_text=True)
-
-    def test_equations(self):
-        for f in [f for f in os.listdir('tests/equations') if f.endswith('.xml')]:
-            result = transform_eqn(os.path.join('tests/equations', f), self.parser)
-            expected = etree.parse(os.path.join('tests/equations', f.replace('.xml', '.html')), parser=self.parser)
-            self.assertTrue(xml_compare(result, expected.getroot(), print_error))
-
 #@unittest.skip("demonstrating skipping")
 class TestPathExtraction(unittest.TestCase):
     def setUp(self):

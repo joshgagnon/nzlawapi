@@ -61,6 +61,11 @@
         </ins>
 </xsl:template>
 
+
+    <xsl:template match="insertwords">
+        <span class="insertwords"><xsl:apply-templates /></span>
+    </xsl:template>
+
 <xsl:template name="string-replace-all">
   <xsl:param name="text" />
   <xsl:param name="replace" />

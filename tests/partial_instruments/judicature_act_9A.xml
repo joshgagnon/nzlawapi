@@ -1,0 +1,209 @@
+<prov id="DLM145586" toc="yes" xml:lang="en-NZ">
+                <label denominator="yes">9A</label>
+                <heading xml:lang="en-NZ">Salaries and allowances of Judges</heading>
+                <prov.body>
+                    <subprov xml:lang="en-NZ">
+                        <label denominator="yes">1</label>
+                        <para xml:lang="en-NZ">
+                            <text>There shall be paid to the Chief Justice, to
+                                <insertwords>the other Judges of the Supreme Court, to the President of the Court of Appeal, to the other</insertwords> Judges of the Court of Appeal, and to the other Judges, out of
+                                <insertwords>public money</insertwords>, without further appropriation than this section,—</text>
+                            <label-para xml:lang="en-NZ">
+                                <label denominator="yes">a</label>
+                                <para xml:lang="en-NZ">
+                                    <text>salaries at such rates as the
+                                        <insertwords>Remuneration Authority</insertwords> from time to time determines; and</text>
+                                </para>
+                            </label-para>
+                            <label-para xml:lang="en-NZ">
+                                <label denominator="yes">b</label>
+                                <para xml:lang="en-NZ">
+                                    <text>such allowances as are from time to time determined by the
+                                        <insertwords>Remuneration Authority</insertwords>; and</text>
+                                </para>
+                            </label-para>
+                            <label-para>
+                                <label denominator="yes">ba</label>
+                                <para>
+                                    <text>a higher duties allowance payable and calculated in accordance with subsection (1A); and</text>
+                                </para>
+                            </label-para>
+                            <label-para xml:lang="en-NZ">
+                                <label denominator="yes">c</label>
+                                <para xml:lang="en-NZ">
+                                    <text>such additional allowances, being travelling allowances or other incidental or minor allowances, as may be determined from time to time by the Governor-General.</text>
+                                </para>
+                            </label-para>
+                        </para>
+                    </subprov>
+                    <subprov>
+                        <label denominator="yes">1A</label>
+                        <para>
+                            <text>The higher duties allowance under subsection (1)﻿(ba) is—</text>
+                            <label-para>
+                                <label denominator="yes">a</label>
+                                <para>
+                                    <text>payable only to a Judge who—</text>
+                                    <label-para>
+                                        <label denominator="yes">i</label>
+                                        <para>
+                                            <text>is or was not a Judge of the Court of Appeal holding office under
+                                                <citation jurisdiction="nz">
+                                                    <intref href="DLM146928">section 57(2)</intref>
+                                                </citation> (in this subsection called a
+                                                <def-term id="DLM2845701">permanent Judge</def-term>); but</text>
+                                        </para>
+                                    </label-para>
+                                    <label-para>
+                                        <label denominator="yes">ii</label>
+                                        <para>
+                                            <text>is or was under
+                                                <citation jurisdiction="nz">
+                                                    <intref href="DLM146961">sections 58A to 58C</intref> or
+                                                    <intref href="DLM146980">section 58F</intref>
+                                                </citation> serving as a member of a criminal or civil division, or as a member of the full court, of the Court of Appeal; and</text>
+                                        </para>
+                                    </label-para>
+                                </para>
+                            </label-para>
+                            <label-para>
+                                <label denominator="yes">b</label>
+                                <para>
+                                    <text>payable only in respect of periods of the Judge's service as a member of the division or full court; and</text>
+                                </para>
+                            </label-para>
+                            <label-para>
+                                <label denominator="yes">c</label>
+                                <para>
+                                    <text>calculated at a rate expressed per day of service as a member of the division or full court in accordance with the following formula:</text>
+                                    <eqn id="DLM2845702">
+                                        <eqn-line>(a − b) × c/d </eqn-line>
+                                        <para>
+                                            <text>where—</text>
+                                        </para>
+                                        <variable-def>
+                                            <variable>a</variable>
+                                            <para>
+                                                <text>is the applicable yearly rate of salary determined by the Remuneration Authority to be payable to a permanent Judge</text>
+                                            </para>
+                                        </variable-def>
+                                        <variable-def>
+                                            <variable>b</variable>
+                                            <para>
+                                                <text>is the applicable yearly rate of salary determined by the Remuneration Authority to be payable to a Judge who is not a permanent Judge</text>
+                                            </para>
+                                        </variable-def>
+                                        <variable-def>
+                                            <variable>c</variable>
+                                            <para>
+                                                <text>is 0.0383561 (the standard payroll factor, which represents the proportion of an annual salary that is paid per fortnight)</text>
+                                            </para>
+                                        </variable-def>
+                                        <variable-def>
+                                            <variable>d</variable>
+                                            <para>
+                                                <text>is 10 (the number of working days per fortnight).</text>
+                                            </para>
+                                        </variable-def>
+                                    </eqn>
+                                </para>
+                            </label-para>
+                        </para>
+                    </subprov>
+                    <subprov xml:lang="en-NZ">
+                        <label denominator="yes">2</label>
+                        <para xml:lang="en-NZ">
+                            <text>Subject to the
+                                <citation jurisdiction="nz">
+                                    <leg-title href="DLM15636">
+                                        <insertwords>Remuneration Authority</insertwords> Act 1977</leg-title>
+                                </citation>, any determination made under subsection (1), and any provision of any such determination, may be made so as to come into force on a date to be specified in that behalf in the determination, being the date of the making of the determination or any other date, whether before or after the date of the making of the determination or the date of the commencement of this section.</text>
+                        </para>
+                    </subprov>
+                    <subprov xml:lang="en-NZ">
+                        <label denominator="yes">3</label>
+                        <para xml:lang="en-NZ">
+                            <text>Every such determination, and every provision of any such determination, in respect of which no date is specified as aforesaid shall come into force on the date of the making of the determination.</text>
+                        </para>
+                    </subprov>
+                    <subprov xml:lang="en-NZ">
+                        <label denominator="yes">4</label>
+                        <para xml:lang="en-NZ">
+                            <text>The salary and allowances payable for a period during which a Judge acts on a part-time basis must be calculated and paid as a pro rata proportion of the salary and allowances for a full-time equivalent position.</text>
+                        </para>
+                    </subprov>
+                    <subprov xml:lang="en-NZ">
+                        <label denominator="yes">5</label>
+                        <para xml:lang="en-NZ">
+                            <text>For the purpose of
+                                <citation jurisdiction="nz">
+                                    <extref href="DLM94256">section 24</extref> of the Constitution Act 1986</citation>,
+                                <insertwords>neither the cessation of the payment of a higher duties allowance payable and calculated under subsections (1)﻿(ba) and (1A), nor the payment of salary and allowances on a pro rata basis under subsection (4), is</insertwords> a reduction of salary.</text>
+                        </para>
+                    </subprov>
+                </prov.body>
+                <notes>
+                    <history>
+                        <history-note id="DLM145587">
+                            <amended-provision>Section 9A</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>1 April 1985</amendment-date>, by
+                            <amending-provision href="DLM81022">section 2</amending-provision> of the
+                            <amending-leg>Judicature Amendment Act (No 3) 1985</amending-leg> (1985 No 136).</history-note>
+                        <history-note id="DLM145590">
+                            <amended-provision>Section 9A(1)</amended-provision>:
+                            <amending-operation>amended</amending-operation>, on
+                            <amendment-date>1 January 2004</amendment-date>, by
+                            <amending-provision href="DLM214522">section 48(1)</amending-provision> of the
+                            <amending-leg>Supreme Court Act 2003</amending-leg> (2003 No 53).</history-note>
+                        <history-note id="DLM145589">
+                            <amended-provision>Section 9A(1)</amended-provision>:
+                            <amending-operation>amended</amending-operation>, on
+                            <amendment-date>1 July 1989</amendment-date>, by
+                            <amending-provision href="DLM163175">section 86(1)</amending-provision> of the
+                            <amending-leg>Public Finance Act 1989</amending-leg> (1989 No 44).</history-note>
+                        <history-note id="DLM145588">
+                            <amended-provision>Section 9A(1)﻿(a)</amended-provision>:
+                            <amending-operation>amended</amending-operation>, on
+                            <amendment-date>1 April 2003</amendment-date>, by
+                            <amending-provision href="DLM167443">section 4(1)</amending-provision> of the
+                            <amending-leg>Remuneration Authority (Members of Parliament) Amendment Act 2002</amending-leg> (2002 No 54).</history-note>
+                        <history-note id="DLM2751507">
+                            <amended-provision>Section 9A(1)﻿(b)</amended-provision>:
+                            <amending-operation>amended</amending-operation>, on
+                            <amendment-date>1 April 2003</amendment-date>, by
+                            <amending-provision href="DLM167443">section 4(1)</amending-provision> of the
+                            <amending-leg>Remuneration Authority (Members of Parliament) Amendment Act 2002</amending-leg> (2002 No 54).</history-note>
+                        <history-note id="DLM2845715">
+                            <amended-provision>Section 9A(1)﻿(ba)</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>23 March 2010</amendment-date>, by
+                            <amending-provision href="DLM2753201">section 4(1)</amending-provision> of the
+                            <amending-leg>Judicature (Judicial Matters) Amendment Act 2010</amending-leg> (2010 No 7).</history-note>
+                        <history-note id="DLM2845716">
+                            <amended-provision>Section 9A(1A)</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>23 March 2010</amendment-date>, by
+                            <amending-provision href="DLM2753201">section 4(2)</amending-provision> of the
+                            <amending-leg>Judicature (Judicial Matters) Amendment Act 2010</amending-leg> (2010 No 7).</history-note>
+                        <history-note id="DLM145591">
+                            <amended-provision>Section 9A(4)</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>20 May 2004</amendment-date>, by
+                            <amending-provision href="DLM294330">section 5</amending-provision> of the
+                            <amending-leg>Judicature Amendment Act 2004</amending-leg> (2004 No 45).</history-note>
+                        <history-note id="DLM2362816">
+                            <amended-provision>Section 9A(5)</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>20 May 2004</amendment-date>, by
+                            <amending-provision href="DLM294330">section 5</amending-provision> of the
+                            <amending-leg>Judicature Amendment Act 2004</amending-leg> (2004 No 45).</history-note>
+                        <history-note id="DLM2845717">
+                            <amended-provision>Section 9A(5)</amended-provision>:
+                            <amending-operation>amended</amending-operation>, on
+                            <amendment-date>23 March 2010</amendment-date>, by
+                            <amending-provision href="DLM2753201">section 4(3)</amending-provision> of the
+                            <amending-leg>Judicature (Judicial Matters) Amendment Act 2010</amending-leg> (2010 No 7).</history-note>
+                    </history>
+                </notes>
+            </prov>

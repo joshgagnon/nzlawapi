@@ -97,13 +97,15 @@
         </table>
     </xsl:template>
 
-    <xsl:template match="eqn/para">
+   <!-- <xsl:template match="eqn/para">-->
         <!-- TODO: Revise this so it has a neater way of playing nice with global text() rule -->
-        <xsl:for-each select="text">
+        <!--<xsl:for-each select="text">
             <p class="text"><xsl:value-of select="."/></p>
         </xsl:for-each>
-        <xsl:apply-templates select="*[not(text())]"/>
-    </xsl:template>
+        <xsl:apply-templates select="*[not(text())]"/> -->
+
+       <!-- <xsl:apply-templates/>
+    </xsl:template> -->
 
     <xsl:template match="eqn/eqn-line">
         <p class="eqn-line"><xsl:value-of select="."/></p>

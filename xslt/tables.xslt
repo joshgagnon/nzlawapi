@@ -71,5 +71,7 @@
         </td>
     </xsl:template>
 
+    <xsl:template match="legtable/summary">
+    </xsl:template>
 
 </xsl:stylesheet>

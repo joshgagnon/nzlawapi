@@ -83,6 +83,7 @@ def tohtml(tree, transform=xslt['transform'], **kwargs):
     xslt = etree.parse(transform).getroot()
 
     transform = etree.XSLT(xslt)
+    # failed experiment
     """
         xslt_tree = etree.XML('''\
         <xsl:stylesheet version="1.0"
@@ -108,19 +109,20 @@ def get_title(tree):
 
 
 # https://bitbucket.org/ianb/formencode/src/tip/formencode/doctest_xml_compare.py#cl-70
-def xml_compare(x1, x2, reporter=None):
+def xml_compare(x1, x2, reporter=None, do_attr=True):
     if x1.tag != x2.tag:
         if reporter:
+            print etree.tostring(x1)
             reporter('Tags do not match: %s and %s' % (x1.tag, x2.tag))
         return False
     for name, value in x1.attrib.items():
-        if x2.attrib.get(name) != value:
+        if x2.attrib.get(name) != value and do_attr:
             if reporter:
                 reporter('Attributes do not match: %s=%r, %s=%r'
                          % (name, value, name, x2.attrib.get(name)))
             return False
     for name in x2.attrib.keys():
-        if name not in x1.attrib:
+        if name not in x1.attrib and do_attr:
             if reporter:
                 reporter('x2 has an attribute x1 is missing: %s'
                          % name)
@@ -144,7 +146,7 @@ def xml_compare(x1, x2, reporter=None):
     i = 0
     for c1, c2 in zip(cl1, cl2):
         i += 1
-        if not xml_compare(c1, c2, reporter=reporter):
+        if not xml_compare(c1, c2, reporter=reporter, do_attr=do_attr):
             if reporter:
                 reporter('children %i do not match: %s'
                          % (i, c1.tag))

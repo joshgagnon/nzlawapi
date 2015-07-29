@@ -262,11 +262,11 @@
                     </h5>
             </xsl:if>
 
-            <ul class="prov">
-                <li>
+            <div class="prov-body">
+
                     <xsl:choose>
-                        <xsl:when test="prov.body != ''">
-                             <xsl:apply-templates select="prov.body/subprov|prov.body/para/list"/>
+                        <xsl:when test="not(@deletion-status)">
+                             <xsl:apply-templates select="prov.body/subprov|prov.body/para/list|prov.body/subprov.crosshead"/>
                              <xsl:if test="prov.body/para/text != ''">
                                  <p class="headless label">
                                         <span class="label">
@@ -281,10 +281,8 @@
                                     <xsl:apply-templates select="prov.body/notes/history/history-note"/>
                              </xsl:if>
                         </xsl:when>
-                        <xsl:otherwise>
-                            <!-- error in Lawyers and Conveyancers Act (Lawyers: Conduct and Client Care) Rules 2008 chapter 15 -->
-                            <span class="deleted label-deleted">
-                                <xsl:choose>
+                    <xsl:otherwise>
+                            <xsl:choose>
                                 <xsl:when test="ancestor::act">
                                         [Repealed]
                                     </xsl:when>
@@ -292,12 +290,15 @@
                                         [Revoked]
                                 </xsl:otherwise>
                                 </xsl:choose>
-                            </span>
+                            <!-- error in Lawyers and Conveyancers Act (Lawyers: Conduct and Client Care) Rules 2008 chapter 15 -->
+                            <!--<span class="deleted label-deleted">
+
+                            </span> -->
                         </xsl:otherwise>
                     </xsl:choose>
-                    <xsl:apply-templates select="def-para|prov.body/para/def-para|notes/history/history-note" />
-                </li>
-            </ul>
+                    <xsl:apply-templates select="def-para|prov.body/para/def-para" />
+            </div>
+            <xsl:apply-templates select="notes|cf"/>
         </div>
     </xsl:template>
 
@@ -314,8 +315,9 @@
                     </xsl:call-template>
                  </xsl:attribute>
             </xsl:if>
-            <xsl:apply-templates select="label"/>
-              <xsl:apply-templates select="para/*[position() > 1]|para[position() > 1]/*|para/amend/prov|label-para" />
+
+            <xsl:apply-templates />
+
         </div>
     </xsl:template>
 
@@ -329,9 +331,9 @@
     </xsl:template>
 
     <xsl:template match="label-para">
-        <ul class="label-para">
+        <div class="label-para">
             <xsl:call-template name="current"/>
-            <li>
+
             <xsl:call-template name="current">
                 <xsl:with-param name="class">label-para</xsl:with-param>
             </xsl:call-template>
@@ -341,12 +343,11 @@
                         <xsl:with-param name="label"><xsl:value-of select="normalize-space(label)"/></xsl:with-param>
                     </xsl:call-template>
                 </xsl:attribute>
-
                 </xsl:if>
                 <!-- label will render first para/text, so must match others separately -->
-                <xsl:apply-templates select="label|para/label-para|para/text[position()>1]"/>
-            </li>
-        </ul>
+                <xsl:apply-templates />
+
+        </div>
     </xsl:template>
 
 
@@ -358,10 +359,10 @@
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-            <p class="text">
+
                 <xsl:call-template name="quote"/>
-                <xsl:apply-templates select="para/text|para/label-para|example|text" />
-            </p>
+                <xsl:apply-templates />
+
             <xsl:if test="@deletion-status='repealed'">
                 <p class="deleted para-deleted">[Repealed]</p>
             </xsl:if>
@@ -397,6 +398,34 @@
         </dfn>
     </xsl:template>
 
+    <xsl:template match="subprov/label">
+        <p class="subprov">
+            <xsl:call-template name="current">
+                <xsl:with-param name="subprov"></xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:if test="text() != ''">
+                <span class="label focus-link">
+                     <xsl:call-template name="parentquote"/>
+                     <xsl:call-template name="openbracket"/>
+                     <xsl:value-of select="."/>
+                     <xsl:call-template name="closebracket"/>
+                </span>
+            </xsl:if>
+        </p>
+    </xsl:template>
+
+    <xsl:template match="label-para/label">
+        <h5 class="label-para">
+            <span class="label focus-link">
+             <xsl:call-template name="parentquote"/>
+             <xsl:call-template name="openbracket"/>
+             <xsl:value-of select="."/>
+             <xsl:call-template name="closebracket"/>
+            </span>
+        </h5>
+    </xsl:template>
+    <!--
     <xsl:template match="label">
         <p class="labelled label">
             <xsl:call-template name="current">
@@ -421,6 +450,7 @@
             </xsl:choose>
         </p>
     </xsl:template>
+    -->
 
     <xsl:template match="item/label">
         <p class="labelled item">
@@ -454,6 +484,20 @@
         </h4>
     </xsl:template>
 
+
+    <xsl:template match='subprov.crosshead'>
+        <h6 class="subprov-crosshead">
+             <xsl:apply-templates />
+        </h6>
+    </xsl:template>
+
+    <xsl:template match="notes/history">
+        <div class="history">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+
+
     <xsl:template match="notes/history/history-note">
         <p class="history-note">
             <xsl:attribute name="id">
@@ -463,6 +507,26 @@
         </p>
     </xsl:template>
 
+    <xsl:template match="cf">
+        <p class="cf">Compare <xsl:apply-templates/></p>
+    </xsl:template>
+
+    <xsl:template match="history-note/amended-provision">
+        <span class="amended-provision"><xsl:apply-templates/></span>
+    </xsl:template>
+
+    <xsl:template match="history-note/amending-operation">
+        <span class="amending-operation"><xsl:apply-templates/></span>
+    </xsl:template>
+
+    <xsl:template match="history-note/amendment-date">
+        <span class="amendment-date"><xsl:apply-templates/></span>
+    </xsl:template>
+
+
+     <xsl:template match="history-note/amending-leg">
+        <span class="amending-leg"><xsl:apply-templates/></span>
+    </xsl:template>
 
     <xsl:template match="admended-provision|amending-operation">
         <xsl:value-of select="."/>
@@ -519,6 +583,16 @@
                 </xsl:attribute>
                  <xsl:attribute name="class">external_ref</xsl:attribute>
             </xsl:when>
+            <xsl:when test="local-name() = 'extref'">
+                  <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@href"/>
+                </xsl:attribute>
+                 <xsl:attribute name="class">external_ref</xsl:attribute>
+            </xsl:when>
+            <xsl:when test="local-name() = 'amending-provision'">
+                  <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@href"/>
+                </xsl:attribute>
+                 <xsl:attribute name="class">amending-provision external_ref</xsl:attribute>
+            </xsl:when>
             <xsl:otherwise>
                   <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/></xsl:attribute>
                  <xsl:attribute name="data-target-id"><xsl:value-of select="@target-id"/></xsl:attribute>
@@ -527,7 +601,7 @@
                 </xsl:if>
             </xsl:otherwise>
         </xsl:choose>
-            <xsl:value-of select="."/>
+           <xsl:apply-templates  />
         </a>
     </xsl:template>
 
@@ -581,13 +655,22 @@
         <xsl:value-of select="."/>
     </xsl:template>
 
+    <xsl:template match="para">
+        <div class="para"><xsl:apply-templates /></div>
+    </xsl:template>
 
-    <xsl:template match="para[1]">
+    <xsl:template match="para/text">
         <p class="text"><xsl:apply-templates /></p>
     </xsl:template>
 
-    <xsl:template match="para[position() > 1]/text">
-        <p class="text"><xsl:apply-templates /></p>
+    <xsl:template match="label-para/para/text[not(node())]">
+            <span class="label-para deletion-status">[Repealed]</span>
+            <div class="para"><p class="text"></p></div>
+    </xsl:template>
+
+    <xsl:template match="subprov/para/text[not(node())]">
+            <span class="subprov deletion-status">[Repealed]</span>
+            <div class="para"><p class="text"></p></div>
     </xsl:template>
 
     <xsl:template match="form">
@@ -729,6 +812,37 @@
                 <xsl:apply-templates select="para/text|para/list"/>
             </p>
         </li>
+    </xsl:template>
+
+
+    <xsl:template match="variable-def[1]">
+
+        <dl class="variable-list">
+            <xsl:apply-templates />
+            <xsl:for-each select="../variable-def[position() > 1]">
+                <xsl:apply-templates />
+            </xsl:for-each>
+        </dl>
+
+    </xsl:template>
+
+    <xsl:template match="variable-def[position() > 1]">
+
+    </xsl:template>
+
+
+    <xsl:template match="variable-def/variable">
+        <dt class="variable">
+            <xsl:apply-templates />
+        </dt>
+    </xsl:template>
+
+    <xsl:template match="variable-def/para">
+        <dd class="variable-description">
+            <div class="para">
+                <xsl:apply-templates />
+            </div>
+        </dd>
     </xsl:template>
 
 </xsl:stylesheet>
