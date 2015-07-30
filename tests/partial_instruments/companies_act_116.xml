@@ -1,0 +1,73 @@
+ <prov id="DLM320603" toc="yes" xml:lang="en-NZ">
+                    <label denominator="yes">116</label>
+                    <heading xml:lang="en-NZ">Meaning of classes and interest groups</heading>
+                    <prov.body>
+                        <subprov xml:lang="en-NZ">
+                            <label denominator="yes">1</label>
+                            <para xml:lang="en-NZ">
+                                <text>In this Act, unless the context otherwise requires,—</text>
+                                <def-para id="DLM320604" xml:lang="en-NZ">
+                                    <para xml:lang="en-NZ">
+                                        <text>
+                                            <def-term id="DLM320605" xml:lang="en-NZ">class</def-term> means a class of shares having attached to them identical rights, privileges, limitations, and conditions</text>
+                                    </para>
+                                </def-para>
+                                <def-para id="DLM320606" xml:lang="en-NZ">
+                                    <para xml:lang="en-NZ">
+                                        <text>
+                                            <def-term id="DLM320607" xml:lang="en-NZ">interest group</def-term>, in relation to any action or proposal affecting rights attached to shares, means a group of shareholders—</text>
+                                        <label-para xml:lang="en-NZ">
+                                            <label denominator="yes">a</label>
+                                            <para xml:lang="en-NZ">
+                                                <text>whose affected rights are identical; and</text>
+                                            </para>
+                                        </label-para>
+                                        <label-para xml:lang="en-NZ">
+                                            <label denominator="yes">b</label>
+                                            <para xml:lang="en-NZ">
+                                                <text>whose rights are affected by the action or proposal in the same way; and</text>
+                                            </para>
+                                        </label-para>
+                                        <label-para xml:lang="en-NZ">
+                                            <label denominator="yes">c</label>
+                                            <para xml:lang="en-NZ">
+                                                <text>subject to subsection (2)﻿(b), who comprise the holders of 1 or more classes of shares in the company.</text>
+                                            </para>
+                                        </label-para>
+                                    </para>
+                                </def-para>
+                            </para>
+                        </subprov>
+                        <subprov xml:lang="en-NZ">
+                            <label denominator="yes">2</label>
+                            <para xml:lang="en-NZ">
+                                <text>For the purposes of this Act and the definition of the term interest group,—</text>
+                                <label-para xml:lang="en-NZ">
+                                    <label denominator="yes">a</label>
+                                    <para xml:lang="en-NZ">
+                                        <text>1 or more interest groups may exist in relation to any action or proposal; and</text>
+                                    </para>
+                                </label-para>
+                                <label-para xml:lang="en-NZ">
+                                    <label denominator="yes">b</label>
+                                    <para xml:lang="en-NZ">
+                                        <text>if—</text>
+                                        <label-para xml:lang="en-NZ">
+                                            <label denominator="yes">i</label>
+                                            <para xml:lang="en-NZ">
+                                                <text>action is taken in relation to some holders of shares in a class and not others; or</text>
+                                            </para>
+                                        </label-para>
+                                        <label-para xml:lang="en-NZ">
+                                            <label denominator="yes">ii</label>
+                                            <para xml:lang="en-NZ">
+                                                <text>a proposal expressly distinguishes between some holders of shares in a class and other holders of shares of that class,—</text>
+                                            </para>
+                                        </label-para>
+                                        <text>holders of shares in the same class may fall into 2 or more interest groups.</text>
+                                    </para>
+                                </label-para>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                </prov>

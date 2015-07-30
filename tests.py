@@ -55,7 +55,7 @@ class TestQueries(unittest.TestCase):
 
     def setUp(self):
         self.parser = etree.XMLParser(remove_blank_text=True)
-        self.tree = etree.parse('tests/companiesact.xml', parser=self.parser).getroot()
+        self.tree = etree.parse('tests/instruments/companies.xml', parser=self.parser).getroot()
 
     def test_path_query_counts(self):
         # test path queries return correct number of leaf nodes
@@ -63,7 +63,7 @@ class TestQueries(unittest.TestCase):
         self.assertEqual(len(find_sub_node(self.tree, ['223'])), 1)
         self.assertEqual(len(find_sub_node(self.tree, ['223', 'b'])), 1)
         self.assertEqual(len(find_sub_node(self.tree, ['223', 'a+c'])), 2)
-        self.assertEqual(len(find_sub_node(self.tree, ['223', 'a-c'])), 3)
+        self.assertEqual(len(find_sub_node(self.tree, ['223', 'a-c'])), 4) # includes ba
         self.assertEqual(len(find_sub_node(self.tree.find('.//body'), ['1-10'])), 10)
         self.assertEqual(len(find_sub_node(self.tree.find('.//body'), ['1+8-10+15'])), 5)
         self.assertEqual(len(find_sub_node(self.tree.find('.//body'), ['2+11-13+18-19+25'])), 7)
@@ -88,11 +88,11 @@ class TestQueries(unittest.TestCase):
         self.assertRaises(CustomException, find_sub_node, self.tree, ['666'])
 
     def test_definition_query_counts(self):
-        self.assertEqual(len(find_definitions(self.tree, 'company')), 20)
+        self.assertEqual(len(find_definitions(self.tree, 'company')), 22)
         self.assertRaises(CustomException, find_definitions, self.tree, 'balderdash')
 
     def test_search(self):
-        self.assertEqual(len(find_node_by_query(self.tree, 'constitution')), 910)
+        self.assertEqual(len(find_node_by_query(self.tree, 'constitution')), 918)
         self.assertEqual(len(find_node_by_query(self.tree, 'fistycuffs')), 0)
 
 #@unittest.skip("demonstrating skipping")
@@ -270,7 +270,7 @@ class DocumentTreeTest(unittest.TestCase):
 
 
     def test_tree_generation(self):
-        with open('tests/companiesact.xml') as fp:
+        with open('tests/instruments/companies.xml') as fp:
             tree = etree.fromstring(remove_nbsp(fp.read()), parser=self.parser)
         document_tree = create_document_tree(tree)
         with open('tests/companiesact_doc_tree.json') as fp:

@@ -272,7 +272,7 @@
 
                     <xsl:choose>
                         <xsl:when test="not(@deletion-status)">
-                             <xsl:apply-templates select="prov.body/subprov|prov.body/para/list|prov.body/subprov.crosshead"/>
+                             <xsl:apply-templates select="prov.body/subprov|prov.body/para/list|prov.body/subprov.crosshead|prov.body/example"/>
                              <xsl:if test="prov.body/para/text != ''">
                                  <p class="headless label">
                                         <span class="label">
@@ -494,6 +494,9 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <xsl:value-of select="."/>
+            <xsl:if test="@deletion-status='repealed'">
+            <span class="crosshead deletion-status">[Repealed]</span>
+            </xsl:if>
         </h4>
     </xsl:template>
 
@@ -501,6 +504,18 @@
     <xsl:template match='subprov.crosshead'>
         <h6 class="subprov-crosshead">
              <xsl:apply-templates />
+        </h6>
+    </xsl:template>
+
+    <xsl:template match='example'>
+        <div class="example">
+            <xsl:apply-templates />
+        </div>
+    </xsl:template>
+
+    <xsl:template match='example/heading'>
+        <h6 class="heading">
+            <xsl:apply-templates />
         </h6>
     </xsl:template>
 

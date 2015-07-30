@@ -91,15 +91,22 @@ class FullTransformTest(unittest.TestCase):
         with app.test_request_context():
             for test_file in os.listdir(path):
                 if test_file.endswith('html'):
+                    print test_file
                     result = tohtml(etree.parse(os.path.join(path, test_file.replace('.html', '.xml'))))
                     expected = etree.parse(open(os.path.join(path, test_file)), parser=etree.HTMLParser()).xpath('.//body/div[1]')[0]
                     end = expected.find('.//div[@class="actbodylastpage"]')
                     end.getparent().remove(end)
-                    results = result.findall('.//div[@class="prov"]')
-                    for i, prov in enumerate(expected.findall('.//div[@class="prov"]')):
-                        expected_prov = sub.sub('', etree.tostring(prov, method="text", encoding="utf-8"))
-                        result_prov = sub.sub('', etree.tostring(results[i], method="text", encoding="utf-8"))
-                        self.assertEqual(result_prov, expected_prov)
+                    #xpath = './/div[@class="prov"]|.//div[@class="form"]'
+                    xpath = './/div[@class="part"]'
+                    results = result.findall(xpath)
+                    for i, seg in enumerate(expected.findall(xpath)):
+                        expected_seg = sub.sub('', etree.tostring(seg, method="text", encoding="utf-8"))
+                        result_seg = sub.sub('', etree.tostring(results[i], method="text", encoding="utf-8"))
+                        x = [i for i in xrange(len(result_seg)) if result_seg[i] != expected_seg[i]]
+                        if len(x):
+                            print expected_seg[x[0]-10:x[0]+100]
+                            print result_seg[x[0]-10:x[0]+100]
+                        self.assertEqual(result_seg, expected_seg)
                         # we add too many links for this to work
                         #self.assertTrue(xml_compare(prov, results[i], print_error, do_attr=False))
 
