@@ -10,30 +10,6 @@
     </xsl:template>
 
 
-    <xsl:template match="signature-block">
-        <div class="signature-block">
-             <xsl:apply-templates select="sig.para|sig.officer"/>
-        </div>
-        <hr class="signature-block"/>
-    </xsl:template>
-
-    <xsl:template match="sig.para|sig.officer">
-        <p class="sig-para">
-            <xsl:attribute name="style">
-                text-align:<xsl:value-of select="@align"/>
-            </xsl:attribute>
-            <xsl:apply-templates/>
-        </p>
-    </xsl:template>
-
-    <xsl:template match="sig.para|sig.officer">
-        <p class="sig-para">
-            <xsl:attribute name="style">
-                text-align:<xsl:value-of select="@align"/>
-            </xsl:attribute>
-            <xsl:apply-templates/>
-        </p>
-    </xsl:template>
 
     <xsl:template match="explnote">
         <div class="explnote">

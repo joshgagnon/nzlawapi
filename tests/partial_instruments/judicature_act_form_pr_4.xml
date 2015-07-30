@@ -1,0 +1,694 @@
+<form id="DLM1817672" toc="yes">
+    <label denominator="yes">PR 4</label>
+    <empowering-prov>
+        <citation jurisdiction="nz">
+            <intref href="DLM1819905">r 27.4</intref>
+        </citation>
+    </empowering-prov>
+    <heading>Affidavit for obtaining grant of administration on intestacy to daughter or son of deceased</heading>
+    <form.body>
+        <para>
+            <text>
+                <emphasis style="italic">The cover sheet for this form should have the same heading as that set out in
+                    <citation jurisdiction="nz">
+                        <intref href="DLM1817669">form PR 1</intref>
+                    </citation>.</emphasis>
+            </text>
+        </para>
+        <para>
+            <text>No: [
+                <emphasis style="italic">number of proceeding</emphasis>]</text>
+        </para>
+        <para>
+            <text>In the estate of [
+                <emphasis style="italic">full name, place, occupation</emphasis>] (deceased)</text>
+        </para>
+        <para>
+            <text>I, [
+                <emphasis style="italic">full name, place of residence, occupation</emphasis>], swear/solemnly and sincerely affirm*—</text>
+        </para>
+        <para>
+            <legtable>
+                <summary> </summary>
+                <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                    <tgroup cols="1">
+                        <colspec colname="col1" colwidth="1.00*" />
+                        <tbody>
+                            <row>
+                                <entry>*Select one.</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </legtable>
+        </para>
+        <para>
+            <text>
+                <emphasis style="italic">
+                    <emphasis style="italic">Note: This form must be appropriately modified if more than 1 daughter or son is applying.</emphasis>
+                </emphasis>
+            </text>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">1</label>
+                <para>
+                    <text>The deceased, [
+                        <emphasis style="italic">name as on cover sheet</emphasis>], whom I/we* knew, died at [
+                        <emphasis style="italic">place, country</emphasis>] on or about [
+                        <emphasis style="italic">date</emphasis>].</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" />
+                                <tbody>
+                                    <row>
+                                        <entry colsep="0" rowsep="0">*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">2</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">For this paragraph select the first of the following statements that applies.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I was present when the deceased died.</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I attended the deceased’s funeral.</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement C</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I saw the deceased’s dead body.</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement D</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The deceased is the person named [
+                        <emphasis style="italic">full name</emphasis>] in the death certificate/certified copy of the death certificate* that is attached and marked
+                        <quote.in quote="1">A</quote.in>.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" />
+                                <tbody>
+                                    <row>
+                                        <entry colsep="0" rowsep="0">*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>
+                        <emphasis style="italic">If the applicant or applicants for the grant do not know about the deceased’s death personally, replace paragraphs 1 and 2 with an affidavit in the form of those paragraphs made by a person or persons who knew the deceased and know(s) about the deceased’s death personally</emphasis>.</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">3</label>
+                <para>
+                    <text>At the time of death the deceased resided at [
+                        <emphasis style="italic">place, country</emphasis>].</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para deletion-status="repealed">
+                <label denominator="no">4</label>
+                <para>
+                    <text/>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">5</label>
+                <para>
+                    <text>I have made full inquiries and searches for a will made by the deceased. I am satisfied that the deceased died without leaving a will and was wholly intestate.</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">6</label>
+                <para>
+                    <text>I am a daughter/son* of the deceased.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">7</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">For this paragraph select the statement that applies. Note: Statements B and C should be appropriately altered if the deceased entered a civil union that was dissolved or affected by court order.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>At the time of his death, my father was a widower/At the time of her death, my mother was a widow* and was not living in a de facto relationship.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I attach to this affidavit a copy of the order/decree absolute* marked
+                        <quote.in quote="1">[
+                            <emphasis style="italic">specify</emphasis>]</quote.in>, dissolving my father’s/mother’s* marriage. He/She* did not subsequently marry or enter into a civil union, and, at the time of his/her* death, he/she* was not living in a de facto relationship.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement C</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I attach to this affidavit a copy of the separation order/decree of judicial separation* marked
+                        <quote.in quote="1">[
+                            <emphasis style="italic">specify</emphasis>]</quote.in>, made between
+                        <insertwords>my father and his wife or husband/my mother and her husband or wife</insertwords>*. The order/decree* was in force at the time of his/her* death, and, at the time of his/her* death, he/she* was not living in a de facto relationship.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement D</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The deceased was survived by a spouse/civil union partner/de facto partner* who was entitled to succeed on the intestacy, but his/her* beneficial interest in the estate was affected by the choice he/she* made between option A and option B, under
+                        <citation jurisdiction="nz">
+                            <extref href="DLM441977">section 61</extref> of the Property (Relationships) Act 1976</citation>, because he/she* chose option A. Attached and marked
+                        <quote.in quote="1">[
+                            <emphasis style="italic">specify</emphasis>]</quote.in> is a copy of the choice of option.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement E</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The deceased never married or entered into a civil union and at the time of his/her* death, he/she* was not living in a de facto relationship.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" />
+                                <tbody>
+                                    <row>
+                                        <entry colsep="0" rowsep="0">*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">8</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">For this paragraph select the statement that applies.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The deceased was not survived by any other child—</text>
+                    <label-para>
+                        <label denominator="yes">a</label>
+                        <para>
+                            <text>who was born to the deceased; or</text>
+                        </para>
+                    </label-para>
+                    <label-para>
+                        <label denominator="yes">b</label>
+                        <para>
+                            <text>who was adopted by the deceased; or</text>
+                        </para>
+                    </label-para>
+                </para>
+            </label-para>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>
+                        <emphasis style="italic">Omit paragraphs (c) and (d) if the deceased was female.</emphasis>
+                    </text>
+                    <label-para>
+                        <label denominator="yes">c</label>
+                        <para>
+                            <text>in respect of whom the deceased had admitted paternity; or</text>
+                        </para>
+                    </label-para>
+                    <label-para>
+                        <label denominator="yes">d</label>
+                        <para>
+                            <text>in respect of whom the deceased was adjudged, before or after his death, to be the father.</text>
+                        </para>
+                    </label-para>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>In addition to myself, the deceased was survived by the following children, all of whom, except where otherwise shown, are adult: [
+                        <emphasis style="italic">list full names, places of residence, and occupations of the other children of the deceased and, in the case of a child who is a minor, the age of that child</emphasis>].</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">9</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">If you selected statement B for paragraph 8, for this paragraph select the statement(s) that apply, otherwise omit this paragraph.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>On [
+                        <emphasis style="italic">date</emphasis>], I gave written notice to [
+                        <emphasis style="italic">full names</emphasis>], adult children of the deceased who are named in paragraph 8, that I intended to apply to this court for letters of administration of the estate of the deceased. Attached and marked
+                        <quote.in quote="1">[
+                            <emphasis style="italic">specify</emphasis>]</quote.in> is a copy/copies* of that notice/those notices*).</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I attach to this affidavit the consents, marked
+                        <quote.in quote="1">[
+                            <emphasis style="italic">specify</emphasis>]</quote.in> of [
+                        <emphasis style="italic">full names</emphasis>], adult children of the deceased who are named in paragraph [
+                        <emphasis style="italic">specify</emphasis>], to letters of administration of the deceased’s estate being granted to me.</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">10</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">For this paragraph select the statement that applies.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>Neither
+                        <citation jurisdiction="nz">
+                            <extref href="DLM293189">section 16(2)﻿(d)</extref> of the Adoption Act 1955</citation> nor
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390672">section 4</extref> of the Status of Children Act 1969</citation> is relevant or applies to me.</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>Both in the case of the children of the deceased who are named in paragraph [
+                        <emphasis style="italic">number</emphasis>] of this affidavit and in my case, neither
+                        <citation jurisdiction="nz">
+                            <extref href="DLM293189">section 16(2)﻿(d)</extref> of the Adoption Act 1955</citation> nor
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390672">section 4</extref> of the Status of Children Act 1969</citation> is relevant or applies.</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">11</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">For this paragraph select the statement that applies.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>I have made reasonable inquiries for the purposes of the
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390653">Status of Children Act 1969</extref>
+                        </citation> as to the existence of a parent or child of the deceased (in addition to those already known to me) who could claim an interest in the estate of the deceased by reason only of that Act and the enactments governing the distribution of intestate estates. Those inquiries, which included those required by
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390679">section 5A(2)</extref> of the Status of Children Act 1969</citation>, consisted of [
+                        <emphasis style="italic">specify</emphasis>].</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>Making the inquiries specified in
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390679">section 5A(1)﻿(a)</extref> of the Status of Children Act 1969</citation> would unduly delay the making of a grant of administration because [
+                        <emphasis style="italic">state why</emphasis>].</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement C</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The getting in or preservation of the assets of the estate of the deceased requires the making of an immediate grant of administration because [
+                        <emphasis style="italic">state why</emphasis>].</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement D</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>No useful purpose would be served by making the inquiries specified in
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390679">section 5A(1)﻿(a)</extref> of the Status of Children Act 1969</citation> because [
+                        <emphasis style="italic">state why</emphasis>].</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">12</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">If you selected statement A for paragraph 11, for this paragraph select the statement that applies, otherwise omit this paragraph.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para.crosshead>Statement A</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The result of my inquiries was that I did not discover any such parent or child. Attached and marked
+                        <quote.in quote="1">[
+                            <emphasis style="italic">specify</emphasis>]</quote.in> is a certificate from the office of the Registrar-General confirming the absence of a record of any such parent or child.</text>
+                </para>
+            </label-para>
+            <label-para.crosshead>Statement B</label-para.crosshead>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The result of my inquiries was that I discovered [
+                        <emphasis style="italic">full names and relationship of those discovered</emphasis>].</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">13</label>
+                <para>
+                    <text>
+                        <emphasis style="italic">Include the following paragraph where those discovered are children.</emphasis>
+                    </text>
+                </para>
+            </label-para>
+            <label-para>
+                <label denominator="no" />
+                <para>
+                    <text>The person/Those* discovered is/are* aged [
+                        <emphasis style="italic">specify ages</emphasis>] being a child/children* to whom neither
+                        <citation jurisdiction="nz">
+                            <extref href="DLM293189">section 16(2)﻿(d)</extref> of the Adoption Act 1955</citation> nor
+                        <citation jurisdiction="nz">
+                            <extref href="DLM390672">section 4</extref> of the Status of Children Act 1969</citation> is relevant or applies.</text>
+                </para>
+                <para>
+                    <legtable>
+                        <summary> </summary>
+                        <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                            <tgroup cols="1">
+                                <colspec colname="col1" colwidth="1.00*" />
+                                <tbody>
+                                    <row>
+                                        <entry>*Select one.</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </legtable>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">14</label>
+                <para>
+                    <text>To the best of my knowledge, information, and belief, the gross value of the estate left by the deceased does not exceed $[
+                        <emphasis style="italic">amount</emphasis>].</text>
+                </para>
+            </label-para>
+        </para>
+        <para>
+            <label-para>
+                <label denominator="no">15</label>
+                <para>
+                    <text>I will faithfully administer the deceased’s estate in accordance with the law, and will, if required by the court, file in the court and verify by affidavit—</text>
+                    <label-para>
+                        <label denominator="yes">a</label>
+                        <para>
+                            <text>a true and complete inventory of the deceased’s estate; and</text>
+                        </para>
+                    </label-para>
+                    <label-para>
+                        <label denominator="yes">b</label>
+                        <para>
+                            <text>a true and complete account of the deceased’s estate—</text>
+                            <label-para>
+                                <label denominator="yes">i</label>
+                                <para>
+                                    <text>setting out the dates and particulars of all receipts and disbursements; and</text>
+                                </para>
+                            </label-para>
+                            <label-para>
+                                <label denominator="yes">ii</label>
+                                <para>
+                                    <text>showing, in my opinion, which of the receipts and disbursements are on account of capital and which are on account of income.</text>
+                                </para>
+                            </label-para>
+                        </para>
+                    </label-para>
+                </para>
+            </label-para>
+        </para>
+        <signature-block>
+            <sig.para align="left">Sworn/Affirmed* at [
+                <emphasis style="italic">place, date</emphasis>]</sig.para>
+            <para>
+                <text>Before me:</text>
+            </para>
+            <para>
+                <legtable>
+                    <summary> </summary>
+                    <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                        <tgroup cols="1">
+                            <colspec colname="col1" colwidth="1.00*" />
+                            <tbody>
+                                <row>
+                                    <entry>*Select one.</entry>
+                                </row>
+                            </tbody>
+                        </tgroup>
+                    </table>
+                </legtable>
+            </para>
+            <para>
+                <text>[
+                    <emphasis style="italic">print name</emphasis>]</text>
+            </para>
+            <para>
+                <text>(a solicitor of the High Court of New Zealand
+                    <emphasis style="italic">or</emphasis> Registrar/Deputy Registrar* of the High Court/District Court*
+                    <emphasis style="italic">or</emphasis> Justice of the Peace)</text>
+            </para>
+        </signature-block>
+        <para>
+            <legtable>
+                <summary> </summary>
+                <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                    <tgroup cols="1">
+                        <colspec colname="col1" colwidth="1.00*" />
+                        <tbody>
+                            <row>
+                                <entry>*Select one.</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </legtable>
+        </para>
+    </form.body>
+    <notes>
+        <history>
+            <history-note id="DLM3483468">
+                <amended-provision>Schedule 2 Schedule 1 form PR 4</amended-provision>:
+                <amending-operation>replaced</amending-operation>, on
+                <amendment-date>1 January 2011</amendment-date>, by
+                <amending-provision href="DLM3329003">rule 22</amending-provision> of the
+                <amending-leg>High Court Amendment Rules (No 2) 2010</amending-leg> (SR 2010/394).</history-note>
+            <history-note id="DLM5575002">
+                <amended-provision>Schedule 2 Schedule 1 form PR 4</amended-provision>:
+                <amending-operation>amended</amending-operation>, on
+                <amendment-date>1 September 2013</amendment-date>, by
+                <amending-provision href="DLM5192031">rule 18</amending-provision> of the
+                <amending-leg>High Court Amendment Rules (No 2) 2013</amending-leg> (SR 2013/214).</history-note>
+            <history-note id="DLM5267610">
+                <amended-provision>Schedule 2 Schedule 1 form PR 4</amended-provision>:
+                <amending-operation>amended</amending-operation>, on
+                <amendment-date>4 June 2013</amendment-date>, by
+                <amending-provision href="DLM5049413">rule 9</amending-provision> of the
+                <amending-leg>High Court Amendment Rules 2013</amending-leg> (SR 2013/128).</history-note>
+        </history>
+    </notes>
+</form>

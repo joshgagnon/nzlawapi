@@ -1,1092 +1,4586 @@
+
 .definition-result,
+
 .legislation-result{
-    font-size: 16px;
-    line-height: 1.5em;
-.legislation{
-        font-family: "Times New Roman", serif;
+
+    font-size: initial;
+    line-height: 1.2em;
+
+    .legislation{
+
+        font-size   : 1em;
+        font-family : "Times New Roman", serif;
+    }
+    .definition * {
+        vertical-align : baseline;
+        box-sizing     : initial;
+
+        margin         : 0;
+        padding        : 0;
+
+        font           : inherit;
+        border         : 0;
+        outline        : 0;
+    }
 }
-.legislation *,
-.definition * {
+
+.legislation{
+
+ div,
+ span,
+ applet,
+ object,
+ iframe,
+ h1,
+ h2,
+ h3,
+ h4,
+ h5,
+ h6,
+ p,
+ blockquote,
+ pre,
+ a,
+ abbr,
+ acronym,
+ address,
+ big,
+ cite,
+ code,
+ del,
+ dfn,
+ em,
+ img,
+ ins,
+ kbd,
+ q,
+ s,
+ samp,
+ small,
+ strike,
+ strong,
+ sub,
+ sup,
+ tt,
+ var,
+ b,
+ u,
+ i,
+ center,
+ dl,
+ dt,
+ dd,
+ ol,
+ ul,
+ li,
+ fieldset,
+ form,
+ label,
+ legend,
+ table,
+ caption,
+ tbody,
+ tfoot,
+ thead,
+ tr,
+ th,
+ td,
+ article,
+ aside,
+ canvas,
+ details,
+ figcaption,
+ figure,
+ footer,
+ header,
+ hgroup,
+ menu,
+ nav,
+ section,
+ summary,
+ time,
+ mark,
+ audio,
+ video {
     margin: 0;
     padding: 0;
     border: 0;
     outline: 0;
-
-    font: inherit;
     vertical-align: baseline;
-    box-sizing: initial;
-
-
-}
-.legislation article, .legislation aside, .legislation details, .legislation figcaption, .legislation figure, .legislation footer, .legislation header, .legislation hgroup, .legislation menu, .legislation nav, .legislation section {
-    display: block
-}
-.legislation ol, .legislation ul {
-    list-style: none
-}
-.legislation blockquote, .legislation q {
-    quotes: none
-}
-.legislation blockquote:before, .legislation blockquote:after {
-    content: '';
-    content: none
-}
-.legislation q:before, .legislation q:after {
-    content: '';
-    content: none
-}
-.legislation:focus {
-    outline: none
-}
-
-.legislation a[href^="http:"], .legislation a[href^="https:"], .legislation a.externallink {
-    background: none;
-    padding: inherit;
-    margin: inherit
-}
-.legislation a:focus {
-    outline: 1px dotted #000
-}
-.legislation ins {
-    text-decoration: underline;
-    background: none
-}
-.legislation del {
-    text-decoration: line-through
-}
-.legislation table {
-    border-collapse: collapse;
-    border-spacing: 0
-}
-.legislation em, .legislation i {
-    font-style: italic
-}
-.legislation strong, .legislation b {
-    font-weight: bold
-}
-.legislation u {
-    text-decoration: underline
-}
-.legislation h1, .legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6, .legislation p, .legislation th, .legislation td, .legislation dl {
-    color: #000;
-    line-height: 1.2em;
+    text-align: justify;
     font-family: "Times New Roman", serif;
+    font-size: 1em;
+    color: #000;
+
+
+    font-family: inherit;
+    font-size: 100%;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    font-stretch: inherit;
+    line-height: inherit;
+
+
 }
-.legislation a.intref, .legislation a.extref, .legislation a.toc, .legislation a.term, .legislation a.leg-title, .legislation a.amending-provision {
-    color: blue;
-    background-color: white
-}
-.legislation h1, .legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6 {
-    clear: left;
-    margin: 0;
-    padding: 0;
+ h1,
+ h2,
+ h3,
+ h4,
+ h5,
+ h6 {
+    margin-top: 0.34783em;
+    text-align: justify;
+    font-family: "Times New Roman", serif;
+    line-height: 1.2em;
+    font-size: inherit;
     font-weight: normal
 }
-.legislation h1 {
-    font-size: 1.5em
+ em,
+ strong,
+ dfn,
+ code,
+ q,
+ samp,
+ kbd,
+ var,
+ cite,
+ abbr,
+ acronym,
+ sub,
+ sup,
+ span {
+    font-size: inherit;
+    text-align: inherit;
+    color: inherit
 }
-.legislation h2, .legislation h3, .legislation h4, .legislation h5, .legislation h6 {
-    font-size: 1.2em
+ div.front div.long-title {
+    text-align: left;
+    font-weight: bold
 }
-.legislation p {
-    padding: 0;
-    margin: 0;
-    clear: left
+ p.enactment {
+    margin-top: 0.86957em;
+    font-size: inherit;
+    text-align: left;
+    font-weight: bold
 }
-.legislation ul {
-    padding: 0;
-    margin: 0;
-    margin-left: 3em;
-    clear: left
+ div.prov {
+    padding-left: 2.6087em
 }
-.legislation ul.history {
+ div.prov h5.prov span.label {
+    float: left;
+    margin-left: -2.17391em;
+    padding-right: 0.5em
+}
+ div.prov div.subprov {
+    padding-left: 0
+}
+ div.prov h6.subprov-crosshead {
+    padding-left: 0
+}
+ div.prov div.history {
+    padding-left: 0
+}
+ div.prov div.amend {
+    margin-left: -2.6087em
+}
+ div.prov div.increment-1.amend {
     margin-left: 0
 }
-.legislation ul li {
-    padding: 0;
-    margin: 0;
+ div.prov div.increment-2.amend {
+    margin-left: 2.6087em
+}
+ div.prov div.increment-3.amend {
+    margin-left: 5.21739em
+}
+ div.subprov {
+    padding-left: 2.6087em
+}
+ div.subprov p.subprov {
+    font-size: inherit
+}
+ div.subprov p.subprov span.label {
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em
+}
+ div.subprov div.history {
+    padding-left: 0
+}
+ div.subprov div.amend {
+    margin-left: -2.6087em
+}
+ div.subprov div.increment-1.amend {
+    margin-left: 0
+}
+ div.subprov div.increment-2.amend {
+    margin-left: 2.6087em
+}
+ div.subprov div.increment-3.amend {
+    margin-left: 5.21739em
+}
+ div.leg-history {
     display: block;
-    list-style-type: none
+    text-align: center
 }
-.legislation q:before, .legislation q:after {
-    content: ""
+ div.leg-history table {
+    table-layout: fixed;
+    margin-left: auto;
+    margin-right: auto
 }
-.legislation h2.labelled, .legislation h3.labelled, .legislation h4.labelled, .legislation h5.labelled, .legislation h6.labelled {
-    padding-left: 2.5em
-}
-.legislation h2.labelled span.label, .legislation h3.labelled span.label, .legislation h4.labelled span.label, .legislation h5.labelled span.label, .legislation h6.labelled span.label {
-    float: left;
-    margin-left: -2.5em;
-    padding-right: 0.5em
-}
-.legislation p.labelled {
-    margin-right: 1em
-}
-.legislation p.labelled span.label, .legislation p.labelled a.label {
-    float: left;
-    margin-left: -3em;
-    padding-right: 0.5em
-}
-.legislation ins {
-    text-decoration: underline
-}
-.legislation ins span, .legislation ins a {
-    text-decoration: underline
-}
-.legislation del {
-    text-decoration: line-through
-}
-.legislation del span, .legislation del a {
-    text-decoration: line-through
-}
-.legislation span.spc {
-    float: left;
-    margin-left: -3em;
-    text-decoration: none
-}
-.legislation dd {
-    margin-left: 40px
-}
-.legislation ul.list {
-    margin-left: 0em
-}
-.legislation ul.list li {
-    margin-left: 3em
-}
-.legislation ul.list li.bull {
-    list-style-type: disc;
-    display: list-item;
-    margin-left: 1.2em;
-    padding-left: 2em
-}
-.legislation dfn.def-term {
-    font-weight: bold;
-    font-style: normal
-}
-.legislation .deleted {
-    font-weight: normal;
-    font-style: italic;
+ tr.history-item p {
+    text-align: left;
+    vertical-align: top;
     font-size: 0.8em
 }
-.legislation em.emphasis {
-    font-style: normal;
-    text-decoration: none
+ div.history {
+    padding-left: 2.6087em
 }
-.legislation p.cf {
-    font-size: 0.8em;
-    clear: left;
-    padding-top: 0.25em
+ div.cover table,
+ div.cover-reprint table {
+    border-collapse: collapse;
+    margin: auto
 }
-.legislation p.history-note {
-    font-size: 0.8em;
-    padding-top: 0.25em
-}
-.legislation p.empowering-prov {
-    font-size: 0.8em;
-    text-align: right;
-    padding: 0;
+ div.cover table td,
+ div.cover-reprint table td {
     white-space: nowrap
 }
-.legislation p.authorisation {
-    font-size: 0.8em;
-    text-align: center;
-    font-style: italic
-}
-.legislation p.term-list {
-    font-size: 0.8em;
-    padding-top: 0.25em
-}
-.legislation p.eqn-line {
-    text-align: center
-}
-.legislation p.made-at, .legislation p.made-present {
-    text-align: center;
-    margin-top: 2em
-}
-.legislation p.statutory-regulation-number {
-    margin-top: 0;
-    text-align: right;
-    font-weight: bold
-}
-.legislation p.reprint-sr-number, .legislation p.proclamation {
-    text-align: center
-}
-.legislation p.member {
-    font-style: italic;
-    text-align: center;
-    margin-bottom: 1em;
-    padding-top: 1em
-}
-.legislation p.repnote {
-    margin-top: 2em;
-    font-size: 1.5em;
-    text-align: center
-}
-.legislation p.sop-date {
-    margin-top: 1em
-}
-.legislation p.billref {
-    font-size: 1.5em;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 2em
-}
-.legislation p.schedule-deleted, .legislation p.part-deleted, .legislation p.head1-deleted, .legislation p.schedule-group-deleted, .legislation p.schedule-amendments-group1-deleted {
-    text-align: center
-}
-.legislation p.subpart-deleted, .legislation p.conv-deleted, .legislation p.head2-deleted {
-    text-align: center
-}
-.legislation p.toc-ird-crosshead, .legislation p.toc-head4 {
-    font-weight: bold
-}
-.legislation p.crosshead-deleted, .legislation p.ird-crosshead-deleted, .legislation p.head3-deleted, .legislation p.head4-deleted {
-    text-align: center
-}
-.legislation span.changeable {
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    font-size: 0.8em
-}
-.legislation span.leader, .legislation span.field {
-    white-space: nowrap
-}
-.legislation span.leader {
-    font-size: 0.8em
-}
-.legislation dt.variable {
-    float: left;
-    clear: left
-}
-.legislation div, .legislation table, .legislation li {
-    clear: left;
-    white-space: normal;
-}
-.legislation p.footnote {
-    font-size: 0.8em
-}
-.legislation hr.footnotes {
-    float: left;
-    width: 30%
-}
-.legislation sup.footnote-ref {
-    font-size: 0.6em
-}
-.legislation div.readers-notes {
-    font-size: 0.8em;
-    padding-top: 0.25em
-}
-.legislation div.crest {
-    text-align: center
-}
-.legislation img.crest {
-    width: 147px;
-    height: 141px
-}
-.legislation hr {
-    padding: 0;
-    border: none;
-    width: 40%;
-    height: 1px;
-    color: black;
-    background-color: black;
-    margin-top: 2em;
-    border: 0;
-    clear: left
-}
-.legislation blockquote span.q, .legislation cite span.q {
-    font-weight: normal;
-    font-style: normal;
-    letter-spacing: 1px
-}
-.legislation sup, .legislation sub {
-    font-size: 0.6em
-}
-.legislation sup {
-    vertical-align: super;
-    line-height: 1em
-}
-.legislation sub {
-    vertical-align: sub;
-    line-height: 1em
-}
-.legislation span.fraction, .legislation sup.numerator, .legislation sub.denominator {
-    font-size: 0.6em
-}
-.legislation span.fraction sup.numerator, .legislation span.fraction sub.denominator {
-    font-size: 1em
-}
-.legislation div.cover {
-   // margin-right: -1.5em
-}
-.legislation h1.title {
-    font-size: 1.7em;
-    font-weight: bold;
-    margin-top: 2em;
-    text-align: center;
-    padding:0
-}
-.legislation table.cover-properties {
-    text-align: center;
-    width: 100%
-}
-.legislation table.cover-properties td {
-    padding: 0 0.5em;
-    width: 50%;
-    text-align: left
-}
-.legislation table.cover-properties td.date-of-assent, .legislation table.cover-properties td.document-type, .legislation table.cover-properties td.commencement {
+ div.cover table td.text-align-right,
+ div.cover-reprint table td.text-align-right {
     text-align: right
 }
-.legislation p.reprint-date {
-    font-size: 1.5em;
-    text-align: center;
-    font-weight: bold
+ div.cover table td.text-align-left,
+ div.cover-reprint table td.text-align-left {
+    text-align: left
 }
-.legislation div.long-title {
-    font-weight: bold;
-    margin-top: 1em
+ div.cover table div.document-type,
+ div.cover table div.assent-date-title,
+ div.cover table div.commencement-title,
+ div.cover-reprint table div.document-type,
+ div.cover-reprint table div.assent-date-title,
+ div.cover-reprint table div.commencement-title {
+    text-align: right
 }
-.legislation div.long-title h1, .legislation div.long-title h2, .legislation div.long-title h3, .legislation div.long-title h4, .legislation div.long-title h5, .legislation div.long-title h6 {
-    font-weight: bold
+ div.cover table div.legislation-number,
+ div.cover table div.assent-date,
+ div.cover table div.commencement,
+ div.cover-reprint table div.legislation-number,
+ div.cover-reprint table div.assent-date,
+ div.cover-reprint table div.commencement {
+    text-align: left
 }
-.legislation div.long-title p.history-note {
-    font-weight: normal
+ div.cover p.sr-number,
+ div.cover p.skeleton-sr-number {
+    text-align: center
 }
-.legislation p.enactment {
-    font-weight: bold;
-    margin-top: 1em
+ div.cover p.li-number,
+ div.cover p.skeleton-li-number {
+    text-align: center
 }
-.legislation h6.cover-reprint-note {
-    font-size: 0.8em;
-    font-weight: bold
+ div.skeleton-reg p.li-number,
+ div.skeleton-reg p.skeleton-li-number,
+ div.skeleton-act p.li-number,
+ div.skeleton-act p.skeleton-li-number {
+    text-align: center
 }
-.legislation hr.cover-reprint-note {
-    width: 100%
+ div.skeleton-reg p.sr-number,
+ div.skeleton-reg p.skeleton-sr-number,
+ div.skeleton-act p.sr-number,
+ div.skeleton-act p.skeleton-sr-number {
+    text-align: center
 }
-.legislation div.cover-reprint-note {
-    font-size: 0.8em
+ div.amend {
+    background: #E5E5E5;
+    border: 1px solid #E5E5E5
 }
-.legislation p.admin-office {
-    line-height: 100%;
-    font-size: 0.8em
+ div.amend p.text:first-child {
+    background: #E5E5E5
 }
-.legislation div.reprint p.admin-office {
-    font-weight: bold;
-    padding-top: 0.25em
+ div.amend div.preamble {
+    margin-left: -2.6087em
 }
-.legislation p.title-former {
-    text-align: center;
-    margin-top: 0.5em
+ div.amend div.preamble div.preamble-block {
+    margin-left: 0
 }
-.legislation div.example {
+ div.amend div.preamble div.subprov {
+    padding-left: 2.6087em
+}
+ div.amend div.preamble-block {
+    margin-left: -2.6087em
+}
+ div.amend div.subprov {
+    padding-left: 2.6087em
+}
+ div.amend div.prov div.subprov {
+    padding-left: 0
+}
+ div.increment-1.amend {
+    margin-left: 2.6087em;
+    padding-left: 0
+}
+ div.increment-2.amend {
+    margin-left: 5.21739em;
+    padding-left: 0
+}
+ div.increment-3.amend {
+    margin-left: 7.82609em;
+    padding-left: 0
+}
+ div.instrument-amend {
+    margin-left: 2.26087em;
+    margin-right: 2.26087em;
+    background: #E5E5E5
+}
+ div.instrument-amend p.text:first-child {
+    background: #E5E5E5
+}
+ div.instrument-amend.noquote {
+    background: white
+}
+ div.instrument-amend.noquote p.text:first-child {
+    background: white
+}
+ div.instrument-amend.noquote div.amend p.text:first-child {
+    background: #E5E5E5
+}
+ div.instrument-amend.increment-1 {
+    margin-left: 4.86957em
+}
+ div.instrument-amend.increment-2 {
+    margin-left: 7.47826em
+}
+ div.instrument-amend.increment-3 {
+    margin-left: 10.08696em
+}
+ div.end-reprint-note {
+    margin-top: 1.33em
+}
+ div.example {
     width: 100%;
     border-bottom: thin solid black;
     border-top: thin solid black;
-    margin: 0.5em 0
+    margin: 1em 0;
+    padding: 1em 0
 }
-.legislation div.example p, .legislation div.example h1, .legislation div.example h2, .legislation div.example h3, .legislation div.example h4, .legislation div.example h5 {
+ div.example p,
+ div.example h1,
+ div.example h2,
+ div.example h3,
+ div.example h4,
+ div.example h5,
+ div.example h6 {
     font-family: Arial, sans-serif;
+    text-align: justify;
     font-size: 0.8em
 }
-.legislation div.example h6 {
-    font-family: Arial, sans-serif;
-    font-size: 0.8em
-}
-.legislation div.example h6.heading {
-    font-family: Arial, sans-serif;
+ div.example h6.example {
+    margin-top: 0;
+    text-align: left;
     font-weight: bold
 }
-.legislation div.example h6.subheading {
-    font-family: Arial, sans-serif;
-    font-style: italic
-}
-.legislation h2.contents {
-    text-align: center;
-    margin-top: 1em;
-    font-size: 1.2em;
-    font-weight: bold;
-    padding:0
-}
-.legislation div.contents-note p {
-    text-align: center;
+ div.example h6.subheading {
+    text-align: left;
     font-size: 0.8em;
     font-style: italic
 }
-.legislation div.contents div.key {
+ div.example strong {
+    font-family: Arial, sans-serif
+}
+ div.cover-reprint-note {
+    width: 100%;
+    border-bottom: thin solid black;
+    border-top: thin solid black;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    font-size: 0.8em
+}
+ div.cover-reprint-note h6,
+ div.cover-reprint-note p,
+ div.cover-reprint-note div,
+ div.cover-reprint-note a {
+    font-size: inherit
+}
+ div.cover-reprint-note p.text {
+    text-align: justify
+}
+ div.cover-reprint-note p.admin-office {
+    margin-top: 1.11111em;
+    font-weight: bold;
+    text-align: justify
+}
+ div.cover-reprint-note h6.cover-reprint-note {
     text-align: left;
-    margin-top: 0
-}
-.legislation div.external-document {
-    margin-top: 1em
-}
-.legislation div.schedule-forms h4.head4, .legislation div.schedule-amendments h4.head4 {
-    text-align: center;
-    margin-top: 2em;
-    margin-left: 0;
-    font-size: 1.5em;
-    font-weight: bold;
-    padding:0
-}
-.legislation div.schedule-forms h4.head4, .legislation div.schedule-amendments h4.head4 {
-    font-weight: normal;
-    font-style: normal
-}
-.legislation div.prov ul.prov li p.headless {
-    margin-top: 1em;
-    margin-bottom: 1.5em
-}
-.legislation h2.part, .legislation h2.schedule, .legislation h2.head1, .legislation h2.schedule-group, .legislation h2.schedule-amendments-group1, .legislation h2.sop-part {
-    text-align: center;
-    margin-top: 2em;
-    margin-left: 0;
-    font-size: 1.5em;
-    font-weight: bold;
-    padding:0
-}
-.legislation h2.schedule-amendments-group1 {
-    font-weight: normal
-}
-.legislation h2.head1 {
-    font-weight: normal;
-    font-style: normal
-}
-.legislation h2.schedule-group {
-    margin-top: 1em
-}
-.legislation h3.subpart, .legislation h3.conv, .legislation h3.head2, .legislation h3.sop-subpart, .legislation h3.heading {
-    text-align: center;
-    margin-top: 1em;
-    padding:0
-}
-.legislation h3.subpart {
-    font-size: 1.5em
-}
-.legislation div.schedule-provisions h2.part {
-    font-weight: normal
-}
-.legislation div.schedule-provisions h3.subpart {
-    font-style: italic
-}
-.legislation h3.conv {
+    font-size: 0.8em;
     font-weight: bold
 }
-.legislation h3.head2 {
-    font-style: italic
+ div.readers-notes {
+    font-size: 0.8em
 }
-.legislation h4.preamble {
-    font-weight: bold;
-    font-size: 1.5em;
-    margin-top: 1.5em
+ div.label-para {
+    padding-left: 2.6087em
 }
-.legislation h5.preamble-block {
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation h6.preamble-headlev2 {
-    font-style: italic;
-    margin-top: 0.5em
-}
-.legislation h6.preamble-headlev3 {
-    margin-top: 0.5em
-}
-.legislation h4.crosshead, .legislation h4.ird-crosshead, .legislation h4.head3, .legislation h4.head4 {
-    text-align: center;
-    font-style: italic;
-    margin-top: 1em;
-    margin-left: 0;
-    padding:0
-}
-.legislation div.schedule-provisions h4.crosshead {
-    font-style: normal
-}
-.legislation h4.ird-crosshead, .legislation h4.head4 {
-    font-weight: bold
-}
-.legislation h4.head3, .legislation div.form h4.head4 {
-    font-style: normal
-}
-.legislation ul.label-only, .legislation div.label-only {
+ div.label-para h5.label-para span.label {
     float: left;
-    margin-top: -1.25em;
-    margin-bottom: 1.25em
-}
-.legislation ul.label-only-last {
-    float: left;
-    margin-top: -1.25em;
-    margin-bottom: 0em
-}
-.legislation h4.form {
-    text-align: center;
-    margin-top: 1em;
-    margin-left: 0;
-    padding:0
-}
-.legislation h4.form span.label a.label {
-    margin-left: 0;
-    float: none
-}
-.legislation p.headless span.label {
-    float: left;
-    margin-left: -3em;
+    margin-left: -2.6087em;
     padding-right: 0.5em
 }
-.legislation p.form-deleted {
-    text-align: center
+ div.label-para h5 {
+    display: inline;
+    font-size: inherit
 }
-.legislation h5.prov, .legislation h5.head5, .legislation h5.head6, .legislation h5.schedule-amendments-group2 {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation h5.head6 {
-    font-style: italic;
-    font-weight: normal
-}
-.legislation ul.head5 {
-    font-weight: bold
-}
-.legislation h6.subprov-crosshead, .legislation h6.schedule-amendments-group3 {
-    font-style: italic;
-    margin-top: 1em
-}
-.legislation h6.label-para-crosshead {
-    font-style: italic;
-    margin-top: 0.5em
-}
-.legislation h6.figure {
-    text-align: center;
-    font-weight: bold;
-    margin-left: 0;
-    padding:0;
-    margin-top: 0.5em
-}
-.legislation h6.figure span.label {
-    margin-left: 0;
-    float: none
-}
-.legislation p.figure-deleted, .legislation div.graphic {
-    text-align: center
-}
-.legislation img.graphic-inline {
+ div.label-para div.labelled-label {
     display: inline
 }
-.legislation div.graphic-text, .legislation span.graphic-text {
-    display: none
+ div.label-para div.labelled-label p.text {
+    display: inline
 }
-.legislation div.table th {
-    vertical-align: bottom;
-    text-align: left;
-    padding: 0 0.1em
+ div.label-para div.history {
+    padding-left: 0
 }
-.legislation div.table th[align="center"] {
+ div.ocboxnote {
+    border: thin solid black;
+    margin-bottom: 0.86957em;
     text-align: center
 }
-.legislation div.table th[align="right"] {
-    text-align: right
+ div.ocboxnote div.para {
+    margin: 0.86957em
 }
-.legislation div.table td {
-    vertical-align: top;
-    padding: 0.1em 0.1em
+ div.commentary blockquote.quote {
+    font-size: 1em;
+    padding-left: 2.6087em;
+    padding-right: 2.6087em
 }
-.legislation div.tableLeft, .legislation div.tableRight, .legislation div.tableCentered, .legislation div.tableFullWidth {
-    margin: 0.6em 0
+ div.commentary blockquote.quote div.history {
+    padding-left: 0
 }
-.legislation div.tableRight {
-    text-align: right
+ div.comm-lev1 {
+    padding-left: 0
 }
-.legislation div.tableRight div.tableContainer {
-    text-align: left;
-    display: -moz-inline-stack;
-    display: inline-block;
-    zoom: 1;
-    *display: inline
+ div.comm-lev2 {
+    padding-left: 0
 }
-.legislation div.tableCentered {
+ div.comm-lev3 {
+    padding-left: 0
+}
+ div.comm-appendix {
+    padding-left: 0
+}
+ div.key {
     text-align: center
 }
-.legislation div.tableCentered div.tableContainer {
-    text-align: left;
-    display: -moz-inline-stack;
-    display: inline-block;
-    zoom: 1;
-    *display: inline
+ div.key div.para {
+    text-align: inherit
 }
-.legislation div.tableFullWidth table {
+ div.key-cowh {
+    text-align: left
+}
+ div.key-cowh h2.key {
+    text-align: inherit
+}
+ div.key-cowh div.para {
+    text-align: inherit
+}
+ div.graphic {
+    display: block;
+    text-align: center
+}
+ img.graphic-inline {
+    height: 1em
+}
+ table img.graphic {
     width: 100%
 }
-.legislation h6.table {
-    margin-top: 0.5em
+ div.graphic-text {
+    display: none
 }
-.legislation table.frame-none, .legislation table.frame-default {
-    border-collapse: collapse;
-    border: none
-}
-.legislation table.frame-topbot {
-    border-collapse: collapse;
-    border-top: thin solid black;
-    border-bottom: thin solid black
-}
-.legislation table.frame-top {
-    border-collapse: collapse;
-    border-top: thin solid black
-}
-.legislation table.frame-bottom {
-    border-collapse: collapse;
-    border-bottom: thin solid black
-}
-.legislation table.frame-sides {
-    border-collapse: collapse;
-    border-left: thin solid black;
-    border-right: thin solid black
-}
-.legislation td.rowsep, .legislation th.rowsep {
-    border-bottom: thin solid black
-}
-.legislation div.flush-left-margin-1 {
-    margin-left: -3em
-}
-.legislation div.flush-left-margin-2 {
-    margin-left: -6em
-}
-.legislation div.flush-left-margin-3 {
-    margin-left: -9em
-}
-.legislation div.flush-left-margin-4 {
-    margin-left: -12em
-}
-.legislation blockquote {
-    margin: 0;
-    padding: 0
-}
-.legislation blockquote h6.subprov-crosshead {
-    margin-left: 2.5em
-}
-.legislation blockquote ul h6.subprov-crosshead {
-    margin-left: 0
-}
-.legislation blockquote p.labelled {
-    margin-left: 3em
-}
-.legislation blockquote ul p.labelled {
-    margin-left: 0
-}
-.legislation blockquote.amend-increment-1 {
-    margin-left: 3em
-}
-.legislation blockquote.amend-increment-2 {
-    margin-left: 6em
-}
-.legislation blockquote.amend-increment-3 {
-    margin-left: 9em
-}
-.legislation blockquote.quote-indented {
-    margin-left: 1em
-}
-.legislation blockquote.instrument-amend-default-margin {
-    margin-left: 2.5em;
-    margin-right: 2.5em
-}
-.legislation blockquote.amend h2.first, .legislation blockquote.amend h3.first, .legislation blockquote.amend h4.first, .legislation blockquote.amend h5.first, .legislation blockquote.amend h6.first {
-    margin-top: 0
-}
-.legislation div.commentary blockquote.quote {
-    margin-left: 3em;
-    margin-right: 3em
-}
-.legislation div.assent-block p.para {
-    font-style: italic
-}
-.legislation div.assent-block p.sig-officer {
-    font-size: 0.8em;
-    font-style: italic
-}
-.legislation div.assent-block p.sig-para {
-    font-style: italic;
-    margin-top: 1.5em;
-    line-height: 1.5em
-}
-.legislation div.signature-block p.sig-para {
-    margin-top: 2em
-}
-.legislation p.sig-officer {
-    margin-top: 3em
-}
-.legislation hr.sig-separator {
-    text-align: center;
-    width: 4em;
-    margin-top: 1em
-}
-.legislation h2.leg-history {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    font-weight: bold;
-    text-align: left
-}
-.legislation table.leg-history td {
-    vertical-align: top;
-    font-size: 0.8em
-}
-.legislation table.leg-history td.date, .legislation table.leg-history td.date-text {
-    padding-right: 1em
-}
-.legislation h4.reprint-index {
-    font-weight: bold
-}
-.legislation h5.reprint-notes {
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation h6.reprint-note {
-    font-style: italic;
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation p.reprint-amend {
-    font-size: 0.8em
-}
-.legislation table.empowering-prov-layout {
-    width: 100%;
-    margin-top: 2em
-}
-.legislation table.empowering-prov-layout td {
-    vertical-align: top
-}
-.legislation table.header tr {
-    vertical-align: top
-}
-.legislation table.empowering-prov-layout tr td h2, .legislation table.empowering-prov-layout tr td h3, .legislation table.empowering-prov-layout tr td h4, .legislation table.empowering-prov-layout tr td h5, .legislation table.empowering-prov-layout tr td h6 {
-    padding-right: 0;
-    margin-top: 0
-}
-.legislation table.empowering-prov-layout td.empowering-prov {
-    width: 3.5em
-}
-.legislation p.gg {
-    text-align: center;
-    margin-top: 3em
-}
-.legislation div.promulgation {
-    margin-top: 1em
-}
-.legislation div.promulgation p.admin-office {
-    font-size: 0.8em
-}
-.legislation p.issue-authority, .legislation p.gazette-date {
-    font-size: 0.8em
-}
-.legislation h2.made {
-    font-size: 1.5em;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 2em
-}
-.legislation h2.regulation-type {
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation div.pursuant p.para {
-    margin-top: 1em
-}
-.legislation div.end h2.explnote, .legislation div.skeleton-reg-end h2.explnote {
-    margin-top: 1.5em
-}
-.legislation div.ocboxnote {
-    border: thin solid black;
-    margin-top: 0.5em
-}
-.legislation div.ocboxnote p {
-    margin: 1em
-}
-.legislation p.billtype {
-    text-align: center;
-    line-height: 100%;
-    margin-top: 1em
-}
-.legislation h2.explnote {
-    font-size: 1.5em;
+ div.footnotes:before {
     margin-top: 2em;
-    text-align: center;
-    font-weight: bold
+    content: "\00a0";
+    display: block;
+    height: 1px;
+    width: 20%;
+    border-top-style: solid;
+    border-top-width: thin
 }
-.legislation h3.explnote-group {
-    margin-top: 1em;
-    text-align: center;
-    font-weight: bold;
-    line-height: 100%
+ div.footnote {
+    font-size: 1em;
+    padding-left: 1.04348em
 }
-.legislation h4.explnote-subgroup {
-    margin-top: 1em;
-    text-align: center;
-    font-style: italic
-}
-.legislation h2.explnote-part {
-    margin-top: 1em;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.5em
-}
-.legislation h3.explnote-subpart {
-    margin-top: 1em;
-    text-align: center;
-    font-size: 1.5em
-}
-.legislation h4.explnote-crosshead {
-    margin-top: 1em;
-    text-align: center;
-    font-style: italic
-}
-.legislation h4.explnote-ird-crosshead {
-    margin-top: 1em;
-    text-align: center;
-    font-style: italic;
-    font-weight: bold
-}
-.legislation h5.explnote-subhead1 {
-    margin-top: 1em;
-    font-weight: bold
-}
-.legislation h5.explnote-subhead2 {
-    margin-top: 1em;
-    font-style: italic
-}
-.legislation h2.explnote-ris {
-    margin-top: 1em;
-    text-align: center;
-    font-weight: bold;
-    line-height: 100%
-}
-.legislation p.bill-identifier {
-    text-align: center;
-    font-size: 0.8em;
-    line-height: 100%
-}
-.legislation em.intref {
-    font-style: italic
-}
-.legislation h2.billnote {
-    margin-top: 2em;
-    text-align: center
-}
-.legislation h2.commentary {
-    font-size: 1.5em;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 2em
-}
-.legislation h3.comm-lev1, .legislation h3.comm-appendix {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation h4.comm-lev2 {
-    font-weight: bold;
-    margin-top: 1em
-}
-.legislation h5.comm-lev3 {
-    font-style: italic;
-    margin-top: 1em
-}
-.legislation div.key, .legislation div.key2 {
-    margin-top: 1em;
-    text-align: center
-}
-.legislation div.key1 {
-    margin-top: 1em;
-    text-align: left
-}
-.legislation div.key h2.heading, .legislation div.key1 h2.heading, .legislation div.key2 h2.heading {
-    font-size: 1.5em;
-    font-weight: bold
-}
-.legislation div.key h3.subheading, .legislation div.key1 h3.subheading, .legislation div.key2 h3.subheading {
-    font-weight: bold
-}
-.legislation p.omitted-provs {
-    margin-top: 1em;
-    font-size: 1.7em;
-    text-align: center
-}
-.legislation span.omitted-prov {
-    padding-right: 3em
-}
-.legislation div.commentary blockquote.quote {
-    font-size: 0.8em
-}
-.legislation p.house, .legislation h1.sop-heading, .legislation p.sop-date {
-    text-align: center;
-    font-size: 1.7em;
-    font-weight: bold;
-    line-height: 100%
-}
-.legislation h1.sop-heading {
-    font-size: 1.9em;
-    margin-top: 1em
-}
-.legislation h2.sop-body {
-    text-align: center;
-    font-style: italic
-}
-.legislation p.motion {
-    margin-top: 1em
-}
-.legislation p.clause-ref {
-    margin-top: 1em;
-    font-style: italic
-}
-.legislation div.sop-newenact {
-    margin: 0 2.5em
-}
-.legislation div.sop-newenact p.enactment {
-    margin-top: 0.5em
-}
-.legislation hr.sop-body {
-    width: 6em
-}
-.legislation .taggedheading {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.1em;
-    color: #666;
-    background: #eff4fa;
-    padding: 0.5em 0 0.3em 15px;
-    border-bottom: 1px solid #ccc;
-    margin: 2.5em 0 1em 0
-}
-.legislation div:first-child .taggedheading {
-    margin: 0.5em 0 1em 0
-}
-.legislation div.toc-amend {
-    margin-left: 3em
-}
-.legislation div.toc {
-    margin: 0 3em;
-    font-size: 0.9em
-}
-.legislation div.toc p {
-    padding-top: 0
-}
-.legislation div.toc ul {
-    margin-left: 0
-}
-.legislation div.toc p.skeleton-act, .legislation div.toc p.skeleton-reg {
-    margin-top: 1.1em;
-    padding-top: 0;
-    text-align: center;
-    font-weight: bold
-}
-.legislation div.toc p.schedule, .legislation div.toc p.part, .legislation div.toc p.schedule-group, .legislation div.toc p.schedule-amendments-group1, .legislation div.toc p.head1 {
-    text-align: center;
-    margin-top: 0.75em;
-    margin-left: 0;
-    font-weight: bold;
-    padding:0
-}
-.legislation div.toc p.schedule a.label, .legislation div.toc p.part a.label, .legislation div.toc p.schedule-group a.label, .legislation div.toc p.schedule-amendments-group1 a.label, .legislation div.toc p.head1 a.label {
-    margin-left: 0;
-    float: none
-}
-.legislation div.toc p.schedule-amendments-group1 {
-    font-weight: normal
-}
-.legislation div.toc p.sop-part {
-    font-size: 1.2em
-}
-.legislation div.toc p.subpart, .legislation div.toc p.conv, .legislation div.toc p.head2 {
-    text-align: center;
-    margin-top: 1em;
-    padding:0
-}
-.legislation div.toc p.subpart a.label, .legislation div.toc p.conv a.label {
-    margin-left: 0;
-    float: none
-}
-.legislation div.toc p.head2 {
-    font-style: italic
-}
-.legislation div.toc p.head2 a.label {
-    margin-left: 0;
-    float: none
-}
-.legislation div.toc p.conv {
-    font-weight: bold
-}
-.legislation div.toc p.preamble {
-    font-weight: normal
-}
-.legislation div.toc p.crosshead, .legislation div.toc p.ird-crosshead, .legislation div.toc p.head3, .legislation div.toc p.head4 {
-    text-align: center;
-    font-style: italic;
-    margin-top: 1em;
-    margin-left: 0;
-    padding:0
-}
-.legislation div.toc p.crosshead a.toc span.spc, .legislation div.toc p.ird-crosshead a.toc span.spc, .legislation div.toc p.head3 a.toc span.spc, .legislation div.toc p.head4 a.toc span.spc {
-    float: none;
-    margin: 0;
-    text-decoration: none
-}
-.legislation div.toc p.ird-crosshead, .legislation div.toc p.head4 {
-    font-weight: bold
-}
-.legislation div.toc p.form {
-    text-align: left;
-    margin-top: 0.5em;
-    margin-left: 0
-}
-.legislation div.toc p.form a.label {
+ div.footnote sup.footnote-label span.label {
     float: left;
-    margin-left: -3em;
+    margin-left: -1.04348em;
     padding-right: 0.5em
 }
-.legislation div.toc p.head6 {
-    font-style: italic;
+ div.footnote p.footnote-body {
+    font-size: inherit
+}
+ div.footnote p.foonotnote {
+    font-size: inherit
+}
+ div.footnote div.history {
+    padding-left: 0
+}
+ table,
+ caption,
+ tbody,
+ tfoot,
+ thead,
+ tr,
+ th,
+ td {
+    text-align: left
+}
+ table {
+    border-collapse: collapse;
+    border-color: black;
+    margin-top: 0.34783em
+}
+ table td,
+ table th {
     font-weight: normal
 }
-.legislation div.toc p.figure {
+ table.table-align-right {
+    margin-left: auto
+}
+ table.table-align-center {
+    margin-left: auto;
+    margin-right: auto
+}
+ table.outside-top-no {
+    border-top-style: none
+}
+ table.outside-left-no {
+    border-left-style: none
+}
+ table.frame-default,
+ table.frame-all {
+    border-style: solid
+}
+ table.frame-bottom {
+    border-bottom-style: solid
+}
+ table.frame-none {
+    border-style: none
+}
+ table.frame-sides {
+    border-right-style: solid;
+    border-left-style: solid
+}
+ table.frame-top {
+    border-top-style: solid
+}
+ table.frame-topbot {
+    border-top-style: solid;
+    border-bottom-style: solid
+}
+ table.frame-nottop {
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid
+}
+ table.frame-notbot {
+    border-top-style: solid;
+    border-right-style: solid;
+    border-left-style: solid
+}
+ table.outside-top-yes {
+    border-top-style: solid
+}
+ table.outside-left-yes {
+    border-left-style: solid
+}
+ table.frame-default.border-top-double,
+ table.frame-all.border-top-double {
+    border-top-style: double
+}
+ table.frame-default.border-bottom-double,
+ table.frame-all.border-bottom-double {
+    border-bottom-style: double
+}
+ table.frame-default.border-right-double,
+ table.frame-all.border-right-double {
+    border-right-style: double
+}
+ table.frame-default.border-left-double,
+ table.frame-all.border-left-double {
+    border-left-style: double
+}
+ table.frame-bottom.border-bottom-double {
+    border-bottom-style: double
+}
+ table.frame-sides.border-right-double {
+    border-right-style: double
+}
+ table.frame-sides.border-left-double {
+    border-left-style: double
+}
+ table.frame-top.border-top-double {
+    border-top-style: double
+}
+ table.frame-topbot.border-top-double {
+    border-top-style: double
+}
+ table.frame-topbot.border-bottom-double {
+    border-bottom-style: double
+}
+ table.frame-nottop.border-right-double {
+    border-right-style: double
+}
+ table.frame-nottop.border-bottom-double {
+    border-bottom-style: double
+}
+ table.frame-nottop.border-left-double {
+    border-left-style: double
+}
+ table.frame-notbot.border-top-double {
+    border-top-style: double
+}
+ table.frame-notbot.border-right-double {
+    border-right-style: double
+}
+ table.frame-notbot.border-left-double {
+    border-left-style: double
+}
+ table.outside-top-yes.border-top-double {
+    border-top-style: double
+}
+ table.outside-left-yes.border-left-double {
+    border-left-style: double
+}
+ table.frame-default.border-top-dashed,
+ table.frame-all.border-top-dashed {
+    border-top-style: dashed
+}
+ table.frame-default.border-bottom-dashed,
+ table.frame-all.border-bottom-dashed {
+    border-bottom-style: dashed
+}
+ table.frame-default.border-right-dashed,
+ table.frame-all.border-right-dashed {
+    border-right-style: dashed
+}
+ table.frame-default.border-left-dashed,
+ table.frame-all.border-left-dashed {
+    border-left-style: dashed
+}
+ table.frame-bottom.border-bottom-dashed {
+    border-bottom-style: dashed
+}
+ table.frame-sides.border-right-dashed {
+    border-right-style: dashed
+}
+ table.frame-sides.border-left-dashed {
+    border-left-style: dashed
+}
+ table.frame-top.border-top-dashed {
+    border-top-style: dashed
+}
+ table.frame-topbot.border-top-dashed {
+    border-top-style: dashed
+}
+ table.frame-topbot.border-bottom-dashed {
+    border-bottom-style: dashed
+}
+ table.frame-nottop.border-right-dashed {
+    border-right-style: dashed
+}
+ table.frame-nottop.border-bottom-dashed {
+    border-bottom-style: dashed
+}
+ table.frame-nottop.border-left-dashed {
+    border-left-style: dashed
+}
+ table.frame-notbot.border-top-dashed {
+    border-top-style: dashed
+}
+ table.frame-notbot.border-right-dashed {
+    border-right-style: dashed
+}
+ table.frame-notbot.border-left-dashed {
+    border-left-style: dashed
+}
+ table.outside-top-yes.border-top-dashed {
+    border-top-style: dashed
+}
+ table.outside-left-yes.border-left-dashed {
+    border-left-style: dashed
+}
+ table.frame-default.border-top-dotted,
+ table.frame-all.border-top-dotted {
+    border-top-style: dotted
+}
+ table.frame-default.border-bottom-dotted,
+ table.frame-all.border-bottom-dotted {
+    border-bottom-style: dotted
+}
+ table.frame-default.border-right-dotted,
+ table.frame-all.border-right-dotted {
+    border-right-style: dotted
+}
+ table.frame-default.border-left-dotted,
+ table.frame-all.border-left-dotted {
+    border-left-style: dotted
+}
+ table.frame-bottom.border-bottom-dotted {
+    border-bottom-style: dotted
+}
+ table.frame-sides.border-right-dotted {
+    border-right-style: dotted
+}
+ table.frame-sides.border-left-dotted {
+    border-left-style: dotted
+}
+ table.frame-top.border-top-dotted {
+    border-top-style: dotted
+}
+ table.frame-topbot.border-top-dotted {
+    border-top-style: dotted
+}
+ table.frame-topbot.border-bottom-dotted {
+    border-bottom-style: dotted
+}
+ table.frame-nottop.border-right-dotted {
+    border-right-style: dotted
+}
+ table.frame-nottop.border-bottom-dotted {
+    border-bottom-style: dotted
+}
+ table.frame-nottop.border-left-dotted {
+    border-left-style: dotted
+}
+ table.frame-notbot.border-top-dotted {
+    border-top-style: dotted
+}
+ table.frame-notbot.border-right-dotted {
+    border-right-style: dotted
+}
+ table.frame-notbot.border-left-dotted {
+    border-left-style: dotted
+}
+ table.outside-top-yes.border-top-dotted {
+    border-top-style: dotted
+}
+ table.outside-left-yes.border-left-dotted {
+    border-left-style: dotted
+}
+ table.clmarg-1 th,
+ table.clmarg-1 td {
+    padding-left: 0.08696em
+}
+ table.crmarg-1 th,
+ table.crmarg-1 td {
+    padding-right: 0.08696em
+}
+ table.ctmarg-1 th,
+ table.ctmarg-1 td {
+    padding-top: 0.08696em
+}
+ table.cbmarg-1 th,
+ table.cbmarg-1 td {
+    padding-bottom: 0.08696em
+}
+ table.clmarg-2 th,
+ table.clmarg-2 td {
+    padding-left: 0.17391em
+}
+ table.crmarg-2 th,
+ table.crmarg-2 td {
+    padding-right: 0.17391em
+}
+ table.ctmarg-2 th,
+ table.ctmarg-2 td {
+    padding-top: 0.17391em
+}
+ table.cbmarg-2 th,
+ table.cbmarg-2 td {
+    padding-bottom: 0.17391em
+}
+ table.clmarg-3 th,
+ table.clmarg-3 td {
+    padding-left: 0.26087em
+}
+ table.crmarg-3 th,
+ table.crmarg-3 td {
+    padding-right: 0.26087em
+}
+ table.ctmarg-3 th,
+ table.ctmarg-3 td {
+    padding-top: 0.26087em
+}
+ table.cbmarg-3 th,
+ table.cbmarg-3 td {
+    padding-bottom: 0.26087em
+}
+ table.clmarg-4 th,
+ table.clmarg-4 td {
+    padding-left: 0.34783em
+}
+ table.crmarg-4 th,
+ table.crmarg-4 td {
+    padding-right: 0.34783em
+}
+ table.ctmarg-4 th,
+ table.ctmarg-4 td {
+    padding-top: 0.34783em
+}
+ table.cbmarg-4 th,
+ table.cbmarg-4 td {
+    padding-bottom: 0.34783em
+}
+ table.clmarg-5 th,
+ table.clmarg-5 td {
+    padding-left: 0.43478em
+}
+ table.crmarg-5 th,
+ table.crmarg-5 td {
+    padding-right: 0.43478em
+}
+ table.ctmarg-5 th,
+ table.ctmarg-5 td {
+    padding-top: 0.43478em
+}
+ table.cbmarg-5 th,
+ table.cbmarg-5 td {
+    padding-bottom: 0.43478em
+}
+ table.clmarg-6 th,
+ table.clmarg-6 td {
+    padding-left: 0.52174em
+}
+ table.crmarg-6 th,
+ table.crmarg-6 td {
+    padding-right: 0.52174em
+}
+ table.ctmarg-6 th,
+ table.ctmarg-6 td {
+    padding-top: 0.52174em
+}
+ table.cbmarg-6 th,
+ table.cbmarg-6 td {
+    padding-bottom: 0.52174em
+}
+ table.clmarg-7 th,
+ table.clmarg-7 td {
+    padding-left: 0.6087em
+}
+ table.crmarg-7 th,
+ table.crmarg-7 td {
+    padding-right: 0.6087em
+}
+ table.ctmarg-7 th,
+ table.ctmarg-7 td {
+    padding-top: 0.6087em
+}
+ table.cbmarg-7 th,
+ table.cbmarg-7 td {
+    padding-bottom: 0.6087em
+}
+ table.clmarg-8 th,
+ table.clmarg-8 td {
+    padding-left: 0.69565em
+}
+ table.crmarg-8 th,
+ table.crmarg-8 td {
+    padding-right: 0.69565em
+}
+ table.ctmarg-8 th,
+ table.ctmarg-8 td {
+    padding-top: 0.69565em
+}
+ table.cbmarg-8 th,
+ table.cbmarg-8 td {
+    padding-bottom: 0.69565em
+}
+ table.clmarg-9 th,
+ table.clmarg-9 td {
+    padding-left: 0.78261em
+}
+ table.crmarg-9 th,
+ table.crmarg-9 td {
+    padding-right: 0.78261em
+}
+ table.ctmarg-9 th,
+ table.ctmarg-9 td {
+    padding-top: 0.78261em
+}
+ table.cbmarg-9 th,
+ table.cbmarg-9 td {
+    padding-bottom: 0.78261em
+}
+ table.clmarg-10 th,
+ table.clmarg-10 td {
+    padding-left: 0.86957em
+}
+ table.crmarg-10 th,
+ table.crmarg-10 td {
+    padding-right: 0.86957em
+}
+ table.ctmarg-10 th,
+ table.ctmarg-10 td {
+    padding-top: 0.86957em
+}
+ table.cbmarg-10 th,
+ table.cbmarg-10 td {
+    padding-bottom: 0.86957em
+}
+ table.clmarg-11 th,
+ table.clmarg-11 td {
+    padding-left: 0.95652em
+}
+ table.crmarg-11 th,
+ table.crmarg-11 td {
+    padding-right: 0.95652em
+}
+ table.ctmarg-11 th,
+ table.ctmarg-11 td {
+    padding-top: 0.95652em
+}
+ table.cbmarg-11 th,
+ table.cbmarg-11 td {
+    padding-bottom: 0.95652em
+}
+ table.clmarg-12 th,
+ table.clmarg-12 td {
+    padding-left: 1.04348em
+}
+ table.crmarg-12 th,
+ table.crmarg-12 td {
+    padding-right: 1.04348em
+}
+ table.ctmarg-12 th,
+ table.ctmarg-12 td {
+    padding-top: 1.04348em
+}
+ table.cbmarg-12 th,
+ table.cbmarg-12 td {
+    padding-bottom: 1.04348em
+}
+ th.rowsep-no,
+ td.rowsep-no {
+    border-bottom-style: none
+}
+ th.colsep-no,
+ td.colsep-no {
+    border-right-style: none
+}
+ th.rowsep-yes,
+ td.rowsep-yes {
+    border-bottom-style: solid
+}
+ th.colsep-yes,
+ td.colsep-yes {
+    border-right-style: solid
+}
+ th.rowstart-yes,
+ td.rowstart-yes {
+    border-top-style: solid
+}
+ th.colstart-yes,
+ td.colstart-yes {
+    border-left-style: solid
+}
+ th.rowsep-yes.border-bottom-double,
+ td.rowsep-yes.border-bottom-double {
+    border-bottom-style: double
+}
+ th.colsep-yes.border-right-double,
+ td.colsep-yes.border-right-double {
+    border-right-style: double
+}
+ th.rowstart-yes.border-top-double,
+ td.rowstart-yes.border-top-double {
+    border-top-style: double
+}
+ th.colstart-yes.border-left-double,
+ td.colstart-yes.border-left-double {
+    border-left-style: double
+}
+ th.rowsep-yes.border-bottom-dashed,
+ td.rowsep-yes.border-bottom-dashed {
+    border-bottom-style: dashed
+}
+ th.colsep-yes.border-right-dashed,
+ td.colsep-yes.border-right-dashed {
+    border-right-style: dashed
+}
+ th.rowstart-yes.border-top-dashed,
+ td.rowstart-yes.border-top-dashed {
+    border-top-style: dashed
+}
+ th.colstart-yes.border-left-dashed,
+ td.colstart-yes.border-left-dashed {
+    border-left-style: dashed
+}
+ th.rowsep-yes.border-bottom-dotted,
+ td.rowsep-yes.border-bottom-dotted {
+    border-bottom-style: dotted
+}
+ th.colsep-yes.border-right-dotted,
+ td.colsep-yes.border-right-dotted {
+    border-right-style: dotted
+}
+ th.rowstart-yes.border-top-dotted,
+ td.rowstart-yes.border-top-dotted {
+    border-top-style: dotted
+}
+ th.colstart-yes.border-left-dotted,
+ td.colstart-yes.border-left-dotted {
+    border-left-style: dotted
+}
+ table,
+ th,
+ td {
+    border-width: 1.3px
+}
+ table.border-left-color-maroon,
+ th.border-left-color-maroon,
+ td.border-left-color-maroon {
+    border-left-color: maroon
+}
+ table.border-right-color-maroon,
+ th.border-right-color-maroon,
+ td.border-right-color-maroon {
+    border-right-color: maroon
+}
+ table.border-bottom-color-maroon,
+ th.border-bottom-color-maroon,
+ td.border-bottom-color-maroon {
+    border-bottom-color: maroon
+}
+ table.border-top-color-maroon,
+ th.border-top-color-maroon,
+ td.border-top-color-maroon {
+    border-top-color: maroon
+}
+ table.border-left-color-teal,
+ th.border-left-color-teal,
+ td.border-left-color-teal {
+    border-left-color: teal
+}
+ table.border-right-color-teal,
+ th.border-right-color-teal,
+ td.border-right-color-teal {
+    border-right-color: teal
+}
+ table.border-bottom-color-teal,
+ th.border-bottom-color-teal,
+ td.border-bottom-color-teal {
+    border-bottom-color: teal
+}
+ table.border-top-color-teal,
+ th.border-top-color-teal,
+ td.border-top-color-teal {
+    border-top-color: teal
+}
+ table.border-left-color-blue,
+ th.border-left-color-blue,
+ td.border-left-color-blue {
+    border-left-color: blue
+}
+ table.border-right-color-blue,
+ th.border-right-color-blue,
+ td.border-right-color-blue {
+    border-right-color: blue
+}
+ table.border-bottom-color-blue,
+ th.border-bottom-color-blue,
+ td.border-bottom-color-blue {
+    border-bottom-color: blue
+}
+ table.border-top-color-blue,
+ th.border-top-color-blue,
+ td.border-top-color-blue {
+    border-top-color: blue
+}
+ table.border-left-color-navy,
+ th.border-left-color-navy,
+ td.border-left-color-navy {
+    border-left-color: navy
+}
+ table.border-right-color-navy,
+ th.border-right-color-navy,
+ td.border-right-color-navy {
+    border-right-color: navy
+}
+ table.border-bottom-color-navy,
+ th.border-bottom-color-navy,
+ td.border-bottom-color-navy {
+    border-bottom-color: navy
+}
+ table.border-top-color-navy,
+ th.border-top-color-navy,
+ td.border-top-color-navy {
+    border-top-color: navy
+}
+ table.border-left-color-red,
+ th.border-left-color-red,
+ td.border-left-color-red {
+    border-left-color: red
+}
+ table.border-right-color-red,
+ th.border-right-color-red,
+ td.border-right-color-red {
+    border-right-color: red
+}
+ table.border-bottom-color-red,
+ th.border-bottom-color-red,
+ td.border-bottom-color-red {
+    border-bottom-color: red
+}
+ table.border-top-color-red,
+ th.border-top-color-red,
+ td.border-top-color-red {
+    border-top-color: red
+}
+ table.border-left-color-brown,
+ th.border-left-color-brown,
+ td.border-left-color-brown {
+    border-left-color: #A52A2A
+}
+ table.border-right-color-brown,
+ th.border-right-color-brown,
+ td.border-right-color-brown {
+    border-right-color: #A52A2A
+}
+ table.border-bottom-color-brown,
+ th.border-bottom-color-brown,
+ td.border-bottom-color-brown {
+    border-bottom-color: #A52A2A
+}
+ table.border-top-color-brown,
+ th.border-top-color-brown,
+ td.border-top-color-brown {
+    border-top-color: #A52A2A
+}
+ table.border-left-color-olive,
+ th.border-left-color-olive,
+ td.border-left-color-olive {
+    border-left-color: olive
+}
+ table.border-right-color-olive,
+ th.border-right-color-olive,
+ td.border-right-color-olive {
+    border-right-color: olive
+}
+ table.border-bottom-color-olive,
+ th.border-bottom-color-olive,
+ td.border-bottom-color-olive {
+    border-bottom-color: olive
+}
+ table.border-top-color-olive,
+ th.border-top-color-olive,
+ td.border-top-color-olive {
+    border-top-color: olive
+}
+ table.border-left-color-green,
+ th.border-left-color-green,
+ td.border-left-color-green {
+    border-left-color: green
+}
+ table.border-right-color-green,
+ th.border-right-color-green,
+ td.border-right-color-green {
+    border-right-color: green
+}
+ table.border-bottom-color-green,
+ th.border-bottom-color-green,
+ td.border-bottom-color-green {
+    border-bottom-color: green
+}
+ table.border-top-color-green,
+ th.border-top-color-green,
+ td.border-top-color-green {
+    border-top-color: green
+}
+ table.border-left-color-aqua,
+ th.border-left-color-aqua,
+ td.border-left-color-aqua {
+    border-left-color: aqua
+}
+ table.border-right-color-aqua,
+ th.border-right-color-aqua,
+ td.border-right-color-aqua {
+    border-right-color: aqua
+}
+ table.border-bottom-color-aqua,
+ th.border-bottom-color-aqua,
+ td.border-bottom-color-aqua {
+    border-bottom-color: aqua
+}
+ table.border-top-color-aqua,
+ th.border-top-color-aqua,
+ td.border-top-color-aqua {
+    border-top-color: aqua
+}
+ table.border-left-color-violet,
+ th.border-left-color-violet,
+ td.border-left-color-violet {
+    border-left-color: #EE82EE
+}
+ table.border-right-color-violet,
+ th.border-right-color-violet,
+ td.border-right-color-violet {
+    border-right-color: #EE82EE
+}
+ table.border-bottom-color-violet,
+ th.border-bottom-color-violet,
+ td.border-bottom-color-violet {
+    border-bottom-color: #EE82EE
+}
+ table.border-top-color-violet,
+ th.border-top-color-violet,
+ td.border-top-color-violet {
+    border-top-color: #EE82EE
+}
+ table.border-left-color-yellow,
+ th.border-left-color-yellow,
+ td.border-left-color-yellow {
+    border-left-color: yellow
+}
+ table.border-right-color-yellow,
+ th.border-right-color-yellow,
+ td.border-right-color-yellow {
+    border-right-color: yellow
+}
+ table.border-bottom-color-yellow,
+ th.border-bottom-color-yellow,
+ td.border-bottom-color-yellow {
+    border-bottom-color: yellow
+}
+ table.border-top-color-yellow,
+ th.border-top-color-yellow,
+ td.border-top-color-yellow {
+    border-top-color: yellow
+}
+ table.border-left-color-orange,
+ th.border-left-color-orange,
+ td.border-left-color-orange {
+    border-left-color: orange
+}
+ table.border-right-color-orange,
+ th.border-right-color-orange,
+ td.border-right-color-orange {
+    border-right-color: orange
+}
+ table.border-bottom-color-orange,
+ th.border-bottom-color-orange,
+ td.border-bottom-color-orange {
+    border-bottom-color: orange
+}
+ table.border-top-color-orange,
+ th.border-top-color-orange,
+ td.border-top-color-orange {
+    border-top-color: orange
+}
+ table.border-left-color-lime,
+ th.border-left-color-lime,
+ td.border-left-color-lime {
+    border-left-color: lime
+}
+ table.border-right-color-lime,
+ th.border-right-color-lime,
+ td.border-right-color-lime {
+    border-right-color: lime
+}
+ table.border-bottom-color-lime,
+ th.border-bottom-color-lime,
+ td.border-bottom-color-lime {
+    border-bottom-color: lime
+}
+ table.border-top-color-lime,
+ th.border-top-color-lime,
+ td.border-top-color-lime {
+    border-top-color: lime
+}
+ table.border-left-color-gray,
+ th.border-left-color-gray,
+ td.border-left-color-gray {
+    border-left-color: gray
+}
+ table.border-right-color-gray,
+ th.border-right-color-gray,
+ td.border-right-color-gray {
+    border-right-color: gray
+}
+ table.border-bottom-color-gray,
+ th.border-bottom-color-gray,
+ td.border-bottom-color-gray {
+    border-bottom-color: gray
+}
+ table.border-top-color-gray,
+ th.border-top-color-gray,
+ td.border-top-color-gray {
+    border-top-color: gray
+}
+ table.border-left-color-white,
+ th.border-left-color-white,
+ td.border-left-color-white {
+    border-left-color: white
+}
+ table.border-right-color-white,
+ th.border-right-color-white,
+ td.border-right-color-white {
+    border-right-color: white
+}
+ table.border-bottom-color-white,
+ th.border-bottom-color-white,
+ td.border-bottom-color-white {
+    border-bottom-color: white
+}
+ table.border-top-color-white,
+ th.border-top-color-white,
+ td.border-top-color-white {
+    border-top-color: white
+}
+ table.border-top-width-2,
+ th.border-top-width-2,
+ td.border-top-width-2 {
+    border-top-width: 2.6px
+}
+ table.border-bottom-width-2,
+ th.border-bottom-width-2,
+ td.border-bottom-width-2 {
+    border-bottom-width: 2.6px
+}
+ table.border-left-width-2,
+ th.border-left-width-2,
+ td.border-left-width-2 {
+    border-left-width: 2.6px
+}
+ table.border-right-width-2,
+ th.border-right-width-2,
+ td.border-right-width-2 {
+    border-right-width: 2.6px
+}
+ table.border-top-width-3,
+ th.border-top-width-3,
+ td.border-top-width-3 {
+    border-top-width: 3.9px
+}
+ table.border-bottom-width-3,
+ th.border-bottom-width-3,
+ td.border-bottom-width-3 {
+    border-bottom-width: 3.9px
+}
+ table.border-left-width-3,
+ th.border-left-width-3,
+ td.border-left-width-3 {
+    border-left-width: 3.9px
+}
+ table.border-right-width-3,
+ th.border-right-width-3,
+ td.border-right-width-3 {
+    border-right-width: 3.9px
+}
+ table.border-top-width-4,
+ th.border-top-width-4,
+ td.border-top-width-4 {
+    border-top-width: 5.2px
+}
+ table.border-bottom-width-4,
+ th.border-bottom-width-4,
+ td.border-bottom-width-4 {
+    border-bottom-width: 5.2px
+}
+ table.border-left-width-4,
+ th.border-left-width-4,
+ td.border-left-width-4 {
+    border-left-width: 5.2px
+}
+ table.border-right-width-4,
+ th.border-right-width-4,
+ td.border-right-width-4 {
+    border-right-width: 5.2px
+}
+ table.border-top-width-5,
+ th.border-top-width-5,
+ td.border-top-width-5 {
+    border-top-width: 6.5px
+}
+ table.border-bottom-width-5,
+ th.border-bottom-width-5,
+ td.border-bottom-width-5 {
+    border-bottom-width: 6.5px
+}
+ table.border-left-width-5,
+ th.border-left-width-5,
+ td.border-left-width-5 {
+    border-left-width: 6.5px
+}
+ table.border-right-width-5,
+ th.border-right-width-5,
+ td.border-right-width-5 {
+    border-right-width: 6.5px
+}
+ table.align-left,
+ thead.align-left,
+ tbody.align-left,
+ th.align-left,
+ tr.align-left,
+ td.align-left {
+    text-align: left
+}
+ table.align-center,
+ thead.align-center,
+ tbody.align-center,
+ th.align-center,
+ tr.align-center,
+ td.align-center {
+    text-align: center
+}
+ table.align-right,
+ thead.align-right,
+ tbody.align-right,
+ th.align-right,
+ tr.align-right,
+ td.align-right {
+    text-align: right
+}
+ table.valign-top,
+ thead.valign-top,
+ tbody.valign-top,
+ th.valign-top,
+ tr.valign-top,
+ td.valign-top {
+    vertical-align: top
+}
+ table.valign-middle,
+ thead.valign-middle,
+ tbody.valign-middle,
+ th.valign-middle,
+ tr.valign-middle,
+ td.valign-middle {
+    vertical-align: middle
+}
+ table.valign-bottom,
+ thead.valign-bottom,
+ tbody.valign-bottom,
+ th.valign-bottom,
+ tr.valign-bottom,
+ td.valign-bottom {
+    vertical-align: bottom
+}
+ div.skeleton-act h1.title {
+    margin-top: 2em
+}
+ div.skeleton-reg h1.title {
+    margin-top: 2em
+}
+ div.reprint-note {
+    padding-left: 2.6087em
+}
+ div.reprint-note h6.reprint-note span.label {
+    float: left;
+    margin-left: -2.17391em;
+    padding-right: 0.5em
+}
+ div.reprint-note div.history {
+    padding-left: 0
+}
+ div.explnote {
+    padding-left: 0
+}
+ div.explnote-crosshead {
+    margin-top: 0.8em;
     text-align: center;
-    font-weight: bold;
-    margin-left: 0;
-    padding:0;
-    margin-top: 0.5em
+    font-size: 1.2em;
+    font-style: italic
 }
-.legislation div.toc p.figure a.label {
-    margin-left: 0;
-    float: none
+ p.proclamation {
+    margin-top: 0.86957em;
+    text-align: center;
+    font-size: inherit
 }
-.legislation div.toc p.leg-history {
-    margin-top: 0.5em;
-    margin-bottom: 1em;
-    font-weight: normal;
+ div.promulgation {
+    margin-top: 0.87em;
+    text-align: center
+}
+ div.sop-newenact {
+    padding-left: 2.26087em;
+    padding-right: 2.26087em
+}
+ div.sop-newenact div.history {
+    padding-left: 0
+}
+ div.sop-para {
+    padding-left: 0
+}
+ h4[class^="option-"] {
     text-align: left;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding-left: 0
 }
-.legislation div.toc p.omitted-provs {
+ div.crest {
+    text-align: center
+}
+ div.head5 div.history {
+    padding-left: 0
+}
+ div.head6 div.history {
+    padding-left: 0
+}
+ div.para {
+    margin-top: 0.34783em;
+    text-align: left
+}
+ div.para+div.para {
+    display: block
+}
+ div.version-information {
+    text-align: right
+}
+ div.table.fontsize6 {
+    font-size: 0.52174em
+}
+ div.table.fontsize6_5 {
+    font-size: 0.56522em
+}
+ div.table.fontsize7 {
+    font-size: 0.6087em
+}
+ div.table.fontsize7_5 {
+    font-size: 0.65217em
+}
+ div.table.fontsize8 {
+    font-size: 0.69565em
+}
+ div.table.fontsize8_5 {
+    font-size: 0.73913em
+}
+ div.table.fontsize9 {
+    font-size: 0.78261em
+}
+ div.table.fontsize9_5 {
+    font-size: 0.82609em
+}
+ div.table.fontsize10 {
+    font-size: 0.86957em
+}
+ div.table.fontsize10_5 {
+    font-size: 0.91304em
+}
+ div.table.fontsize11 {
+    font-size: 0.95652em
+}
+ div.table.fontsize11_5 {
+    font-size: 1em
+}
+ div.table.fontsize12 {
+    font-size: 1.04348em
+}
+ div.table.fontsize12_5 {
+    font-size: 1.08696em
+}
+ div.table.fontsize13 {
+    font-size: 1.13043em
+}
+ div.table.fontsize13_5 {
+    font-size: 1.17391em
+}
+ div.table.fontsize14 {
+    font-size: 1.21739em
+}
+ div.table.fontsize6.leading6 {
+    line-height: 1em
+}
+ div.table.fontsize6.leading6_5 {
+    line-height: 1.08333em
+}
+ div.table.fontsize6.leading7 {
+    line-height: 1.16667em
+}
+ div.table.fontsize6.leading7_5 {
+    line-height: 1.25em
+}
+ div.table.fontsize6.leading8 {
+    line-height: 1.33333em
+}
+ div.table.fontsize6.leading8_5 {
+    line-height: 1.41667em
+}
+ div.table.fontsize6.leading9 {
+    line-height: 1.5em
+}
+ div.table.fontsize6.leading9_5 {
+    line-height: 1.58333em
+}
+ div.table.fontsize6.leading10 {
+    line-height: 1.66667em
+}
+ div.table.fontsize6.leading10_5 {
+    line-height: 1.75em
+}
+ div.table.fontsize6.leading11 {
+    line-height: 1.83333em
+}
+ div.table.fontsize6.leading11_5 {
+    line-height: 1.91667em
+}
+ div.table.fontsize6.leading12 {
+    line-height: 2em
+}
+ div.table.fontsize6.leading12_5 {
+    line-height: 2.08333em
+}
+ div.table.fontsize6.leading13 {
+    line-height: 2.16667em
+}
+ div.table.fontsize6.leading13_5 {
+    line-height: 2.25em
+}
+ div.table.fontsize6.leading14 {
+    line-height: 2.33333em
+}
+ div.table.fontsize6_5.leading6 {
+    line-height: 0.92308em
+}
+ div.table.fontsize6_5.leading6_5 {
+    line-height: 1em
+}
+ div.table.fontsize6_5.leading7 {
+    line-height: 1.07692em
+}
+ div.table.fontsize6_5.leading7_5 {
+    line-height: 1.15385em
+}
+ div.table.fontsize6_5.leading8 {
+    line-height: 1.23077em
+}
+ div.table.fontsize6_5.leading8_5 {
+    line-height: 1.30769em
+}
+ div.table.fontsize6_5.leading9 {
+    line-height: 1.38462em
+}
+ div.table.fontsize6_5.leading9_5 {
+    line-height: 1.46154em
+}
+ div.table.fontsize6_5.leading10 {
+    line-height: 1.53846em
+}
+ div.table.fontsize6_5.leading10_5 {
+    line-height: 1.61538em
+}
+ div.table.fontsize6_5.leading11 {
+    line-height: 1.69231em
+}
+ div.table.fontsize6_5.leading11_5 {
+    line-height: 1.76923em
+}
+ div.table.fontsize6_5.leading12 {
+    line-height: 1.84615em
+}
+ div.table.fontsize6_5.leading12_5 {
+    line-height: 1.92308em
+}
+ div.table.fontsize6_5.leading13 {
+    line-height: 2em
+}
+ div.table.fontsize6_5.leading13_5 {
+    line-height: 2.07692em
+}
+ div.table.fontsize6_5.leading14 {
+    line-height: 2.15385em
+}
+ div.table.fontsize7.leading6 {
+    line-height: 0.85714em
+}
+ div.table.fontsize7.leading6_5 {
+    line-height: 0.92857em
+}
+ div.table.fontsize7.leading7 {
+    line-height: 1em
+}
+ div.table.fontsize7.leading7_5 {
+    line-height: 1.07143em
+}
+ div.table.fontsize7.leading8 {
+    line-height: 1.14286em
+}
+ div.table.fontsize7.leading8_5 {
+    line-height: 1.21429em
+}
+ div.table.fontsize7.leading9 {
+    line-height: 1.28571em
+}
+ div.table.fontsize7.leading9_5 {
+    line-height: 1.35714em
+}
+ div.table.fontsize7.leading10 {
+    line-height: 1.42857em
+}
+ div.table.fontsize7.leading10_5 {
+    line-height: 1.5em
+}
+ div.table.fontsize7.leading11 {
+    line-height: 1.57143em
+}
+ div.table.fontsize7.leading11_5 {
+    line-height: 1.64286em
+}
+ div.table.fontsize7.leading12 {
+    line-height: 1.71429em
+}
+ div.table.fontsize7.leading12_5 {
+    line-height: 1.78571em
+}
+ div.table.fontsize7.leading13 {
+    line-height: 1.85714em
+}
+ div.table.fontsize7.leading13_5 {
+    line-height: 1.92857em
+}
+ div.table.fontsize7.leading14 {
+    line-height: 2em
+}
+ div.table.fontsize7_5.leading6 {
+    line-height: 0.8em
+}
+ div.table.fontsize7_5.leading6_5 {
+    line-height: 0.86667em
+}
+ div.table.fontsize7_5.leading7 {
+    line-height: 0.93333em
+}
+ div.table.fontsize7_5.leading7_5 {
+    line-height: 1em
+}
+ div.table.fontsize7_5.leading8 {
+    line-height: 1.06667em
+}
+ div.table.fontsize7_5.leading8_5 {
+    line-height: 1.13333em
+}
+ div.table.fontsize7_5.leading9 {
+    line-height: 1.2em
+}
+ div.table.fontsize7_5.leading9_5 {
+    line-height: 1.26667em
+}
+ div.table.fontsize7_5.leading10 {
+    line-height: 1.33333em
+}
+ div.table.fontsize7_5.leading10_5 {
+    line-height: 1.4em
+}
+ div.table.fontsize7_5.leading11 {
+    line-height: 1.46667em
+}
+ div.table.fontsize7_5.leading11_5 {
+    line-height: 1.53333em
+}
+ div.table.fontsize7_5.leading12 {
+    line-height: 1.6em
+}
+ div.table.fontsize7_5.leading12_5 {
+    line-height: 1.66667em
+}
+ div.table.fontsize7_5.leading13 {
+    line-height: 1.73333em
+}
+ div.table.fontsize7_5.leading13_5 {
+    line-height: 1.8em
+}
+ div.table.fontsize7_5.leading14 {
+    line-height: 1.86667em
+}
+ div.table.fontsize8.leading6 {
+    line-height: 0.75em
+}
+ div.table.fontsize8.leading6_5 {
+    line-height: 0.8125em
+}
+ div.table.fontsize8.leading7 {
+    line-height: 0.875em
+}
+ div.table.fontsize8.leading7_5 {
+    line-height: 0.9375em
+}
+ div.table.fontsize8.leading8 {
+    line-height: 1em
+}
+ div.table.fontsize8.leading8_5 {
+    line-height: 1.0625em
+}
+ div.table.fontsize8.leading9 {
+    line-height: 1.125em
+}
+ div.table.fontsize8.leading9_5 {
+    line-height: 1.1875em
+}
+ div.table.fontsize8.leading10 {
+    line-height: 1.25em
+}
+ div.table.fontsize8.leading10_5 {
+    line-height: 1.3125em
+}
+ div.table.fontsize8.leading11 {
+    line-height: 1.375em
+}
+ div.table.fontsize8.leading11_5 {
+    line-height: 1.4375em
+}
+ div.table.fontsize8.leading12 {
+    line-height: 1.5em
+}
+ div.table.fontsize8.leading12_5 {
+    line-height: 1.5625em
+}
+ div.table.fontsize8.leading13 {
+    line-height: 1.625em
+}
+ div.table.fontsize8.leading13_5 {
+    line-height: 1.6875em
+}
+ div.table.fontsize8.leading14 {
+    line-height: 1.75em
+}
+ div.table.fontsize8_5.leading6 {
+    line-height: 0.70588em
+}
+ div.table.fontsize8_5.leading6_5 {
+    line-height: 0.76471em
+}
+ div.table.fontsize8_5.leading7 {
+    line-height: 0.82353em
+}
+ div.table.fontsize8_5.leading7_5 {
+    line-height: 0.88235em
+}
+ div.table.fontsize8_5.leading8 {
+    line-height: 0.94118em
+}
+ div.table.fontsize8_5.leading8_5 {
+    line-height: 1em
+}
+ div.table.fontsize8_5.leading9 {
+    line-height: 1.05882em
+}
+ div.table.fontsize8_5.leading9_5 {
+    line-height: 1.11765em
+}
+ div.table.fontsize8_5.leading10 {
+    line-height: 1.17647em
+}
+ div.table.fontsize8_5.leading10_5 {
+    line-height: 1.23529em
+}
+ div.table.fontsize8_5.leading11 {
+    line-height: 1.29412em
+}
+ div.table.fontsize8_5.leading11_5 {
+    line-height: 1.35294em
+}
+ div.table.fontsize8_5.leading12 {
+    line-height: 1.41176em
+}
+ div.table.fontsize8_5.leading12_5 {
+    line-height: 1.47059em
+}
+ div.table.fontsize8_5.leading13 {
+    line-height: 1.52941em
+}
+ div.table.fontsize8_5.leading13_5 {
+    line-height: 1.58824em
+}
+ div.table.fontsize8_5.leading14 {
+    line-height: 1.64706em
+}
+ div.table.fontsize9.leading6 {
+    line-height: 0.66667em
+}
+ div.table.fontsize9.leading6_5 {
+    line-height: 0.72222em
+}
+ div.table.fontsize9.leading7 {
+    line-height: 0.77778em
+}
+ div.table.fontsize9.leading7_5 {
+    line-height: 0.83333em
+}
+ div.table.fontsize9.leading8 {
+    line-height: 0.88889em
+}
+ div.table.fontsize9.leading8_5 {
+    line-height: 0.94444em
+}
+ div.table.fontsize9.leading9 {
+    line-height: 1em
+}
+ div.table.fontsize9.leading9_5 {
+    line-height: 1.05556em
+}
+ div.table.fontsize9.leading10 {
+    line-height: 1.11111em
+}
+ div.table.fontsize9.leading10_5 {
+    line-height: 1.16667em
+}
+ div.table.fontsize9.leading11 {
+    line-height: 1.22222em
+}
+ div.table.fontsize9.leading11_5 {
+    line-height: 1.27778em
+}
+ div.table.fontsize9.leading12 {
+    line-height: 1.33333em
+}
+ div.table.fontsize9.leading12_5 {
+    line-height: 1.38889em
+}
+ div.table.fontsize9.leading13 {
+    line-height: 1.44444em
+}
+ div.table.fontsize9.leading13_5 {
+    line-height: 1.5em
+}
+ div.table.fontsize9.leading14 {
+    line-height: 1.55556em
+}
+ div.table.fontsize9_5.leading6 {
+    line-height: 0.63158em
+}
+ div.table.fontsize9_5.leading6_5 {
+    line-height: 0.68421em
+}
+ div.table.fontsize9_5.leading7 {
+    line-height: 0.73684em
+}
+ div.table.fontsize9_5.leading7_5 {
+    line-height: 0.78947em
+}
+ div.table.fontsize9_5.leading8 {
+    line-height: 0.84211em
+}
+ div.table.fontsize9_5.leading8_5 {
+    line-height: 0.89474em
+}
+ div.table.fontsize9_5.leading9 {
+    line-height: 0.94737em
+}
+ div.table.fontsize9_5.leading9_5 {
+    line-height: 1em
+}
+ div.table.fontsize9_5.leading10 {
+    line-height: 1.05263em
+}
+ div.table.fontsize9_5.leading10_5 {
+    line-height: 1.10526em
+}
+ div.table.fontsize9_5.leading11 {
+    line-height: 1.15789em
+}
+ div.table.fontsize9_5.leading11_5 {
+    line-height: 1.21053em
+}
+ div.table.fontsize9_5.leading12 {
+    line-height: 1.26316em
+}
+ div.table.fontsize9_5.leading12_5 {
+    line-height: 1.31579em
+}
+ div.table.fontsize9_5.leading13 {
+    line-height: 1.36842em
+}
+ div.table.fontsize9_5.leading13_5 {
+    line-height: 1.42105em
+}
+ div.table.fontsize9_5.leading14 {
+    line-height: 1.47368em
+}
+ div.table.fontsize10.leading6 {
+    line-height: 0.6em
+}
+ div.table.fontsize10.leading6_5 {
+    line-height: 0.65em
+}
+ div.table.fontsize10.leading7 {
+    line-height: 0.7em
+}
+ div.table.fontsize10.leading7_5 {
+    line-height: 0.75em
+}
+ div.table.fontsize10.leading8 {
+    line-height: 0.8em
+}
+ div.table.fontsize10.leading8_5 {
+    line-height: 0.85em
+}
+ div.table.fontsize10.leading9 {
+    line-height: 0.9em
+}
+ div.table.fontsize10.leading9_5 {
+    line-height: 0.95em
+}
+ div.table.fontsize10.leading10 {
+    line-height: 1em
+}
+ div.table.fontsize10.leading10_5 {
+    line-height: 1.05em
+}
+ div.table.fontsize10.leading11 {
+    line-height: 1.1em
+}
+ div.table.fontsize10.leading11_5 {
+    line-height: 1.15em
+}
+ div.table.fontsize10.leading12 {
+    line-height: 1.2em
+}
+ div.table.fontsize10.leading12_5 {
+    line-height: 1.25em
+}
+ div.table.fontsize10.leading13 {
+    line-height: 1.3em
+}
+ div.table.fontsize10.leading13_5 {
+    line-height: 1.35em
+}
+ div.table.fontsize10.leading14 {
+    line-height: 1.4em
+}
+ div.table.fontsize10_5.leading6 {
+    line-height: 0.57143em
+}
+ div.table.fontsize10_5.leading6_5 {
+    line-height: 0.61905em
+}
+ div.table.fontsize10_5.leading7 {
+    line-height: 0.66667em
+}
+ div.table.fontsize10_5.leading7_5 {
+    line-height: 0.71429em
+}
+ div.table.fontsize10_5.leading8 {
+    line-height: 0.7619em
+}
+ div.table.fontsize10_5.leading8_5 {
+    line-height: 0.80952em
+}
+ div.table.fontsize10_5.leading9 {
+    line-height: 0.85714em
+}
+ div.table.fontsize10_5.leading9_5 {
+    line-height: 0.90476em
+}
+ div.table.fontsize10_5.leading10 {
+    line-height: 0.95238em
+}
+ div.table.fontsize10_5.leading10_5 {
+    line-height: 1em
+}
+ div.table.fontsize10_5.leading11 {
+    line-height: 1.04762em
+}
+ div.table.fontsize10_5.leading11_5 {
+    line-height: 1.09524em
+}
+ div.table.fontsize10_5.leading12 {
+    line-height: 1.14286em
+}
+ div.table.fontsize10_5.leading12_5 {
+    line-height: 1.19048em
+}
+ div.table.fontsize10_5.leading13 {
+    line-height: 1.2381em
+}
+ div.table.fontsize10_5.leading13_5 {
+    line-height: 1.28571em
+}
+ div.table.fontsize10_5.leading14 {
+    line-height: 1.33333em
+}
+ div.table.fontsize11.leading6 {
+    line-height: 0.54545em
+}
+ div.table.fontsize11.leading6_5 {
+    line-height: 0.59091em
+}
+ div.table.fontsize11.leading7 {
+    line-height: 0.63636em
+}
+ div.table.fontsize11.leading7_5 {
+    line-height: 0.68182em
+}
+ div.table.fontsize11.leading8 {
+    line-height: 0.72727em
+}
+ div.table.fontsize11.leading8_5 {
+    line-height: 0.77273em
+}
+ div.table.fontsize11.leading9 {
+    line-height: 0.81818em
+}
+ div.table.fontsize11.leading9_5 {
+    line-height: 0.86364em
+}
+ div.table.fontsize11.leading10 {
+    line-height: 0.90909em
+}
+ div.table.fontsize11.leading10_5 {
+    line-height: 0.95455em
+}
+ div.table.fontsize11.leading11 {
+    line-height: 1em
+}
+ div.table.fontsize11.leading11_5 {
+    line-height: 1.04545em
+}
+ div.table.fontsize11.leading12 {
+    line-height: 1.09091em
+}
+ div.table.fontsize11.leading12_5 {
+    line-height: 1.13636em
+}
+ div.table.fontsize11.leading13 {
+    line-height: 1.18182em
+}
+ div.table.fontsize11.leading13_5 {
+    line-height: 1.22727em
+}
+ div.table.fontsize11.leading14 {
+    line-height: 1.27273em
+}
+ div.table.fontsize11_5.leading6 {
+    line-height: 0.52174em
+}
+ div.table.fontsize11_5.leading6_5 {
+    line-height: 0.56522em
+}
+ div.table.fontsize11_5.leading7 {
+    line-height: 0.6087em
+}
+ div.table.fontsize11_5.leading7_5 {
+    line-height: 0.65217em
+}
+ div.table.fontsize11_5.leading8 {
+    line-height: 0.69565em
+}
+ div.table.fontsize11_5.leading8_5 {
+    line-height: 0.73913em
+}
+ div.table.fontsize11_5.leading9 {
+    line-height: 0.78261em
+}
+ div.table.fontsize11_5.leading9_5 {
+    line-height: 0.82609em
+}
+ div.table.fontsize11_5.leading10 {
+    line-height: 0.86957em
+}
+ div.table.fontsize11_5.leading10_5 {
+    line-height: 0.91304em
+}
+ div.table.fontsize11_5.leading11 {
+    line-height: 0.95652em
+}
+ div.table.fontsize11_5.leading11_5 {
+    line-height: 1em
+}
+ div.table.fontsize11_5.leading12 {
+    line-height: 1.04348em
+}
+ div.table.fontsize11_5.leading12_5 {
+    line-height: 1.08696em
+}
+ div.table.fontsize11_5.leading13 {
+    line-height: 1.13043em
+}
+ div.table.fontsize11_5.leading13_5 {
+    line-height: 1.17391em
+}
+ div.table.fontsize11_5.leading14 {
+    line-height: 1.21739em
+}
+ div.table.fontsize12.leading6 {
+    line-height: 0.5em
+}
+ div.table.fontsize12.leading6_5 {
+    line-height: 0.54167em
+}
+ div.table.fontsize12.leading7 {
+    line-height: 0.58333em
+}
+ div.table.fontsize12.leading7_5 {
+    line-height: 0.625em
+}
+ div.table.fontsize12.leading8 {
+    line-height: 0.66667em
+}
+ div.table.fontsize12.leading8_5 {
+    line-height: 0.70833em
+}
+ div.table.fontsize12.leading9 {
+    line-height: 0.75em
+}
+ div.table.fontsize12.leading9_5 {
+    line-height: 0.79167em
+}
+ div.table.fontsize12.leading10 {
+    line-height: 0.83333em
+}
+ div.table.fontsize12.leading10_5 {
+    line-height: 0.875em
+}
+ div.table.fontsize12.leading11 {
+    line-height: 0.91667em
+}
+ div.table.fontsize12.leading11_5 {
+    line-height: 0.95833em
+}
+ div.table.fontsize12.leading12 {
+    line-height: 1em
+}
+ div.table.fontsize12.leading12_5 {
+    line-height: 1.04167em
+}
+ div.table.fontsize12.leading13 {
+    line-height: 1.08333em
+}
+ div.table.fontsize12.leading13_5 {
+    line-height: 1.125em
+}
+ div.table.fontsize12.leading14 {
+    line-height: 1.16667em
+}
+ div.table.fontsize12_5.leading6 {
+    line-height: 0.48em
+}
+ div.table.fontsize12_5.leading6_5 {
+    line-height: 0.52em
+}
+ div.table.fontsize12_5.leading7 {
+    line-height: 0.56em
+}
+ div.table.fontsize12_5.leading7_5 {
+    line-height: 0.6em
+}
+ div.table.fontsize12_5.leading8 {
+    line-height: 0.64em
+}
+ div.table.fontsize12_5.leading8_5 {
+    line-height: 0.68em
+}
+ div.table.fontsize12_5.leading9 {
+    line-height: 0.72em
+}
+ div.table.fontsize12_5.leading9_5 {
+    line-height: 0.76em
+}
+ div.table.fontsize12_5.leading10 {
+    line-height: 0.8em
+}
+ div.table.fontsize12_5.leading10_5 {
+    line-height: 0.84em
+}
+ div.table.fontsize12_5.leading11 {
+    line-height: 0.88em
+}
+ div.table.fontsize12_5.leading11_5 {
+    line-height: 0.92em
+}
+ div.table.fontsize12_5.leading12 {
+    line-height: 0.96em
+}
+ div.table.fontsize12_5.leading12_5 {
+    line-height: 1em
+}
+ div.table.fontsize12_5.leading13 {
+    line-height: 1.04em
+}
+ div.table.fontsize12_5.leading13_5 {
+    line-height: 1.08em
+}
+ div.table.fontsize12_5.leading14 {
+    line-height: 1.12em
+}
+ div.table.fontsize13.leading6 {
+    line-height: 0.46154em
+}
+ div.table.fontsize13.leading6_5 {
+    line-height: 0.5em
+}
+ div.table.fontsize13.leading7 {
+    line-height: 0.53846em
+}
+ div.table.fontsize13.leading7_5 {
+    line-height: 0.57692em
+}
+ div.table.fontsize13.leading8 {
+    line-height: 0.61538em
+}
+ div.table.fontsize13.leading8_5 {
+    line-height: 0.65385em
+}
+ div.table.fontsize13.leading9 {
+    line-height: 0.69231em
+}
+ div.table.fontsize13.leading9_5 {
+    line-height: 0.73077em
+}
+ div.table.fontsize13.leading10 {
+    line-height: 0.76923em
+}
+ div.table.fontsize13.leading10_5 {
+    line-height: 0.80769em
+}
+ div.table.fontsize13.leading11 {
+    line-height: 0.84615em
+}
+ div.table.fontsize13.leading11_5 {
+    line-height: 0.88462em
+}
+ div.table.fontsize13.leading12 {
+    line-height: 0.92308em
+}
+ div.table.fontsize13.leading12_5 {
+    line-height: 0.96154em
+}
+ div.table.fontsize13.leading13 {
+    line-height: 1em
+}
+ div.table.fontsize13.leading13_5 {
+    line-height: 1.03846em
+}
+ div.table.fontsize13.leading14 {
+    line-height: 1.07692em
+}
+ div.table.fontsize13_5.leading6 {
+    line-height: 0.44444em
+}
+ div.table.fontsize13_5.leading6_5 {
+    line-height: 0.48148em
+}
+ div.table.fontsize13_5.leading7 {
+    line-height: 0.51852em
+}
+ div.table.fontsize13_5.leading7_5 {
+    line-height: 0.55556em
+}
+ div.table.fontsize13_5.leading8 {
+    line-height: 0.59259em
+}
+ div.table.fontsize13_5.leading8_5 {
+    line-height: 0.62963em
+}
+ div.table.fontsize13_5.leading9 {
+    line-height: 0.66667em
+}
+ div.table.fontsize13_5.leading9_5 {
+    line-height: 0.7037em
+}
+ div.table.fontsize13_5.leading10 {
+    line-height: 0.74074em
+}
+ div.table.fontsize13_5.leading10_5 {
+    line-height: 0.77778em
+}
+ div.table.fontsize13_5.leading11 {
+    line-height: 0.81481em
+}
+ div.table.fontsize13_5.leading11_5 {
+    line-height: 0.85185em
+}
+ div.table.fontsize13_5.leading12 {
+    line-height: 0.88889em
+}
+ div.table.fontsize13_5.leading12_5 {
+    line-height: 0.92593em
+}
+ div.table.fontsize13_5.leading13 {
+    line-height: 0.96296em
+}
+ div.table.fontsize13_5.leading13_5 {
+    line-height: 1em
+}
+ div.table.fontsize13_5.leading14 {
+    line-height: 1.03704em
+}
+ div.table.fontsize14.leading6 {
+    line-height: 0.42857em
+}
+ div.table.fontsize14.leading6_5 {
+    line-height: 0.46429em
+}
+ div.table.fontsize14.leading7 {
+    line-height: 0.5em
+}
+ div.table.fontsize14.leading7_5 {
+    line-height: 0.53571em
+}
+ div.table.fontsize14.leading8 {
+    line-height: 0.57143em
+}
+ div.table.fontsize14.leading8_5 {
+    line-height: 0.60714em
+}
+ div.table.fontsize14.leading9 {
+    line-height: 0.64286em
+}
+ div.table.fontsize14.leading9_5 {
+    line-height: 0.67857em
+}
+ div.table.fontsize14.leading10 {
+    line-height: 0.71429em
+}
+ div.table.fontsize14.leading10_5 {
+    line-height: 0.75em
+}
+ div.table.fontsize14.leading11 {
+    line-height: 0.78571em
+}
+ div.table.fontsize14.leading11_5 {
+    line-height: 0.82143em
+}
+ div.table.fontsize14.leading12 {
+    line-height: 0.85714em
+}
+ div.table.fontsize14.leading12_5 {
+    line-height: 0.89286em
+}
+ div.table.fontsize14.leading13 {
+    line-height: 0.92857em
+}
+ div.table.fontsize14.leading13_5 {
+    line-height: 0.96429em
+}
+ div.table.fontsize14.leading14 {
+    line-height: 1em
+}
+ ul.list {
+    margin-left: 0
+}
+ ul.list li.item {
+    display: list-item;
+    list-style-type: none;
+    padding-left: 1.6087em
+}
+ ul.list li.item span.label {
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em
+}
+ ul.list li.item h5 {
+    display: inline
+}
+ ul.list li.item div.para {
+    display: inline
+}
+ ul.list li.item div.para p.text {
+    display: inline
+}
+ ul.list li.item div.history {
+    padding-left: 0
+}
+ ul.list li.bullet.item {
+    display: list-item;
+    list-style-type: disc;
+    padding-left: 1.56522em
+}
+ ul.list li.bullet.item div.para {
+    display: inline
+}
+ ul.list li.bullet.item div.para p.text {
+    display: inline
+}
+ ul.list li.bullet.item div.history {
+    padding-left: 0
+}
+ dt.variable {
+    float: left;
+    padding-right: 0.5em
+}
+ dd.variable-description {
+    padding-left: 2.6087em
+}
+ dd.variable-description div.para {
+    display: inline
+}
+ dd.variable-description div.para p.text {
+    display: inline
+}
+ blockquote.quote:before,
+ blockquote.quote:after {
+    content: '';
+    content: none
+}
+ blockquote.indented.quote {
+    padding-left: 0.86957em
+}
+ blockquote.indented.quote div.history {
+    padding-left: 0
+}
+ h1.title {
+    text-align: center;
+    font-size: 1.7em;
     font-weight: bold
 }
-.legislation div.toc p.clause-ref {
-    margin-top: 0;
+ h1.sop-heading {
+    margin-top: 1.73913em;
+    text-align: center;
+    font-size: 1.9em;
+    font-weight: bold
+}
+ h2.key {
+    margin-top: 2em;
+    margin-bottom: 0;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.billnote {
+    margin-top: 0.86957em;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ h2.made {
+    margin-top: 1.77778em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.bylaw.body,
+ h2.determination.body,
+ h2.direction.body,
+ h2.notice.body,
+ h2.rule.body,
+ h2.order.body {
+    font-size: 1.5em;
+    font-style: normal;
+    font-weight: bold
+}
+ h2.part,
+ h2.schedule,
+ h2.head1,
+ h2.sop-part {
+    margin-top: 1.18519em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.sop-part {
+    margin-top: 0.74074em
+}
+ h2.schedule-group {
+    margin-top: 0.74074em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.schedule-amendments-group1 {
+    margin-top: 1.18519em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.part span.label,
+ h2.schedule span.label,
+ h2.head1 span.label,
+ h2.schedule-amendments-group1 span.label,
+ h2.sop-part span.label {
+    display: block;
+    margin-bottom: 0.11111em;
+    text-align: center
+}
+ h2.part+span.deletion-status,
+ h2.schedule+span.deletion-status,
+ h2.head1+span.deletion-status,
+ h2.schedule-amendments-group1+span.deletion-status,
+ h2.sop-part+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h2.explnote {
+    margin-top: 1.33333em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.explnote+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h2.explnote-part {
+    margin-top: 1.18519em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h2.explnote-part span.label {
+    display: block;
+    margin-bottom: 0.11111em
+}
+ h2.explnote-part+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h2.body,
+ h2.bill-sop-body,
+ h2.sop-body {
+    margin-top: 0.74074em;
+    text-align: center;
+    font-size: 1.5em;
+    font-style: italic
+}
+ h2.body+span.deletion-status,
+ h2.bill-sop-body+span.deletion-status,
+ h2.sop-body+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h2.regulation.body,
+ h3.skeleton-reg-body {
+    margin-top: 0.86957em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
     font-style: normal
 }
-.legislation div.toc p.hdr-before {
-    margin-top: 0.5em
+ h3.key-subheading {
+    margin-top: 0.86957em;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold
 }
-.legislation div.toc-schedule-provisions p.part {
-    font-weight: normal;
-    margin-left: 0;
-    float: none
+ h3.comm-appendix {
+    text-align: left;
+    font-size: 1.5em;
+    font-weight: bold
 }
-.legislation div.toc-schedule-provisions p.subpart {
+ h3.comm-lev1 {
+    margin-top: 0.74074em;
+    text-align: left;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h3.explnote-group {
+    margin-top: 1.56522em;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ h3.explnote-group+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h3.explnote-subgroup {
+    margin-top: 1.08696em;
+    text-align: center;
+    font-size: 1.2em;
+    font-style: italic
+}
+ h3.explnote-subgroup+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h3.explnote-subpart {
+    margin-top: 0.74em;
+    text-align: center;
+    font-size: 1.5em
+}
+ h3.explnote-subpart+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h3.subpart,
+ h3.head2,
+ h3.conv,
+ h3.sop-subpart {
+    margin-top: 0.74074em;
+    text-align: center;
+    font-size: 1.5em
+}
+ h3.subpart+span.deletion-status,
+ h3.head2+span.deletion-status,
+ h3.conv+span.deletion-status,
+ h3.sop-subpart+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h3.conv {
+    font-weight: bold;
+    font-size: 1.2em
+}
+ h3.conv span.label {
+    display: block;
+    text-align: center
+}
+ h3.explnote-ris {
+    margin-top: 0.8em;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ h3.explnote-ris+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h4.comm-lev2 {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ h4.explnote-crosshead,
+ h4.explnote-ird-crosshead {
+    margin-top: 0.8em;
+    text-align: center;
+    font-size: 1.2em;
+    font-style: italic
+}
+ h4.explnote-crosshead+span.deletion-status,
+ h4.explnote-ird-crosshead+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h4.explnote-ird-crosshead {
+    font-weight: bold
+}
+ h4.preamble {
+    margin-top: 0.74074em;
+    text-align: left;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h4.crosshead,
+ h4.head3 {
+    margin-top: 0.8em;
+    text-align: center;
+    font-size: 1.2em;
+    font-style: italic
+}
+ h4.crosshead span.deletion-status,
+ h4.head3 span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h4.crosshead+span.deletion-status,
+ h4.head3+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h4.form {
+    margin-top: 0.8em;
+    text-align: center;
+    font-size: 1.2em
+}
+ h4.form+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h4.form span.label {
+    margin-bottom: 0.12em;
+    display: block
+}
+ h4.ird-crosshead,
+ h4.head4 {
+    margin-top: 0.8em;
+    text-align: center;
+    font-size: 1.2em;
     font-style: italic;
-    text-align: center;
-    margin-top: 1em;
-    padding:0
+    font-weight: bold
 }
-.legislation div.toc-schedule-provisions p.crosshead {
-    font-style: normal;
+ h4.ird-crosshead+span.deletion-status,
+ h4.head4+span.deletion-status {
+    display: block;
+    text-align: center
+}
+ h5.figure {
     text-align: center;
-    margin-top: 1em;
-    margin-left: 0;
-    padding:0
+    font-size: 1.2em;
+    font-weight: bold
+}
+ h5.figure span.label {
+    display: block
+}
+ h5.comm-lev3 {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-style: italic
+}
+ h5.explnote-subhead1,
+ h5.explnote-subhead2 {
+    margin-top: 0.86957em;
+    font-size: 1.2em;
+    text-align: left
+}
+ h5.explnote-subhead1 {
+    font-weight: bold
+}
+ h5.explnote-subhead2 {
+    font-style: italic;
+    padding-left: 0
+}
+ h5.head5,
+ h5.schedule-amendments-group2 {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ h5.head5 {
+    padding-left: 2.6087em
+}
+ h5.head5 span.label {
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em
+}
+ h5.unlabelled.head5 {
+    padding-left: 0
+}
+ h5.headless.head5 span.label {
+    float: none;
+    padding-right: 0
+}
+ h5.schedule-amendments-group2 {
+    padding-left: 2.6087em
+}
+ h5.schedule-amendments-group2 span.label {
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em
+}
+ h5.schedule-amendments-group2 div.history {
+    padding-left: 0
+}
+ h5.unlabelled.schedule-amendments-group2 {
+    padding-left: 0
+}
+ h5.head6 {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-style: italic;
+    padding-left: 2.6087em
+}
+ h5.head6 span.label {
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em
+}
+ h5.unlabelled.head6 {
+    padding-left: 0
+}
+ h5.headless.head6 span.label {
+    float: none;
+    padding-right: 0
+}
+ h5.prov {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1.2em
+}
+ h5.preamble-block {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ div.headless.prov h5.prov {
+    font-weight: normal;
+    font-size: 1em
+}
+ div.headless.prov h5.prov span.label {
+    margin-left: -2.6087em
+}
+ h6.preamble-headlev2 {
+    text-align: left;
+    font-size: 1.2em;
+    font-style: italic
+}
+ h6.preamble-headlev3 {
+    font-size: 1.2em;
+    text-align: left
+}
+ h6.schedule-amendments-group3 {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-style: italic;
+    padding-left: 2.6087em
+}
+ h6.schedule-amendments-group3 span.label {
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em
+}
+ h6.schedule-amendments-group3 div.history {
+    padding-left: 0
+}
+ h6.unlabelled.schedule-amendments-group3 {
+    padding-left: 0
+}
+ h6.subprov-crosshead {
+    text-align: left;
+    font-size: 1.2em;
+    font-style: italic;
+    padding-left: 2.6087em
+}
+ h6.subprov-crosshead div.history {
+    padding-left: 0
+}
+ h6.table {
+    font-size: 1.2em
+}
+ h6.quoted-heading {
+    font-size: 1.2em
+}
+ h6.quoted-heading.left {
+    text-align: left
+}
+ h6.quoted-heading.right {
+    text-align: right
+}
+ h6.quoted-heading.center {
+    text-align: center
+}
+ h6.subprov-crosshead+span.deletion-status {
+    padding-left: 2.6087em
+}
+ h6.commentary {
+    margin-top: 0.74074em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ h6.leg-history {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ div.end h6.reprint-notes {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ div.end h6.reprint-note {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold;
+    font-style: italic
+}
+ div.end h6.reprint-index {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ div.end p.admin-office {
+    margin-top: 1.11111em;
+    text-align: left;
+    font-size: 0.8em
+}
+ p {
+    margin-top: 0.34783em;
+    line-height: 1.2em
+}
+ p.authorisation {
+    line-height: 1em;
+    text-align: center;
+    font-size: 0.8em;
+    font-style: italic
+}
+ p.omitted-provs {
+    margin-top: 0.55556em;
+    text-align: center;
+    font-size: 1.7em
+}
+ p.motion {
+    margin-top: 1.04348em;
+    font-size: inherit
+}
+ p.clause-ref {
+    margin-top: 0.86957em;
+    text-align: left;
+    font-size: inherit;
+    font-style: italic;
+    padding-left: 0
+}
+ p.bill-identifier {
+    margin-top: 0;
+    text-align: center;
+    font-size: 0.8em
+}
+ p.title-alt {
+    text-align: center;
+    font-size: 1.7em;
+    font-weight: bold
+}
+ p.billtype {
+    text-align: center;
+    font-size: inherit
+}
+ p.title-former {
+    text-align: center;
+    font-size: inherit
+}
+ p.repnote {
+    margin-top: 0.74074em;
+    text-align: center;
+    font-size: 1.5em
+}
+ p.member {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    text-align: center;
+    font-size: inherit;
+    font-style: italic
+}
+ p.crosshead {
+    margin-top: 0.8em;
+    text-align: center;
+    font-size: 1.2em;
+    font-style: italic
+}
+ p.sig-para {
+    margin-top: 3.13043em;
+    font-size: inherit;
+    font-style: normal
+}
+ p.sig-para.left {
+    text-align: left
+}
+ p.sig-para.right {
+    text-align: right
+}
+ p.sig-para.center {
+    text-align: center
+}
+ p.sig-para.justify {
+    text-align: justify
+}
+ p.sig-officer {
+    margin-top: 3.13043em;
+    font-size: inherit;
+    font-style: normal
+}
+ p.sig-officer.left {
+    text-align: left
+}
+ p.sig-officer.right {
+    text-align: right
+}
+ p.sig-officer.center {
+    text-align: center
+}
+ p.sig-officer.justify {
+    text-align: justify
+}
+ p.made-at {
+    margin-top: 2.08696em;
+    text-align: center;
+    font-size: inherit
+}
+ p.made-present {
+    margin-top: 2.08696em;
+    text-align: center;
+    font-size: inherit
+}
+ p.reprint-amend {
+    font-size: 0.8em
+}
+ p.sop-number {
+    text-align: left;
+    font-size: inherit
+}
+ p.house-heading {
+    text-align: center;
+    font-size: 1.7em;
+    font-weight: bold
+}
+ p.sop-date {
+    margin-top: 2.6087em;
+    text-align: center;
+    font-size: 1.7em;
+    font-weight: bold
+}
+ p.billref {
+    margin-top: 1.77778em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ p.billref-alt {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ p.sr-number,
+ p.li-number,
+ p.skeleton-li-number,
+ p.skeleton-sr-number {
+    font-size: inherit;
+    font-weight: bold
+}
+ p.sr-number,
+ p.skeleton-sr-number {
+    text-align: right
+}
+ p.li-number,
+ p.skeleton-li-number {
+    text-align: right
+}
+ p.eqn-line {
+    text-align: center;
+    font-size: inherit
+}
+ p.eqn-line .numerator,
+ p.eqn-line .denominator {
+    font-size: inherit
+}
+ p.label-para-crosshead {
+    text-align: left;
+    font-size: 1.2em;
+    font-style: italic;
+    padding-left: 2.17391em
+}
+ p.label-para-crosshead div.history {
+    padding-left: 0
+}
+ p.label-para-crosshead+span.deletion-status {
+    padding-left: 2.6087em
+}
+ p.text {
+    text-align: inherit;
+    font-size: inherit
+}
+ p.text:first-child {
+    background: white;
+    display: inline
+}
+ p.cf {
+    font-size: 0.8em
+}
+ p.empowering-prov {
+    text-align: right;
+    font-size: 0.8em
+}
+ p.issue-authority {
+    margin-top: 1.17647em;
+    font-size: 0.8em;
+    text-align: left
+}
+ p.issue-authority span,
+ p.issue-authority a {
+    font-size: inherit
+}
+ p.gazette-date {
+    font-size: 0.8em;
+    text-align: left
+}
+ p.gazette-date span,
+ p.gazette-date a {
+    font-size: inherit
+}
+ p.term-list {
+    font-size: 0.8em
+}
+ p.history-note {
+    font-size: 0.8em;
+    font-weight: normal
+}
+ p.reprint-date {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold
+}
+ p.gg {
+    margin-top: 3.13043em;
+    text-align: center;
+    font-size: inherit
+}
+ p.follow-text {
+    font-size: inherit
+}
+ p.security {
+    font-size: 1.5em
+}
+ p.footnote-text {
+    font-size: inherit;
+    text-align: initial
+}
+ span.follow-text {
+    font-size: inherit
+}
+ span.underline {
+    text-decoration: underline
+}
+ span.fraction {
+    font-size: 1em
+}
+ span.changeable {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.9em
+}
+ span.graphic-text {
+    display: none
+}
+ ins {
+    text-decoration: underline;
+    background: none
+}
+ del {
+    text-decoration: line-through;
+    background: none
+}
+ a {
+    color: #0000FF;
+    text-decoration: none
+}
+ a:focus {
+    outline: 1px dotted #000
+}
+ a span,
+ a ins,
+ a del {
+    color: inherit
+}
+ a.intref,
+ a.term,
+ a.extref,
+ a.leg-title {
+    color: inherit;
+    text-decoration: none
+}
+ a.intref[href],
+ a.term[href],
+ a.extref[href],
+ a.leg-title[href] {
+    color: #0000FF;
+    text-decoration: none
+}
+ a:hover {
+    text-decoration: underline
+}
+ a.intref:hover,
+ a.term:hover,
+ a.extref:hover,
+ a.leg-title:hover {
+    text-decoration: underline
+}
+ a.intref[href]:hover,
+ a.term[href]:hover,
+ a.extref[href]:hover,
+ a.leg-title[href]:hover {
+    text-decoration: underline
+}
+ a:visited span,
+ a:visited ins,
+ a:visited del {
+    color: #552288
+}
+ .deletion-status {
+    text-align: inherit;
+    font-style: italic
+}
+ span.deletion-status.center {
+    display: block;
+    text-align: center
+}
+ span.deletion-status.inline {
+    display: inline
+}
+ strong,
+ b {
+    font-weight: bold
+}
+ em {
+    font-style: italic
+}
+ strong em {
+    font-weight: bold;
+    font-style: italic
+}
+ sup {
+    font-size: 0.6em;
+    vertical-align: super;
+    line-height: 1em
+}
+ sup.superscript {
+    vertical-align: super
+}
+ sup.footnote-ref {
+    vertical-align: super;
+    font-size: 0.8em
+}
+ sup.footnote-ref a {
+    color: #0000FF;
+    text-decoration: none;
+    font-size: inherit
+}
+ sup.footnote-label {
+    vertical-align: super;
+    font-size: 0.8em
+}
+ sub {
+    font-size: 0.6em;
+    vertical-align: sub;
+    line-height: 1em
+}
+ sub.subscript {
+    vertical-align: sub
+}
+ span.field-space-5mm:before {
+    content: "   "
+}
+ span.field-space-10mm:before {
+    content: "        "
+}
+ span.field-space-20mm:before {
+    content: "               "
+}
+ span.field-space-30mm:before {
+    content: "                       "
+}
+ span.field-space-40mm:before {
+    content: "                              "
+}
+ span.field-space-50mm:before {
+    content: "                                      "
+}
+ span.field-space-60mm:before {
+    content: "                                             "
+}
+ span.field-space-70mm:before {
+    content: "                                                     "
+}
+ span.field-space-80mm:before {
+    content: "                                                            "
+}
+ span.field-space-90mm:before {
+    content: "                                                                    "
+}
+ span.field-space-100mm:before {
+    content: "                                                                           "
+}
+ span.field-space-110mm:before {
+    content: "                                                                                   "
+}
+ span.field-space-120mm:before {
+    content: "                                                                                           "
+}
+ span.field-space-128mm:before {
+    content: "                                                                                                 "
+}
+ span.field-dot-5mm:before {
+    content: "..."
+}
+ span.field-dot-10mm:before {
+    content: "........"
+}
+ span.field-dot-20mm:before {
+    content: "..............."
+}
+ span.field-dot-30mm:before {
+    content: "......................."
+}
+ span.field-dot-40mm:before {
+    content: ".............................."
+}
+ span.field-dot-50mm:before {
+    content: "......................................"
+}
+ span.field-dot-60mm:before {
+    content: "............................................."
+}
+ span.field-dot-70mm:before {
+    content: "....................................................."
+}
+ span.field-dot-80mm:before {
+    content: "............................................................"
+}
+ span.field-dot-90mm:before {
+    content: "...................................................................."
+}
+ span.field-dot-100mm:before {
+    content: "..........................................................................."
+}
+ span.field-dot-110mm:before {
+    content: "..................................................................................."
+}
+ span.field-dot-120mm:before {
+    content: "..........................................................................................."
+}
+ span.field-dot-128mm:before {
+    content: "................................................................................................."
+}
+ span.field-pairdot-5mm:before {
+    content: ".. "
+}
+ span.field-pairdot-10mm:before {
+    content: ".. .. .. "
+}
+ span.field-pairdot-20mm:before {
+    content: ".. .. .. .. .. "
+}
+ span.field-pairdot-30mm:before {
+    content: ".. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-40mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-50mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-60mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-70mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-80mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-90mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-100mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-110mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-120mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-pairdot-128mm:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.field-underline-5mm:before {
+    content: "__"
+}
+ span.field-underline-10mm:before {
+    content: "____"
+}
+ span.field-underline-20mm:before {
+    content: "________"
+}
+ span.field-underline-30mm:before {
+    content: "____________"
+}
+ span.field-underline-40mm:before {
+    content: "_______________"
+}
+ span.field-underline-50mm:before {
+    content: "___________________"
+}
+ span.field-underline-60mm:before {
+    content: "_______________________"
+}
+ span.field-underline-70mm:before {
+    content: "___________________________"
+}
+ span.field-underline-80mm:before {
+    content: "______________________________"
+}
+ span.field-underline-90mm:before {
+    content: "__________________________________"
+}
+ span.field-underline-100mm:before {
+    content: "______________________________________"
+}
+ span.field-underline-110mm:before {
+    content: "__________________________________________"
+}
+ span.field-underline-120mm:before {
+    content: "______________________________________________"
+}
+ span.field-underline-128mm:before {
+    content: "________________________________________________"
+}
+ span.leader {
+    max-width: 40em;
+    padding: 0;
+    list-style: none
+}
+ span.leader:before {
+    float: left;
+    width: 0;
+    white-space: nowrap
+}
+ span.leader.space:before {
+    content: "                                                                                                                                                                                                        "
+}
+ span.leader.dot:before {
+    content: "........................................................................................................................................................................................................"
+}
+ span.leader.underline:before {
+    content: "____________________________________________________________________________________________________"
+}
+ span.leader.pairdot:before {
+    content: ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. "
+}
+ span.leader:after {
+    content: "\a";
+    white-space: pre
+}
+ dfn.def-term {
+    font-weight: bold;
+    font-style: normal
+}
+ q.quote-in:before,
+ q.quote-in:after,
+ q.amend-in:before,
+ q.amend-in:after {
+    content: '';
+    content: none
+}
+ div.contents-note {
+    text-align: center;
+    font-style: italic
+}
+ div.toc.fontsize6 {
+    font-size: 0.52174em
+}
+ div.toc.fontsize6_5 {
+    font-size: 0.56522em
+}
+ div.toc.fontsize7 {
+    font-size: 0.6087em
+}
+ div.toc.fontsize7_5 {
+    font-size: 0.65217em
+}
+ div.toc.fontsize8 {
+    font-size: 0.69565em
+}
+ div.toc.fontsize8_5 {
+    font-size: 0.73913em
+}
+ div.toc.fontsize9 {
+    font-size: 0.78261em
+}
+ div.toc.fontsize9_5 {
+    font-size: 0.82609em
+}
+ div.toc.fontsize10 {
+    font-size: 0.86957em
+}
+ div.toc.fontsize10_5 {
+    font-size: 0.91304em
+}
+ div.toc.fontsize11 {
+    font-size: 0.95652em
+}
+ div.toc.fontsize11_5 {
+    font-size: 1em
+}
+ div.toc.fontsize12 {
+    font-size: 1.04348em
+}
+ div.toc.fontsize12_5 {
+    font-size: 1.08696em
+}
+ div.toc.fontsize13 {
+    font-size: 1.13043em
+}
+ div.toc.fontsize13_5 {
+    font-size: 1.17391em
+}
+ div.toc.fontsize14 {
+    font-size: 1.21739em
+}
+ div.toc.fontsize6.leading6 {
+    line-height: 1em
+}
+ div.toc.fontsize6.leading6_5 {
+    line-height: 1.08333em
+}
+ div.toc.fontsize6.leading7 {
+    line-height: 1.16667em
+}
+ div.toc.fontsize6.leading7_5 {
+    line-height: 1.25em
+}
+ div.toc.fontsize6.leading8 {
+    line-height: 1.33333em
+}
+ div.toc.fontsize6.leading8_5 {
+    line-height: 1.41667em
+}
+ div.toc.fontsize6.leading9 {
+    line-height: 1.5em
+}
+ div.toc.fontsize6.leading9_5 {
+    line-height: 1.58333em
+}
+ div.toc.fontsize6.leading10 {
+    line-height: 1.66667em
+}
+ div.toc.fontsize6.leading10_5 {
+    line-height: 1.75em
+}
+ div.toc.fontsize6.leading11 {
+    line-height: 1.83333em
+}
+ div.toc.fontsize6.leading11_5 {
+    line-height: 1.91667em
+}
+ div.toc.fontsize6.leading12 {
+    line-height: 2em
+}
+ div.toc.fontsize6.leading12_5 {
+    line-height: 2.08333em
+}
+ div.toc.fontsize6.leading13 {
+    line-height: 2.16667em
+}
+ div.toc.fontsize6.leading13_5 {
+    line-height: 2.25em
+}
+ div.toc.fontsize6.leading14 {
+    line-height: 2.33333em
+}
+ div.toc.fontsize6_5.leading6 {
+    line-height: 0.92308em
+}
+ div.toc.fontsize6_5.leading6_5 {
+    line-height: 1em
+}
+ div.toc.fontsize6_5.leading7 {
+    line-height: 1.07692em
+}
+ div.toc.fontsize6_5.leading7_5 {
+    line-height: 1.15385em
+}
+ div.toc.fontsize6_5.leading8 {
+    line-height: 1.23077em
+}
+ div.toc.fontsize6_5.leading8_5 {
+    line-height: 1.30769em
+}
+ div.toc.fontsize6_5.leading9 {
+    line-height: 1.38462em
+}
+ div.toc.fontsize6_5.leading9_5 {
+    line-height: 1.46154em
+}
+ div.toc.fontsize6_5.leading10 {
+    line-height: 1.53846em
+}
+ div.toc.fontsize6_5.leading10_5 {
+    line-height: 1.61538em
+}
+ div.toc.fontsize6_5.leading11 {
+    line-height: 1.69231em
+}
+ div.toc.fontsize6_5.leading11_5 {
+    line-height: 1.76923em
+}
+ div.toc.fontsize6_5.leading12 {
+    line-height: 1.84615em
+}
+ div.toc.fontsize6_5.leading12_5 {
+    line-height: 1.92308em
+}
+ div.toc.fontsize6_5.leading13 {
+    line-height: 2em
+}
+ div.toc.fontsize6_5.leading13_5 {
+    line-height: 2.07692em
+}
+ div.toc.fontsize6_5.leading14 {
+    line-height: 2.15385em
+}
+ div.toc.fontsize7.leading6 {
+    line-height: 0.85714em
+}
+ div.toc.fontsize7.leading6_5 {
+    line-height: 0.92857em
+}
+ div.toc.fontsize7.leading7 {
+    line-height: 1em
+}
+ div.toc.fontsize7.leading7_5 {
+    line-height: 1.07143em
+}
+ div.toc.fontsize7.leading8 {
+    line-height: 1.14286em
+}
+ div.toc.fontsize7.leading8_5 {
+    line-height: 1.21429em
+}
+ div.toc.fontsize7.leading9 {
+    line-height: 1.28571em
+}
+ div.toc.fontsize7.leading9_5 {
+    line-height: 1.35714em
+}
+ div.toc.fontsize7.leading10 {
+    line-height: 1.42857em
+}
+ div.toc.fontsize7.leading10_5 {
+    line-height: 1.5em
+}
+ div.toc.fontsize7.leading11 {
+    line-height: 1.57143em
+}
+ div.toc.fontsize7.leading11_5 {
+    line-height: 1.64286em
+}
+ div.toc.fontsize7.leading12 {
+    line-height: 1.71429em
+}
+ div.toc.fontsize7.leading12_5 {
+    line-height: 1.78571em
+}
+ div.toc.fontsize7.leading13 {
+    line-height: 1.85714em
+}
+ div.toc.fontsize7.leading13_5 {
+    line-height: 1.92857em
+}
+ div.toc.fontsize7.leading14 {
+    line-height: 2em
+}
+ div.toc.fontsize7_5.leading6 {
+    line-height: 0.8em
+}
+ div.toc.fontsize7_5.leading6_5 {
+    line-height: 0.86667em
+}
+ div.toc.fontsize7_5.leading7 {
+    line-height: 0.93333em
+}
+ div.toc.fontsize7_5.leading7_5 {
+    line-height: 1em
+}
+ div.toc.fontsize7_5.leading8 {
+    line-height: 1.06667em
+}
+ div.toc.fontsize7_5.leading8_5 {
+    line-height: 1.13333em
+}
+ div.toc.fontsize7_5.leading9 {
+    line-height: 1.2em
+}
+ div.toc.fontsize7_5.leading9_5 {
+    line-height: 1.26667em
+}
+ div.toc.fontsize7_5.leading10 {
+    line-height: 1.33333em
+}
+ div.toc.fontsize7_5.leading10_5 {
+    line-height: 1.4em
+}
+ div.toc.fontsize7_5.leading11 {
+    line-height: 1.46667em
+}
+ div.toc.fontsize7_5.leading11_5 {
+    line-height: 1.53333em
+}
+ div.toc.fontsize7_5.leading12 {
+    line-height: 1.6em
+}
+ div.toc.fontsize7_5.leading12_5 {
+    line-height: 1.66667em
+}
+ div.toc.fontsize7_5.leading13 {
+    line-height: 1.73333em
+}
+ div.toc.fontsize7_5.leading13_5 {
+    line-height: 1.8em
+}
+ div.toc.fontsize7_5.leading14 {
+    line-height: 1.86667em
+}
+ div.toc.fontsize8.leading6 {
+    line-height: 0.75em
+}
+ div.toc.fontsize8.leading6_5 {
+    line-height: 0.8125em
+}
+ div.toc.fontsize8.leading7 {
+    line-height: 0.875em
+}
+ div.toc.fontsize8.leading7_5 {
+    line-height: 0.9375em
+}
+ div.toc.fontsize8.leading8 {
+    line-height: 1em
+}
+ div.toc.fontsize8.leading8_5 {
+    line-height: 1.0625em
+}
+ div.toc.fontsize8.leading9 {
+    line-height: 1.125em
+}
+ div.toc.fontsize8.leading9_5 {
+    line-height: 1.1875em
+}
+ div.toc.fontsize8.leading10 {
+    line-height: 1.25em
+}
+ div.toc.fontsize8.leading10_5 {
+    line-height: 1.3125em
+}
+ div.toc.fontsize8.leading11 {
+    line-height: 1.375em
+}
+ div.toc.fontsize8.leading11_5 {
+    line-height: 1.4375em
+}
+ div.toc.fontsize8.leading12 {
+    line-height: 1.5em
+}
+ div.toc.fontsize8.leading12_5 {
+    line-height: 1.5625em
+}
+ div.toc.fontsize8.leading13 {
+    line-height: 1.625em
+}
+ div.toc.fontsize8.leading13_5 {
+    line-height: 1.6875em
+}
+ div.toc.fontsize8.leading14 {
+    line-height: 1.75em
+}
+ div.toc.fontsize8_5.leading6 {
+    line-height: 0.70588em
+}
+ div.toc.fontsize8_5.leading6_5 {
+    line-height: 0.76471em
+}
+ div.toc.fontsize8_5.leading7 {
+    line-height: 0.82353em
+}
+ div.toc.fontsize8_5.leading7_5 {
+    line-height: 0.88235em
+}
+ div.toc.fontsize8_5.leading8 {
+    line-height: 0.94118em
+}
+ div.toc.fontsize8_5.leading8_5 {
+    line-height: 1em
+}
+ div.toc.fontsize8_5.leading9 {
+    line-height: 1.05882em
+}
+ div.toc.fontsize8_5.leading9_5 {
+    line-height: 1.11765em
+}
+ div.toc.fontsize8_5.leading10 {
+    line-height: 1.17647em
+}
+ div.toc.fontsize8_5.leading10_5 {
+    line-height: 1.23529em
+}
+ div.toc.fontsize8_5.leading11 {
+    line-height: 1.29412em
+}
+ div.toc.fontsize8_5.leading11_5 {
+    line-height: 1.35294em
+}
+ div.toc.fontsize8_5.leading12 {
+    line-height: 1.41176em
+}
+ div.toc.fontsize8_5.leading12_5 {
+    line-height: 1.47059em
+}
+ div.toc.fontsize8_5.leading13 {
+    line-height: 1.52941em
+}
+ div.toc.fontsize8_5.leading13_5 {
+    line-height: 1.58824em
+}
+ div.toc.fontsize8_5.leading14 {
+    line-height: 1.64706em
+}
+ div.toc.fontsize9.leading6 {
+    line-height: 0.66667em
+}
+ div.toc.fontsize9.leading6_5 {
+    line-height: 0.72222em
+}
+ div.toc.fontsize9.leading7 {
+    line-height: 0.77778em
+}
+ div.toc.fontsize9.leading7_5 {
+    line-height: 0.83333em
+}
+ div.toc.fontsize9.leading8 {
+    line-height: 0.88889em
+}
+ div.toc.fontsize9.leading8_5 {
+    line-height: 0.94444em
+}
+ div.toc.fontsize9.leading9 {
+    line-height: 1em
+}
+ div.toc.fontsize9.leading9_5 {
+    line-height: 1.05556em
+}
+ div.toc.fontsize9.leading10 {
+    line-height: 1.11111em
+}
+ div.toc.fontsize9.leading10_5 {
+    line-height: 1.16667em
+}
+ div.toc.fontsize9.leading11 {
+    line-height: 1.22222em
+}
+ div.toc.fontsize9.leading11_5 {
+    line-height: 1.27778em
+}
+ div.toc.fontsize9.leading12 {
+    line-height: 1.33333em
+}
+ div.toc.fontsize9.leading12_5 {
+    line-height: 1.38889em
+}
+ div.toc.fontsize9.leading13 {
+    line-height: 1.44444em
+}
+ div.toc.fontsize9.leading13_5 {
+    line-height: 1.5em
+}
+ div.toc.fontsize9.leading14 {
+    line-height: 1.55556em
+}
+ div.toc.fontsize9_5.leading6 {
+    line-height: 0.63158em
+}
+ div.toc.fontsize9_5.leading6_5 {
+    line-height: 0.68421em
+}
+ div.toc.fontsize9_5.leading7 {
+    line-height: 0.73684em
+}
+ div.toc.fontsize9_5.leading7_5 {
+    line-height: 0.78947em
+}
+ div.toc.fontsize9_5.leading8 {
+    line-height: 0.84211em
+}
+ div.toc.fontsize9_5.leading8_5 {
+    line-height: 0.89474em
+}
+ div.toc.fontsize9_5.leading9 {
+    line-height: 0.94737em
+}
+ div.toc.fontsize9_5.leading9_5 {
+    line-height: 1em
+}
+ div.toc.fontsize9_5.leading10 {
+    line-height: 1.05263em
+}
+ div.toc.fontsize9_5.leading10_5 {
+    line-height: 1.10526em
+}
+ div.toc.fontsize9_5.leading11 {
+    line-height: 1.15789em
+}
+ div.toc.fontsize9_5.leading11_5 {
+    line-height: 1.21053em
+}
+ div.toc.fontsize9_5.leading12 {
+    line-height: 1.26316em
+}
+ div.toc.fontsize9_5.leading12_5 {
+    line-height: 1.31579em
+}
+ div.toc.fontsize9_5.leading13 {
+    line-height: 1.36842em
+}
+ div.toc.fontsize9_5.leading13_5 {
+    line-height: 1.42105em
+}
+ div.toc.fontsize9_5.leading14 {
+    line-height: 1.47368em
+}
+ div.toc.fontsize10.leading6 {
+    line-height: 0.6em
+}
+ div.toc.fontsize10.leading6_5 {
+    line-height: 0.65em
+}
+ div.toc.fontsize10.leading7 {
+    line-height: 0.7em
+}
+ div.toc.fontsize10.leading7_5 {
+    line-height: 0.75em
+}
+ div.toc.fontsize10.leading8 {
+    line-height: 0.8em
+}
+ div.toc.fontsize10.leading8_5 {
+    line-height: 0.85em
+}
+ div.toc.fontsize10.leading9 {
+    line-height: 0.9em
+}
+ div.toc.fontsize10.leading9_5 {
+    line-height: 0.95em
+}
+ div.toc.fontsize10.leading10 {
+    line-height: 1em
+}
+ div.toc.fontsize10.leading10_5 {
+    line-height: 1.05em
+}
+ div.toc.fontsize10.leading11 {
+    line-height: 1.1em
+}
+ div.toc.fontsize10.leading11_5 {
+    line-height: 1.15em
+}
+ div.toc.fontsize10.leading12 {
+    line-height: 1.2em
+}
+ div.toc.fontsize10.leading12_5 {
+    line-height: 1.25em
+}
+ div.toc.fontsize10.leading13 {
+    line-height: 1.3em
+}
+ div.toc.fontsize10.leading13_5 {
+    line-height: 1.35em
+}
+ div.toc.fontsize10.leading14 {
+    line-height: 1.4em
+}
+ div.toc.fontsize10_5.leading6 {
+    line-height: 0.57143em
+}
+ div.toc.fontsize10_5.leading6_5 {
+    line-height: 0.61905em
+}
+ div.toc.fontsize10_5.leading7 {
+    line-height: 0.66667em
+}
+ div.toc.fontsize10_5.leading7_5 {
+    line-height: 0.71429em
+}
+ div.toc.fontsize10_5.leading8 {
+    line-height: 0.7619em
+}
+ div.toc.fontsize10_5.leading8_5 {
+    line-height: 0.80952em
+}
+ div.toc.fontsize10_5.leading9 {
+    line-height: 0.85714em
+}
+ div.toc.fontsize10_5.leading9_5 {
+    line-height: 0.90476em
+}
+ div.toc.fontsize10_5.leading10 {
+    line-height: 0.95238em
+}
+ div.toc.fontsize10_5.leading10_5 {
+    line-height: 1em
+}
+ div.toc.fontsize10_5.leading11 {
+    line-height: 1.04762em
+}
+ div.toc.fontsize10_5.leading11_5 {
+    line-height: 1.09524em
+}
+ div.toc.fontsize10_5.leading12 {
+    line-height: 1.14286em
+}
+ div.toc.fontsize10_5.leading12_5 {
+    line-height: 1.19048em
+}
+ div.toc.fontsize10_5.leading13 {
+    line-height: 1.2381em
+}
+ div.toc.fontsize10_5.leading13_5 {
+    line-height: 1.28571em
+}
+ div.toc.fontsize10_5.leading14 {
+    line-height: 1.33333em
+}
+ div.toc.fontsize11.leading6 {
+    line-height: 0.54545em
+}
+ div.toc.fontsize11.leading6_5 {
+    line-height: 0.59091em
+}
+ div.toc.fontsize11.leading7 {
+    line-height: 0.63636em
+}
+ div.toc.fontsize11.leading7_5 {
+    line-height: 0.68182em
+}
+ div.toc.fontsize11.leading8 {
+    line-height: 0.72727em
+}
+ div.toc.fontsize11.leading8_5 {
+    line-height: 0.77273em
+}
+ div.toc.fontsize11.leading9 {
+    line-height: 0.81818em
+}
+ div.toc.fontsize11.leading9_5 {
+    line-height: 0.86364em
+}
+ div.toc.fontsize11.leading10 {
+    line-height: 0.90909em
+}
+ div.toc.fontsize11.leading10_5 {
+    line-height: 0.95455em
+}
+ div.toc.fontsize11.leading11 {
+    line-height: 1em
+}
+ div.toc.fontsize11.leading11_5 {
+    line-height: 1.04545em
+}
+ div.toc.fontsize11.leading12 {
+    line-height: 1.09091em
+}
+ div.toc.fontsize11.leading12_5 {
+    line-height: 1.13636em
+}
+ div.toc.fontsize11.leading13 {
+    line-height: 1.18182em
+}
+ div.toc.fontsize11.leading13_5 {
+    line-height: 1.22727em
+}
+ div.toc.fontsize11.leading14 {
+    line-height: 1.27273em
+}
+ div.toc.fontsize11_5.leading6 {
+    line-height: 0.52174em
+}
+ div.toc.fontsize11_5.leading6_5 {
+    line-height: 0.56522em
+}
+ div.toc.fontsize11_5.leading7 {
+    line-height: 0.6087em
+}
+ div.toc.fontsize11_5.leading7_5 {
+    line-height: 0.65217em
+}
+ div.toc.fontsize11_5.leading8 {
+    line-height: 0.69565em
+}
+ div.toc.fontsize11_5.leading8_5 {
+    line-height: 0.73913em
+}
+ div.toc.fontsize11_5.leading9 {
+    line-height: 0.78261em
+}
+ div.toc.fontsize11_5.leading9_5 {
+    line-height: 0.82609em
+}
+ div.toc.fontsize11_5.leading10 {
+    line-height: 0.86957em
+}
+ div.toc.fontsize11_5.leading10_5 {
+    line-height: 0.91304em
+}
+ div.toc.fontsize11_5.leading11 {
+    line-height: 0.95652em
+}
+ div.toc.fontsize11_5.leading11_5 {
+    line-height: 1em
+}
+ div.toc.fontsize11_5.leading12 {
+    line-height: 1.04348em
+}
+ div.toc.fontsize11_5.leading12_5 {
+    line-height: 1.08696em
+}
+ div.toc.fontsize11_5.leading13 {
+    line-height: 1.13043em
+}
+ div.toc.fontsize11_5.leading13_5 {
+    line-height: 1.17391em
+}
+ div.toc.fontsize11_5.leading14 {
+    line-height: 1.21739em
+}
+ div.toc.fontsize12.leading6 {
+    line-height: 0.5em
+}
+ div.toc.fontsize12.leading6_5 {
+    line-height: 0.54167em
+}
+ div.toc.fontsize12.leading7 {
+    line-height: 0.58333em
+}
+ div.toc.fontsize12.leading7_5 {
+    line-height: 0.625em
+}
+ div.toc.fontsize12.leading8 {
+    line-height: 0.66667em
+}
+ div.toc.fontsize12.leading8_5 {
+    line-height: 0.70833em
+}
+ div.toc.fontsize12.leading9 {
+    line-height: 0.75em
+}
+ div.toc.fontsize12.leading9_5 {
+    line-height: 0.79167em
+}
+ div.toc.fontsize12.leading10 {
+    line-height: 0.83333em
+}
+ div.toc.fontsize12.leading10_5 {
+    line-height: 0.875em
+}
+ div.toc.fontsize12.leading11 {
+    line-height: 0.91667em
+}
+ div.toc.fontsize12.leading11_5 {
+    line-height: 0.95833em
+}
+ div.toc.fontsize12.leading12 {
+    line-height: 1em
+}
+ div.toc.fontsize12.leading12_5 {
+    line-height: 1.04167em
+}
+ div.toc.fontsize12.leading13 {
+    line-height: 1.08333em
+}
+ div.toc.fontsize12.leading13_5 {
+    line-height: 1.125em
+}
+ div.toc.fontsize12.leading14 {
+    line-height: 1.16667em
+}
+ div.toc.fontsize12_5.leading6 {
+    line-height: 0.48em
+}
+ div.toc.fontsize12_5.leading6_5 {
+    line-height: 0.52em
+}
+ div.toc.fontsize12_5.leading7 {
+    line-height: 0.56em
+}
+ div.toc.fontsize12_5.leading7_5 {
+    line-height: 0.6em
+}
+ div.toc.fontsize12_5.leading8 {
+    line-height: 0.64em
+}
+ div.toc.fontsize12_5.leading8_5 {
+    line-height: 0.68em
+}
+ div.toc.fontsize12_5.leading9 {
+    line-height: 0.72em
+}
+ div.toc.fontsize12_5.leading9_5 {
+    line-height: 0.76em
+}
+ div.toc.fontsize12_5.leading10 {
+    line-height: 0.8em
+}
+ div.toc.fontsize12_5.leading10_5 {
+    line-height: 0.84em
+}
+ div.toc.fontsize12_5.leading11 {
+    line-height: 0.88em
+}
+ div.toc.fontsize12_5.leading11_5 {
+    line-height: 0.92em
+}
+ div.toc.fontsize12_5.leading12 {
+    line-height: 0.96em
+}
+ div.toc.fontsize12_5.leading12_5 {
+    line-height: 1em
+}
+ div.toc.fontsize12_5.leading13 {
+    line-height: 1.04em
+}
+ div.toc.fontsize12_5.leading13_5 {
+    line-height: 1.08em
+}
+ div.toc.fontsize12_5.leading14 {
+    line-height: 1.12em
+}
+ div.toc.fontsize13.leading6 {
+    line-height: 0.46154em
+}
+ div.toc.fontsize13.leading6_5 {
+    line-height: 0.5em
+}
+ div.toc.fontsize13.leading7 {
+    line-height: 0.53846em
+}
+ div.toc.fontsize13.leading7_5 {
+    line-height: 0.57692em
+}
+ div.toc.fontsize13.leading8 {
+    line-height: 0.61538em
+}
+ div.toc.fontsize13.leading8_5 {
+    line-height: 0.65385em
+}
+ div.toc.fontsize13.leading9 {
+    line-height: 0.69231em
+}
+ div.toc.fontsize13.leading9_5 {
+    line-height: 0.73077em
+}
+ div.toc.fontsize13.leading10 {
+    line-height: 0.76923em
+}
+ div.toc.fontsize13.leading10_5 {
+    line-height: 0.80769em
+}
+ div.toc.fontsize13.leading11 {
+    line-height: 0.84615em
+}
+ div.toc.fontsize13.leading11_5 {
+    line-height: 0.88462em
+}
+ div.toc.fontsize13.leading12 {
+    line-height: 0.92308em
+}
+ div.toc.fontsize13.leading12_5 {
+    line-height: 0.96154em
+}
+ div.toc.fontsize13.leading13 {
+    line-height: 1em
+}
+ div.toc.fontsize13.leading13_5 {
+    line-height: 1.03846em
+}
+ div.toc.fontsize13.leading14 {
+    line-height: 1.07692em
+}
+ div.toc.fontsize13_5.leading6 {
+    line-height: 0.44444em
+}
+ div.toc.fontsize13_5.leading6_5 {
+    line-height: 0.48148em
+}
+ div.toc.fontsize13_5.leading7 {
+    line-height: 0.51852em
+}
+ div.toc.fontsize13_5.leading7_5 {
+    line-height: 0.55556em
+}
+ div.toc.fontsize13_5.leading8 {
+    line-height: 0.59259em
+}
+ div.toc.fontsize13_5.leading8_5 {
+    line-height: 0.62963em
+}
+ div.toc.fontsize13_5.leading9 {
+    line-height: 0.66667em
+}
+ div.toc.fontsize13_5.leading9_5 {
+    line-height: 0.7037em
+}
+ div.toc.fontsize13_5.leading10 {
+    line-height: 0.74074em
+}
+ div.toc.fontsize13_5.leading10_5 {
+    line-height: 0.77778em
+}
+ div.toc.fontsize13_5.leading11 {
+    line-height: 0.81481em
+}
+ div.toc.fontsize13_5.leading11_5 {
+    line-height: 0.85185em
+}
+ div.toc.fontsize13_5.leading12 {
+    line-height: 0.88889em
+}
+ div.toc.fontsize13_5.leading12_5 {
+    line-height: 0.92593em
+}
+ div.toc.fontsize13_5.leading13 {
+    line-height: 0.96296em
+}
+ div.toc.fontsize13_5.leading13_5 {
+    line-height: 1em
+}
+ div.toc.fontsize13_5.leading14 {
+    line-height: 1.03704em
+}
+ div.toc.fontsize14.leading6 {
+    line-height: 0.42857em
+}
+ div.toc.fontsize14.leading6_5 {
+    line-height: 0.46429em
+}
+ div.toc.fontsize14.leading7 {
+    line-height: 0.5em
+}
+ div.toc.fontsize14.leading7_5 {
+    line-height: 0.53571em
+}
+ div.toc.fontsize14.leading8 {
+    line-height: 0.57143em
+}
+ div.toc.fontsize14.leading8_5 {
+    line-height: 0.60714em
+}
+ div.toc.fontsize14.leading9 {
+    line-height: 0.64286em
+}
+ div.toc.fontsize14.leading9_5 {
+    line-height: 0.67857em
+}
+ div.toc.fontsize14.leading10 {
+    line-height: 0.71429em
+}
+ div.toc.fontsize14.leading10_5 {
+    line-height: 0.75em
+}
+ div.toc.fontsize14.leading11 {
+    line-height: 0.78571em
+}
+ div.toc.fontsize14.leading11_5 {
+    line-height: 0.82143em
+}
+ div.toc.fontsize14.leading12 {
+    line-height: 0.85714em
+}
+ div.toc.fontsize14.leading12_5 {
+    line-height: 0.89286em
+}
+ div.toc.fontsize14.leading13 {
+    line-height: 0.92857em
+}
+ div.toc.fontsize14.leading13_5 {
+    line-height: 0.96429em
+}
+ div.toc.fontsize14.leading14 {
+    line-height: 1em
+}
+ div.toc td {
+    padding-top: 0.2em;
+    padding-bottom: 0.2em
+}
+ h2.contents {
+    margin-top: 1.04348em;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold
+}
+ div.tocLongTitle,
+ div.tocPreamble {
+    text-align: left;
+    font-size: inherit
+}
+ div.tocPartHeading,
+ div.tocPartLabel,
+ div.tocSubPart,
+ div.tocCrosshead,
+ div.tocIRDCrosshead,
+ div.tocOmittedProvs,
+ div.tocScheduleHeading,
+ div.tocScheduleLabel,
+ div.tocHead1Heading,
+ div.tocHead1Label,
+ div.tocHead2,
+ div.tocHead3,
+ div.tocHead4 {
+    display: block;
+    text-align: center;
+    font-size: inherit
+}
+ div.tocForm {
+    text-align: left;
+    font-size: inherit
+}
+ div.tocPartHeading,
+ div.tocPartLabel,
+ div.tocIRDCrosshead,
+ div.tocOmittedProvs,
+ div.tocScheduleHeading,
+ div.tocScheduleLabel,
+ div.tocHead4,
+ div.tocHead1Heading,
+ div.tocHead1Label {
+    font-weight: bold
+}
+ div.tocCrosshead,
+ div.tocIRDCrosshead,
+ div.tocHead2,
+ div.tocHead3,
+ div.tocHead4 {
+    font-style: italic
+}
+ div.tocExplNote,
+ div.tocBillNote,
+ div.tocCommentary,
+ div.tocKey,
+ div.tocLegislativeHistory,
+ div.tocCoverReprintNote,
+ div.tocEndReprintNote,
+ div.tocPromulgation {
+    display: block;
+    margin-top: 0.33333em;
+    text-align: left;
+    line-height: 0.83333em;
+    font-size: inherit
+}
+ div.tocSkeletonTitle,
+ div.tocSkeletonTitleAlt {
+    display: block;
+    margin-top: 0.75em;
+    text-align: center;
+    line-height: 0.83333em;
+    font-size: inherit;
+    font-weight: bold
+}
+ div.tocClauseRef,
+ div.tocSOPBody {
+    display: block;
+    margin-top: 0.25em;
+    text-align: left;
+    line-height: 0.83333em;
+    font-size: inherit
+}
+ tr.tocAmendRow {
+    background: #E5E5E5;
+    border: 1px solid #E5E5E5
+}
+ table.tocentrylayout {
+    border-collapse: collapse
+}
+ div.regulation div.cover-reprint-note p.admin-office,
+ div.regulation div.end p.admin-office {
+    margin-top: 0;
+    text-align: left;
+    font-size: 0.8em
+}
+ div.regulation div.cover-reprint-note p.gazette-date,
+ div.regulation div.end p.gazette-date {
+    margin-top: 0
+}
+ div.regulation p.li-number {
+    text-align: right
+}
+ div.regulation p.sr-number {
+    text-align: right
+}
+ div.reprint.regulation p.li-number {
+    text-align: center;
+    font-weight: inherit
+}
+ div.reprint.regulation p.sr-number {
+    text-align: center
+}
+ td.tocColumn2 {
+    *width: auto
+}
+@media print {
+     div.subprov p.subprov span.label {
+        page-break-after: avoid
+    }
+}
+@-moz-document url-prefix() {
+     tr.tocAmendRow {
+        border-left-width: 2px
+    }
 }
 }

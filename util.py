@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from lxml import etree
+from lxml import etree, objectify
 from collections import defaultdict
 import os
 import urllib
@@ -100,8 +100,9 @@ def tohtml(tree, transform=xslt['transform'], **kwargs):
         result = transform(doc_root, highlight="5")
         print str(result)
     """
-    return transform(tree, **kwargs)
-
+    tree = transform(tree, **kwargs)
+    objectify.deannotate(tree.getroot(), cleanup_namespaces=True)
+    return tree
 
 def get_title(tree):
     title = etree.tostring(tree.xpath('.//billref|.//title')[0], method="text", encoding="UTF-8")
@@ -139,8 +140,12 @@ def xml_compare(x1, x2, reporter=None, do_attr=True):
     cl1 = x1.getchildren()
     cl2 = x2.getchildren()
     if len(cl1) != len(cl2):
-        print cl1, cl2
+        print etree.tostring(x1)
+        print etree.tostring(x2)
         if reporter:
+            #for c1, c2 in zip(cl1, cl2):
+            #    print etree.tostring(c1)
+            #    print etree.tostring(c2)
             reporter('children length differs, %i != %i'
                      % (len(cl1), len(cl2)))
         return False
@@ -149,6 +154,8 @@ def xml_compare(x1, x2, reporter=None, do_attr=True):
         i += 1
         if not xml_compare(c1, c2, reporter=reporter, do_attr=do_attr):
             if reporter:
+                #print etree.tostring(c1)
+                #print etree.tostring(c2)
                 reporter('children %i do not match: %s'
                          % (i, c1.tag))
             return False

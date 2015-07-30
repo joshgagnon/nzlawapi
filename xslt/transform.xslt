@@ -1,10 +1,13 @@
-
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
     <!-- note, all have lower priority -->
+
+
     <xsl:import href="common.xslt"/>
     <xsl:import href="bill.xslt" />
     <xsl:import href="equations.xslt" />
     <xsl:import href="tables.xslt" />
+    <xsl:import href="forms.xslt" />
     <xsl:import href="end.xslt" />
     <xsl:import href="schedules.xslt" />
 
@@ -26,11 +29,17 @@
     </xsl:template>
 
     <xsl:template name="quote">
-        <xsl:if test="@quote = '1'"><xsl:attribute name="quote"></xsl:attribute>“</xsl:if>
+        <xsl:if test="@quote = '1'">“</xsl:if>
     </xsl:template>
 
     <xsl:template name="parentquote">
-        <xsl:if test="../@quote = '1'"><xsl:attribute name="quote"></xsl:attribute>“</xsl:if>
+        <xsl:if test="../@quote = '1'">“</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="quote.in">
+        <q class="quote-in"><xsl:if test="@quote = '1'">“</xsl:if>
+        <xsl:apply-templates/>
+        <xsl:if test="@quote = '1'">”</xsl:if></q>
     </xsl:template>
 
     <xsl:template name="openbracket">

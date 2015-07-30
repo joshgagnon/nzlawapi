@@ -7,6 +7,12 @@ import re
 from util import xml_compare, tohtml
 from lxml import etree, html
 from lxml.html.diff import htmldiff, html_annotate
+import codecs
+
+def ugly_replace(string):
+    # this has a very very bad smell
+    return string.replace(u"\u00A0", u' ').replace(u'\xe2\x80\x99', "'").replace('&#8217;', "'").replace(u'\xa0', ' ') #.replace(u'\u2019', "'");
+
 
 class TestLinkParsing(unittest.TestCase):
 
@@ -17,7 +23,7 @@ class TestLinkParsing(unittest.TestCase):
                 # TODO, use utils remove_nbsp
                 self.assertEqual(
                     link_to_canonical(line),
-                    unicode(expected_lines[i].strip(), 'utf-8').replace(u"\u00A0", u' '))
+                    ugly_replace(unicode(expected_lines[i].strip(), 'utf-8')))
 
 
 class PluralsTest(unittest.TestCase):
@@ -62,10 +68,13 @@ class PartialTransformTest(unittest.TestCase):
 
     def test_partials(self):
         for f in [f for f in os.listdir('tests/partial_instruments') if f.endswith('.xml')]:
-            with open(os.path.join('tests/partial_instruments', f)) as fp:
+            print f
+            with codecs.open(os.path.join('tests/partial_instruments', f), encoding='utf-8') as fp:
                 result = tohtml(etree.fromstring(fp.read(), self.parser)).getroot()
-            with open(os.path.join('tests/partial_instruments', f.replace('.xml', '.html'))) as fp:
-                expected = html.fromstring(re.sub(ur'\xe2\x80\x99', "'", fp.read(), flags=re.UNICODE),
+            with codecs.open(os.path.join('tests/partial_instruments', f.replace('.xml', '.html')), encoding='utf-8') as fp:
+            #with open(os.path.join('tests/partial_instruments', f.replace('.xml', '.html'))) as fp:
+                #expected = html.fromstring(re.sub(ur'\xe2\x80\x99', "'", fp.read(), flags=re.UNICODE),
+                expected = html.fromstring(ugly_replace(fp.read()),
                     parser=etree.HTMLParser(remove_blank_text=True, encoding="utf-8"))
             self.assertTrue(xml_compare(result, expected, print_error, do_attr=False))
 

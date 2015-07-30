@@ -60,7 +60,7 @@
             </xsl:if>
            <xsl:if test=" ../@formatted.reprint != '' and ../@old-version != '' ">
                 <p class="reprint-date">
-                    Reprint<br/>as at <xsl:value-of select="../@formatted.reprint" />
+                    Reprint as at <xsl:value-of select="../@formatted.reprint" />
                 </p>
             </xsl:if>
             <h1 class="title"><xsl:value-of select="title"/></h1>
@@ -115,7 +115,7 @@
                 <xsl:if test="long-title[@deletion-status='repealed']">
                     <p class="deleted para-deleted">[Repealed]</p>
                 </xsl:if>
-                <xsl:apply-templates select="long-title/notes/history/history-note"/>
+                <xsl:apply-templates select="long-title/notes"/>
              </div>
         </div>
     </xsl:template>
@@ -175,14 +175,16 @@
 
             <h2 class="part">
                 <xsl:if test="not(ancestor::amend) and label!='' ">
-                    <span class="label">Part <xsl:value-of select="label"/></span><br/>
+                    <span class="label">Part <xsl:value-of select="label"/></span>
                 </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>
-            <xsl:apply-templates select="subpart|crosshead|prov|amend/prov|para"/>
+            <xsl:apply-templates />
         </div>
     </xsl:template>
 
+    <xsl:template match="part/label|part/heading">
+    </xsl:template>
 
 
     <xsl:template match="subpart">
@@ -219,9 +221,13 @@
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
                 <xsl:value-of select="heading"/>
             </h3>
-            <xsl:apply-templates select="crosshead|prov|amend/prov"/>
+            <xsl:apply-templates />
         </div>
     </xsl:template>
+
+    <xsl:template match="subpart/label|subpart/heading">
+    </xsl:template>
+
 
     <xsl:template match="prov">
         <div class="prov">
@@ -250,7 +256,7 @@
                 <xsl:with-param name="class">prov</xsl:with-param>
             </xsl:call-template>
             <xsl:if test="heading !=''">
-                    <h5 class="prov labelled">
+                    <h5 class="prov">
                         <a class="focus-link">
                         <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@id"/></xsl:attribute>
                         <span class="label">
@@ -282,6 +288,7 @@
                              </xsl:if>
                         </xsl:when>
                     <xsl:otherwise>
+                        <span class="prov deletion-status">
                             <xsl:choose>
                                 <xsl:when test="ancestor::act">
                                         [Repealed]
@@ -290,6 +297,7 @@
                                         [Revoked]
                                 </xsl:otherwise>
                                 </xsl:choose>
+                            </span>
                             <!-- error in Lawyers and Conveyancers Act (Lawyers: Conduct and Client Care) Rules 2008 chapter 15 -->
                             <!--<span class="deleted label-deleted">
 
@@ -317,9 +325,9 @@
             </xsl:if>
 
             <xsl:apply-templates />
-
         </div>
     </xsl:template>
+
 
     <xsl:template match='prov.body/para/list'>
         <ul class="list">
@@ -425,6 +433,11 @@
             </span>
         </h5>
     </xsl:template>
+
+    <xsl:template match="label-para.crosshead">
+      <p class="label-para-crosshead"><xsl:apply-templates/></p>
+    </xsl:template>
+
     <!--
     <xsl:template match="label">
         <p class="labelled label">
@@ -536,7 +549,7 @@
     <xsl:template match="emphasis[@style='bold']">
         <xsl:variable name="length" select="string-length(preceding::text()[1])"/>
           <xsl:if test="string-length(preceding::text()[1])">
-                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) = 0 ">&#160;</xsl:if>
         </xsl:if>
         <span style="font-weight:bold"><xsl:apply-templates/></span>
     </xsl:template>
@@ -544,9 +557,9 @@
     <xsl:template match="emphasis[@style='italic']">
         <xsl:variable name="length" select="string-length(preceding::text()[1])"/>
           <xsl:if test="string-length(preceding::text()[1])">
-                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) = 0 ">&#160;</xsl:if>
         </xsl:if>
-       <span style="font-style:italic"><xsl:apply-templates/></span>
+       <em><xsl:apply-templates/></em>
     </xsl:template>
 
 
@@ -634,7 +647,7 @@
           <xsl:apply-templates/>
     </xsl:template> -->
 
-   <xsl:template match="para/text|insertwords">
+   <xsl:template match="insertwords">
          <xsl:apply-templates />
     </xsl:template>
 
@@ -656,50 +669,19 @@
     </xsl:template>
 
     <xsl:template match="para">
+        <xsl:if test="text[not(node())]">
+        <span class="label-para deletion-status">[Repealed]</span>
+    </xsl:if>
         <div class="para"><xsl:apply-templates /></div>
     </xsl:template>
 
     <xsl:template match="para/text">
-        <p class="text"><xsl:apply-templates /></p>
-    </xsl:template>
-
-    <xsl:template match="label-para/para/text[not(node())]">
-            <span class="label-para deletion-status">[Repealed]</span>
-            <div class="para"><p class="text"></p></div>
-    </xsl:template>
-
-    <xsl:template match="subprov/para/text[not(node())]">
-            <span class="subprov deletion-status">[Repealed]</span>
-            <div class="para"><p class="text"></p></div>
-    </xsl:template>
-
-    <xsl:template match="form">
-      <div class="form">
-        <xsl:attribute name="id">
-            <xsl:value-of select="@id"/>
-        </xsl:attribute>
-            <h4 class="form"><span class="label">Form <xsl:value-of select="label"/></span><br/>
-            <xsl:value-of select="heading"/></h4>
-             <xsl:apply-templates select="authorisation|form.body"/>
-      </div>
+        <p class="text">
+            <xsl:apply-templates />
+        </p>
     </xsl:template>
 
 
-     <xsl:template match="form.body">
-        <xsl:apply-templates />
-     </xsl:template>
-    <xsl:template match="authorisation">
-      <p class="authorisation">
-        <xsl:apply-templates />
-      </p>
-    </xsl:template>
-
-
-    <xsl:template match="authorisation">
-      <p class="authorisation">
-        <xsl:apply-templates />
-      </p>
-    </xsl:template>
 
     <xsl:template match="conv">
       <div class="conv">
@@ -843,6 +825,12 @@
                 <xsl:apply-templates />
             </div>
         </dd>
+    </xsl:template>
+
+      <xsl:template match="empowering-prov">
+        <p class="empowering-prov">
+            <xsl:apply-templates />
+        </p>
     </xsl:template>
 
 </xsl:stylesheet>
