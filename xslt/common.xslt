@@ -535,6 +535,12 @@
         </p>
     </xsl:template>
 
+    <xsl:template match="readers-notes">
+        <div class="readers-notes">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+
     <xsl:template match="cf">
         <p class="cf">Compare <xsl:apply-templates/></p>
     </xsl:template>
@@ -563,20 +569,23 @@
 
     <xsl:template match="emphasis[@style='bold']">
         <xsl:variable name="length" select="string-length(preceding::text()[1])"/>
-          <xsl:if test="string-length(preceding::text()[1])">
+          <!--<xsl:if test="string-length(preceding::text()[1])">
                 <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) = 0 ">&#160;</xsl:if>
-        </xsl:if>
-        <span style="font-weight:bold"><xsl:apply-templates/></span>
+        </xsl:if>-->
+        <strong><xsl:apply-templates/></strong>
     </xsl:template>
 
     <xsl:template match="emphasis[@style='italic']">
         <xsl:variable name="length" select="string-length(preceding::text()[1])"/>
-          <xsl:if test="string-length(preceding::text()[1])">
-                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) = 0 ">&#160;</xsl:if>
-        </xsl:if>
+          <!--<xsl:if test="string-length(preceding::text()[1])">
+                <xsl:if test="string-length(translate(substring(preceding::text()[1], $length), $symbols-skip-insert-space, '')) != 0 ">&#160;</xsl:if>
+        </xsl:if>-->
        <em><xsl:apply-templates/></em>
     </xsl:template>
 
+    <xsl:template match="emphasis[@style='roman']">
+       <span class="roman"><xsl:apply-templates/></span>
+    </xsl:template>
 
    <xsl:template match="catalex-def">
         <a class="def-popover" href="#" tabindex="0" data-toggle="popover"  data-html="true">

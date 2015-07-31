@@ -1,0 +1,146 @@
+            <schedule id="DLM6038804" prov-type="clause" schedule.heading.continue="no" toc="yes" type="schedule" act.no="97" act.type="public" date.as.at="2015-07-01" date.assent="2007-11-01" date.first.valid="2008-04-01" date.terminated="nulldate" year="2007">
+                <label denominator="yes">33</label>
+                <empowering-prov>
+                    <citation jurisdiction="nz">
+                        <intref href="DLM6033105">s CF 3</intref>
+                    </citation>
+                </empowering-prov>
+                <heading>Default fractions of foreign superannuation withdrawals</heading>
+                <notes>
+                    <history>
+                        <history-note id="DLM6038807">
+                            <amended-provision>Schedule 33</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>1 April 2014</amendment-date>, by
+                            <amending-provision href="DLM5198425">section 130</amending-provision> of the
+                            <amending-leg>Taxation (Annual Rates, Foreign Superannuation, and Remedial Matters) Act 2014</amending-leg> (2014 No 4).</history-note>
+                    </history>
+                </notes>
+                <schedule.misc>
+                    <para>
+                        <table align="center" colsep="0" fontsize="11.5" frame="top" id="DLM6038805" leading="13.5" rowsep="0">
+                            <tgroup cols="2">
+                                <colspec colname="col1" colwidth="50.52*" />
+                                <colspec colname="col2" colwidth="49.48*" />
+                                <thead>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1">
+                                            <emphasis style="italic">Column 1</emphasis>
+                                            <brk/>schedule year</entry>
+                                        <entry align="center">
+                                            <emphasis style="italic">Column 2</emphasis>
+                                            <brk/>schedule year fraction
+                                            <brk/>(%)</entry>
+                                    </row>
+                                </thead>
+                                <tbody>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">1</entry>
+                                        <entry align="center" rowsep="0">4.76</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">2</entry>
+                                        <entry align="center" rowsep="0">9.45</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">3</entry>
+                                        <entry align="center" rowsep="0">14.06</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">4</entry>
+                                        <entry align="center" rowsep="0">18.60</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">5</entry>
+                                        <entry align="center" rowsep="0">23.07</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">6</entry>
+                                        <entry align="center" rowsep="0">27.47</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">7</entry>
+                                        <entry align="center" rowsep="0">31.80</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">8</entry>
+                                        <entry align="center" rowsep="0">36.06</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">9</entry>
+                                        <entry align="center" rowsep="0">40.26</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">10</entry>
+                                        <entry align="center" rowsep="0">44.39</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">11</entry>
+                                        <entry align="center" rowsep="0">48.45</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">12</entry>
+                                        <entry align="center" rowsep="0">52.45</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">13</entry>
+                                        <entry align="center" rowsep="0">56.39</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">14</entry>
+                                        <entry align="center" rowsep="0">60.27</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">15</entry>
+                                        <entry align="center" rowsep="0">64.08</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">16</entry>
+                                        <entry align="center" rowsep="0">67.84</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">17</entry>
+                                        <entry align="center" rowsep="0">71.53</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">18</entry>
+                                        <entry align="center" rowsep="0">75.17</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">19</entry>
+                                        <entry align="center" rowsep="0">78.75</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">20</entry>
+                                        <entry align="center" rowsep="0">82.28</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">21</entry>
+                                        <entry align="center" rowsep="0">85.74</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">22</entry>
+                                        <entry align="center" rowsep="0">89.16</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">23</entry>
+                                        <entry align="center" rowsep="0">92.58</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">24</entry>
+                                        <entry align="center" rowsep="0">95.83</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">25</entry>
+                                        <entry align="center" rowsep="0">99.08</entry>
+                                    </row>
+                                    <row valign="middle">
+                                        <entry align="center" colsep="1" rowsep="0">26 or more</entry>
+                                        <entry align="center" rowsep="0">100.00</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </para>
+                </schedule.misc>
+            </schedule>

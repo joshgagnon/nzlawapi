@@ -1,0 +1,374 @@
+<notes>
+    <ird.aids id="DLM4264561">
+        <readers-notes>
+            <para>
+                <table align="left" colsep="0" fontsize="8.5" frame="all" leading="10" rowsep="0">
+                    <tgroup cols="4">
+                        <colspec align="left" colname="col1" colwidth="17.94*" />
+                        <colspec align="left" colname="col2" colwidth="84.37*" />
+                        <colspec align="left" colname="col3" colwidth="46.26*" />
+                        <colspec align="left" colname="col4" colwidth="43.42*" />
+                        <thead>
+                            <row valign="bottom">
+                                <entry colsep="1" rowsep="1">
+                                    <emphasis style="bold">Row</emphasis>
+                                </entry>
+                                <entry colsep="1" rowsep="1">
+                                    <emphasis style="bold">Imputation credit</emphasis>
+                                </entry>
+                                <entry colsep="1" rowsep="1">
+                                    <emphasis style="bold">Credit date</emphasis>
+                                </entry>
+                                <entry colsep="0" rowsep="1">
+                                    <emphasis style="bold">Further defined</emphasis>
+                                </entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry colsep="1" rowsep="0">1</entry>
+                                <entry colsep="1" rowsep="0">Opening credit balance</entry>
+                                <entry colsep="1" rowsep="0">1 April</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518661">section OA 7</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">2</entry>
+                                <entry colsep="1" rowsep="0">Provisional tax and income tax paid</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518705">section OB 4</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">3</entry>
+                                <entry colsep="1" rowsep="0">Deposit into tax pooling account</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518708">section OB 5</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">4</entry>
+                                <entry colsep="1" rowsep="0">Transfer from tax pooling account</entry>
+                                <entry colsep="1" rowsep="0">day of credit</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518710">section OB 6</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">5</entry>
+                                <entry colsep="1" rowsep="0">Payment of further income tax</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518712">section OB 7</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">5B</entry>
+                                <entry colsep="1" rowsep="0">Payment of qualifying company election tax</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1631666">section OB 7B</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">5C</entry>
+                                <entry colsep="1" rowsep="0">Tax credit for research and development expenditure</entry>
+                                <entry colsep="1" rowsep="0">day return filed</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1631668">section OB 7C</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">6</entry>
+                                <entry colsep="1" rowsep="0">Amount of tax withheld for resident passive income</entry>
+                                <entry colsep="1" rowsep="0">day on which amount is withheld</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518714">section OB 8</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">7</entry>
+                                <entry colsep="1" rowsep="0">Imputation credit attached to dividend derived</entry>
+                                <entry colsep="1" rowsep="0">day on which dividend is paid</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518716">section OB 9</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">7B</entry>
+                                <entry colsep="1" rowsep="0">Attributed PIE income with imputation credit</entry>
+                                <entry colsep="1" rowsep="0">day of attribution</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM2569615">section OB 9B</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">8</entry>
+                                <entry colsep="1" rowsep="0">FDP credit attached to dividend derived when not FDPA company</entry>
+                                <entry colsep="1" rowsep="0">day on which dividend is paid</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518718">section OB 10</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">9</entry>
+                                <entry colsep="1" rowsep="0">
+                                    <emphasis style="italic">[Repealed]</emphasis>
+                                </entry>
+                                <entry colsep="1" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">10</entry>
+                                <entry colsep="1" rowsep="0">Transfer from FDP account</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518722">section OB 12</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">11</entry>
+                                <entry colsep="1" rowsep="0">Transfer of debt balance when company leaves wholly-owned group</entry>
+                                <entry colsep="1" rowsep="0">day on which company leaves group</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518724">section OB 13</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">12</entry>
+                                <entry colsep="1" rowsep="0">Additional income tax payable when company leaves wholly-owned group</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518726">section OB 14</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">13</entry>
+                                <entry colsep="1" rowsep="0">Additional income tax when company joins wholly-owned group</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518728">section OB 15</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">14</entry>
+                                <entry colsep="1" rowsep="0">Attribution for personal services if company is not
+                                    <insertwords>qualifying company</insertwords>
+                                </entry>
+                                <entry colsep="1" rowsep="0">31 March</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518730">section OB 16</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">15</entry>
+                                <entry colsep="1" rowsep="0">
+                                    <emphasis style="italic">[Repealed]</emphasis>
+                                </entry>
+                                <entry colsep="1" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">16</entry>
+                                <entry colsep="1" rowsep="0">Transfer from ASC account</entry>
+                                <entry colsep="1" rowsep="0">day of transfer</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518734">section OB 18</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">17</entry>
+                                <entry colsep="1" rowsep="0">Transfer to master fund by company</entry>
+                                <entry colsep="1" rowsep="0">day of transfer</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518736">section OB 19</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">18</entry>
+                                <entry colsep="1" rowsep="0">Maori authority credit attached to distribution</entry>
+                                <entry colsep="1" rowsep="0">day of distribution</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518741">section OB 20</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">19</entry>
+                                <entry colsep="1" rowsep="0">Transfer of balance of Maori authority credit account</entry>
+                                <entry colsep="1" rowsep="0">day of transfer</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518743">section OB 21</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">20</entry>
+                                <entry colsep="1" rowsep="0">Replacement payment paid under share-lending arrangement</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518745">section OB 22</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">21</entry>
+                                <entry colsep="1" rowsep="0">Imputation credit shown in credit transfer notice</entry>
+                                <entry colsep="1" rowsep="0">day on which notice is given</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518747">section OB 23</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">22</entry>
+                                <entry colsep="1" rowsep="0">Imputation credit, FDP credit, or policyholder credit on resident’s restricted amalgamation</entry>
+                                <entry colsep="1" rowsep="0">credit date in account of amalgamating company</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518749">section OB 24</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">23</entry>
+                                <entry colsep="1" rowsep="0">Reversal of debt for tax advantage arrangement</entry>
+                                <entry colsep="1" rowsep="0">debit date of debit</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518751">section OB 25</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">24</entry>
+                                <entry colsep="1" rowsep="0">Eliminating debit for loss of shareholder continuity cancelling tax pooling account deposit that is refunded or credited</entry>
+                                <entry colsep="1" rowsep="0">day of refund or credit</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518753">section OB 26</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">25</entry>
+                                <entry colsep="1" rowsep="0">Amount of tax withheld by Australian ICA company for non-resident passive income</entry>
+                                <entry colsep="1" rowsep="0">day on which amount is withheld</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518755">section OB 27</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">26</entry>
+                                <entry colsep="1" rowsep="0">Amount of tax withheld from schedular payment to Australian ICA company</entry>
+                                <entry colsep="1" rowsep="0">day on which amount is withheld</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518757">section OB 28</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry colsep="1" rowsep="0">27</entry>
+                                <entry colsep="1" rowsep="0">Schedular income tax paid by Australian ICA company</entry>
+                                <entry colsep="1" rowsep="0">day of payment</entry>
+                                <entry colsep="0" rowsep="0">
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM1518759">section OB 29</intref>
+                                    </citation>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+            <para>
+                <notes>
+                    <history>
+                        <history-note id="DLM1634329">
+                            <amended-provision>Table O1 row 5B</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>1 April 2008</amendment-date>, by
+                            <amending-provision href="DLM1172837">section 497</amending-provision> of the
+                            <amending-leg>Taxation (Business Taxation and Remedial Matters) Act 2007</amending-leg> (2007 No 109).</history-note>
+                        <history-note id="DLM1634330">
+                            <amended-provision>Table O1 row 5C</amended-provision>:
+                            <amending-operation>inserted</amending-operation>, on
+                            <amendment-date>1 April 2008</amendment-date>, by
+                            <amending-provision href="DLM1172837">section 497</amending-provision> of the
+                            <amending-leg>Taxation (Business Taxation and Remedial Matters) Act 2007</amending-leg> (2007 No 109).</history-note>
+                        <history-note id="DLM2570614">
+                            <amended-provision>Table O1 row 7B</amended-provision>:
+                            <amending-operation>substituted</amending-operation> (with effect on 1 April 2009), on
+                            <amendment-date>6 October 2009</amendment-date>, by
+                            <amending-provision href="DLM1400953">section 399(2)</amending-provision> of the
+                            <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                        <history-note id="DLM2570616">
+                            <amended-provision>Table O1 row 9</amended-provision>:
+                            <amending-operation>repealed</amending-operation> (with effect on 30 June 2009), on
+                            <amendment-date>6 October 2009</amendment-date>, by
+                            <amending-provision href="DLM1400953">section 399(3)</amending-provision> of the
+                            <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                        <history-note id="DLM2570617">
+                            <amended-provision>Table O1 row 14</amended-provision>:
+                            <amending-operation>amended</amending-operation> (with effect on 1 April 2008), on
+                            <amendment-date>6 October 2009</amendment-date>, by
+                            <amending-provision href="DLM1400953">section 399(4)</amending-provision> of the
+                            <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                        <history-note id="DLM3113463">
+                            <amended-provision>Table O1 row 15</amended-provision>:
+                            <amending-operation>repealed</amending-operation>, on
+                            <amendment-date>1 July 2010</amendment-date>, by
+                            <amending-provision href="DLM1400953">section 399(5)</amending-provision> of the
+                            <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                    </history>
+                </notes>
+            </para>
+        </readers-notes>
+    </ird.aids>
+</notes>

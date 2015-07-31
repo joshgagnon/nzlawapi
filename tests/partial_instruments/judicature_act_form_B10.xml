@@ -1,0 +1,188 @@
+<form id="DLM1817926" toc="yes">
+    <label denominator="yes">B 10</label>
+    <empowering-prov>
+        <citation jurisdiction="nz">
+            <intref href="DLM1819744">r 24.42</intref>
+        </citation>
+    </empowering-prov>
+    <heading>Statement of affairs and affidavit</heading>
+    <form.body>
+        <para>
+            <text>
+                <emphasis style="italic">Insert a heading that conforms with
+                    <citation jurisdiction="nz">
+                        <intref href="DLM1819699">rule 24.5</intref>
+                    </citation>.</emphasis>
+            </text>
+        </para>
+        <para>
+            <text>Statement showing the assets, debts, and liabilities of [
+                <emphasis style="italic">full name, address, description of insolvent person</emphasis>] (the insolvent).</text>
+        </para>
+        <para>
+            <legtable>
+                <summary>The following table is small in size and has 2 columns. Column 1 is headed Assets and column 2 is headed $.</summary>
+                <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                    <tgroup cols="3">
+                        <colspec colname="col1" colwidth="2.41*" />
+                        <colspec colname="col2" colwidth="11.61pt" />
+                        <colspec align="right" colname="col3" colwidth="0.59*" />
+                        <tbody>
+                            <row>
+                                <entry colsep="0" rowsep="0">
+                                    <emphasis style="bold">Assets</emphasis>
+                                </entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0">
+                                    <emphasis style="bold">$</emphasis>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Stock-in-trade at [
+                                    <emphasis style="italic">place</emphasis>], estimated at</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Book debts, estimated to produce</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Cash in hand</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Cash in [
+                                    <emphasis style="italic">name of bank</emphasis>]</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Furniture and other personal property according to list attached and marked “A”</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Real property according to list attached and marked “B”</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Surplus from securities in hands of secured creditors</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Other assets</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">
+                                    <emphasis style="bold">Total assets</emphasis>
+                                </entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </legtable>
+        </para>
+        <para>
+            <legtable>
+                <summary>The following table is small in size and has 2 columns. Column 1 is headed Debts and liabilities.</summary>
+                <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                    <tgroup cols="3">
+                        <colspec colname="col1" colwidth="2.40*" />
+                        <colspec colname="col2" colwidth="11.61pt" />
+                        <colspec align="right" colname="col3" colwidth="0.60*" />
+                        <tbody>
+                            <row>
+                                <entry colsep="0" rowsep="0">
+                                    <emphasis style="bold">Debts and liabilities</emphasis>
+                                </entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Unsecured creditors according to list attached and marked “C”</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Secured creditors according to list attached and marked “D”</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Less estimated value of securities</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Surplus</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">Other liabilities according to list attached and marked “E”</entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                            <row>
+                                <entry align="justify" colsep="0" rowsep="0">
+                                    <emphasis style="bold">Total debts</emphasis>
+                                </entry>
+                                <entry colsep="0" rowsep="0" />
+                                <entry colsep="0" rowsep="0" />
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </legtable>
+        </para>
+        <para>
+            <text>I, [
+                <emphasis style="italic">full name, address, description of insolvent person</emphasis>], swear that the above statement and the lists marked
+                <quote.in quote="1">A</quote.in>,
+                <quote.in quote="1">B</quote.in>,
+                <quote.in quote="1">C</quote.in>,
+                <quote.in quote="1">D</quote.in>, and
+                <quote.in quote="1">E</quote.in> are a correct statement of my assets, debts, and liabilities, the names and addresses of my creditors, and the securities held by them.</text>
+        </para>
+        <para>
+            <text>
+                <emphasis style="roman">Sworn at [
+                    <emphasis style="italic">place, date</emphasis>]</emphasis>
+            </text>
+        </para>
+        <para>
+            <text>(insolvent person)</text>
+        </para>
+        <para>
+            <text>Before me: [
+                <emphasis style="italic">name, signature</emphasis>]</text>
+        </para>
+        <para>
+            <text>(a solicitor of the High Court of New Zealand/Registrar/Deputy Registrar/Notary Public*)</text>
+        </para>
+        <para>
+            <legtable>
+                <summary> </summary>
+                <table align="left" colsep="0" fontsize="9.5" frame="none" leading="10.5" rowsep="0">
+                    <tgroup cols="1">
+                        <colspec colname="col1" />
+                        <tbody>
+                            <row valign="top">
+                                <entry>*Select one.</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </legtable>
+        </para>
+    </form.body>
+</form>

@@ -63,8 +63,13 @@
     .em{
         font-style:italic;
     }
-}
+    .row {
 
+    }
+      .row:before, .row:after {
+        content: initial;
+        display: intial;
+    }}
 
 /*
 .legislation .label{

@@ -88,24 +88,19 @@
                   <xsl:otherwise>sch</xsl:otherwise>
                   </xsl:choose>
               </xsl:attribute>
-            <table class="empowering-prov-layout" summary="This table lays out an empowering provision with it's subject. ">
-                <tbody><tr>
-                    <td class="header">
+
                         <h2 class="schedule">
-                            <span class="label">
-                                <span class="hit">Schedule</span>
-                                <xsl:if test="./label/text()!='Schedule'">&#160;<xsl:value-of select="label"/></xsl:if>
-                            </span><br/>
+                            <span class="label">Schedule<xsl:if test="./label/text()!='Schedule'">&#160;<xsl:value-of select="label"/></xsl:if>
+                            </span>
                             <xsl:value-of select="heading"/>
                         </h2>
-                    </td>
-                    <!--<td class="empowering-prov">
-                    </td>-->
-                    </tr>
-                </tbody>
-            </table>
-            <xsl:apply-templates select="schedule.provisions|schedule.misc|schedule.forms|schedule.amendments|notes|conv"/>
+
+            <xsl:apply-templates />
         </div>
     </xsl:template>
+
+    <xsl:template match="schedule/label|schedule/heading">
+    </xsl:template>
+
 
   </xsl:stylesheet>
