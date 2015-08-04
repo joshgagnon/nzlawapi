@@ -94,18 +94,22 @@ class FullTransformTest(unittest.TestCase):
                     print test_file
                     result = tohtml(etree.parse(os.path.join(path, test_file.replace('.html', '.xml'))))
                     expected = etree.parse(open(os.path.join(path, test_file)), parser=etree.HTMLParser()).xpath('.//body/div[1]')[0]
-                    end = expected.find('.//div[@class="actbodylastpage"]')
-                    end.getparent().remove(end)
+                    # findall much faster than xpath, but no 'or'
+                    remove = expected.findall('.//div[@class="actbodylastpage"]') + expected.findall('.//div[@class="contents"]')
+                    for r in remove:
+                        r.getparent().remove(r)
                     #xpath = './/div[@class="prov"]|.//div[@class="form"]'
                     xpath = './/div[@class="part"]'
                     results = result.findall(xpath)
                     for i, seg in enumerate(expected.findall(xpath)):
                         expected_seg = sub.sub('', etree.tostring(seg, method="text", encoding="utf-8"))
+                        #print expected_seg
                         result_seg = sub.sub('', etree.tostring(results[i], method="text", encoding="utf-8"))
-                        x = [i for i in xrange(len(result_seg)) if result_seg[i] != expected_seg[i]]
+                        x = [i for i in xrange(len(result_seg)) if i >= len(expected_seg) or result_seg[i] != expected_seg[i]]
                         if len(x):
-                            print expected_seg[x[0]-10:x[0]+100]
                             print result_seg[x[0]-10:x[0]+100]
+                            print expected_seg[x[0]-10:x[0]+100]
+
                         self.assertEqual(result_seg, expected_seg)
                         # we add too many links for this to work
                         #self.assertTrue(xml_compare(prov, results[i], print_error, do_attr=False))

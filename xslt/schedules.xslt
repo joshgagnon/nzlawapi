@@ -63,9 +63,16 @@
         <xsl:attribute name="id">
               <xsl:value-of select="@id"/>
           </xsl:attribute>
-        <h5 class="schedule-amendments-group2"><xsl:apply-templates select="heading"/></h5>
+        <xsl:apply-templates />
       </div>
     </xsl:template>
+
+    <xsl:template match="schedule.amendments.group2/heading">
+        <h5 class="schedule-amendments-group2">
+             <xsl:apply-templates />
+        </h5>
+    </xsl:template>
+
 
     <xsl:template match="schedule">
         <div class="schedule">

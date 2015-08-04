@@ -4,3 +4,5 @@
 bower_components
 node_modules
 build
+tests/instruments/tax.xml
+tests/instruments/tax.html

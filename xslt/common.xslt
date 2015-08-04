@@ -174,8 +174,8 @@
                 </xsl:if>
 
             <h2 class="part">
-                <xsl:if test="not(ancestor::amend) and label!='' ">
-                    <span class="label">Part <xsl:value-of select="label"/></span>
+                <xsl:if test="label!='' ">
+                    <span class="label"><xsl:if test="not(contains(label, 'Part'))">Part </xsl:if><xsl:value-of select="label"/></span>
                 </xsl:if>
                 <xsl:value-of select="heading"/>
             </h2>
@@ -221,6 +221,9 @@
                 <span class="label">Subpart <xsl:value-of select="label"/></span><span class="suffix">—</span>
                 <xsl:value-of select="heading"/>
             </h3>
+            <xsl:if test="@deletion-status='repealed'">
+            <span class="subpart deletion-status">[Repealed]</span>
+            </xsl:if>
             <xsl:apply-templates />
         </div>
     </xsl:template>
@@ -306,7 +309,7 @@
                     </xsl:choose>
                     <xsl:apply-templates select="def-para|prov.body/para/def-para" />
             </div>
-            <xsl:apply-templates select="notes|cf"/>
+            <xsl:apply-templates select="notes|cf|ird.aids"/>
         </div>
     </xsl:template>
 
@@ -377,7 +380,7 @@
         </div>
     </xsl:template>
 
-    <!-- can't be right -->
+    <!-- can't be right
     <xsl:template match="amend">
         <div class="def-para">
              <xsl:attribute name="class">
@@ -387,8 +390,14 @@
                   <xsl:attribute name="class">
                     amend amend-increment-<xsl:value-of select="increment"/>
                 </xsl:attribute>
-                 <xsl:apply-templates select="def-para"/>
+                 <xsl:apply-templates />
             </blockquote>
+        </div>
+    </xsl:template>-->
+
+    <xsl:template match="amend">
+        <div class="amend">
+             <xsl:apply-templates />
         </div>
     </xsl:template>
 
@@ -435,7 +444,8 @@
     </xsl:template>
 
     <xsl:template match="label-para.crosshead">
-      <p class="label-para-crosshead"><xsl:apply-templates/></p>
+      <p class="label-para-crosshead"><xsl:apply-templates/>
+  </p>
     </xsl:template>
 
     <!--
@@ -504,7 +514,19 @@
     <xsl:template match='subprov.crosshead'>
         <h6 class="subprov-crosshead">
              <xsl:apply-templates />
+            <xsl:if test="@deletion-status='repealed'">
+                <span class="crosshead deletion-status">[Repealed]</span>
+            </xsl:if>
         </h6>
+    </xsl:template>
+
+    <xsl:template match='ird-crosshead'>
+        <h4 class="ird-crosshead">
+             <xsl:apply-templates />
+            <xsl:if test="@deletion-status='repealed'">
+                <span class="crosshead deletion-status">[Repealed]</span>
+            </xsl:if>
+        </h4>
     </xsl:template>
 
     <xsl:template match='example'>
@@ -519,12 +541,21 @@
         </h6>
     </xsl:template>
 
+   <xsl:template match="example/text">
+        <p  class="text"><xsl:apply-templates select="para"/></p>
+    </xsl:template>
+
     <xsl:template match="notes/history">
         <div class="history">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
 
+    <xsl:template match="notes/editorial-note">
+    </xsl:template>
+
+    <xsl:template match="notes/amends-note">
+    </xsl:template>
 
     <xsl:template match="notes/history/history-note">
         <p class="history-note">
@@ -543,6 +574,16 @@
 
     <xsl:template match="cf">
         <p class="cf">Compare <xsl:apply-templates/></p>
+    </xsl:template>
+
+    <xsl:template match="ird.aids">
+       <xsl:apply-templates/>
+    </xsl:template>
+
+    <xsl:template match="term.list">
+        <p class="term-list">Defined in this Act:
+            <xsl:apply-templates/>
+    </p>
     </xsl:template>
 
     <xsl:template match="history-note/amended-provision">
@@ -630,6 +671,11 @@
                 </xsl:attribute>
                  <xsl:attribute name="class">amending-provision external_ref</xsl:attribute>
             </xsl:when>
+            <xsl:when test="local-name() = 'term'">
+                  <xsl:attribute name="href">/open_article/instrument/<xsl:value-of select="@href"/>
+                </xsl:attribute>
+                 <xsl:attribute name="class">term external_ref</xsl:attribute>
+            </xsl:when>
             <xsl:otherwise>
                   <xsl:attribute name="href">/open_article/<xsl:value-of select="@href"/></xsl:attribute>
                  <xsl:attribute name="data-target-id"><xsl:value-of select="@target-id"/></xsl:attribute>
@@ -681,19 +727,14 @@
          <xsl:apply-templates />
     </xsl:template>
 
-   <xsl:template match="example">
-        <div class="example">
-            <h6 class="heading"><strong>Example</strong></h6>
-            <p  class="text"><xsl:apply-templates select="para"/></p>
-        </div>
-    </xsl:template>
+
 
     <xsl:template match="text()">
         <xsl:value-of select="."/>
     </xsl:template>
 
     <xsl:template match="para">
-        <xsl:if test="text[not(node())]">
+        <xsl:if test="text[1][not(node())] and not(ancestor::readers-notes)">
         <span class="label-para deletion-status">[Repealed]</span>
     </xsl:if>
         <div class="para"><xsl:apply-templates /></div>
