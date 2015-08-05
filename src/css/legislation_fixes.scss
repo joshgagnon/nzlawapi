@@ -69,7 +69,29 @@
       .row:before, .row:after {
         content: initial;
         display: intial;
-    }}
+    }
+
+     p.house,  h1.sop-heading, p.sop-date {
+        text-align: center;
+        font-size: 1.7em;
+        font-weight: bold;
+        line-height: 100%;
+    }
+     ul.list {
+        margin-left: 0
+    }
+
+     ul.list li {
+        margin-left: 3em
+    }
+
+     ul.list li.bull {
+        list-style-type: disc;
+        display: list-item;
+        margin-left: 1.2em;
+        padding-left: 2em
+    }
+}
 
 /*
 .legislation .label{

@@ -15,7 +15,6 @@
         </div>
     </xsl:template>
 
-
     <xsl:template match="sop">
         <div class="legislation">
             <div>
@@ -23,10 +22,50 @@
                      <xsl:attribute name="id">
                         <xsl:value-of select="@id"/>
                     </xsl:attribute>
-                <xsl:apply-templates select="bill.sop.body/bill|billref|body|explnote|end" />
+
+                <p class="sop-number">
+                    No <xsl:value-of select="@sop.no"/>
+                </p>
+                <!-- TODO, switch here -->
+                <p class="house">
+                    House of Representatives
+                </p>
+                <h1 class="sop-heading">
+                    Supplementary Order Paper
+                </h1>
+                <xsl:apply-templates  />
                 </div>
             </div>
         </div>
+    </xsl:template>
+
+    <xsl:template match="bill/cover">
+        <div  class="cover">
+            <xsl:apply-templates  />
+            <p class="bill-identifier"><xsl:value-of select="../@bill.no"/>-<xsl:value-of select="../@stage"/></p>
+        </div>
+    </xsl:template>
+
+    <xsl:template match="bill/cover/member">
+        <p class="member"><xsl:apply-templates  /></p>
+    </xsl:template>
+
+    <xsl:template match="bill/cover/title">
+        <h1 class="title"><xsl:apply-templates  /></h1>
+    </xsl:template>
+
+    <xsl:template match="bill/cover/billtype">
+        <p class="billtype"><xsl:apply-templates /></p>
+    </xsl:template>
+
+
+
+    <xsl:template match="bill.sop.body/bill">
+        <xsl:apply-templates  />
+    </xsl:template>
+
+    <xsl:template match="bill.sop.body/bill/billdetail">
+
     </xsl:template>
 
     <xsl:template match="sop.amend">
@@ -40,8 +79,25 @@
         </div>
     </xsl:template>
 
+    <xsl:template match="sop/date">
+            <p class="sop-date"><xsl:apply-templates/></p>
+    </xsl:template>
+
+
+
     <xsl:template match="billref">
         <p class="billref"><xsl:value-of select="."/></p>
+    </xsl:template>
+
+    <xsl:template match="sop/billref">
+        <p class="billref"><xsl:value-of select="."/></p>
+         <hr class="sop-body" />
+    </xsl:template>
+
+    <xsl:template match="bill.sop.body/heading">
+        <h2 class="sop-body">
+            <xsl:apply-templates />
+        </h2>
     </xsl:template>
 
     <xsl:template match="sop/body/heading">
@@ -50,7 +106,7 @@
     </xsl:template>
 
     <xsl:template match="motion">
-        <p class="motion"><xsl:value-of select="."/></p>
+        <p class="motion"><xsl:apply-templates /></p>
     </xsl:template>
 
 
@@ -76,20 +132,42 @@
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
-             <h2 class="explnote"><xsl:value-of select="heading"/></h2>
-             <xsl:apply-templates select="explnote.group"/>
+            <xsl:apply-templates />
+            <hr class="explnote"/>
          </div>
     </xsl:template>
 
-    <xsl:template match="explnote.group">
-         <h3 class="explnote-group"><xsl:value-of select="heading"/></h3>
-         <xsl:apply-templates select="para|explnote.subhead1"/>
+    <xsl:template match="explnote/heading">
+             <h2 class="explnote"><xsl:apply-templates /></h2>
     </xsl:template>
+
+    <xsl:template match="explnote.part">
+        <h2 class="explnote-part">
+            <xsl:if test="label!='' ">
+                <span class="label"><xsl:if test="not(contains(label, 'Part'))">Part </xsl:if><xsl:value-of select="label"/></span>
+            </xsl:if>
+            <xsl:value-of select="heading"/>
+        </h2>
+        <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="explnote.part/label|explnote.part/heading">
+    </xsl:template>
+
+    <xsl:template match="explnote.group">
+         <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="explnote.group/heading">
+          <h3 class="explnote-group"><xsl:apply-templates /></h3>
+    </xsl:template>
+
 
       <xsl:template match="explnote.subhead1">
-         <h5 class="explnote-subhead1"><xsl:value-of select="."/></h5>
+         <h5 class="explnote-subhead1">
+             <xsl:apply-templates />
+         </h5>
     </xsl:template>
-
 
 
 

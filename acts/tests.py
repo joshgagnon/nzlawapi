@@ -99,11 +99,13 @@ class FullTransformTest(unittest.TestCase):
                     for r in remove:
                         r.getparent().remove(r)
                     #xpath = './/div[@class="prov"]|.//div[@class="form"]'
-                    xpath = './/div[@class="part"]'
-                    results = result.findall(xpath)
-                    for i, seg in enumerate(expected.findall(xpath)):
+                    xpath = ".//div[contains(concat(' ', @class, ' '), ' part ')]"
+                    results = result.xpath(xpath)
+                    for i, seg in enumerate(expected.xpath(xpath)):
                         expected_seg = sub.sub('', etree.tostring(seg, method="text", encoding="utf-8"))
                         #print expected_seg
+                        if len(results) <= i:
+                            print etree.tostring(seg, method="text", encoding="utf-8")
                         result_seg = sub.sub('', etree.tostring(results[i], method="text", encoding="utf-8"))
                         x = [i for i in xrange(len(result_seg)) if i >= len(expected_seg) or result_seg[i] != expected_seg[i]]
                         if len(x):

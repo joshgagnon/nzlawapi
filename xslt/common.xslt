@@ -1,6 +1,25 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"  xmlns:atidlm="http://www.arbortext.com/namespace/atidlm">
 
+    <xsl:template match="struckoutwords|insertwords">
+        <xsl:apply-templates/>
+    </xsl:template>
+
+
+    <xsl:template name="quote">
+        <xsl:if test="@quote = '1'">“</xsl:if>
+    </xsl:template>
+
+    <xsl:template name="parentquote">
+        <xsl:if test="../@quote = '1'">“</xsl:if>
+    </xsl:template>
+
+    <xsl:template match="quote.in">
+        <q class="quote-in"><xsl:if test="@quote = '1'">“</xsl:if>
+        <xsl:apply-templates/>
+        <xsl:if test="@quote = '1'">”</xsl:if></q>
+    </xsl:template>
+
 
     <xsl:template match="act">
         <div class="legislation">
@@ -72,9 +91,12 @@
             <xsl:if test="../@act.no">
 
             </xsl:if>
-            <xsl:apply-templates select="notes"/>
+            <xsl:apply-templates />
             <!--<xsl:apply-templates select="cover.reprint-note"/> -->
         </div>
+    </xsl:template>
+
+    <xsl:template match="cover/title">
     </xsl:template>
 
     <xsl:template match="contents">
@@ -143,7 +165,7 @@
 
 
     <xsl:template match="part">
-        <div class="part">
+        <div>
              <xsl:attribute name="id">
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
@@ -155,9 +177,17 @@
                         <xsl:value-of select="@data-hook-length"/>
                     </xsl:attribute>
                 </xsl:if>
+             <xsl:attribute name="class">
+                <xsl:choose>
+                    <xsl:when test="@quote='1'">part first</xsl:when>
+                    <xsl:otherwise>part</xsl:otherwise>
+                </xsl:choose>
+                <!-- will loose previous class -->
             <xsl:call-template name="current">
                 <xsl:with-param name="class">part</xsl:with-param>
             </xsl:call-template>
+            </xsl:attribute>
+
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
                      <xsl:when test="ancestor::*[@quote]  or ancestor::amend">
@@ -396,7 +426,15 @@
     </xsl:template>-->
 
     <xsl:template match="amend">
-        <div class="amend">
+        <div>
+             <xsl:attribute name="class">
+            <xsl:choose>
+                <xsl:when test="@increment='1'">increment-1 amend</xsl:when>
+                <xsl:when test="@increment='2'">increment-2 amend</xsl:when>
+                <xsl:when test="@increment='3'">increment-2 amend</xsl:when>
+                <xsl:otherwise>amend</xsl:otherwise>
+            </xsl:choose>
+            </xsl:attribute>
              <xsl:apply-templates />
         </div>
     </xsl:template>
@@ -474,25 +512,6 @@
         </p>
     </xsl:template>
     -->
-
-    <xsl:template match="item/label">
-        <p class="labelled item">
-            <xsl:call-template name="current"/>
-            <xsl:if test="text() != ''">
-                <span class="label">
-                     <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
-                </span>
-            </xsl:if>
-            <xsl:choose>
-                <xsl:when test="../para/text != ''">
-                    <xsl:apply-templates select="../para/text[1]"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <span class="deleted label-deleted">[Repealed]</span>
-                </xsl:otherwise>
-            </xsl:choose>
-        </p>
-    </xsl:template>
 
 
     <xsl:template match="follow-text[@space-before='no']">
@@ -854,11 +873,28 @@
     <xsl:template match="list/item">
         <li class="bull">
             <p class="item">
-                <xsl:value-of select="label"/>
-
-                <xsl:apply-templates select="para/text|para/list"/>
+                <xsl:apply-templates />
             </p>
         </li>
+    </xsl:template>
+
+    <xsl:template match="item/label">
+        <p class="labelled item">
+            <xsl:call-template name="current"/>
+            <xsl:if test="text() != ''">
+                <span class="label">
+                     <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
+                </span>
+            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="../para/text != ''">
+
+                </xsl:when>
+                <xsl:otherwise>
+                    <span class="deleted label-deleted">[Repealed]</span>
+                </xsl:otherwise>
+            </xsl:choose>
+        </p>
     </xsl:template>
 
 

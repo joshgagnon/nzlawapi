@@ -10,18 +10,6 @@
     </xsl:template>
 
 
-
-    <xsl:template match="explnote">
-        <div class="explnote">
-            <xsl:attribute name="id">
-                <xsl:value-of select="@id"/>
-            </xsl:attribute>
-            <h2 class="explnote"><xsl:value-of select="heading"/></h2>
-            <xsl:apply-templates select="para"/>
-        </div>
-            <hr class="explnote"/>
-    </xsl:template>
-
      <xsl:template match="promulgation">
         <div class="promulgation">
             <xsl:attribute name="id">

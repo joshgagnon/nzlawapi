@@ -11,13 +11,13 @@
     <xsl:import href="end.xslt" />
     <xsl:import href="schedules.xslt" />
 
+
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
     <xsl:variable name="symbols-skip-insert-space"> ,.;:'`’")(</xsl:variable>
 
 
     <xsl:template match="/">
         <xsl:apply-templates />
-
     </xsl:template>
 
 
@@ -26,20 +26,6 @@
         <xsl:if test="@current = 'true'">
            <xsl:attribute name="class">current <xsl:value-of select="$class"/></xsl:attribute>
         </xsl:if>
-    </xsl:template>
-
-    <xsl:template name="quote">
-        <xsl:if test="@quote = '1'">“</xsl:if>
-    </xsl:template>
-
-    <xsl:template name="parentquote">
-        <xsl:if test="../@quote = '1'">“</xsl:if>
-    </xsl:template>
-
-    <xsl:template match="quote.in">
-        <q class="quote-in"><xsl:if test="@quote = '1'">“</xsl:if>
-        <xsl:apply-templates/>
-        <xsl:if test="@quote = '1'">”</xsl:if></q>
     </xsl:template>
 
     <xsl:template name="openbracket">
@@ -59,17 +45,16 @@
     </xsl:template>
 
  <xsl:template match="*[@amend.level1='struckout-draft']">
-        <del href="struckout-draft">
+        <del class="struckout-draft">
             <xsl:apply-imports/>
         </del>
 </xsl:template>
 
  <xsl:template match="*[@amend.level1='insert-draft']">
-        <ins href="insert-draft">
+        <ins class="insert-draft">
             <xsl:apply-imports/>
         </ins>
 </xsl:template>
-
 
     <xsl:template match="insertwords">
         <span class="insertwords"><xsl:apply-templates /></span>
