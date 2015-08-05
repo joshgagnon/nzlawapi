@@ -46,6 +46,7 @@ class Instrument(object):
 
 
 def format_dates(tree):
+    # piece of shit, bug before 1900!!!
     try:
         assent_date = datetime.datetime.strptime(tree.attrib['date.assent'], "%Y-%m-%d").date()
         tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')

@@ -89,15 +89,57 @@
                 <xsl:apply-templates select="made" />
             </xsl:if>
             <xsl:if test="../@act.no">
-
+                <xsl:call-template name='act-cover'/>
             </xsl:if>
             <xsl:apply-templates />
-            <!--<xsl:apply-templates select="cover.reprint-note"/> -->
         </div>
     </xsl:template>
 
-    <xsl:template match="cover/title">
+    <xsl:template match="cover/title|cover/reprint-date|cover/assent|cover/commencement">
     </xsl:template>
+
+
+    <xsl:template name="act-cover">
+        <table class="cover-properties">
+            <colgroup>
+                <col class="cover-properties-column-1" width="47.6%"/>
+                <col class="cover-properties-column-2" width="4.8%"/>
+                <col class="cover-properties-column-3" width="47.6%"/>
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td><div class="document-type">
+                        <xsl:call-template name="act-type">
+                            <xsl:with-param name="type"><xsl:value-of select="../@act.type"/></xsl:with-param>
+                    </xsl:call-template></div></td><td></td>
+                    <td><div class="legislation-number"><xsl:value-of select="../@year"/> No <xsl:value-of select="../@act.no"/></div></td></tr>
+                <xsl:if test="../@formatted.assent != ''">
+                    <tr>
+                        <td><div class="assent-date-title">Date of assent</div></td>
+                        <td></td><td><div class="assent-date"><xsl:value-of select="../@formatted.assent" /></div></td>
+                </tr></xsl:if>
+                <xsl:if test="commencement/text() != ''">
+                    <tr>
+                        <td><div class="commencement-title">Commencement</div></td>
+                        <td></td><td><div class="commencement"><xsl:value-of select="commencement"/></div></td>
+                    </tr>
+                </xsl:if>
+            </tbody>
+        </table>
+    </xsl:template>
+
+    <xsl:template name="act-type">
+        <xsl:param name="type" />
+        <xsl:choose>
+            <xsl:when test="$type = 'public'">Public Act</xsl:when>
+            <xsl:when test="$type = 'private'">Private Act</xsl:when>
+            <xsl:when test="$type = 'local'">Local Act</xsl:when>
+            <xsl:when test="$type = 'provincial'">Provincial Act</xsl:when>
+            <xsl:when test="$type = 'imperial'">Imperial Act</xsl:when>
+            <xsl:otherwise>Act</xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
 
     <xsl:template match="contents">
     </xsl:template>
@@ -115,7 +157,7 @@
         <div class="cover-reprint-note">
             <hr class="cover-reprint-note"/>
                 <h6 class="cover-reprint-note">Note</h6>
-                 <xsl:apply-templates select="para|admin-office"/>
+                 <xsl:apply-templates />
                 <hr class="cover-reprint-note"/>
         </div>
     </xsl:template>
@@ -131,9 +173,9 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
             <div class="long-title">
-                <xsl:apply-templates select="long-title/para/text"/>
+                <xsl:apply-templates select="long-title/para/textlong-title/para/label-para|pursuant"/>
 
-                <xsl:apply-templates select="long-title/para/label-para"/>
+
                 <xsl:if test="long-title[@deletion-status='repealed']">
                     <p class="deleted para-deleted">[Repealed]</p>
                 </xsl:if>
@@ -881,7 +923,7 @@
     <xsl:template match="item/label">
         <p class="labelled item">
             <xsl:call-template name="current"/>
-            <xsl:if test="text() != ''">
+            <xsl:if test="text() != '' and text() != '•'">
                 <span class="label">
                      <xsl:call-template name="parentquote"/>(<xsl:value-of select="."/>)
                 </span>
@@ -933,5 +975,11 @@
             <xsl:apply-templates />
         </p>
     </xsl:template>
+
+    <!-- currently no footnotes -->
+    <xsl:template match="footnote">
+
+    </xsl:template>
+
 
 </xsl:stylesheet>
