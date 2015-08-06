@@ -79,7 +79,7 @@ class PartialTransformTest(unittest.TestCase):
             self.assertTrue(xml_compare(result, expected, print_error, do_attr=False))
 
 
-
+@unittest.skip("demonstrating skipping")
 class FullTransformTest(unittest.TestCase):
 
     def setUp(self):

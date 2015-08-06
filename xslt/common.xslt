@@ -225,10 +225,11 @@
                     <xsl:otherwise>part</xsl:otherwise>
                 </xsl:choose>
                 <!-- will loose previous class -->
+            </xsl:attribute>
             <xsl:call-template name="current">
                 <xsl:with-param name="class">part</xsl:with-param>
             </xsl:call-template>
-            </xsl:attribute>
+
 
                 <xsl:attribute name="data-location-no-path"></xsl:attribute>
                 <xsl:choose>
@@ -500,15 +501,19 @@
             <xsl:call-template name="current">
                 <xsl:with-param name="subprov"></xsl:with-param>
             </xsl:call-template>
-
-            <xsl:if test="text() != ''">
+            <xsl:choose>
+            <xsl:when test="text() != ''">
                 <span class="label focus-link">
                      <xsl:call-template name="parentquote"/>
                      <xsl:call-template name="openbracket"/>
                      <xsl:value-of select="."/>
                      <xsl:call-template name="closebracket"/>
                 </span>
-            </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+                <span class="label"></span>
+            </xsl:otherwise>
+        </xsl:choose>
         </p>
     </xsl:template>
 
@@ -845,10 +850,10 @@
             <h2 class="head1">
                  <xsl:if test="label != ''">
                 <span class="label">
-                    <xsl:value-of select="label"/>
-                </span><br/>
+                    <xsl:apply-templates select="label"/>
+                </span>
                 </xsl:if>
-                <xsl:value-of select="heading"/>
+                <xsl:apply-templates select="heading"/>
             </h2>
         <xsl:apply-templates select="prov|para|head2|head3|head4|head5|notes"/>
       </div>
@@ -904,6 +909,10 @@
 
     <xsl:template match="brk">
         <br class="brk"/>
+    </xsl:template>
+
+    <xsl:template match="field[@fill]">
+        <span></span>
     </xsl:template>
 
     <xsl:template match="list">

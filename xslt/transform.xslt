@@ -60,6 +60,10 @@
         <span class="insertwords"><xsl:apply-templates /></span>
     </xsl:template>
 
+    <xsl:template match="struckoutwords">
+        <span class="struckoutwords"><xsl:apply-templates /></span>
+    </xsl:template>
+
 <xsl:template name="string-replace-all">
   <xsl:param name="text" />
   <xsl:param name="replace" />
