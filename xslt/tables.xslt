@@ -81,6 +81,9 @@
         </xsl:variable>
           width:<xsl:value-of select="100.0 div $cols * number(substring-before(@colwidth, '*'))"/>%;
       </xsl:when>
+      <xsl:when test="@colwidth='1cm'">
+          width:7%;
+      </xsl:when>
       <xsl:otherwise>
             width:<xsl:value-of select='@colwidth'/>
       </xsl:otherwise>
