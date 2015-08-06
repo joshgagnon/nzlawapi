@@ -8,17 +8,13 @@ var DynamicArticleBreadCrumbs = require('./BreadCrumbs.jsx');
 var Find = require('./Find.jsx');
 
 
-
-
 var ArticleOverlay= React.createClass({
-    propTypes: {
-       page: React.PropTypes.object.isRequired,
-    },
     render: function(){
-        return <div className="article-overlay">
-                 { this.props.page.getIn(['content','format']) === 'fragment' ?
-                     <DynamicArticleBreadCrumbs {...this.props}/> : null }
-                { this.props.view.getIn(['settings', this.props.page.get('id'), 'find']) ? <Find {...this.props}/> : null }
+        var className = this.props.viewer_id === 'tab-0' ? ' left' : ' right';
+        return <div className={"article-overlay"+className}>
+                 { this.props.page && this.props.page.getIn(['content','format']) === 'fragment' ?
+                     <DynamicArticleBreadCrumbs {...this.props} content={this.props.page.get('content')} /> : null }
+                { this.props.page && this.props.view.getIn(['settings', this.props.page.get('id'), 'find']) ? <Find {...this.props}/> : null }
             </div>
     }
 });

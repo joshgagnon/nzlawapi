@@ -1,3 +1,4 @@
+"use strict"
 var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react/addons');
@@ -17,6 +18,7 @@ var SearchFormStore = require('../stores/SearchFormStore.js');
 var Actions = require('../actions/Actions');
 var SearchResults = require('./SearchResults.jsx');
 var ArticleSideBar = require('./ArticleSideBar.jsx');
+var ArticleOverlay = require('./ArticleOverlay.jsx');
 var AutoComplete = require('./AutoComplete.jsx');
 var TabbedArea = require('./TabbedArea.jsx');
 var TabPane = require('./TabPane.jsx');
@@ -281,8 +283,8 @@ var Browser = React.createClass({
     showLocation: function(){
         return this.state.show_location;
     },
-    getActive: function(){
-        var id = this.state.views.getIn(['tab-0' ,'active_page_id'])
+    getActive: function(tab_id){
+        var id = this.state.views.getIn([tab_id ? tab_id : 'tab-0' ,'active_page_id'])
         if(id){
             return this.state.pages.find(function(p){
                 return p.get('id') === id;
@@ -317,9 +319,13 @@ var Browser = React.createClass({
         }
     },
     sidebar: function(active){
-        if(active.get('page_type') === constants.PAGE_TYPES.INSTRUMENT){
-            return <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
-        }
+        return <ArticleSideBar ref="sidebar" article={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />
+    },
+    overlay: function(active, viewer_id, view){
+        return <ArticleOverlay
+            page={active}
+            viewer_id={viewer_id}
+            view={view} />
     },
     clickOutComponent: function(){
         return this.refs.form;
@@ -333,39 +339,45 @@ var Browser = React.createClass({
     // NOTE TO SELF:  splitting of render into multiple functions begs to just split component up
     renderBody: function(){
         var active = this.getActive();
+        var className = this.state.views.get('tab-0').size ? ' multi_page' : '';
         if(this.state.browser.get('print_mode') && this.state.browser.get('split_mode') ){
-            return <div className="split print">
-                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
+            return <div className={"split print" + className}>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
                 <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} />
+                { this.overlay(active, 'tab-0', this.state.views.get('tab-0')) }
             </div>
         }
         else if(this.state.browser.get('print_mode')){
-
-            return <div className="print">
+            return <div className={"print" + className}>
                 <PrintView print={this.state.print} view={this.state.views.get('print')} viewer_id={'print'} key={'print'} showCloseView={true} showOpenColumns={this.state.width > SPLIT_MIN} />
             </div>
         }
         else if(this.state.browser.get('split_mode')){
-            return <div className="split">
-                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
+            return <div className={"split" + className}>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>
                 <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-1')} viewer_id={'tab-1'} key={'tab-1'} showCloseView={true} />
+                { this.overlay(active, 'tab-0', this.state.views.get('tab-0')) }
+                { this.overlay(this.getActive('tab-1'), 'tab-1', this.state.views.get('tab-1')) }
             </div>
         }
         else if (this.showSidebar(active)){
-            return <div className="sidebar-visible">
-                <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} />
+            return <div className={"sidebar-visible" + className}>
+                <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} />
                 { this.sidebar(active)}
+                   { this.overlay(active, 'tab-0', this.state.views.get('tab-0')) }
             </div>
         }
-        return <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} />
+        return <div className={className}>
+            <TabView key="tabview" browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} />
+                 { this.overlay(active, 'tab-0', this.state.views.get('tab-0')) }
+            </div>
     },
     renderLocation: function(){
         return <div className="locations">
             <div className="form-col">
                 <div className="input-group has-clear">
                  <input type="text" className="jump_to form-control" placeholder="Jump To..." ref="jump_to" value={this.state.jump_to}
-                        onChange={this.handleJumpTo} onKeyPress={this.handleJumpToEnter}
-                        ref="jump_to"  />
+                        onChange={this.handleJumpTo} onKeyPress={this.handleJumpToEnter} />
                     <ClearInput clear={this.clearJumpTo} />
                      <span className="input-group-btn">
                         <Button bsStyle={'info'} onClick={this.submitJumpTo} >Jump To</Button>
@@ -375,8 +387,7 @@ var Browser = React.createClass({
             <div className="form-col">
                 <div className="input-group has-clear">
                     <input type="text" className="focus form-control" placeholder="Focus..." ref="focus" value={this.state.focus}
-                        onChange={this.handleFocus} onKeyPress={this.handleFocusEnter}
-                        ref="focus"  />
+                        onChange={this.handleFocus} onKeyPress={this.handleFocusEnter} />
                     <ClearInput clear={this.clearFocus} />
                      <span className="input-group-btn">
                         <Button bsStyle={'info'} onClick={this.submitFocus} >Focus</Button>
@@ -418,7 +429,7 @@ var Browser = React.createClass({
         if(this.state.browser.get('notes')){
             parentClass += ' notes';
         }
-        return (<div className className={parentClass}>
+        return (<div className={parentClass}>
                 <BrowserModals />
                 { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
                 <Banner renderDropdown={this.renderDropdown} extraClasses={ this.showLocation() ? ' expanded' : null}>

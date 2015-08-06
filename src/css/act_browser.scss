@@ -65,12 +65,12 @@ body{
                 .tab-content{
                     padding-right: $sidebar-outer-width;
                 }
-                .article-overlay{
-                    right: $sidebar-outer-width;
-                }
-                .find{
-                    right: $sidebar-outer-width;
-                }
+            }
+            .article-overlay{
+                right: $sidebar-outer-width;
+            }
+            .find{
+                right: $sidebar-outer-width;
             }
         }
     }
@@ -85,9 +85,6 @@ body{
             content: none;
          }
     }
-
-
-
 
 
 
@@ -111,19 +108,6 @@ body{
     .split .print-container,
     .split .results-container:nth-child(2){
         left:50%;
-    }
-
-    .split .article-overlay,
-    .print .article-overlay{
-
-    }
-    .split .results-container:nth-child(2) .article-overlay{
-
-        left:calc(50% + #{$buttonbar-outer-width} ) !important;
-    }
-    .split .results-container:nth-child(1) .find{
-
-        right:50% !important;
     }
 
     @media print{
