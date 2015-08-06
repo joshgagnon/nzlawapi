@@ -1,0 +1,230 @@
+                    <head1 id="DLM1523253" toc="yes" type="part">
+                        <label denominator="yes">Part B</label>
+                        <heading>Months for payment under
+                            <citation jurisdiction="nz">
+                                <intref href="DLM1519822">sections RC 9</intref> and
+                                <intref href="DLM1519864">RC 22 to RC 25</intref>
+                            </citation>
+                        </heading>
+                        <para>
+                            <table align="center" colsep="0" fontsize="10.5" frame="none" id="DLM4318721" leading="11.5" rowsep="0">
+                                <tgroup cols="1">
+                                    <colspec colname="col1" />
+                                    <tbody>
+                                        <row>
+                                            <entry align="center">
+                                                <emphasis style="bold">Monthly and 2-monthly non-ratio and non-GST provisional taxpayers</emphasis>
+                                            </entry>
+                                        </row>
+                                    </tbody>
+                                </tgroup>
+                            </table>
+                        </para>
+                        <para>
+                            <table align="left" colsep="0" fontsize="8" frame="top" id="DLM1523254" leading="9" rowsep="0">
+                                <tgroup cols="3">
+                                    <colspec align="left" colname="c1" colnum="1" colsep="0" colwidth="1.78*" rowsep="0" />
+                                    <colspec align="left" colname="c2" colnum="2" colsep="0" colwidth="0.63*" rowsep="0" />
+                                    <colspec align="left" colname="c3" colnum="3" colsep="0" colwidth="7.60*" rowsep="0" />
+                                    <thead valign="top">
+                                        <row>
+                                            <entry colsep="1" rowsep="1">
+                                                <emphasis style="bold">Transitional year length</emphasis>
+                                            </entry>
+                                            <entry align="center" nameend="c3" namest="c2" rowsep="1" valign="middle">
+                                                <emphasis style="bold">New instalment months</emphasis>
+                                            </entry>
+                                        </row>
+                                    </thead>
+                                    <tbody valign="top">
+                                        <row>
+                                            <entry colsep="1">0–4 mths</entry>
+                                            <entry colsep="1">1</entry>
+                                            <entry>month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">5–8 mths</entry>
+                                            <entry colsep="1">2</entry>
+                                            <entry>5th month, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">9–12 mths</entry>
+                                            <entry colsep="1">3</entry>
+                                            <entry>5th, 9th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">13–16 mths</entry>
+                                            <entry colsep="1">4</entry>
+                                            <entry>5th, 9th, 13th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">17–20 mths</entry>
+                                            <entry colsep="1">5</entry>
+                                            <entry>5th, 9th, 13th, 17th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">21–24 mths</entry>
+                                            <entry colsep="1">6</entry>
+                                            <entry>5th, 9th, 13th, 17th, 21st months, month following final month</entry>
+                                        </row>
+                                    </tbody>
+                                </tgroup>
+                            </table>
+                        </para>
+                        <para>
+                            <table align="center" colsep="0" fontsize="10.5" frame="none" id="DLM4318722" leading="11.5" rowsep="0">
+                                <tgroup cols="1">
+                                    <colspec colname="col1" />
+                                    <tbody>
+                                        <row>
+                                            <entry align="center">
+                                                <emphasis style="bold">6-monthly non-ratio provisional taxpayers</emphasis>
+                                            </entry>
+                                        </row>
+                                    </tbody>
+                                </tgroup>
+                            </table>
+                        </para>
+                        <para>
+                            <table align="left" colsep="0" fontsize="8" frame="top" id="DLM1523255" leading="9" rowsep="0">
+                                <tgroup cols="3">
+                                    <colspec align="left" colname="c1" colnum="1" colsep="0" colwidth="1.77*" rowsep="0" />
+                                    <colspec align="left" colname="c2" colnum="2" colsep="0" colwidth="0.64*" rowsep="0" />
+                                    <colspec align="left" colname="c3" colnum="3" colsep="0" colwidth="7.59*" rowsep="0" />
+                                    <thead valign="top">
+                                        <row>
+                                            <entry colsep="1" rowsep="1">
+                                                <emphasis style="bold">Transitional year length</emphasis>
+                                            </entry>
+                                            <entry align="center" colsep="1" nameend="c3" namest="c2" rowsep="1" valign="middle">
+                                                <emphasis style="bold">New instalment months</emphasis>
+                                            </entry>
+                                        </row>
+                                    </thead>
+                                    <tbody valign="top">
+                                        <row>
+                                            <entry colsep="1">0–6 mths</entry>
+                                            <entry colsep="1">1</entry>
+                                            <entry colsep="1">month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">7–12 mths</entry>
+                                            <entry colsep="1">2</entry>
+                                            <entry colsep="1">7th month, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">13–18 mths</entry>
+                                            <entry colsep="1">3</entry>
+                                            <entry colsep="1">7th, 13th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">19–24 mths</entry>
+                                            <entry colsep="1">4</entry>
+                                            <entry colsep="1">7th, 13th, 19th months, month following final month</entry>
+                                        </row>
+                                    </tbody>
+                                </tgroup>
+                            </table>
+                        </para>
+                        <para>
+                            <table align="center" colsep="0" fontsize="10.5" frame="none" id="DLM4318723" leading="11.5" rowsep="0">
+                                <tgroup cols="1">
+                                    <colspec colname="col1" />
+                                    <tbody>
+                                        <row>
+                                            <entry align="center">
+                                                <emphasis style="bold">GST ratio provisional taxpayers</emphasis>
+                                            </entry>
+                                        </row>
+                                    </tbody>
+                                </tgroup>
+                            </table>
+                        </para>
+                        <para>
+                            <table align="left" colsep="0" fontsize="8" frame="top" id="DLM1523256" leading="9" rowsep="0">
+                                <tgroup cols="3">
+                                    <colspec align="left" colname="c1" colnum="1" colsep="0" colwidth="1.77*" rowsep="0" />
+                                    <colspec align="left" colname="c2" colnum="2" colsep="0" colwidth="0.64*" rowsep="0" />
+                                    <colspec align="left" colname="c3" colnum="3" colsep="0" colwidth="7.59*" rowsep="0" />
+                                    <thead valign="top">
+                                        <row>
+                                            <entry colsep="1" rowsep="1">
+                                                <emphasis style="bold">Transitional year length</emphasis>
+                                            </entry>
+                                            <entry align="center" colsep="1" nameend="c3" namest="c2" rowsep="1" valign="middle">
+                                                <emphasis style="bold">New instalment months</emphasis>
+                                            </entry>
+                                        </row>
+                                    </thead>
+                                    <tbody valign="top">
+                                        <row>
+                                            <entry colsep="1">0–2 mths</entry>
+                                            <entry colsep="1">1</entry>
+                                            <entry colsep="1">month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">3–4 mths</entry>
+                                            <entry colsep="1">2</entry>
+                                            <entry colsep="1">3rd month, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">5–6 mths</entry>
+                                            <entry colsep="1">3</entry>
+                                            <entry colsep="1">3rd, 5th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">7–8 mths</entry>
+                                            <entry colsep="1">4</entry>
+                                            <entry colsep="1">3rd, 5th, 7th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">9–10 mths</entry>
+                                            <entry colsep="1">5</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">11–12 mths</entry>
+                                            <entry colsep="1">6</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">13–14 mths</entry>
+                                            <entry colsep="1">7</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th, 13th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">15–16 mths</entry>
+                                            <entry colsep="1">8</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th, 13th, 15th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">17–18 mths</entry>
+                                            <entry colsep="1">9</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th, 13th, 15th, 17th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">19–20 mths</entry>
+                                            <entry colsep="1">10</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th, 13th, 15th, 17th, 19th months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">21–22 mths</entry>
+                                            <entry colsep="1">11</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th, 13th, 15th, 17th, 19th, 21st months, month following final month</entry>
+                                        </row>
+                                        <row>
+                                            <entry colsep="1">23–24 mths</entry>
+                                            <entry colsep="1">12</entry>
+                                            <entry colsep="1">3rd, 5th, 7th, 9th, 11th, 13th, 15th, 17th, 19th, 21st, 23rd months, month following final month</entry>
+                                        </row>
+                                    </tbody>
+                                </tgroup>
+                            </table>
+                        </para>
+                        <para>
+                            <text>For the purposes of counting months under this schedule, the number is reckoned as set out in
+                                <citation jurisdiction="nz">
+                                    <intref href="DLM1519862">section RC 21(5)</intref>
+                                </citation>.</text>
+                        </para>
+                    </head1>

@@ -1,0 +1,1514 @@
+            <part id="DLM297037" toc="yes" date.first.valid="2007-09-18" act.no="28" act.type="public" date.as.at="2015-08-03" date.assent="1993-05-17" date.terminated="nulldate" year="1993">
+                <label denominator="yes">2</label>
+                <heading>Information privacy principles</heading>
+                <prov id="DLM297038" toc="yes">
+                    <label denominator="yes">6</label>
+                    <heading>Information privacy principles</heading>
+                    <prov.body>
+                        <subprov>
+                            <label denominator="yes" />
+                            <para>
+                                <text>The information privacy principles are as follows:</text>
+                                <legtable>
+                                    <summary> </summary>
+                                    <table align="left" colsep="0" fontsize="11.5" frame="none" id="DLM3466600" leading="13.5" rowsep="0">
+                                        <tgroup cols="4">
+                                            <colspec colname="col1" colwidth="1cm" />
+                                            <colspec colname="col2" colwidth="1cm" />
+                                            <colspec colname="col3" colwidth="1cm" />
+                                            <colspec colname="COLSPEC0" colwidth="4.16*" />
+                                            <tbody>
+                                                <row>
+                                                    <entry align="center" colsep="0" nameend="COLSPEC0" namest="col1" rowsep="0">
+                                                        <emphasis style="bold">Information privacy principles</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 1</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Purpose of collection of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>Personal information shall not be collected by any agency unless—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>the information is collected for a lawful purpose connected with a function or activity of the agency; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>the collection of the information is necessary for that purpose.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 2</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Source of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(1)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where an agency collects personal information, the agency shall collect the information directly from the individual concerned.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(2)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>It is not necessary for an agency to comply with subclause (1) if the agency believes, on reasonable grounds,—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the information is publicly available information; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the individual concerned authorises collection of the information from someone else; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(c)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that non-compliance would not prejudice the interests of the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(d)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that non-compliance is necessary—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry/>
+                                                    <entry align="left">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>to avoid prejudice to the maintenance of the law by any public sector agency, including the prevention, detection, investigation, prosecution, and punishment of offences; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry/>
+                                                    <entry align="left">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the enforcement of a law imposing a pecuniary penalty; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry/>
+                                                    <entry align="left">(iii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the protection of the public revenue; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry/>
+                                                    <entry align="left">(iv)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the conduct of proceedings before any court or
+                                                                <insertwords>tribunal</insertwords> (being proceedings that have been commenced or are reasonably in contemplation); or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(e)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that compliance would prejudice the purposes of the collection; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(f)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that compliance is not reasonably practicable in the circumstances of the particular case; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(g)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the information—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>will not be used in a form in which the individual concerned is identified; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>will be used for statistical or research purposes and will not be published in a form that could reasonably be expected to identify the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(h)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the collection of the information is in accordance with an authority granted under
+                                                                <citation jurisdiction="nz">
+                                                                    <intref href="DLM297419">section 54</intref>
+                                                                </citation>.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 3</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Collection of information from subject</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(1)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where an agency collects personal information directly from the individual concerned, the agency shall take such steps (if any) as are, in the circumstances, reasonable to ensure that the individual concerned is aware of—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the fact that the information is being collected; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the purpose for which the information is being collected; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(c)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the intended recipients of the information; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(d)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the name and address of—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>the agency that is collecting the information; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>the agency that will hold the information; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(e)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>if the collection of the information is authorised or required by or under law,—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>the particular law by or under which the collection of the information is so authorised or required; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>whether or not the supply of the information by that individual is voluntary or mandatory; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(f)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the consequences (if any) for that individual if all or any part of the requested information is not provided; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(g)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the rights of access to, and correction of, personal information provided by these principles.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(2)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>The steps referred to in subclause (1) shall be taken before the information is collected or, if that is not practicable, as soon as practicable after the information is collected.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(3)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>An agency is not required to take the steps referred to in subclause (1) in relation to the collection of information from an individual if that agency has taken those steps in relation to the collection, from that individual, of the same information or information of the same kind, on a recent previous occasion.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(4)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>It is not necessary for an agency to comply with subclause (1) if the agency believes, on reasonable grounds,—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that non-compliance is authorised by the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that non-compliance would not prejudice the interests of the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(c)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that non-compliance is necessary—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>to avoid prejudice to the maintenance of the law by any public sector agency, including the prevention, detection, investigation, prosecution, and punishment of offences; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the enforcement of a law imposing a pecuniary penalty; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(iii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the protection of the public revenue; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(iv)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the conduct of proceedings before any court or
+                                                                <insertwords>tribunal</insertwords> (being proceedings that have been commenced or are reasonably in contemplation); or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(d)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that compliance would prejudice the purposes of the collection; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(e)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that compliance is not reasonably practicable in the circumstances of the particular case; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(f)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the information—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>will not be used in a form in which the individual concerned is identified; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>will be used for statistical or research purposes and will not be published in a form that could reasonably be expected to identify the individual concerned.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 4</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Manner of collection of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>Personal information shall not be collected by an agency—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>by unlawful means; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>by means that, in the circumstances of the case,—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>are unfair; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>intrude to an unreasonable extent upon the personal affairs of the individual concerned.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 5</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Storage and security of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>An agency that holds personal information shall ensure—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the information is protected, by such security safeguards as it is reasonable in the circumstances to take, against—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>loss; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>access, use, modification, or disclosure, except with the authority of the agency that holds the information; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="justify">(iii)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>other misuse; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that if it is necessary for the information to be given to a person in connection with the provision of a service to the agency, everything reasonably within the power of the agency is done to prevent unauthorised use or unauthorised disclosure of the information.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 6</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Access to personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(1)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where an agency holds personal information in such a way that it can readily be retrieved, the individual concerned shall be entitled—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>to obtain from the agency confirmation of whether or not the agency holds such personal information; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>to have access to that information.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(2)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where, in accordance with subclause (1)﻿(b), an individual is given access to personal information, the individual shall be advised that, under principle 7, the individual may request the correction of that information.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(3)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>The application of this principle is subject to the provisions of
+                                                                <citation jurisdiction="nz">
+                                                                    <intref href="DLM297080">Parts 4</intref> and
+                                                                    <intref href="DLM297092">5</intref>
+                                                                </citation>.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 7</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Correction of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(1)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where an agency holds personal information, the individual concerned shall be entitled—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>to request correction of the information; and</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>to request that there be attached to the information a statement of the correction sought but not made.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(2)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>An agency that holds personal information shall, if so requested by the individual concerned or on its own initiative, take such steps (if any) to correct that information as are, in the circumstances, reasonable to ensure that, having regard to the purposes for which the information may lawfully be used, the information is accurate, up to date, complete, and not misleading.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(3)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where an agency that holds personal information is not willing to correct that information in accordance with a request by the individual concerned, the agency shall, if so requested by the individual concerned, take such steps (if any) as are reasonable in the circumstances to attach to the information, in such a manner that it will always be read with the information, any statement provided by that individual of the correction sought.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(4)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where the agency has taken steps under subclause (2) or subclause (3), the agency shall, if reasonably practicable, inform each person or body or agency to whom the personal information has been disclosed of those steps.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(5)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>Where an agency receives a request made pursuant to subclause (1), the agency shall inform the individual concerned of the action taken as a result of the request.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 8</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Accuracy, etc, of personal information to be checked before use</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>An agency that holds personal information shall not use that information without taking such steps (if any) as are, in the circumstances, reasonable to ensure that, having regard to the purpose for which the information is proposed to be used, the information is accurate, up to date, complete, relevant, and not misleading.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 9</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Agency not to keep personal information for longer than necessary</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>An agency that holds personal information shall not keep that information for longer than is required for the purposes for which the information may lawfully be used.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 10</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Limits on use of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>An agency that holds personal information that was obtained in connection with one purpose shall not use the information for any other purpose unless the agency believes, on reasonable grounds,—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(a)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the source of the information is a publicly available publication
+                                                                <insertwords>and that, in the circumstances of the case, it would not be unfair or unreasonable to use the information</insertwords>; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(b)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the use of the information for that other purpose is authorised by the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(c)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that non-compliance is necessary—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>to avoid prejudice to the maintenance of the law by any public sector agency, including the prevention, detection, investigation, prosecution, and punishment of offences; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the enforcement of a law imposing a pecuniary penalty; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(iii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the protection of the public revenue; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(iv)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>for the conduct of proceedings before any court or
+                                                                <insertwords>tribunal</insertwords> (being proceedings that have been commenced or are reasonably in contemplation); or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(d)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the use of the information for that other purpose is necessary to prevent or lessen a
+                                                                <insertwords>serious threat (as defined in
+                                                                    <citation jurisdiction="nz">
+                                                                        <intref href="DLM296645">section 2(1)</intref>
+                                                                    </citation>)</insertwords> to—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>public health or public safety; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>the life or health of the individual concerned or another individual; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(e)</entry>
+                                                    <entry align="justify" colsep="0" nameend="COLSPEC0" namest="col3" rowsep="0">
+                                                        <para>
+                                                            <text>that the purpose for which the information is used is directly related to the purpose in connection with which the information was obtained; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(f)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the information—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(i)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>is used in a form in which the individual concerned is not identified; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left" />
+                                                    <entry align="justify">(ii)</entry>
+                                                    <entry align="justify">
+                                                        <para>
+                                                            <text>is used for statistical or research purposes and will not be published in a form that could reasonably be expected to identify the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left" />
+                                                    <entry align="left">(g)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>that the use of the information is in accordance with an authority granted under
+                                                                <citation jurisdiction="nz">
+                                                                    <intref href="DLM297419">section 54</intref>
+                                                                </citation>.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 11</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Limits on disclosure of personal information</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col1">
+                                                        <para>
+                                                            <text>An agency that holds personal information shall not disclose the information to a person or body or agency unless the agency believes, on reasonable grounds,—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(a)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the disclosure of the information is one of the purposes in connection with which the information was obtained or is directly related to the purposes in connection with which the information was obtained; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(b)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the source of the information is a publicly available publication
+                                                                <insertwords>and that, in the circumstances of the case, it would not be unfair or unreasonable to disclose the information</insertwords>; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(c)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the disclosure is to the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(d)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the disclosure is authorised by the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(e)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that non-compliance is necessary—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(i)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>to avoid prejudice to the maintenance of the law by any public sector agency, including the prevention, detection, investigation, prosecution, and punishment of offences; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(ii)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>for the enforcement of a law imposing a pecuniary penalty; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(iii)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>for the protection of the public revenue; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(iv)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>for the conduct of proceedings before any court or
+                                                                <insertwords>tribunal</insertwords> (being proceedings that have been commenced or are reasonably in contemplation); or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(f)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the disclosure of the information is necessary to prevent or lessen a
+                                                                <insertwords>serious threat (as defined in
+                                                                    <citation jurisdiction="nz">
+                                                                        <intref href="DLM296645">section 2(1)</intref>
+                                                                    </citation>)</insertwords> to—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(i)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>public health or public safety; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(ii)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>the life or health of the individual concerned or another individual; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(g)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the disclosure of the information is necessary to facilitate the sale or other disposition of a business as a going concern; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(h)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the information—</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(i)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>is to be used in a form in which the individual concerned is not identified; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry/>
+                                                    <entry align="left">(ii)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col3">
+                                                        <para>
+                                                            <text>is to be used for statistical or research purposes and will not be published in a form that could reasonably be expected to identify the individual concerned; or</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry>(i)</entry>
+                                                    <entry align="left" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>that the disclosure of the information is in accordance with an authority granted under
+                                                                <citation jurisdiction="nz">
+                                                                    <intref href="DLM297419">section 54</intref>
+                                                                </citation>.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry nameend="COLSPEC0" namest="col1"> </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">Principle 12</entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="center" nameend="COLSPEC0" namest="col1">
+                                                        <emphasis style="italic">Unique identifiers</emphasis>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(1)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>An agency shall not assign a unique identifier to an individual unless the assignment of that identifier is necessary to enable the agency to carry out any 1 or more of its functions efficiently.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(2)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>An agency shall not assign to an individual a unique identifier that, to that agency’s knowledge, has been assigned to that individual by another agency, unless those 2 agencies are associated persons within the meaning of
+                                                                <insertwords>
+                                                                    <citation jurisdiction="nz">
+                                                                        <extref href="DLM1522997">subpart YB</extref> of the Income Tax Act 2007</citation>
+                                                                    <struckoutwords/>
+                                                                </insertwords>.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(3)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>An agency that assigns unique identifiers to individuals shall take all reasonable steps to ensure that unique identifiers are assigned only to individuals whose identity is clearly established.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                                <row>
+                                                    <entry align="left">(4)</entry>
+                                                    <entry align="justify" nameend="COLSPEC0" namest="col2">
+                                                        <para>
+                                                            <text>An agency shall not require an individual to disclose any unique identifier assigned to that individual unless the disclosure is for one of the purposes in connection with which that unique identifier was assigned or for a purpose that is directly related to one of those purposes.</text>
+                                                        </para>
+                                                    </entry>
+                                                </row>
+                                            </tbody>
+                                        </tgroup>
+                                    </table>
+                                </legtable>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                    <notes>
+                        <history>
+                            <history-note id="DLM2331609">
+                                <amended-provision>Section 6 principle 2(2)﻿(d)﻿(iv)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>3 September 1996</amendment-date>, by section 3 of the
+                                <amending-leg>Privacy Amendment Act 1996</amending-leg> (1996 No 142).</history-note>
+                            <history-note id="DLM2331610">
+                                <amended-provision>Section 6 principle 3(4)﻿(c)﻿(iv)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>3 September 1996</amendment-date>, by section 3 of the
+                                <amending-leg>Privacy Amendment Act 1996</amending-leg> (1996 No 142).</history-note>
+                            <history-note id="DLM6534705">
+                                <amended-provision>Section 6 principle 10(a)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>3 July 2015</amendment-date>, by
+                                <amending-provision href="DLM5711885">section 40(1)</amending-provision> of the
+                                <amending-leg>Harmful Digital Communications Act 2015</amending-leg> (2015 No 63).</history-note>
+                            <history-note id="DLM2331611">
+                                <amended-provision>Section 6 principle 10(c)﻿(iv)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>3 September 1996</amendment-date>, by section 3 of the
+                                <amending-leg>Privacy Amendment Act 1996</amending-leg> (1996 No 142).</history-note>
+                            <history-note id="DLM5057810">
+                                <amended-provision>Section 6 principle 10(d)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>27 February 2013</amendment-date>, by
+                                <amending-provision href="DLM3941919">section 5(1)</amending-provision> of the
+                                <amending-leg>Privacy Amendment Act 2013</amending-leg> (2013 No 1).</history-note>
+                            <history-note id="DLM6534706">
+                                <amended-provision>Section 6 principle 11(b)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>3 July 2015</amendment-date>, by
+                                <amending-provision href="DLM5711885">section 40(2)</amending-provision> of the
+                                <amending-leg>Harmful Digital Communications Act 2015</amending-leg> (2015 No 63).</history-note>
+                            <history-note id="DLM2331612">
+                                <amended-provision>Section 6 principle 11(e)﻿(iv)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>3 September 1996</amendment-date>, by section 3 of the
+                                <amending-leg>Privacy Amendment Act 1996</amending-leg> (1996 No 142).</history-note>
+                            <history-note id="DLM5057811">
+                                <amended-provision>Section 6 principle 11(f)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>27 February 2013</amendment-date>, by
+                                <amending-provision href="DLM3941919">section 5(2)</amending-provision> of the
+                                <amending-leg>Privacy Amendment Act 2013</amending-leg> (2013 No 1).</history-note>
+                            <history-note id="DLM2860409">
+                                <amended-provision>Section 6 principle 12(2)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>1 April 2010</amendment-date>, by
+                                <amending-provision href="DLM1401902">section 861</amending-provision> of the
+                                <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                            <history-note id="DLM1257400">
+                                <amended-provision>Section 6 principle 12(2)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>1 April 2008</amendment-date> (effective for 2008–09 income year and later income years, except when the context requires otherwise), by
+                                <amending-provision href="DLM1523176">section ZA 2(1)</amending-provision> of the
+                                <amending-leg>Income Tax Act 2007</amending-leg> (2007 No 97).</history-note>
+                        </history>
+                    </notes>
+                </prov>
+                <prov id="DLM297046" toc="yes">
+                    <label denominator="yes">7</label>
+                    <heading>Savings</heading>
+                    <prov.body>
+                        <subprov>
+                            <label denominator="yes">1</label>
+                            <para>
+                                <text>Nothing in
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 6 or principle 11</intref>
+                                    </citation> derogates from any provision that is contained in any enactment and that authorises or requires personal information to be made available.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">2</label>
+                            <para>
+                                <text>Nothing in
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 6 or principle 11</intref>
+                                    </citation> derogates from any provision that is contained in any other Act of Parliament and that—</text>
+                                <label-para>
+                                    <label denominator="yes">a</label>
+                                    <para>
+                                        <text>imposes a prohibition or restriction in relation to the availability of personal information; or</text>
+                                    </para>
+                                </label-para>
+                                <label-para>
+                                    <label denominator="yes">b</label>
+                                    <para>
+                                        <text>regulates the manner in which personal information may be obtained or made available.</text>
+                                    </para>
+                                </label-para>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">3</label>
+                            <para>
+                                <text>Nothing in
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 6 or principle 11</intref>
+                                    </citation> derogates from any provision—</text>
+                                <label-para>
+                                    <label denominator="yes">a</label>
+                                    <para>
+                                        <text>that is contained in any
+                                            <insertwords>legislative instrument within the meaning of the
+                                                <citation jurisdiction="nz">
+                                                    <extref href="DLM2997643">Legislation Act 2012</extref>
+                                                </citation>
+                                            </insertwords> made by Order in Council and in force—</text>
+                                        <label-para>
+                                            <label denominator="yes">i</label>
+                                            <para>
+                                                <text>in so far as those principles apply to a department, a Minister, an organisation, or a public sector agency (as defined in <citation jurisdiction="nz">paragraph (b) of the definition of that term in
+                                                        <intref href="DLM296645">section 2(1)</intref>
+                                                    </citation>) that is established for the purposes of assisting or advising, or performing functions connected with, a department, a Minister, or an organisation, immediately before 1 July 1983; and</text>
+                                            </para>
+                                        </label-para>
+                                        <label-para>
+                                            <label denominator="yes">ii</label>
+                                            <para>
+                                                <text>in so far as those principles apply to a local authority or a public sector agency (as so defined) that is established for the purposes of assisting or advising, or performing functions connected with, a local authority, immediately before 1 March 1988; and</text>
+                                            </para>
+                                        </label-para>
+                                        <label-para>
+                                            <label denominator="yes">iii</label>
+                                            <para>
+                                                <text>in so far as those principles apply to any other agency, immediately before 1 July 1993; and</text>
+                                            </para>
+                                        </label-para>
+                                    </para>
+                                </label-para>
+                                <label-para>
+                                    <label denominator="yes">b</label>
+                                    <para>
+                                        <text>that—</text>
+                                        <label-para>
+                                            <label denominator="yes">i</label>
+                                            <para>
+                                                <text>imposes a prohibition or restriction in relation to the availability of personal information; or</text>
+                                            </para>
+                                        </label-para>
+                                        <label-para>
+                                            <label denominator="yes">ii</label>
+                                            <para>
+                                                <text>regulates the manner in which personal information may be obtained or made available.</text>
+                                            </para>
+                                        </label-para>
+                                    </para>
+                                </label-para>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">4</label>
+                            <para>
+                                <text>An action is not a breach of any of
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principles 1 to 5, 7 to 10, and 12</intref>
+                                    </citation> if that action is authorised or required by or under law.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">5</label>
+                            <para>
+                                <text>Nothing in
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 7</intref>
+                                    </citation> applies in respect of any information held by the Department of Statistics, where that information was obtained pursuant to the
+                                    <citation jurisdiction="nz">
+                                        <leg-title href="DLM430704">Statistics Act 1975</leg-title>
+                                    </citation>.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">6</label>
+                            <para>
+                                <text>Subject to the provisions of
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297423">Part 7</intref>
+                                    </citation>, nothing in any of the information privacy principles shall apply in respect of a public register.</text>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                    <notes>
+                        <history>
+                            <history-note id="DLM5534804">
+                                <amended-provision>Section 7(3)﻿(a)</amended-provision>:
+                                <amending-operation>amended</amending-operation>, on
+                                <amendment-date>5 August 2013</amendment-date>, by
+                                <amending-provision href="DLM2998633">section 77(3)</amending-provision> of the
+                                <amending-leg>Legislation Act 2012</amending-leg> (2012 No 119).</history-note>
+                        </history>
+                    </notes>
+                </prov>
+                <prov id="DLM297047" toc="yes">
+                    <label denominator="yes">8</label>
+                    <heading>Application of information privacy principles</heading>
+                    <prov.body>
+                        <subprov>
+                            <label denominator="yes">1</label>
+                            <para>
+                                <text>Subject to subsection (4),
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principles 1 to 4</intref>
+                                    </citation> apply only in relation to information collected after the commencement of this section.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">2</label>
+                            <para>
+                                <text>Subject to
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297048">section 9</intref>
+                                    </citation>,
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principles 5 to 9 and principle 11</intref>
+                                    </citation> apply in relation to information held by an agency, whether the information was obtained before, or is obtained after, the commencement of this section.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">3</label>
+                            <para>
+                                <text>
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">Principle 10</intref>
+                                    </citation> applies only in relation to information obtained after the commencement of this section.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">4</label>
+                            <para>
+                                <text>Nothing in
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 3</intref>
+                                    </citation> shall apply in relation to the collection, by means of any printed form, of any personal information, if the form was printed before the commencement of this section and is used, before 1 July 1995, for the purpose of collecting personal information.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">5</label>
+                            <para>
+                                <text>
+                                    <citation jurisdiction="nz">Subclauses (1) to (3) of
+                                        <intref href="DLM297038">principle 12</intref>
+                                    </citation> apply only in relation to the assignment of unique identifiers after the commencement of this section.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">6</label>
+                            <para>
+                                <text>
+                                    <citation jurisdiction="nz">Subclause (4) of
+                                        <intref href="DLM297038">principle 12</intref>
+                                    </citation> applies to any unique identifier, whether assigned before or after the commencement of this section.</text>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                </prov>
+                <prov id="DLM297048" toc="yes">
+                    <label denominator="yes">9</label>
+                    <heading>Postponement of application of principle 11 to lists used for direct marketing</heading>
+                    <prov.body>
+                        <subprov>
+                            <label denominator="yes">1</label>
+                            <para>
+                                <text>Nothing in
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 11</intref>
+                                    </citation> shall apply, before 1 July 1996, in relation to the disclosure, by any agency, of personal information collected before 1 July 1993 for direct marketing purposes, where that disclosure is made to another agency for the purpose of enabling that other agency to engage in direct marketing.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">2</label>
+                            <para>
+                                <text>For the purposes of subsection (1),
+                                    <def-term id="DLM297049">direct marketing</def-term> means—</text>
+                                <label-para>
+                                    <label denominator="yes">a</label>
+                                    <para>
+                                        <text>the offering of goods or services; or</text>
+                                    </para>
+                                </label-para>
+                                <label-para>
+                                    <label denominator="yes">b</label>
+                                    <para>
+                                        <text>the advertising of the availability of goods or services; or</text>
+                                    </para>
+                                </label-para>
+                                <label-para>
+                                    <label denominator="yes">c</label>
+                                    <para>
+                                        <text>the solicitation of donations or contributions for charitable, cultural, philanthropic, recreational, political, or other purposes,—</text>
+                                    </para>
+                                </label-para>
+                                <text>by means of—</text>
+                                <label-para>
+                                    <label denominator="yes">d</label>
+                                    <para>
+                                        <text>information or goods sent to any person by mail, facsimile transmission, electronic mail, or other similar means of communication, where the information or goods are addressed to a specific person or specific persons by name; or</text>
+                                    </para>
+                                </label-para>
+                                <label-para>
+                                    <label denominator="yes">e</label>
+                                    <para>
+                                        <text>telephone calls made to specific persons by name.</text>
+                                    </para>
+                                </label-para>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                </prov>
+                <prov id="DLM297050" toc="yes">
+                    <label denominator="yes">10</label>
+                    <heading>Application of principles to information held overseas</heading>
+                    <prov.body>
+                        <subprov>
+                            <label denominator="yes">1</label>
+                            <para>
+                                <text>For the purposes of
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 5 and principles 8 to 11</intref>
+                                    </citation>, information held by an agency includes information that is held outside New Zealand by that agency, where that information has been transferred out of New Zealand by that agency or any other agency.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">2</label>
+                            <para>
+                                <text>For the purposes of
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principles 6 and 7</intref>
+                                    </citation>, information held by an agency includes information held outside New Zealand by that agency.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">3</label>
+                            <para>
+                                <text>Nothing in this section shall apply to render an agency in breach of any of the information privacy principles in respect of any action that the agency is required to take by or under the law of any place outside New Zealand.</text>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                </prov>
+                <prov id="DLM297051" toc="yes">
+                    <label denominator="yes">11</label>
+                    <heading>Enforceability of principles</heading>
+                    <prov.body>
+                        <subprov>
+                            <label denominator="yes">1</label>
+                            <para>
+                                <text>The entitlements conferred on an individual by subclause (1) of
+                                    <citation jurisdiction="nz">
+                                        <intref href="DLM297038">principle 6</intref>
+                                    </citation>, in so far as that subclause relates to personal information held by a public sector agency, are legal rights, and are enforceable accordingly in a court of law.</text>
+                            </para>
+                        </subprov>
+                        <subprov>
+                            <label denominator="yes">2</label>
+                            <para>
+                                <text>Subject to subsection (1), the information privacy principles do not confer on any person any legal right that is enforceable in a court of law.</text>
+                            </para>
+                        </subprov>
+                    </prov.body>
+                </prov>
+            </part>

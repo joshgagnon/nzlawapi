@@ -1,0 +1,694 @@
+            <schedule id="DLM1523373" prov-type="clause" schedule.heading.continue="no" toc="yes" type="schedule" act.no="97" act.type="public" date.as.at="2015-07-01" date.assent="2007-11-01" date.first.valid="2008-04-01" date.terminated="nulldate" year="2007">
+                <label denominator="yes">20</label>
+                <empowering-prov>
+                    <citation jurisdiction="nz">
+                        <intref href="DLM1513921">ss DO 4</intref>,
+                        <intref href="DLM1513926">DO 5</intref>,
+                        <intref href="DLM1513965">DO 11</intref>,
+                        <intref href="DLM1513968">DO 12</intref>,
+                        <intref href="DLM1513973">DO 13</intref>,
+                        <intref href="DLM1513980">DP 3</intref>,
+                        <intref href="DLM1514256">DZ 17</intref>,
+                        <intref href="DLM1514261">DZ 18</intref>,
+                        <intref href="DLM1520575">YA 1</intref>
+                    </citation>
+                </empowering-prov>
+                <heading>Expenditure on farming, horticultural, aquacultural, and forestry improvements</heading>
+                <schedule.misc>
+                    <para>
+                        <table align="center" colsep="0" fontsize="9.5" frame="topbot" id="DLM1523374" leading="10.5" pgwide="1" rowsep="0">
+                            <tgroup cols="3">
+                                <colspec align="center" colname="c1" colnum="1" colsep="0" colwidth="0.27*" rowsep="0" />
+                                <colspec align="left" colname="c2" colnum="2" colsep="0" colwidth="1.93*" rowsep="0" />
+                                <colspec align="center" colname="c3" colnum="3" colsep="0" colwidth="0.81*" rowsep="0" />
+                                <thead valign="top">
+                                    <row rowsep="1">
+                                        <entry align="center" colsep="1" nameend="c2" namest="c1" valign="bottom">
+                                            <emphasis style="bold">Improvement</emphasis>
+                                        </entry>
+                                        <entry align="center" valign="bottom">
+                                            <emphasis style="bold">Percentage of diminished value of improvement allowed as deduction</emphasis>
+                                        </entry>
+                                    </row>
+                                </thead>
+                                <tbody valign="top">
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part A
+                                            <brk/>Farming</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>
+                                                    <insertwords>unless clause 2 applies, preparation</insertwords> of the land for farming or agriculture, including cultivation and grassing</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>regrassing and fertilising all types of pasture in the course of a significant capital activity that relates to a type of pasture with an estimated useful life of more than 1 year</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>45</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>3</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>draining of swamp or low-lying lands</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>4</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of access roads or tracks to or on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>5</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of dams, stopbanks, irrigation or stream diversion channels, or other improvements for the purpose of conserving or conveying water for use on the land or for preventing or combating soil erosion, other than planting or maintaining trees, whether or not on the land, for the purpose of providing shelter to the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>6</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of earthworks, ponds, settling tanks, or other similar improvements mainly for the purpose of the treatment of waste products in order to prevent or combat pollution of the environment</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>7</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>sinking of bores or wells for the purpose of supplying water for use on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>8</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of aeroplane landing strips to facilitate aerial topdressing of the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>9</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>planting of non-listed horticultural plants on the land (see
+                                                    <citation jurisdiction="nz">
+                                                        <extref href="DLM351394">section 44C</extref> of the Tax Administration Act 1994</citation>)</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>10</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>erection on the land of electric power lines or telephone lines</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>11</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction on the land of feeding platforms, feeding yards, plunge sheep dips, or self-feeding ensilage pits</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>12</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction on the land of supporting frames for growing crops</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry>13</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction on the land of structures for shelter purposes</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry align="center" nameend="c3" namest="c1">
+                                            <para>
+                                                <text>
+                                                    <field fill="space" fill-length="10" />
+                                                </text>
+                                            </para>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part B
+                                            <brk/>Freshwater fish farming</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>drilling of water bores</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>draining of land or the excavating of sites for ponds, races, or tanks</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>3</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of ponds, races, settling ponds, sluices, or tanks of impervious materials to conduct or contain waters</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>4</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>supply and installation of pipes for water reticulation</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>5</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of access paths, embankments, service paths, walkways, or walls</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>6</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of effluent ponds</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>7</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>supply and installation of baffles or screens for the containing or excluding of fish</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry>8</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of fencing on the fish farm</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry align="center" nameend="c3" namest="c1">
+                                            <para>
+                                                <text>
+                                                    <field fill="space" fill-length="10" />
+                                                </text>
+                                            </para>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part C
+                                            <brk/>Mussel farming</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition, preparation, and mooring of pontoons or rafts or other floating structures for collecting spat</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition, mooring, and outfitting of moored floating platforms or longlines from which the collected spat is suspended for subsequent growth</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry>3</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>collecting and depositing of shell or other suitable material on the sea bed to create spatting surfaces</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry align="center" nameend="c3" namest="c1">
+                                            <para>
+                                                <text>
+                                                    <field fill="space" fill-length="10" />
+                                                </text>
+                                            </para>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part D
+                                            <brk/>Rock oyster farming</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition and preparation of spatting sticks</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction and erection of posts, rails, or other structures for the holding of spatting sticks during spat catching and maturing</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry>3</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of fences (including breakwater fences)</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry align="center" nameend="c3" namest="c1">
+                                            <para>
+                                                <text>
+                                                    <field fill="space" fill-length="10" />
+                                                </text>
+                                            </para>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part E
+                                            <brk/>Scallop farming</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition, preparation, and mooring of floating structures for collecting spat</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition, mooring, and outfitting of longlines from which the collected spat is suspended for subsequent growth</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry align="center" nameend="c3" namest="c1">
+                                            <para>
+                                                <text>
+                                                    <field fill="space" fill-length="10" />
+                                                </text>
+                                            </para>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part F
+                                            <brk/>Sea-cage salmon farming</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition, preparation, and mooring of pontoons or rafts or other floating structures for securing or protecting cages or other containment vessels</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition, preparation, and placing of equipment or structures, including cages, nets, tanks, or other vessels, for the containment of live salmon</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry>3</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>acquisition and placing of buoys and ropes used in the breeding or maturing of salmon</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry align="center" nameend="c3" namest="c1">
+                                            <para>
+                                                <text>
+                                                    <field fill="space" fill-length="10" />
+                                                </text>
+                                            </para>
+                                        </entry>
+                                    </row>
+                                    <row rowsep="1">
+                                        <entry align="center" nameend="c3" namest="c1">Part G
+                                            <brk/>Forestry</entry>
+                                    </row>
+                                    <row>
+                                        <entry>1</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>felling, clearing, destruction, or removal of timber, stumps, scrub, or undergrowth on the land in the preparation of the land for the planting of trees on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>2</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>eradication or extermination, to enable the planting of trees on the land, of animal or vegetable pests on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>3</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>destruction, to enable the planting of trees on the land, of weeds or plants detrimental to the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>4</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>draining of swamp or low-lying lands in the preparation of the land for the planting of trees on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>5</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of roads to or on the land (including any culverts or bridges necessary for the construction), when the roads are formed and wholly or mainly metalled or sealed</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>6</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of roads to or on the land (including any culverts or bridges necessary for the construction), when the roads—</text>
+                                            </para>
+                                            <para>
+                                                <label-para>
+                                                    <label denominator="yes">a</label>
+                                                    <para>
+                                                        <text>are not access tracks to which <citation jurisdiction="nz">section DP 1(1)﻿(h)</citation>
+                                                            <struckoutwords/>applies; and</text>
+                                                    </para>
+                                                </label-para>
+                                                <label-para>
+                                                    <label denominator="yes">b</label>
+                                                    <para>
+                                                        <text>are 1 of the following:</text>
+                                                        <label-para>
+                                                            <label denominator="yes">i</label>
+                                                            <para>
+                                                                <text>roads that are formed and partially metalled or sealed; or</text>
+                                                            </para>
+                                                        </label-para>
+                                                        <label-para>
+                                                            <label denominator="yes">ii</label>
+                                                            <para>
+                                                                <text>roads that are not metalled or sealed</text>
+                                                            </para>
+                                                        </label-para>
+                                                    </para>
+                                                </label-para>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>20</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>7</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of dams, stopbanks, irrigation or stream diversion channels, or other improvements for the purpose of conserving or conveying water for use on the land or for preventing or combating soil erosion</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>8</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>repair of flood or erosion damage</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>9</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>sinking of bores or wells for the purpose of supplying water for use on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>10</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction of aeroplane landing strips to facilitate aerial topdressing or disease control work or firefighting on the land</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>5</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>11</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>construction on the land of fences, including the purchase of wire or wire netting for the purpose of making new or existing fences rabbit-proof</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                    <row>
+                                        <entry>12</entry>
+                                        <entry colsep="1">
+                                            <para>
+                                                <text>erection on the land of electric power lines or telephone lines</text>
+                                            </para>
+                                        </entry>
+                                        <entry>
+                                            <insertwords>10</insertwords>
+                                        </entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                        <notes>
+                            <history>
+                                <history-note id="DLM6204042">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2013 and applying for an improvement made on or after the first day of the 2013–14 income year), on
+                                    <amendment-date>30 June 2014</amendment-date>, by
+                                    <amending-provision href="DLM5736222">section 148(1)﻿(a)</amending-provision> of the
+                                    <amending-leg>Taxation (Annual Rates, Employee Allowances, and Remedial Matters) Act 2014</amending-leg> (2014 No 39).</history-note>
+                                <history-note id="DLM6204043">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2013 and applying for an improvement made on or after the first day of the 2013–14 income year), on
+                                    <amendment-date>30 June 2014</amendment-date>, by
+                                    <amending-provision href="DLM5736222">section 148(1)﻿(b)</amending-provision> of the
+                                    <amending-leg>Taxation (Annual Rates, Employee Allowances, and Remedial Matters) Act 2014</amending-leg> (2014 No 39).</history-note>
+                                <history-note id="DLM6204044">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2013 and applying for an improvement made on or after the first day of the 2013–14 income year), on
+                                    <amendment-date>30 June 2014</amendment-date>, by
+                                    <amending-provision href="DLM5736222">section 148(1)﻿(c)</amending-provision> of the
+                                    <amending-leg>Taxation (Annual Rates, Employee Allowances, and Remedial Matters) Act 2014</amending-leg> (2014 No 39).</history-note>
+                                <history-note id="DLM5527447">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2013 and applying for the 2013–14 and later income years), on
+                                    <amendment-date>17 July 2013</amendment-date>, by
+                                    <amending-provision href="DLM5166096">section 104(1)﻿(a)</amending-provision> of the
+                                    <amending-leg>Taxation (Livestock Valuation, Assets Expenditure, and Remedial Matters) Act 2013</amending-leg> (2013 No 52).</history-note>
+                                <history-note id="DLM5527448">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2013 and applying for the 2013–14 and later income years), on
+                                    <amendment-date>17 July 2013</amendment-date>, by
+                                    <amending-provision href="DLM5166096">section 104(1)﻿(b)</amending-provision> of the
+                                    <amending-leg>Taxation (Livestock Valuation, Assets Expenditure, and Remedial Matters) Act 2013</amending-leg> (2013 No 52).</history-note>
+                                <history-note id="DLM5527449">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2013 and applying for the 2013–14 and later income years), on
+                                    <amendment-date>17 July 2013</amendment-date>, by
+                                    <amending-provision href="DLM5166096">section 104(1)﻿(c)</amending-provision> of the
+                                    <amending-leg>Taxation (Livestock Valuation, Assets Expenditure, and Remedial Matters) Act 2013</amending-leg> (2013 No 52).</history-note>
+                                <history-note id="DLM4064101">
+                                    <amended-provision>Schedule 20 part G clause 6(a)</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2008), on
+                                    <amendment-date>29 August 2011</amendment-date> (applying for the 2008–09 and later income years), by
+                                    <amending-provision href="DLM3819752">section 140(1)</amending-provision> of the
+                                    <amending-leg>Taxation (Tax Administration and Remedial Matters) Act 2011</amending-leg> (2011 No 63).</history-note>
+                                <history-note id="DLM2663602">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2008), on
+                                    <amendment-date>6 October 2009</amendment-date>, by
+                                    <amending-provision href="DLM2178927">section 582(1)</amending-provision> of the
+                                    <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                                <history-note id="DLM2663603">
+                                    <amended-provision>Schedule 20</amended-provision>:
+                                    <amending-operation>amended</amending-operation> (with effect on 1 April 2008), on
+                                    <amendment-date>6 October 2009</amendment-date>, by
+                                    <amending-provision href="DLM2178927">section 582(2)</amending-provision> of the
+                                    <amending-leg>Taxation (International Taxation, Life Insurance, and Remedial Matters) Act 2009</amending-leg> (2009 No 34).</history-note>
+                            </history>
+                        </notes>
+                    </para>
+                </schedule.misc>
+            </schedule>
