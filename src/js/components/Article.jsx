@@ -81,6 +81,11 @@ var ArticleSkeletonContent = React.createClass({
             }
 
         }
+        var self = this;
+        $('img', React.findDOMNode(this)).on('load', _.debounce(function(){
+            self.resizeSkeleton();
+            self.setSubVisibility();
+        }, 500));
         if(this.props.highlight){
             Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
         }
@@ -92,6 +97,10 @@ var ArticleSkeletonContent = React.createClass({
         if(this.props.highlight){
             Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
         }
+        $('img', React.findDOMNode(this)).on('load', _.debounce(function(){
+            self.resizeSkeleton();
+            self.setSubVisibility();
+        }, 500));
     },
     getScrollContainer: function(){
         return this.props.getScrollContainer();
@@ -289,10 +298,8 @@ var ArticleSkeletonContent = React.createClass({
                 this.recalculateOffsets(resize_index);
             }
 
-            if(change){
-                Actions.getMorePage(this.props.page_id,
+            Actions.getMorePage(this.props.page_id,
                     {requested_parts: requested_parts});
-            }
         }
     },
 
@@ -500,10 +507,14 @@ var ArticleSkeletonContent = React.createClass({
             return false;
         }
     },
+    componentWillUpdate: function(){
+        $('img', React.findDOMNode(this)).off();
+    },
     componentWillUnmount: function(){
         var $parent =  this.getScrollContainer();
         $parent.off('scroll', this.debounce_scroll);
         $parent.off('scroll',  this.debounce_visibility);
+        $('img', React.findDOMNode(this)).off();
     }
 });
 
@@ -531,6 +542,7 @@ var ArticleContent = React.createClass({
         if(this.props.highlight){
             Actions.articleJumpTo(this.props.viewer_id, {next_highlight: true});
         }
+
     },
     getScrollContainer: function(){
         return this.props.getScrollContainer();
