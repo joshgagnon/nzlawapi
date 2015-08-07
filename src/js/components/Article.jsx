@@ -118,7 +118,7 @@ var ArticleSkeletonContent = React.createClass({
     },
     updateSkeletonScroll: function(){
         var self = this;
-        var find_current_part = function(top){
+        var find_current_part_buggy = function(top){
             var key = self.getCurrentPartKey(top);
             if(key < 0){
                 return
@@ -132,6 +132,22 @@ var ArticleSkeletonContent = React.createClass({
             child_key = Math.max(0, Math.min(self._skeleton_locations[part].sorted_children.length, child_key));
             return self._skeleton_locations[part].sorted_children[child_key] || self._refs[part];
         };
+
+        var find_current_part = function(top){
+            var parts = React.findDOMNode(self).querySelectorAll('*[data-location]:not([data-location-no-path])');
+            var index = _.sortedLastIndex(parts, {offsetTop: top, offsetHeight:0}, function(el) {
+              return el.offsetTop;
+            });
+            if(index >= parts.length){
+                index--;
+            }
+            if(index>0 && parts[index-1].offsetTop + parts[index-1].offsetHeight > top){
+                index--;
+            }
+            return parts[index];
+        }
+
+
         if(self.isMounted()){
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));

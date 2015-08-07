@@ -81,11 +81,11 @@
         </xsl:variable>
           width:<xsl:value-of select="100.0 div $cols * number(substring-before(@colwidth, '*'))"/>%;
       </xsl:when>
-      <xsl:when test="@colwidth='1cm'">
+      <xsl:when test="contains(@colwidth, 'cm') or contains(@colwidth, 'pt')">
           width:7%;
       </xsl:when>
       <xsl:otherwise>
-            width:<xsl:value-of select='@colwidth'/>
+            width:<xsl:value-of select='@colwidth'/>;
       </xsl:otherwise>
     </xsl:choose>
     <xsl:if test="@align != ''">

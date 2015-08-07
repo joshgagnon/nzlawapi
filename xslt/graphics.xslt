@@ -10,7 +10,7 @@
 
 <xsl:template match="graphic">
     <div class="graphic">
-        <a target="_blank">
+        <img>
             <xsl:attribute name="alt">
                 <xsl:value-of select="@alt-text" />
             </xsl:attribute>
@@ -18,7 +18,7 @@
                 <xsl:value-of select="@id"/>
             </xsl:attribute>
 
-            <xsl:attribute name="href">
+            <xsl:attribute name="src">
                 <xsl:variable name="year">
                     <xsl:value-of select="ancestor::*[last()]/@year"/>
                 </xsl:variable>
@@ -67,8 +67,7 @@
                         <xsl:with-param name="by" >.jpg</xsl:with-param>
                   </xsl:call-template>
             </xsl:attribute>
-            Click to Open Image
-        </a>
+        </img>
     </div>
 
 </xsl:template>
