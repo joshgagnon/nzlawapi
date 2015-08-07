@@ -30,7 +30,7 @@
 }
 .tab-content .article-overlay{
     top: $tabs-height + $top-bar-height-sm;
-    @media (min-width: $screen-md-min) {
+    @media (min-width: $screen-md-min) { p
         top: $tabs-height + $top-bar-height;
     }
 .split .find:right {
@@ -41,31 +41,31 @@
 
 */
 
-
-.breadcrumb, .find{
-    position: absolute;
-    z-index:$z-toolbars;
-    top: $top-bar-height-sm;
-    @media print{
-        display:none;
+.article-overlay{
+    .breadcrumb, .find{
+        position: absolute;
+        z-index:$z-toolbars;
+        top: $top-bar-height-sm;
+        @media print{
+            display:none;
+        }
+        @media (min-width: $screen-md-min) {
+            top: $top-bar-height;
+        }
     }
-    @media (min-width: $screen-md-min) {
-        top: $top-bar-height;
+    .breadcrumb{
+        @media (min-width: $screen-sm-min) {
+            left: $buttonbar-outer-width;
+        }
+    }
+
+    .find{
+        right: 32px;
+    }
+    .split .article-overlay.left .find{
+        right:calc(50% + 32px) !important;
     }
 }
-.breadcrumb{
-    @media (min-width: $screen-sm-min) {
-        left: $buttonbar-outer-width;
-    }
-}
-
-.find{
-    right: 32px;
-}
-.article-overlay.left .find{
-    right:calc(50% + 32px) !important;
-}
-
 .article-overlay  + .article-overlay .breadcrumb{
     left:calc(50% + 8px) !important;
 }

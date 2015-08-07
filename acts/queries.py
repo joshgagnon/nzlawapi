@@ -42,21 +42,23 @@ class Instrument(object):
     def get_tree(self):
         if self.tree is None:
             self.tree = etree.fromstring(self.document, parser=large_parser)
+        extra_formatting(self.tree, self.attributes.get('version', 0))
+
         return self.tree
 
 
-def format_dates(tree):
-    # piece of shit, bug before 1900!!!
+def extra_formatting(tree, version):
     try:
-        assent_date = datetime.datetime.strptime(tree.attrib['date.assent'], "%Y-%m-%d").date()
-        tree.attrib['formatted.assent'] = assent_date.strftime('%d %B %Y')
-    except:
+        tree.attrib['formatted.assent'] = format_govt_date(safe_date(tree.attrib['date.assent']))
+    except Exception: # ew
         pass
     try:
-        reprint_date = datetime.datetime.strptime(tree.xpath('.//reprint-date')[0].text, "%Y-%m-%d").date()
-        tree.attrib['formatted.reprint'] = reprint_date.strftime('%d %B %Y')
-    except:
+        tree.attrib['formatted.reprint'] = format_govt_date(safe_date(tree.xpath('.//reprint-date')[0].text))
+    except Exception: # ew
         pass
+    tree.attrib['version'] = '%.1f' % version
+
+
 
 
 def measure_heights(html):
@@ -75,11 +77,11 @@ def measure_heights(html):
     return results
 
 
-def process_skeleton(id, tree, db=None):
+def process_skeleton(id, tree, version, db=None):
     """ whoever wrote this is an asshole """
     """ don't check git blame  """
     parts = []
-    format_dates(tree)
+    extra_formatting(tree, version)
     html = tohtml(tree)
     max_size = 20000
     min_size = 200
@@ -183,9 +185,9 @@ def process_skeleton(id, tree, db=None):
     return skeleton
 
 
-def process_heights(id, tree, db=None, measure=True):
-    format_dates(tree)
+def process_heights(id, tree, version, db=None):
     html = tohtml(tree)
+    extra_formatting(tree, version)
     parts = False
     skeleton = etree.tostring(html, encoding='UTF-8', method="html")
     for i, div in enumerate(html.xpath('.//div[@class="prov" or @class="schedule"][not(ancestor::div[@class="prov"] or ancestor::div[@class="schedule"] or ancestor::div[@class="amend"])]')):
@@ -480,11 +482,13 @@ def prep_instrument(result, replace, db):
     else:
         document = result.get('processed_document')
     if redo_skele or not result.get('skeleton'):
-        skeleton = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
+        skeleton = process_skeleton(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser),
+            db=db, version=result.get('version'))
     else:
         skeleton = result.get('skeleton')
     if redo_skele or not result.get('heights'):
-        heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser), db=db)
+        heights = process_heights(result.get('id'), tree if tree is not None else etree.fromstring(document, parser=large_parser),
+            db=db, version=result.get('version'))
     else:
         heights = result.get('heights')
 

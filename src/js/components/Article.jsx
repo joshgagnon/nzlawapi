@@ -128,12 +128,11 @@ var ArticleSkeletonContent = React.createClass({
             if(!self._skeleton_locations[part].sorted_children || !self._skeleton_locations[part].sorted_children.length){
                 return self._refs[part];
             }
-            var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, top-self._skeleton_locations[part].root], _.last) -1;
+            var child_key = _.sortedIndex(self._skeleton_locations[part].sorted_children, [null, self._skeleton_locations[part].root-top], _.last) -1;
             child_key = Math.max(0, Math.min(self._skeleton_locations[part].sorted_children.length, child_key));
             return self._skeleton_locations[part].sorted_children[child_key] || self._refs[part];
         };
         if(self.isMounted()){
-
             var top = self.getScrollContainer().scrollTop();
             var $part = $(find_current_part(top));
             var repr = Utils.getLocation($part).repr;

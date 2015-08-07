@@ -54,7 +54,7 @@ def process_skeleton(document_ids):
                 result = cur.fetchall()
                 if result:
                     tree = etree.fromstring(result[0]['processed_document'], parser=large_parser)
-                    queries.process_skeleton(result[0].get('id'), tree, db=db)
+                    queries.process_skeleton(result[0].get('id'), tree, version=result[0].get('version'), db=db)
 
         db.commit()
         db.close()

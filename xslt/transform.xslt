@@ -10,6 +10,7 @@
     <xsl:import href="forms.xslt" />
     <xsl:import href="end.xslt" />
     <xsl:import href="schedules.xslt" />
+    <xsl:import href="graphics.xslt" />
 
 
     <xsl:variable name="characters-insert-space">0123456789abcdefghijklmnopqrstuvwxyz</xsl:variable>
