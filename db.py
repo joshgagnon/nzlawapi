@@ -6,7 +6,7 @@ from lxml import etree
 
 
 def get_db():
-    if not hasattr(g, 'db'):
+    if not hasattr(g, 'db') or g.db.closed:
         g.db = connect_db()
     return g.db
 

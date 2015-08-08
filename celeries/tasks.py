@@ -41,20 +41,19 @@ def process_instrument(document_ids):
 @app.task
 def process_skeleton(document_ids):
     with server.app.test_request_context():
-        db = get_db()
-        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-            for document_id in document_ids:
-                print 'fetching %d for skeletizing' % document_id
-                query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
-                        JOIN documents d on d.id = i.id
-                        where skeleton is null
-                        and i.id = %(id)s """
-
+        for document_id in document_ids:
+            db = get_db()
+            print 'fetching %d for skeletizing' % document_id
+            query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
+                    JOIN documents d on d.id = i.id
+                    where skeleton is null
+                    and i.id = %(id)s """
+            with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
                 cur.execute(query, {'id': document_id})
                 result = cur.fetchall()
                 if result:
                     tree = etree.fromstring(result[0]['processed_document'], parser=large_parser)
                     queries.process_skeleton(result[0].get('id'), tree, version=result[0].get('version'), db=db)
 
-                db.commit()
-    db.close()
+            db.commit()
+            db.close()
