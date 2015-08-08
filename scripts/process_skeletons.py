@@ -40,10 +40,12 @@ if __name__ == "__main__":
                     where skeleton is null"""
             cur.execute(query)
             results = cur.fetchall()
+        db.commit()
         if len(results):
             print '%s documents to process' % len(results)
             jobs = list(chunks([r['id'] for r in results], 10))
-            tasks = [process_skeleton.delay(j) for j in jobs]
+            #tasks = [process_skeleton.delay(j) for j in jobs]
+            tasks = [process_skeleton(j) for j in jobs]
             while True:
                 tasks_finished = len(filter(lambda x: x.ready(), tasks))
                 sys.stdout.write('%d%%\r' % (tasks_finished/float(len(jobs))*100))
