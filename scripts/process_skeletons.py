@@ -27,11 +27,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     def get_db(config):
-        db = psycopg2.connect(
+        return psycopg2.connect(
                 database=config.DB,
                 user=config.DB_USER,
                 host=config.DB_HOST,
                 password=config.DB_PW)
+
 
     db = get_db(config)
     tasks = []
