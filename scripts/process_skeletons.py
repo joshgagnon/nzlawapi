@@ -26,12 +26,14 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    db = psycopg2.connect(
-            database=config.DB,
-            user=config.DB_USER,
-            host=config.DB_HOST,
-            password=config.DB_PW)
+    def get_db(config):
+        db = psycopg2.connect(
+                database=config.DB,
+                user=config.DB_USER,
+                host=config.DB_HOST,
+                password=config.DB_PW)
 
+    db = get_db(config)
     tasks = []
     try:
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
@@ -41,6 +43,7 @@ if __name__ == "__main__":
             cur.execute(query)
             results = cur.fetchall()
         db.commit()
+        db.close()
         if len(results):
             print '%s documents to process' % len(results)
             jobs = list(chunks([r['id'] for r in results], 10))
@@ -62,6 +65,7 @@ if __name__ == "__main__":
             task.revoke()
     finally:
         print "Cleaning up Main"
+        db = get_db(config)
         with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             cur.execute("select update_views()")
 
