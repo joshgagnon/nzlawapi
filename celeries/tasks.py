@@ -40,8 +40,8 @@ def process_instrument(document_ids):
 
 @app.task
 def process_skeleton(document_ids):
-    db = get_db()
     with server.app.test_request_context():
+        db = get_db()
         for document_id in document_ids:
             print 'fetching %d for skeletizing' % document_id
             query = """SELECT *, exists(select 1 from latest_instruments where id=i.id) as latest FROM instruments i
