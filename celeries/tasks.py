@@ -51,9 +51,9 @@ def process_skeleton(document_ids):
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
                 cur.execute(query, {'id': document_id})
                 result = cur.fetchall()
-                db.commit()
-                if result:
-                    tree = etree.fromstring(result[0]['processed_document'], parser=large_parser)
-                    queries.process_skeleton(result[0].get('id'), tree, version=result[0].get('version'), db=db)
+            db.commit()
+            if result:
+                tree = etree.fromstring(result[0]['processed_document'], parser=large_parser)
+                queries.process_skeleton(result[0].get('id'), tree, version=result[0].get('version'), db=db)
 
     db.close()
