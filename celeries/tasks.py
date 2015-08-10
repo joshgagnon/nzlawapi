@@ -55,7 +55,7 @@ def process_skeleton(document_ids):
             if result:
                 tree = etree.fromstring(result[0]['processed_document'], parser=large_parser)
                 doc_id = result[0].get('id')
-                verion = result[0].get('version')
+                version = result[0].get('version')
                 db.commit()
                 queries.process_skeleton(doc_id, tree, version=version, db=db)
             else:
