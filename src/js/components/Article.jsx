@@ -408,6 +408,7 @@ var ArticleSkeletonContent = React.createClass({
         }
     },
     onJumpTo: function(viewer_id, jump){
+
         this._delayed_jump;
         if(viewer_id!== this.props.viewer_id){
             return;
@@ -423,9 +424,14 @@ var ArticleSkeletonContent = React.createClass({
         else if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length && node.length;i++){
-                var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id]):not(.def-term)').filter(function(){
+                var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not(.def-term):not([data-link-id]):not([data-location-breadcrumb])').filter(function(){
                     return this.getAttribute('data-location').trim() === jump.location[i].trim();
                 });
+                if(!new_node.length){
+                    new_node = node.find('[data-location-breadcrumb^="'+jump.location[i]+'"]:not([data-link-id]):not(.def-term)').filter(function(){
+                        return this.getAttribute('data-location-breadcrumb').trim() === jump.location[i].trim();
+                    });
+                }
                 if(!new_node.length){
                     this._delayed_jump = {ref: node.closest('[data-hook]').attr('data-hook'), jump: jump};
                     break;
@@ -632,7 +638,15 @@ var ArticleContent = React.createClass({
         if(jump.location && jump.location.length){
             var node = $(this.getDOMNode());
             for(var i=0;i<jump.location.length;i++){
-                node = node.find('[data-location^="'+jump.location[i]+'"]:not([data-link-id]):not(.def-term)');
+                var new_node = node.find('[data-location^="'+jump.location[i]+'"]:not(.def-term):not([data-link-id]):not([data-location-breadcrumb])').filter(function(){
+                    return this.getAttribute('data-location').trim() === jump.location[i].trim();
+                });
+                if(!new_node.length){
+                    new_node = node.find('[data-location-breadcrumb^="'+jump.location[i]+'"]:not([data-link-id]):not(.def-term)').filter(function(){
+                        return this.getAttribute('data-location-breadcrumb').trim() === jump.location[i].trim();
+                    });
+                }
+                node = new_node;
             }
             target = node;
         }

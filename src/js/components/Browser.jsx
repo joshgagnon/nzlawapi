@@ -339,7 +339,7 @@ var Browser = React.createClass({
     // NOTE TO SELF:  splitting of render into multiple functions begs to just split component up
     renderBody: function(){
         var active = this.getActive();
-        var className = this.state.views.get('tab-0').size ? ' multi_page' : '';
+        var className = this.state.pages.size > 1 ? ' multi_page' : '';
         if(this.state.browser.get('print_mode') && this.state.browser.get('split_mode') ){
             return <div className={"split print" + className}>
                 <TabView browser={this.state.browser} pages={this.state.pages} view={this.state.views.get('tab-0')} viewer_id={'tab-0'} key={'tab-0'} showCloseView={true}/>

@@ -70,7 +70,7 @@ var PageStore = Reflux.createStore({
         // or, could add NaN or some other hack to mark 'dirty' pages, maybe after user interaction
 
         return this.pages.find(function(p){
-            if(page_data.query_string && page_data.query_string===p.get('query_string')){
+            if(page_data.query_string && p.get('query_string') && page_data.query_string===p.get('query_string')){
                 return true;
             }
             if(!page_data.query || !p.get('query')){

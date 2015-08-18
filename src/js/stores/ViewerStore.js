@@ -139,6 +139,9 @@ module.exports =  Reflux.createStore({
             if(options.position){
                 this.views = this.views.setIn([viewer_id, 'positions', page_id], Immutable.Map());
                 this.views = this.views.mergeDeepIn([viewer_id, 'positions', page_id], options.position);
+                if(viewer_id === 'tab-0' && page_id === this.views.getIn([viewer_id, 'active_page_id'])){
+                    Actions.articleJumpTo(viewer_id, options.position);
+                }
             }
         }
         this.update();

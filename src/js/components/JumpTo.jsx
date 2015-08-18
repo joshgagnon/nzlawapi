@@ -30,6 +30,7 @@ module.exports = React.createClass({
         var loc = this.state.article_location;
         if(loc){
             var m = Utils.splitLocation(loc);
+            console.log('fire action')
             Actions.articleJumpTo(this.props.viewer_id, {location: m, id: null, repr: loc});
         }
     },

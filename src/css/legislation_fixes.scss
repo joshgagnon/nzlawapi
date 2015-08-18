@@ -53,12 +53,19 @@
 .definition-result{
     // SUPER HACK DELETE AFTER FINISHING RERENDER OF DEFS
     span.label.focus-link {
-         margin-right: 20px;
+    float: left;
+    margin-left: -2.6087em;
+    padding-right: 0.5em;
     }
     ul.label-para {
         margin-left: 40px;
         list-style: none;
     }
+    p.label.labelled{
+        white-space: normal;
+    }
+
+
 }
 
 .legislation {
