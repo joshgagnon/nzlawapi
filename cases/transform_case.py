@@ -80,6 +80,10 @@ RULES = [
 
 
 class DocState(object):
+    """ The pdfminer gives us the first stage of grouping, but I have
+        keep it agnostic as to case pdf layout.  This class, on the other hand,
+        will have an opinion about expected layouts, and will separate intituling,
+        paragraphs, footers and tables. """
 
     CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f\n]')
 
@@ -125,38 +129,35 @@ class DocState(object):
             return (bbox[0] > self.thresholds['right_align_thresholds'][0] and
                     bbox[2] > self.thresholds['right_align_thresholds'][1])
 
-        def h_overlap(b, a):
-            h_overlaps = (a[3] <= b[1]) and (a[1] >= b[3])
-            return h_overlaps
 
+        # first bbbox
         if not self.prev_bbox:
             return False
 
-        if dist((self.prev_bbox[1],  self.prev_bbox[3]),(self.bbox[1],  self.bbox[3])) > self.thresholds['para']:
+        # vertical distance so great it is likely a new paragraph
+        if dist((self.prev_bbox[1], self.prev_bbox[3]), (self.bbox[1], self.bbox[3])) > self.thresholds['para']:
             return True
 
+        # has started a new line horizontal before the previous, probably a column in table
         if self.bbox[2] < self.prev_bbox[0]:
             return True
 
     def column_join_threshold(self):
         if (self.prev_bbox and
             abs(self.prev_bbox[1] - self.bbox[3]) > self.thresholds['line_tolerance'] and
-            self.bbox[0] - self.prev_bbox[2] > self.thresholds['column_gap']):
+                self.bbox[0] - self.prev_bbox[2] > self.thresholds['column_gap']):
             # emit join
             return True
-
 
     def line_threshold(self, value=None):
         if not self.prev_bbox:
             return False
         return abs(self.prev_bbox[3] - value if value is not None else self.bbox[3]) > self.thresholds['line_tolerance']
 
-
     def new_line(self, bbox):
         self.has_new_line = True
         self.prev_bbox = self.bbox
         self.bbox = bbox
-
 
     def open_tag(self, tag, flush=True, attributes=None):
         if flush:
@@ -168,7 +169,6 @@ class DocState(object):
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
                     self.out.write('<%s>' % t)
-
 
     def close_tag(self, tag, flush=True):
         if tag in self.tag_stack and flush:
@@ -210,10 +210,8 @@ class DocState(object):
         else:
             self.close_tag('intituling_field')
             self.open_tag('intituling_field',
-                attributes='left="%d" top="%d" bold="%s"' %
-                (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
-
-
+                          attributes='left="%d" top="%d" bold="%s"' %
+                          (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
 
     def handle_style(self):
         if self.is_superscript():
@@ -239,7 +237,6 @@ class DocState(object):
             self.thresholds['footer_size'] = self.size - 2
             self.calibrated = True
 
-
     def is_superscript(self):
         return self.size < self.thresholds['superscript']
 
@@ -250,6 +247,13 @@ class DocState(object):
         return (
             self.calibrated and
             (self.size and self.size < self.thresholds['footer_size']))
+
+    def is_bold(self, font=None):
+        font = font or self.font
+        return font and 'bold' in font.lower()
+
+    def is_italic(self, font):
+        return font and 'italic' in font.lower()
 
     def is_intituling(self):
         return 'intituling' in self.body_stack
@@ -280,13 +284,6 @@ class DocState(object):
         for tag in self.tag_stack[::-1]:
             self.close_tag(tag)
         return ( '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
-
-    def is_bold(self, font=None):
-        font = font or self.font
-        return font and 'bold' in font.lower()
-
-    def is_italic(self, font):
-        return font and 'italic' in font.lower()
 
     def write_text(self, text, item=None):
         text = self.CONTROL.sub(u'', text)
