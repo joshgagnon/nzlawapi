@@ -1,0 +1,89 @@
+<case>
+	<intituling>
+	<full-citation>BIRKENFELD V YACHTING NEW ZEALAND INCORPORATED SC 72/2006 10 November 2006</full-citation>
+	<court>IN THE SUPREME COURT OF NEW ZEALAND</court>
+	<court-file>SC 72/2006</court-file>
+	<neutral-citation>[2006] NZSC 93</neutral-citation>
+	<parties>
+		<plantiffs>
+			<plantiff>
+				<qualifier>BETWEEN</qualifier>
+				<value>KIMBERLEY BIRKENFELD</value>
+				<descriptor>Applicant</descriptor>
+			</plantiff>
+		</plantiffs>
+		<defendants>
+			<defendant>
+				<qualifier>AND</qualifier>
+				<value>YACHTING NEW ZEALAND INCORPORATED</value>
+				<descriptor>Respondent</descriptor>
+				</defendant>
+		</defendants>
+	</parties>
+	<counsel>Applicant in person</counsel>
+	<counsel>N A Beadle for Respondent</counsel>
+	<bench>Elias CJ, McGrath and Anderson JJ</bench>
+	<judgment>10 November 2006</judgment>
+	<waistband>
+	<title>JUDGMENT OF THE COURT</title>
+		<list>
+			<entry>
+			<label>A</label>
+			<text>Leave to appeal is declined.</text>
+			</entry>
+			<entry>
+			<label>B</label>
+			<text>The applicant must pay the respondent costs of $1,500 together with reasonable disbursements, to be fixed if necessary by the Registrar.</text>
+			</entry>
+		</list>
+	</waistband>
+	<solicitor>Phillips Fox, Auckland for Respondent</solicitor>
+	</intituling>
+
+
+	<body>
+		<title>REASONS</title>
+		<paragraph><label>1</label>
+			<text>This application for leave to appeal has its origin in a ruling of the High Court in an admiralty proceeding. Ms Birkenfeld has brought a claim against Yachting New Zealand in consequence of a collision between its rigid inflatable boat (RIB) and a windsurfer ridden by her. Yachting New Zealand moved for a decree of limitation of liability pursuant to s 85 of the Maritime Transport Act 1994, which applies to:</text>
+			<quote>Owners of ships, and any master, seafarer, or other person for whose act, omission, neglect, or default the owner of the ship is responsible.</quote>
+			<text>Keane J made such a decree and awarded costs to YNZ. Ms Birkenfeld appealed unsuccessfully to the Court of Appeal, which also awarded costs to YNZ.</text>
+		</paragraph>
+
+		<paragraph><label>2</label>
+			<text>On 1 October 2006 Ms Birkenfeld filed an application to amend her application for leave. This was, in effect, an attempt to recast and expand upon the rather succinct submissions she had previously filed. As she is unrepresented and dealing with this litigation from abroad we have had regard to her expanded submissions. They were largely anticipated in scope by the respondents’ submissions in any event.
+			</text>
+		</paragraph>
+
+		<paragraph><label>3</label>
+			<text>The term “ship” is defined in Part 7, s 84 of the Maritime Transport Act as follows:</text>
+			<quote>Ship means every description of vessel (including barges, lighters, and like vessels) used or intended to be used in navigation, however propelled; and includes any structure (whether completed or not) launched and intended for use as a ship or part of a ship; and also includes any ship used by or set aside for the New Zealand Defence Force.</quote>
+		</paragraph>
+
+		<paragraph><label>4</label>
+			<text>The RIB comes within the statutory definition but Ms Birkenfeld submitted that the statutory definition should be read down to confine its scope, at least for the purposes of limitation of liability, to vessels engaged in trade. She argued that Part 7 of the Maritime Transport Act gives effect to the Convention on Limitation of Liability for Maritime Claims<footnote>1</footnote> and that the rationale of the Convention is that the public interest in encouraging navigation for trading purposes outweighs the public interest in compensating without limitation persons injured by trading vessels.</text>
+		</paragraph>
+
+		<paragraph><label>5</label>
+			<text>Ms Birkenfeld argued further that the extent of limited liability is calculated in accordance with s 87 by reference to weight, and weight is calculated in accordance with the International Convention on Tonnage Measurement of Ships.<footnote>2</footnote> She submitted that since ships of less than 24 metres are excepted from the Tonnage Convention<footnote>3</footnote> they must therefore be excluded from the ambit of s 87. The RIB is less than 24 metres long. Further, as is indicated by art 15(2), the Limitation Convention envisages limitation of liability for sea-going ships and the RIB is, she submitted, not a sea-going ship.</text>
+		</paragraph>
+
+		<paragraph><label>6</label>
+			<text>Whilst the baldly stated question whether a vessel of less than 24 metres, or a vessel not engaged in trade, is within the ambit of the limitation of liability provisions in the Maritime Transport Act could be perceived as a matter of general or public importance or of general commercial significance, we consider that leave should not be granted in this case. That is because it cannot reasonably be argued that Part 7 of the Act does not apply to the RIB. First, that vessel is plainly within the broad definition of “ship” in s 84. Second, though vessels of less than 24 metres are excepted from the Tonnage Convention itself, Annex 1 of that Convention, which describes the methodology of measurement, is invoked into the Act by s 87(5)(b). And in any event, s 87(5)(c) makes provision for cases where the gross tonnage of a ship is unable to be ascertained.</text>
+		</paragraph>
+
+		<paragraph><label>7</label>
+			<text>On the question whether only sea-going ships are envisaged by the Limitation Convention we consider Ms Birkenfeld’s arguments to be misconceived. Article 15(2)(a) allows a State Party to regulate by specific provisions of national law the system of liability to be applied to vessels which are, according to the law of that State, ships intended for navigation on inland waterways. It is plain that if a State Party does not so regulate, the Limitation Convention applies to all vessels, whether or not intended for navigating inland water ways. The s 84 definition contains no restriction.</text>
+		</paragraph>
+
+		<paragraph><label>8</label>
+			<text>No other matters mentioned by Ms Birkenfeld warrant this Court’s consideration by way of a substantive second appeal. Leave to appeal is declined and Ms Birkenfeld must pay the respondent costs in the sum of $1,500 together with reasonable disbursements, to be fixed if necessary by the Registrar.</text>
+		</paragraph>
+
+	</body>
+	<footer>
+			<footnote-text><key>1</key><text>London, 19 November 1976.</text></footnote-text>
+			<footnote-text><key>2</key><text>London, 23 June 1969.</text></footnote-text>
+			<footnote-text><key>3</key><text>Article 4(1)(b).</text></footnote-text>
+	</footer>
+</case>
+
