@@ -198,6 +198,12 @@ class DocState(object):
         elif 'quote' in self.tag_stack:
             self.close_tag('quote')
 
+        if self.is_italic(self.font):
+            self.open_tag('emphasis')
+
+        elif 'emphasis' in self.tag_stack:
+            self.close_tag('emphasis')
+
         if not self.calibrated and self.size:
             self.thresholds['footer_size'] = self.size - 2
             self.calibrated = True
@@ -245,6 +251,9 @@ class DocState(object):
 
     def is_bold(self, font):
         return 'bold' in font.lower()
+
+    def is_italic(self, font):
+        return 'italic' in font.lower()
 
     def write_text(self, text, item=None):
         text = self.CONTROL.sub(u'', text)
@@ -406,19 +415,23 @@ def massage_xml(soup):
 
 
 def generate_body(soup):
-    reg = re.compile('^\[(\d+)\]')
+    number_reg = re.compile('^\[(\d+)\]')
+    separator_reg = re.compile('^__{3,}')
     body = soup.find('body')
     for paragraph in body.contents[:]:
-        number = reg.match(paragraph.text)
+        number = number_reg.match(paragraph.text)
+        # If a number, then a new paraphgraph
         if number:
             first = paragraph.strings.next()
-            first.replace_with(re.sub(reg, '', first))
+            first.replace_with(re.sub(number_reg, '', first))
             label = soup.new_tag("label")
             label.string = number.group(1)
             paragraph.insert(0, label)
-
+        # In capitals?  probably  a title
         elif paragraph.text.upper() == paragraph.text:
             paragraph.name = 'title'
+        elif separator_reg.match(paragraph.text):
+            paragraph.decompose()
         else:
             # we must stich this paragraph to the previous one
             paragraph.previous_sibling.append(' ')
@@ -427,11 +440,11 @@ def generate_body(soup):
             paragraph.decompose()
 
     for paragraph in body.find_all('paragraph', recursive=False):
-        # next, wrap everything thats not quotes in text element
+        # next, wrap everything thats not quotes or emphasis in text element
         children = []
         current = soup.new_tag("text")
         for child in paragraph.contents[:]:
-            if isinstance(child, element.Tag) and child.name not in ['superscript']:
+            if isinstance(child, element.Tag) and child.name not in ['superscript', 'emphasis']:
                 if len(current.contents):
                     children.append(current)
                     current = soup.new_tag("text")
@@ -454,7 +467,7 @@ def generate_body(soup):
 
 
 def generate_intitular(soup):
-    print soup.prettify()
+    #print soup.prettify()
     intituling = soup.new_tag('intituling')
 
     full_citation = soup.new_tag('full-citation')
@@ -467,6 +480,13 @@ def generate_intitular(soup):
 
     court_file = soup.new_tag('court-file')
     court_file.string = find_court_file(soup)
+
+    registry_string = find_registry(soup)
+    if registry_string:
+        registry = soup.new_tag('registry')
+        registry.string = registry_string
+        intituling.append(registry)
+
     intituling.append(court_file)
 
     neutral_string = find_neutral(soup)
@@ -502,7 +522,6 @@ def generate_intitular(soup):
     intituling.append(waistband(soup))
 
     for solicitor in solicitors(soup):
-        print solicitor
         intituling.append(solicitor)
 
     return intituling
@@ -556,10 +575,10 @@ def find_court(soup):
 
 def find_registry(soup):
     court_reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
-    court = find_reg_el(soup, reg)
+    start = find_reg_el(soup, court_reg)
     registry = find_until(start, None, use_position=True)
     if registry:
-        return registry.text
+        return registry[-1].text
 
 
 def find_court_file(soup):
@@ -656,8 +675,9 @@ def waistband(soup):
             waistband_list.append(entry)
     else:
         text = soup.new_tag('text')
-        text.string= waistband_dict['text']
-        waistband.append(text)
+        if waistband_dict['text']:
+            text.string= waistband_dict['text']
+            waistband.append(text)
 
     return waistband
 
@@ -767,281 +787,6 @@ class NoText(Exception):
     pass
 
 
-def next_tag(el, name):
-    el = el.next_sibling
-    while  el.name != name:
-        el = el.next_sibling
-    return el
-
-
-def prev_tag(el, name):
-    el = el.previous_sibling
-    while  el.name != name:
-        el = el.previous_sibling
-    return el
-
-
-def left_margin(soup):
-    return get_left_position(soup.find('div'))
-
-
-def el_class_style(el):
-    try:
-        class_name = el.find('span').attrs['class'][0]
-        sheet = (e for e in el.previous_siblings if e.name == 'style').next().text.split()
-        line = (s for s in sheet if s.startswith('.'+class_name)).next().replace('.'+class_name, '')[1:-1]
-        return style_to_dict(line)
-    except (AttributeError, StopIteration):
-        return {}
-
-
-def style_to_dict(line):
-    return dict([x.split(':') for x in line.split(';') if x])
-
-
-def font_size(el):
-    return int(re.match(r'\d+', el_class_style(el).get('font-size', '16px')).group())
-
-
-
-def neutral_cite_el(soup):
-    reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
-    el = (e for e in soup.find_all('div') if reg.match(e.text) and is_bold(e)).next()
-    return el
-
-
-def court_file(soup):
-    el = (e for e in soup.select('div') if courtfile_num.match(e.text)).next()
-    return el.text
-
-
-def full_citation(soup):
-    court_str = court(soup)[0]
-    result = []
-    el = soup.find('div')
-    # first letterelement must contain some s
-    letters = re.compile(r'.*\w.*')
-    while not letters.match(el.text):
-        el = next_tag(el, 'div')
-    # can't be bold
-    while is_bold(el):
-        el = next_tag(el, 'div')
-    top = get_top_position(el)
-    while top <= get_top_position(el):
-        result += [el.text]
-        el = next_tag(el, 'div')
-    return ' '.join(result)
-
-
-
-
-
-def get_left_position(el):
-    return int(re.search(r'.*left:(\d+).*', el.attrs['style']).group(1))
-
-
-def get_top_position(el):
-    return int(re.search(r'.*top:(\d+).*', el.attrs['style']).group(1))
-
-
-def consecutive_align(el):
-    results = []
-    position = get_left_position(el)
-    while position == get_left_position(el):
-        results.append(el.text)
-        el = next_tag(el, 'div')
-    return (results, el)
-
-
-def parse_between(soup):
-    results = {}
-    between = ['AND BETWEEN', 'BETWEEN']
-    el = (e for e in soup.find_all('div') if e.text in between).next()
-    plantiff_patterns = [
-        re.compile('.*Plaintiff[s]?'),
-        re.compile('.*Applicant[s]?'),
-        re.compile('.*Appellant[s]?'),
-        re.compile('.*Insolvent[s]?')
-    ]
-    # while not at next section
-
-    while el.text in between:
-        # look back to get court_num
-        try:
-            court_num = (e for e in el.previous_siblings if courtfile_num.match(e.text)).next().text
-        except:
-            court_num = "UNKNOWN"
-        el = next_tag(el, 'div')
-        plantiff = []
-        defendant = []
-        while True:
-            parties, el = consecutive_align(el)
-            if any((p.match(parties[-1]) for p in plantiff_patterns)):
-                plantiff += parties
-            else:
-                defendant += parties
-            if el.text != 'AND':
-                break
-            el = next_tag(el, 'div')
-
-        results[court_num] = {
-            'plantiffs': plantiff,
-            'defendants': defendant
-        }
-
-    return results
-
-
-def parse_versus(soup):
-    results = {}
-    plantiff = []
-    defendant = []
-    # must be x v y
-    v = (e for e in soup.find_all('div') if e.text.lower() == 'v').next()
-    # plantiff is every until neutral citation
-    court_num = (e for e in v.previous_siblings if courtfile_num.match(e.text)).next().text
-    between_el = prev_tag(v, 'div')
-    cite = neutral_cite(soup) or court_num
-    while between_el.text != cite:
-        plantiff = [between_el.text] + plantiff
-        between_el = prev_tag(between_el, 'div')
-    # defendant is everything until no more capitals
-    between_el = next_tag(v, 'div')
-    while between_el.text and ':' not in between_el.text:
-        defendant += [between_el.text]
-        between_el = next_tag(between_el, 'div')
-    results[court_num] = {
-        'plantiff': plantiff,
-        'defendant': defendant
-    }
-    return results
-
-
-
-def element_after_column(soup, strings):
-    el = (e for e in soup.find_all('div') if e.text in strings).next()
-    while get_left_position(el) == get_left_position(next_tag(el, 'div')):
-        el = next_tag(el, 'div')
-    return next_tag(el, 'div')
-
-
-def text_after_column(soup, strings):
-    try:
-        return element_after_column(soup, strings).text
-    except StopIteration:
-        pass
-
-
-def texts_after_column(soup, strings):
-    try:
-        els = consecutive_align(element_after_column(soup, strings))
-        return ' '.join(els[0])
-    except StopIteration:
-        pass
-
-
-def judgment(soup):
-    return text_after_column(soup, ['Judgment:', 'Sentence:', 'Sentenced:'])
-
-
-def hearing(soup):
-    return text_after_column(soup, ['Hearing:','Hearings:', 'received:'])
-
-
-def charge(soup):
-    return text_after_column(soup, ['Charge:'])
-
-
-def plea(soup):
-    return text_after_column(soup, ['Plea:'])
-
-
-def received(soup):
-    return text_after_column(soup, ['received:'])
-
-
-def bench(soup):
-    return text_after_column(soup, ['Court:'])
-
-
-def find_bars(soup, path):
-    def is_black(pixel):
-        return sum(pixel) < 150
-
-    images = soup.find_all('img')
-    results = []
-
-    for image_el in images:
-        page_number = int(image_el.attrs['name'])
-        image_path = os.path.join(path, image_el.attrs['src'])
-        im = Image.open(image_path)
-        width, height = int(image_el.attrs['width']), int(image_el.attrs['height'])
-        im = im.resize((width, height), Image.NEAREST)
-        pixels = im.load()
-        x = im.size[0]//2
-        previous = 0
-        for y in xrange(im.size[1]):
-            if is_black(pixels[x, y]) and y > previous + 5:
-                results.append((page_number, y))
-                previous = y
-                if len(results) == 2:
-                    if not el_between_bars(soup, results):
-                        results = [results[1]]
-                    else:
-                        return results
-        # can't be more than a page, i would guess
-        if len(results) == 1 and page_number > results[0][0]:
-            break
-
-    return results
-
-
-def get_page(el):
-    return int(el.find_previous_sibling('img').attrs['name'])
-
-
-def el_between_bars(soup, bars):
-    try:
-        first_el_after_bar(soup, bars)
-        return True
-    except StopIteration:
-        return False
-
-
-def first_el_after_bar(soup, bars):
-    el = soup.select('img[name=%d]'%bars[0][0])[0]
-    line_gap = 50
-    top = bars[0][1]
-    return (div for div in el.find_next_siblings('div')
-        if top < get_top_position(div) < top + line_gap).next()
-
-
-
-def counsel(soup):
-    counsel_strings = ['Counsel:', 'Appearances:']
-    try:
-        def inclusion(el):
-            return el.text in counsel_strings and font_size(el) > 14
-
-        counsel = next_tag((e for e in soup.find_all('div') if inclusion(e)).next(), 'div')
-        return consecutive_align(counsel)[0]
-    except: pass
-    try:
-        counsel_tag = (e for e in soup.find_all('div') if any(e.text.startswith(x) for x in counsel_strings)).next()
-        counsel = counsel_tag.text
-        for c in counsel_strings:
-            counsel = counsel.replace(c, '')
-        counsel = [counsel.strip()]
-        # keep consuming until a ':' appears, dumb and will have to do for now
-        while True:
-            counsel_tag = next_tag(counsel_tag, 'div')
-            if ':' in counsel_tag.text:
-                break
-            else:
-                counsel.append(counsel_tag.text)
-        return counsel
-    except: pass
-
 
 def matter(soup):
     result = {}
@@ -1091,5 +836,5 @@ def process_case(filename):
     soup = BeautifulSoup(xml, "xml")
     results = massage_xml(soup)
     shutil.rmtree(tmp)
-    print results.prettify()
+    #print results.prettify()
     return unicode(results)

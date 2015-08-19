@@ -13,8 +13,8 @@ class CaseConversion(unittest.TestCase):
     def test_transform(self):
         with app.test_request_context():
             for test_file in os.listdir(path):
-                print test_file
                 if test_file.endswith('xml') and not test_file.startswith('template.'): # and 'BIRKENFELD' not in test_file:
+                    print test_file
                     result = process_case(os.path.join(path, test_file.replace('.xml', '.pdf')))
 
                     expected = etree.parse(open(os.path.join(path, test_file))).getroot()
