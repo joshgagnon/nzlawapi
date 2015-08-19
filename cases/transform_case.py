@@ -22,7 +22,8 @@ from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
-from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup
+from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, \
+    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB
 from pdfminer.utils import bbox2str, enc
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
@@ -78,7 +79,7 @@ class DocState(object):
         'quote': 145,
         'quote_size': 11.0,
         'superscript': 8.0,
-        'fudge': 2.0,
+        'line_tolerance': 4.0,
         'right_align_thresholds': [300, 520]
     }
 
@@ -118,11 +119,10 @@ class DocState(object):
         return ((self.prev_bbox[3] - self.bbox[3]) > self.thresholds['para'] or
                 self.prev_bbox[2] < self.bbox[0])
 
-    def line_threshold(self):
+    def line_threshold(self, value=None):
         if not self.prev_bbox:
             return False
-
-        return (self.prev_bbox[3] - self.bbox[3]) > 4
+        return abs(self.prev_bbox[3] - value if value is not None else self.bbox[3]) > thresholds['line_tolerance']
 
 
     def new_line(self, bbox):
@@ -275,12 +275,15 @@ class DocState(object):
         return
 
 
+
+
 class Converter(PDFConverter):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
              laparams=None, imagewriter=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.imagewriter = imagewriter
+        self.laparams = laparams
         self.doc = DocState()
         return
 
@@ -301,12 +304,15 @@ class Converter(PDFConverter):
 
         def render(item):
             if isinstance(item, LTPage):
+                new_page = LTTextGroupLRTB(item._objs)
+
+                new_page.analyze(self.laparams)
                 for child in item:
                     render(child)
 
             elif isinstance(item, LTLine):
-                #self.doc.out.write('<line linewidth="%d" bbox="%s" />\n' %
-                #                 (item.linewidth, bbox2str(item.bbox)))
+                print ('<line linewidth="%d" bbox="%s" />\n' %
+                                 (item.linewidth, bbox2str(item.bbox)))
                 self.doc.handle_hline(item)
 
             elif isinstance(item, LTRect):
@@ -331,6 +337,7 @@ class Converter(PDFConverter):
                         render(child)
 
             elif isinstance(item, LTTextBox):
+                #
                 for child in item:
                     render(child)
 
@@ -351,6 +358,7 @@ class Converter(PDFConverter):
             else:
                 assert 0, item
             return
+
         render(ltpage)
         return
 
@@ -363,7 +371,7 @@ def generate_parsable_xml(path, tmp):
     retstr = StringIO()
 
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=True, char_margin=6)
+    laparams = LAParams(detect_vertical=True, char_margin=6 )#,line_margin=2)
     # Create a PDF page aggregator object.
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -372,7 +380,7 @@ def generate_parsable_xml(path, tmp):
     with open(path, 'rb') as fp:
         parser = PDFParser(fp)
         document = PDFDocument(parser)
-        device = Converter(rsrcmgr, retstr, codec='utf-8' , laparams = laparams)
+        device = Converter(rsrcmgr, retstr, codec='utf-8', laparams=laparams)
 
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
@@ -467,7 +475,7 @@ def generate_body(soup):
 
 
 def generate_intitular(soup):
-    #print soup.prettify()
+    print soup.prettify()
     intituling = soup.new_tag('intituling')
 
     full_citation = soup.new_tag('full-citation')
@@ -569,7 +577,7 @@ def find_until(el, reg=None, use_position=True):
 
 
 def find_court(soup):
-    reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
+    reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?\W*$', flags=re.IGNORECASE)
     return find_reg_el(soup, reg).text
 
 
