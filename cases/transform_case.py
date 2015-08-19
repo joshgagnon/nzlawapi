@@ -52,10 +52,11 @@ class DocStateMachine(object):
                 self.positions[i] += 1
                 if len(self.inputs[i].string) == self.positions[i]:
                     self.positions[i] = 0
-                    if self.inputs[i].close and all([t() for t in self.inputs[i].tests]):
-                        self.doc.close_tag(self.inputs[i].close, flush=False)
-                    if self.inputs[i].open and all([t() for t in self.inputs[i].tests]):
-                        self.doc.open_tag(self.inputs[i].open, flush=False)
+                    if all([getattr(self.doc, t)() for t in self.inputs[i].tests]):
+                        if self.inputs[i].close:
+                            self.doc.close_tag(self.inputs[i].close, flush=False)
+                        if self.inputs[i].open:
+                            self.doc.open_tag(self.inputs[i].open, flush=False)
             else:
                 self.positions[i] = 0
 
@@ -65,10 +66,17 @@ class DocStateMachine(object):
 
 
 def dist(r1, r2):
-     x, y = sorted((r1, r2))
-     if x[0] <= x[1] < y[0] and all( y[0] <= y[1] for y in (r1,r2)):
+    x, y = sorted((r1, r2))
+    if x[0] <= x[1] < y[0] and all( y[0] <= y[1] for y in (r1,r2)):
         return y[0] - x[1]
-     return 0
+    return 0
+
+
+RULES = [
+    Match(string='[1]', open='body,paragraph', close='intituling', tests=[]),
+    Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string='Para No', open='contents', close=None, tests=['is_bold']),
+]
 
 
 class DocState(object):
@@ -88,7 +96,6 @@ class DocState(object):
     # train these numbers
     thresholds = {
         'para': 20,
-        #'para_top': 710.0,
         'footer': 100,
         'footer_size': 10,
         'quote': 145,
@@ -99,13 +106,8 @@ class DocState(object):
         'right_align_thresholds': [300, 520]
     }
 
-
     def __init__(self):
-        self.state = DocStateMachine([
-            Match(string='[1]', open='body,paragraph', close='intituling', tests=[]),
-            Match(string='REASON', open='body,paragraph', close='intituling', tests=[self.is_bold]),
-            Match(string='Para No', open='contents', close=None, tests=[self.is_bold]),
-            ], self)
+        self.state = DocStateMachine(RULES, self)
         self.body = StringIO()
         self.footer = StringIO()
         self.buffer = StringIO()
@@ -117,14 +119,11 @@ class DocState(object):
         self.switch_body()
         self.open_tag('intituling')
 
-
     def para_threshold(self):
-
-        #print self.prev_bbox, self.bbox
 
         def right_aligned(bbox):
             return (bbox[0] > self.thresholds['right_align_thresholds'][0] and
-                bbox[2] > self.thresholds['right_align_thresholds'][1])
+                    bbox[2] > self.thresholds['right_align_thresholds'][1])
 
         def h_overlap(b, a):
             h_overlaps = (a[3] <= b[1]) and (a[1] >= b[3])
@@ -133,14 +132,11 @@ class DocState(object):
         if not self.prev_bbox:
             return False
 
-
-
         if dist((self.prev_bbox[1],  self.prev_bbox[3]),(self.bbox[1],  self.bbox[3])) > self.thresholds['para']:
             return True
 
         if self.bbox[2] < self.prev_bbox[0]:
             return True
-
 
     def column_join_threshold(self):
         if (self.prev_bbox and
@@ -252,7 +248,7 @@ class DocState(object):
 
     def is_footer(self):
         return (
-            #self.bbox and self.bbox[1] < self.thresholds['footer'] and
+            self.calibrated and
             (self.size and self.size < self.thresholds['footer_size']))
 
     def is_intituling(self):
@@ -456,7 +452,7 @@ def reorder_intituling(soup):
 
 def massage_xml(soup):
     #soup = reorder_intituling(soup)
-    print soup.prettify()
+    #print soup.prettify()
     intituling = generate_intitular(soup)
     body = generate_body(soup)
     footer = generate_footer(soup)
@@ -890,5 +886,5 @@ def process_case(filename):
     soup = BeautifulSoup(xml, "xml")
     results = massage_xml(soup)
     shutil.rmtree(tmp)
-    print results.prettify()
+    #print results.prettify()
     return unicode(results)
