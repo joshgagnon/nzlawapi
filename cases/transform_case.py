@@ -304,9 +304,15 @@ class Converter(PDFConverter):
 
         def render(item):
             if isinstance(item, LTPage):
-                new_page = LTTextGroupLRTB(item._objs)
+                #new_page = LTTextGroupLRTB(item._objs)
 
-                new_page.analyze(self.laparams)
+                #new_page.analyze(self.laparams)
+                def compare(a, b):
+                    if a.y1 == b.y1:
+                        return a.x1 - b.x1
+                    return a.y1 - b.y1
+
+                sorted(item._objs, cmp=compare)
                 for child in item:
                     render(child)
 
