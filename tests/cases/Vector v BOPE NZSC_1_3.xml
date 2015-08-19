@@ -8,7 +8,7 @@
 		<plantiffs>
 			<plantiff>
 				<qualifier>BETWEEN</qualifier>
-				<value>VECTOR GAS LIMITED/value>
+				<value>VECTOR GAS LIMITED</value>
 				<descriptor>Appellant</descriptor>
 			</plantiff>
 		</plantiffs>
@@ -62,3 +62,4 @@
 		<title>BLANCHARD J</title>
 		<para><label>1</label><text>[1] This appeal requires the Court to interpret a gas supply contract entered into in somewhat unusual circumstances.</text></para>
 	</body>
+	</case>

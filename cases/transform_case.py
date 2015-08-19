@@ -29,8 +29,16 @@ from pdfminer.utils import bbox2str, enc
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
 
+def encodeXMLText(text):
+    text = text.replace("&", "&amp;")
+    text = text.replace("\"", "&quot;")
+    text = text.replace("'", "&apos;")
+    text = text.replace("<", "&lt;")
+    text = text.replace(">", "&gt;")
+    return text
 
-Match = namedtuple('Match', 'string open close')
+Match = namedtuple('Match', 'string open close tests')
+
 
 class DocStateMachine(object):
     def __init__(self, inputs, doc):
@@ -44,9 +52,9 @@ class DocStateMachine(object):
                 self.positions[i] += 1
                 if len(self.inputs[i].string) == self.positions[i]:
                     self.positions[i] = 0
-                    if self.inputs[i].close:
+                    if self.inputs[i].close and all([t() for t in self.inputs[i].tests]):
                         self.doc.close_tag(self.inputs[i].close, flush=False)
-                    if self.inputs[i].open:
+                    if self.inputs[i].open and all([t() for t in self.inputs[i].tests]):
                         self.doc.open_tag(self.inputs[i].open, flush=False)
             else:
                 self.positions[i] = 0
@@ -54,6 +62,13 @@ class DocStateMachine(object):
     def reset(self):
         for i in xrange(len(self.inputs)):
             self.positions[i] = 0
+
+
+def dist(r1, r2):
+     x, y = sorted((r1, r2))
+     if x[0] <= x[1] < y[0] and all( y[0] <= y[1] for y in (r1,r2)):
+        return y[0] - x[1]
+     return 0
 
 
 class DocState(object):
@@ -72,7 +87,7 @@ class DocState(object):
 
     # train these numbers
     thresholds = {
-        'para': 30,
+        'para': 20,
         #'para_top': 710.0,
         'footer': 100,
         'footer_size': 10,
@@ -80,14 +95,16 @@ class DocState(object):
         'quote_size': 11.0,
         'superscript': 8.0,
         'line_tolerance': 4.0,
+        'column_gap': 100,
         'right_align_thresholds': [300, 520]
     }
 
 
     def __init__(self):
         self.state = DocStateMachine([
-            Match(string='[1]', open='body,paragraph', close='intituling'),
-            Match(string='REASON', open='body,paragraph', close='intituling')
+            Match(string='[1]', open='body,paragraph', close='intituling', tests=[]),
+            Match(string='REASON', open='body,paragraph', close='intituling', tests=[self.is_bold]),
+            Match(string='Para No', open='contents', close=None, tests=[self.is_bold]),
             ], self)
         self.body = StringIO()
         self.footer = StringIO()
@@ -103,26 +120,40 @@ class DocState(object):
 
     def para_threshold(self):
 
+        #print self.prev_bbox, self.bbox
+
         def right_aligned(bbox):
             return (bbox[0] > self.thresholds['right_align_thresholds'][0] and
                 bbox[2] > self.thresholds['right_align_thresholds'][1])
 
+        def h_overlap(b, a):
+            h_overlaps = (a[3] <= b[1]) and (a[1] >= b[3])
+            return h_overlaps
+
         if not self.prev_bbox:
             return False
 
-        if self.bbox[1] > self.prev_bbox[1]:
+
+
+        if dist((self.prev_bbox[1],  self.prev_bbox[3]),(self.bbox[1],  self.bbox[3])) > self.thresholds['para']:
             return True
 
-        #    return False
-        # If lines are sufficently apart vertically
-        # Or lines dont overlap horizonitally
-        return ((self.prev_bbox[3] - self.bbox[3]) > self.thresholds['para'] or
-                self.prev_bbox[2] < self.bbox[0])
+        if self.bbox[2] < self.prev_bbox[0]:
+            return True
+
+
+    def column_join_threshold(self):
+        if (self.prev_bbox and
+            abs(self.prev_bbox[1] - self.bbox[3]) > self.thresholds['line_tolerance'] and
+            self.bbox[0] - self.prev_bbox[2] > self.thresholds['column_gap']):
+            # emit join
+            return True
+
 
     def line_threshold(self, value=None):
         if not self.prev_bbox:
             return False
-        return abs(self.prev_bbox[3] - value if value is not None else self.bbox[3]) > thresholds['line_tolerance']
+        return abs(self.prev_bbox[3] - value if value is not None else self.bbox[3]) > self.thresholds['line_tolerance']
 
 
     def new_line(self, bbox):
@@ -171,6 +202,9 @@ class DocState(object):
         elif not self.is_intituling():
             if not self.is_quote() and self.para_threshold():
                 self.close_tag('paragraph')
+            if not self.is_quote() and self.column_join_threshold():
+                self.open_tag('join')
+                self.close_tag('join')
 
             if 'paragraph' not in self.tag_stack:
                 self.open_tag('paragraph')
@@ -180,7 +214,8 @@ class DocState(object):
         else:
             self.close_tag('intituling_field')
             self.open_tag('intituling_field',
-                attributes='left="%d" top="%d" bold="%s"' % (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
+                attributes='left="%d" top="%d" bold="%s"' %
+                (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
 
 
 
@@ -224,7 +259,8 @@ class DocState(object):
         return 'intituling' in self.body_stack
 
     def handle_hline(self, item):
-        return self.close_tag('intituling')
+        #return self.close_tag('intituling')
+        pass
 
     def switch_footer(self):
         if self.out != self.footer:
@@ -249,14 +285,16 @@ class DocState(object):
             self.close_tag(tag)
         return ( '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
 
-    def is_bold(self, font):
-        return 'bold' in font.lower()
+    def is_bold(self, font=None):
+        font = font or self.font
+        return font and 'bold' in font.lower()
 
     def is_italic(self, font):
-        return 'italic' in font.lower()
+        return font and 'italic' in font.lower()
 
     def write_text(self, text, item=None):
         text = self.CONTROL.sub(u'', text)
+        text = encodeXMLText(text)
         if item and text.strip():
             if hasattr(item, 'size'):
                 if self.size != item.size:
@@ -309,16 +347,15 @@ class Converter(PDFConverter):
                 #new_page.analyze(self.laparams)
                 def compare(a, b):
                     if a.y1 == b.y1:
-                        return a.x1 - b.x1
-                    return a.y1 - b.y1
+                        return int(a.x1 - b.x1)
+                    return int(b.y1 - a.y1)
 
-                sorted(item._objs, cmp=compare)
+                item._objs = sorted(item._objs, cmp=compare)
                 for child in item:
+                    #print child
                     render(child)
 
             elif isinstance(item, LTLine):
-                print ('<line linewidth="%d" bbox="%s" />\n' %
-                                 (item.linewidth, bbox2str(item.bbox)))
                 self.doc.handle_hline(item)
 
             elif isinstance(item, LTRect):
@@ -377,7 +414,7 @@ def generate_parsable_xml(path, tmp):
     retstr = StringIO()
 
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=True, char_margin=6 )#,line_margin=2)
+    laparams = LAParams(detect_vertical=False, char_margin=6, line_margin=0.01)#,line_margin=2)
     # Create a PDF page aggregator object.
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -396,12 +433,14 @@ def generate_parsable_xml(path, tmp):
         return re.sub(' +', ' ', device.get_result())
 
 
+
 def canoncialize_pdf(path, tmp):
     output = os.path.join(tmp, 'out.pdf')
     cmd = """gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -sOutputFile=%s '%s'"""
     p = Popen(cmd % (output, path), shell=True, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
     return output
+
 
 def reorder_intituling(soup):
     """ reorder the intituling_fields by 'top' attribute  """
@@ -416,7 +455,8 @@ def reorder_intituling(soup):
 
 
 def massage_xml(soup):
-    soup = reorder_intituling(soup)
+    #soup = reorder_intituling(soup)
+    print soup.prettify()
     intituling = generate_intitular(soup)
     body = generate_body(soup)
     footer = generate_footer(soup)
@@ -442,7 +482,7 @@ def generate_body(soup):
             label.string = number.group(1)
             paragraph.insert(0, label)
         # In capitals?  probably  a title
-        elif paragraph.text.upper() == paragraph.text:
+        elif paragraph.text and paragraph.text.upper() == paragraph.text:
             paragraph.name = 'title'
         elif separator_reg.match(paragraph.text):
             paragraph.decompose()
@@ -481,7 +521,7 @@ def generate_body(soup):
 
 
 def generate_intitular(soup):
-    print soup.prettify()
+    #print soup.prettify()
     intituling = soup.new_tag('intituling')
 
     full_citation = soup.new_tag('full-citation')
@@ -588,7 +628,7 @@ def find_court(soup):
 
 
 def find_registry(soup):
-    court_reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?$', flags=re.IGNORECASE)
+    court_reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?\W*$', flags=re.IGNORECASE)
     start = find_reg_el(soup, court_reg)
     registry = find_until(start, None, use_position=True)
     if registry:
@@ -651,7 +691,7 @@ def find_counsel(soup):
 def solicitors(soup):
     solicitors = []
     full_citation = full_citation_lines(soup)
-    for s in find_solicitors(soup):
+    for s in find_solicitors(soup) or []:
         if s not in full_citation:
             solicitor = soup.new_tag('solicitor')
             solicitor.string = s
@@ -662,10 +702,11 @@ def solicitors(soup):
 def find_solicitors(soup):
     reg = re.compile(r'^solicitors?:?', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg, field="footer_field")
-    results = find_until(start, None, use_position=False)
-    strings = map(lambda x: x.text, results)
-    strings = filter(lambda x: not x.startswith('('), strings)
-    return strings
+    if start:
+        results = find_until(start, None, use_position=False)
+        strings = map(lambda x: x.text, results)
+        strings = filter(lambda x: not x.startswith('('), strings)
+        return strings
 
 
 def waistband(soup):
@@ -707,7 +748,7 @@ def find_waistband(soup):
     char = 'A'
     line = ''
     for p in parts[1:]:
-
+        p = p.strip()
         if p.startswith('%s ' % char):
             entry = {'label': char, 'text':  p[2:]}
             entries.append(entry)
@@ -718,7 +759,6 @@ def find_waistband(soup):
         result = {'title': parts[0], 'text': entry['text']}
     else:
         result = {'title': parts[0], 'list': entries}
-
     return result
 
 
@@ -787,9 +827,9 @@ def generate_footer(soup):
             if child.name == 'superscript':
                 child.name = 'key'
                 footnote.append(child)
-            else:
+            elif (child.string and child.strip) or child.content:
                 text = soup.new_tag('text')
-                text.append(child.strip())
+                text.append(child)
                 footnote.append(text)
         footer.append(footnote)
     if footer.findChildren():
@@ -850,5 +890,5 @@ def process_case(filename):
     soup = BeautifulSoup(xml, "xml")
     results = massage_xml(soup)
     shutil.rmtree(tmp)
-    #print results.prettify()
+    print results.prettify()
     return unicode(results)
