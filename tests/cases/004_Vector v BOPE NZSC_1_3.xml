@@ -20,7 +20,8 @@
 				</defendant>
 		</defendants>
 	</parties>
-	<counsel>J E Hodder SC and K E Cornége for Appellant</counsel>
+	  <hearing>23 June 2009</hearing>
+	<counsel>J E Hodder SC and K E Cornége for Appellant</counsel>
 	<counsel>H N McIntosh and K F M Wevers for Respondent</counsel>
 	<bench>Blanchard, Tipping, McGrath, Wilson and Gault JJ</bench>
 	<judgment>10 February 2010</judgment>
@@ -41,25 +42,41 @@
 			</entry>
 		</list>
 	</waistband>
-	<solicitor>Phillips Fox, Auckland for Respondent</solicitor>
 	</intituling>
 
 
 	<body>
 		<title>REASONS</title>
 			<contents>
-				<tabel>
-					<row>
-						<entry>Blanchard J</entry><entry>[1]</entry>
-						<entry>Tipping J</entry><entry>[17]</entry>
-						<entry>McGrath J</entry><entry>[53]</entry>
-						<entry>Wilson J</entry><entry>[100]</entry>
-						<entry>Gault J</entry><entry>[150]</entry>
-					</row>
-				</tabel>
+				<table>
+					<row><entry>Blanchard J</entry><entry>[1]</entry></row>
+					<row><entry>Tipping J</entry><entry>[17]</entry></row>
+					<row><entry>McGrath J</entry><entry>[53]</entry></row>
+					<row><entry>Wilson J</entry><entry>[100]</entry></row>
+					<row><entry>Gault J</entry><entry>[150]</entry></row>
+				</table>
 		</contents>
 
 		<title>BLANCHARD J</title>
-		<para><label>1</label><text>[1] This appeal requires the Court to interpret a gas supply contract entered into in somewhat unusual circumstances.</text></para>
+		<paragraph><label>1</label><text>This appeal requires the Court to interpret a gas supply contract entered into in somewhat unusual circumstances.</text></paragraph>
+
+		<paragraph><label>2</label><text>On 8 October 2004 Chapman Tripp, the lawyers for the appellant, then known as National Gas Corporation (NGC), wrote a short letter to Russell McVeagh, the lawyers for Bay of Plenty Energy Ltd (BoPE). After acknowledging an earlier letter from the other firm, Chapman Tripp said:</text>
+		<quote>2 Without prejudice to its position, NGC is prepared to agree to continue to supply gas based on the terms of the Agreement for Supply of Gas dated 10 October 1995 (the “Agreement”) pending determination of BoPE’s proceeding, or 30 June 2006, whichever is the earlier, provided that BoPE undertakes to: 2.1 file that proceeding on or before 31 October 2004: and 2.2 in the event that BoPE is unsuccessful in, or withdraws, that proceeding, pay NGC on demand, for each GJ supplied, the difference between the price set out in the Agreement and $6.50 per GJ, plus interest at the Interest Rate set out in the Agreement.
+		</quote>
+		<text>That offer was accepted by BoPE on the same day.</text>
+	</paragraph>
+<paragraph><label>3</label><text>BoPE was subsequently unsuccessful in its proceeding. The present issue between the parties is whether the payment BoPE must consequentially make to NGC for gas supplied to it in the meantime does or does not include the cost of transmission of that gas to the point at which it was taken by BoPE. If the price of $6.50 per gigajoule does include transmission costs BoPE will have to pay approximately $1.4 m more. If it does not include transmission costs, the additional amounts due by BoPE will be approximately $4.6 m. That difference of over $3m is substantial even when put against the payment of a little over $10m already made by BoPE at the rate under the agreement of 10 October 1995.
+</text></paragraph>
+<paragraph><label>4</label><text>I begin the task of interpretation by looking at ordinary meaning. “$6.50 per GJ” by itself, with reference to a gas supply, “for each GJ supplied”, is perhaps more likely to be a price inclusive of supply but not necessarily so. It could be taken to be for gas alone. There is therefore an ambiguity, although it is not essential to find an ambiguity before proceeding to look at the background to a contract to assist in interpreting the language which has been used.<footnote>1</footnote>
+</text></paragraph>
+<paragraph><label>5</label><text>NGC’s obligation is to “continue to supply gas based on the terms” of the 1995 Agreement. It is therefore necessary, in order to start resolving the doubt about the meaning of “$6.50 per GJ,” or more accurately what it includes and therefore the scope of the agreement recorded in the letter, to go to the Agreement for Supply of Gas of 10 October 1995 (the 1995 Agreement) to which the letter refers. When one does so, one finds that the price fixed under the 1995 Agreement did include the cost of transmission. That might, at first sight, appear to resolve the point in favour of BoPE. But, to correctly understand words in a contract they must be placed in their full context (famously called by Lord Wilberforce the “factual matrix”<footnote>2</footnote>) and here, as appears from the letter, that context is an interim settlement of an aspect of a larger dispute about supply under the 1995 Agreement. The letter says that what has been agreed to is without prejudice to the position of NGC in that dispute. The supply of gas pursuant to the letter is to be made “pending determination of BoPE’s proceeding or 30 June 2006 whichever is the earlier”.
+</text></paragraph>
+<paragraph><label>6</label><text>So, in order to fully understand the letter, the interpreter must refer to the 1995 Agreement and must comprehend that the larger dispute was over whether NGC had any obligation at all to continue making supply (whether the 1995 Agreement had already come to an end as a result of a notice given by NGC). The genesis of the agreement made on 8 October 2004 was the desire of the parties to decide what was to happen about gas supply pending resolution of the larger dispute. BoPE had been contending that it had a right to continued supply and had threatened to issue a proceeding to enforce that right. This is the proceeding referred to in the letter. The letter says that BoPE will file its proceeding. If it is successful in that litigation the supply is to be paid for on the terms of the 1995 Agreement. It is implicit that in the interim BoPE will pay for the gas at the rate provided for in the
+</text></paragraph>
+
 	</body>
+		<footer>
+			<footnote-text><key>1</key><text><emphasis>Investors Compensation Scheme Ltd v West Bromwich Building Society</emphasis>[1998] 1 WLR 896 (HL) at pp 912 – 913; <emphasis>Chartbrook Ltd v Persimmon Homes Ltd</emphasis> [2009] 1 AC 110 (HL) at para [37]; <emphasis>Ansley v Prospectus Nominees Unlimited</emphasis> [2004] 2 NZLR 590 (CA) at para [36] and <emphasis>Franklins Pty Ltd v Metcash Trading Ltd</emphasis> [2009] NSWCA 407 at [14] – [18]; [63] and [239] – [305].</text></footnote-text>
+			<footnote-text><key>2</key><text><emphasis>Reardon Smith Line Ltd v Hansen-Tangen</emphasis> [1976] 1 WLR 989 (HL) at p 997.</text></footnote-text>
+	</footer>
 	</case>

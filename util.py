@@ -140,7 +140,7 @@ def xml_compare(x1, x2, reporter=None, do_attr=True):
     cl1 = x1.getchildren()
     cl2 = x2.getchildren()
     if len(cl1) != len(cl2):
-        #print etree.tostring(x1)
+        # print etree.tostring(x1)
         #print etree.tostring(x2)
         if reporter:
             #for c1, c2 in zip(cl1, cl2):

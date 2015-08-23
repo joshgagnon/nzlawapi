@@ -67,15 +67,15 @@ class DocStateMachine(object):
 
 def dist(r1, r2):
     x, y = sorted((r1, r2))
-    if x[0] <= x[1] < y[0] and all( y[0] <= y[1] for y in (r1,r2)):
+    if x[0] <= x[1] < y[0] and all(y[0] <= y[1] for y in (r1, r2)):
         return y[0] - x[1]
     return 0
 
 
 RULES = [
-    Match(string='[1]', open='body,paragraph', close='intituling', tests=[]),
+    Match(string='[1]', open='body,paragraph', close='intituling', tests=['is_left_aligned']),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='Para No', open='contents', close=None, tests=['is_bold']),
+    Match(string='Para No', open='table', close='paragraph', tests=['is_bold', 'is_right_aligned'])
 ]
 
 
@@ -96,18 +96,23 @@ class DocState(object):
     body = None
     footer = None
     last_char = None
+    max_width = [None, None]
 
     # train these numbers
     thresholds = {
         'para': 20,
         'footer': 100,
         'footer_size': 10,
-        'quote': 145,
+        'quote': 140,
         'quote_size': 11.0,
         'superscript': 8.0,
         'line_tolerance': 4.0,
         'column_gap': 100,
-        'right_align_thresholds': [300, 520]
+        'superscript_offset': 0.5,
+        'indent_threshold': 10.0,
+        'right_align_thresholds': [280, 480],
+        'left_align_thresholds': [160],
+        'center_align_thresholds': [250, 400]
     }
 
     def __init__(self):
@@ -124,13 +129,7 @@ class DocState(object):
         self.open_tag('intituling')
 
     def para_threshold(self):
-
-        def right_aligned(bbox):
-            return (bbox[0] > self.thresholds['right_align_thresholds'][0] and
-                    bbox[2] > self.thresholds['right_align_thresholds'][1])
-
-
-        # first bbbox
+        # if not first bbox
         if not self.prev_bbox:
             return False
 
@@ -141,6 +140,13 @@ class DocState(object):
         # has started a new line horizontal before the previous, probably a column in table
         if self.bbox[2] < self.prev_bbox[0]:
             return True
+        if self.is_center_aligned(self.prev_bbox):
+            return True
+        if self.is_right_aligned():
+            return True
+
+    def footer_threshold(self):
+        return self.bbox[0] < (self.max_width[0] + self.thresholds['indent_threshold'])
 
     def column_join_threshold(self):
         if (self.prev_bbox and
@@ -165,10 +171,14 @@ class DocState(object):
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
-                if attributes:
+                if t in ['paragraph', 'intituling_field'] and self.bbox:
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s"' %
+                          (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
+                            '1' if self.is_italic(self.font) else '0',
+                            '1' if self.is_bold(self.font) else '0'))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
-                    self.out.write('<%s>' % t)
+                     self.out.write('<%s>' % t)
 
     def close_tag(self, tag, flush=True):
         if tag in self.tag_stack and flush:
@@ -185,6 +195,11 @@ class DocState(object):
     def handle_new_line(self):
         self.has_new_line = False
 
+        if not self.max_width[0] or self.bbox[0] < self.max_width[0]:
+            self.max_width[0] = self.bbox[0]
+        if not self.max_width[1] or self.bbox[2] > self.max_width[1]:
+            self.max_width[1] = self.bbox[2]
+
         if self.is_footer():
             self.switch_footer()
         else:
@@ -192,26 +207,39 @@ class DocState(object):
 
         if self.is_footer():
             self.open_tag('footer_page')
-            self.close_tag('footer_field')
+            if self.footer_threshold():
+                self.close_tag('footer_field')
             self.open_tag('footer_field')
 
-        elif not self.is_intituling():
+        elif self.is_intituling():
+            # we will keep everyline in the intituling separate
+            self.close_tag('intituling_field')
+            self.open_tag('intituling_field',
+                          attributes='left="%d" top="%d" bold="%s"' %
+                          (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
+
+        elif self.is_table():
+            if self.is_left_aligned():
+                self.close_tag('row')
+                self.open_tag('row')
+                self.open_tag('entry')
+            else:
+                self.close_tag('entry')
+                self.open_tag('entry')
+
+            if self.is_bold():
+                self.close_tag('table')
+                self.open_tag('paragraph')
+        else:
             if not self.is_quote() and self.para_threshold():
                 self.close_tag('paragraph')
-            if not self.is_quote() and self.column_join_threshold():
-                self.open_tag('join')
-                self.close_tag('join')
 
             if 'paragraph' not in self.tag_stack:
                 self.open_tag('paragraph')
 
             elif self.last_char != ' ':
+                # we have to add a space between line, if not one already
                 self.write_text(' ')
-        else:
-            self.close_tag('intituling_field')
-            self.open_tag('intituling_field',
-                          attributes='left="%d" top="%d" bold="%s"' %
-                          (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
 
     def handle_style(self):
         if self.is_superscript():
@@ -220,7 +248,7 @@ class DocState(object):
             self.close_tag('superscript')
             self.buffer.write(' ')
 
-        if self.is_quote():
+        if self.is_quote() and not self.is_intituling():
             if 'quote' not in self.tag_stack:
                 self.open_tag('quote')
 
@@ -235,10 +263,12 @@ class DocState(object):
 
         if not self.calibrated and self.size:
             self.thresholds['footer_size'] = self.size - 2
+            #self.thresholds['superscript_size'] = self.size - 4
             self.calibrated = True
 
     def is_superscript(self):
-        return self.size < self.thresholds['superscript']
+        #self.size < self.thresholds['superscript'] or
+        return self.char_bbox[1] > (self.bbox[1] + self.thresholds['superscript_offset'])
 
     def is_quote(self):
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
@@ -257,6 +287,20 @@ class DocState(object):
 
     def is_intituling(self):
         return 'intituling' in self.body_stack
+
+    def is_table(self):
+        return 'table' in self.body_stack
+
+    def is_right_aligned(self):
+        return (self.bbox[0] > self.thresholds['right_align_thresholds'][0])
+
+    def is_left_aligned(self):
+        return (self.bbox[0] < self.thresholds['left_align_thresholds'][0])
+
+    def is_center_aligned(self, bbox=None):
+        bbox = bbox or self.bbox
+        return (bbox[0] > self.thresholds['center_align_thresholds'][0] and
+                bbox[2] < self.thresholds['center_align_thresholds'][1])
 
     def handle_hline(self, item):
         #return self.close_tag('intituling')
@@ -296,7 +340,7 @@ class DocState(object):
             if hasattr(item, 'fontname'):
                 if self.font != item.fontname:
                     self.font = item.fontname
-
+            self.char_bbox = item.bbox
         if self.has_new_line:
             self.handle_new_line()
         self.handle_style()
@@ -447,9 +491,9 @@ def reorder_intituling(soup):
     return soup
 
 
-def massage_xml(soup):
-    #soup = reorder_intituling(soup)
-    #print soup.prettify()
+def massage_xml(soup, debug):
+    if debug:
+        print soup.prettify()
     intituling = generate_intitular(soup)
     body = generate_body(soup)
     footer = generate_footer(soup)
@@ -458,6 +502,8 @@ def massage_xml(soup):
     case.append(body)
     if footer:
         case.append(footer)
+    if debug:
+        print case.prettify()
     return case
 
 
@@ -467,24 +513,33 @@ def generate_body(soup):
     body = soup.find('body')
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
-        # If a number, then a new paraphgraph
-        if number:
+        # If a number, then a new paragraph
+        if paragraph.name == 'table':
+            format_table(soup, paragraph)
+        elif number:
             first = paragraph.strings.next()
             first.replace_with(re.sub(number_reg, '', first))
             label = soup.new_tag("label")
             label.string = number.group(1)
             paragraph.insert(0, label)
         # In capitals?  probably  a title
-        elif paragraph.text and paragraph.text.upper() == paragraph.text:
-            paragraph.name = 'title'
         elif separator_reg.match(paragraph.text):
-            paragraph.decompose()
+            paragraph.clear()
+            paragraph.name = 'signature-line'
+        elif paragraph.text and (paragraph.text.upper() == paragraph.text or paragraph.attrs['bold'] == '1'):
+            paragraph.name = 'title'
+        elif paragraph.previous_sibling and paragraph.previous_sibling.name == 'signature-line':
+            paragraph.name = 'signature-name'
         else:
-            # we must stich this paragraph to the previous one
-            paragraph.previous_sibling.append(' ')
+            # we must stitch this paragraph to the previous one
+            if not paragraph.previous_sibling.contents[-1].string.endswith(' '):
+                paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
                 paragraph.previous_sibling.append(child)
             paragraph.decompose()
+        if paragraph.attrs:
+            for k in paragraph.attrs.keys():
+                del paragraph[k]
 
     for paragraph in body.find_all('paragraph', recursive=False):
         # next, wrap everything thats not quotes or emphasis in text element
@@ -506,11 +561,26 @@ def generate_body(soup):
         for child in children:
             paragraph.append(child)
 
+
     for superscript in body.find_all('superscript'):
         superscript.name = 'footnote'
         superscript.string = superscript.string.strip()
 
     return body
+
+
+def format_table(soup, el):
+    para_reg = re.compile('\W*Para No\W*')
+    if para_reg.match(el.contents[0].string):
+        el.contents[0].replace_with('')
+        el.wrap(soup.new_tag('contents'))
+    # remove empty entry
+    for entry in el.find_all('entry'):
+        if entry.is_empty_element:
+            entry.decompose()
+    for entry in el.find_all('row'):
+        if entry.is_empty_element:
+            entry.decompose()
 
 
 def generate_intitular(soup):
@@ -565,7 +635,6 @@ def generate_intitular(soup):
     judgment.string = find_judgment(soup)
     intituling.append(judgment)
 
-
     intituling.append(waistband(soup))
 
     for solicitor in solicitors(soup):
@@ -605,13 +674,20 @@ def find_reg_el(soup, reg, field='intituling_field'):
             return e
 
 
-def find_until(el, reg=None, use_position=True):
+def find_until(el, reg=None, use_position=True, forward=True):
     results = []
     left = get_left(el)
     bold = get_bold(el)
-    while el.next_sibling and not (reg and reg.match(el.next_sibling.text)) and (not use_position or get_left(el.next_sibling) == left) and get_bold(el.next_sibling) == bold:
-        results.append(el.next_sibling)
-        el = el.next_sibling
+
+    def direction(el):
+        if forward:
+            return el.next_sibling
+        return el.previous_sibling
+
+    while direction(el) and not (reg and reg.match(direction(el).text)) and (
+        not use_position or get_left(direction(el)) == left) and get_bold(direction(el)) == bold:
+        results.append(direction(el))
+        el = direction(el)
     return results
 
 
@@ -643,9 +719,9 @@ def find_court_file(soup):
 
 
 def find_neutral(soup):
-    reg = re.compile(r'\[(\d){4}\] NZ(HC|CA|SC) (\d+)$')
+    reg = re.compile(r'\W*\[(\d){4}\] NZ(HC|CA|SC) (\d+)\W*$')
     try:
-        return find_reg_el(soup, reg).text
+        return find_reg_el(soup, reg).text.strip()
     except AttributeError:
         return None
 
@@ -678,7 +754,7 @@ def find_counsel(soup):
     reg = re.compile(r'(counsel:|appearances:)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
-    return map(lambda x: re.sub(reg, '',  x.text), results)
+    return map(lambda x: re.sub(reg, '',  x.text.strip()), results)
 
 
 def solicitors(soup):
@@ -693,12 +769,16 @@ def solicitors(soup):
 
 
 def find_solicitors(soup):
-    reg = re.compile(r'^solicitors?:?', flags=re.IGNORECASE)
-    start = find_reg_el(soup, reg, field="footer_field")
+    reg = re.compile(r'^solicitors?:?\W*', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg, field=["footer_field", "intituling_field"])
+    strings = []
     if start:
+        if re.sub(reg, '', start.text):
+            strings += [re.sub(reg, '', start.text)]
         results = find_until(start, None, use_position=False)
-        strings = map(lambda x: x.text, results)
+        strings += map(lambda x: x.text, results)
         strings = filter(lambda x: not x.startswith('('), strings)
+        strings = filter(lambda x: x, strings)
         return strings
 
 
@@ -731,7 +811,7 @@ def waistband(soup):
 
 
 def find_waistband(soup):
-    reg = re.compile(r'^JUDGMENT OF ', flags=re.IGNORECASE)
+    reg = re.compile(r'^(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     parts = [start]+ find_until(start, None, use_position=False)
     parts = filter(None, map(lambda x: x.text, parts))
@@ -764,18 +844,24 @@ def parties(soup):
 
     def party(row, name):
         el = soup.new_tag(name)
-        descriptor = soup.new_tag('descriptor')
-        descriptor.string = p['descriptor']
-        qualifier = soup.new_tag('qualifier')
-        qualifier.string = p['qualifier']
+        print row
+        if 'qualifier' in row:
+            qualifier = soup.new_tag('qualifier')
+            qualifier.string = row['qualifier']
+            el.append(qualifier)
         value = soup.new_tag('value')
-        value.string = p['value']
-        el.append(qualifier)
+        value.string = row['value']
         el.append(value)
-        el.append(descriptor)
+        if 'descriptor' in row:
+            descriptor = soup.new_tag('descriptor')
+            descriptor.string = row['descriptor']
+            el.append(descriptor)
         return el
 
-    party_dict = find_parties(soup)
+    try:
+        party_dict = find_parties(soup)
+    except AttributeError, e:
+        party_dict = find_versus(soup)
 
     for p in party_dict['plantiffs']:
         plantiffs.append(party(p, 'plantiff'))
@@ -809,9 +895,20 @@ def find_parties(soup):
         })
     return parties
 
+def find_versus(soup):
+    start = find_reg_el(soup, re.compile('^v$'))
+    parties = {
+        'plantiffs': [{'value': start.previous_sibling.string}]
+    }
+
+    defendants = [start.next_sibling] + find_until(start.next_sibling, use_position=False)
+    parties['defendants'] = [{'value': ' '.join(map(lambda x: x.text, defendants))}]
+    return parties
+
 
 def generate_footer(soup):
     footer = soup.new_tag('footer')
+    text = None
     for f in soup.find_all('footer_field')[1:]:
         if not soup.find('superscript'):
             continue
@@ -819,11 +916,12 @@ def generate_footer(soup):
         for child in f.contents[:]:
             if child.name == 'superscript':
                 child.name = 'key'
+
                 footnote.append(child)
-            elif (child.string and child.strip) or child.content:
                 text = soup.new_tag('text')
-                text.append(child)
                 footnote.append(text)
+            else:
+                text.append(child)
         footer.append(footnote)
     if footer.findChildren():
         return footer
@@ -877,11 +975,11 @@ def iso_date(value):
         return datetime.datetime(*map(int, re.split('\D', value)[:-1]))
 
 
-def process_case(filename):
+def process_case(filename, debug=False):
     tmp = mkdtemp()
     xml = generate_parsable_xml(filename, tmp)
     soup = BeautifulSoup(xml, "xml")
-    results = massage_xml(soup)
+    results = massage_xml(soup, debug)
     shutil.rmtree(tmp)
     #print results.prettify()
     return unicode(results)
