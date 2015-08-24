@@ -100,7 +100,8 @@ class DocState(object):
 
     # train these numbers
     thresholds = {
-        'para': 20,
+        'paragraph_vertical_threshold': 20,
+        'quote_vertical_threshold': 12,
         'footer': 100,
         'footer_size': 10,
         'quote': 140,
@@ -128,13 +129,13 @@ class DocState(object):
         self.switch_body()
         self.open_tag('intituling')
 
-    def para_threshold(self):
+    def para_threshold(self, threshold_key='paragraph_vertical_threshold'):
         # if not first bbox
         if not self.prev_bbox:
             return False
 
         # vertical distance so great it is likely a new paragraph
-        if dist((self.prev_bbox[1], self.prev_bbox[3]), (self.bbox[1], self.bbox[3])) > self.thresholds['para']:
+        if dist((self.prev_bbox[1], self.prev_bbox[3]), (self.bbox[1], self.bbox[3])) > self.thresholds[threshold_key]:
             return True
 
         # has started a new line horizontal before the previous, probably a column in table
@@ -171,7 +172,7 @@ class DocState(object):
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
-                if t in ['paragraph', 'intituling_field'] and self.bbox:
+                if t in ['paragraph', 'intituling-field'] and self.bbox:
                     attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s"' %
                           (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
                             '1' if self.is_italic(self.font) else '0',
@@ -206,15 +207,15 @@ class DocState(object):
             self.switch_body()
 
         if self.is_footer():
-            self.open_tag('footer_page')
+            self.open_tag('footer-page')
             if self.footer_threshold():
-                self.close_tag('footer_field')
-            self.open_tag('footer_field')
+                self.close_tag('footer-field')
+            self.open_tag('footer-field')
 
         elif self.is_intituling():
             # we will keep everyline in the intituling separate
-            self.close_tag('intituling_field')
-            self.open_tag('intituling_field',
+            self.close_tag('intituling-field')
+            self.open_tag('intituling-field',
                           attributes='left="%d" top="%d" bold="%s"' %
                           (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
 
@@ -231,29 +232,37 @@ class DocState(object):
                 self.close_tag('table')
                 self.open_tag('paragraph')
         else:
-            if not self.is_quote() and self.para_threshold():
-                self.close_tag('paragraph')
+            handle_space = False
+            if self.is_quote():
+                if 'quote' not in self.tag_stack:
+                    self.open_tag('quote')
+                if self.para_threshold('quote_vertical_threshold'):
+                    self.close_tag('quote-paragraph')
+                if 'quote-paragraph' not in self.tag_stack:
+                    self.open_tag('quote-paragraph')
+                else:
+                    handle_space = True
+            else:
+                if 'quote' in self.tag_stack:
+                    self.close_tag('quote')
+                if self.para_threshold():
+                    self.close_tag('paragraph')
 
-            if 'paragraph' not in self.tag_stack:
-                self.open_tag('paragraph')
-
-            elif self.last_char != ' ':
+                if 'paragraph' not in self.tag_stack:
+                    self.open_tag('paragraph')
+                else:
+                    handle_space = True
+            if handle_space and self.last_char != ' ':
                 # we have to add a space between line, if not one already
                 self.write_text(' ')
 
     def handle_style(self):
         if self.is_superscript():
             self.open_tag('superscript')
+
         elif 'superscript' in self.tag_stack:
             self.close_tag('superscript')
             self.buffer.write(' ')
-
-        if self.is_quote() and not self.is_intituling():
-            if 'quote' not in self.tag_stack:
-                self.open_tag('quote')
-
-        elif 'quote' in self.tag_stack:
-            self.close_tag('quote')
 
         if self.is_italic(self.font):
             self.open_tag('emphasis')
@@ -316,7 +325,7 @@ class DocState(object):
 
     def switch_body(self):
         if self.out == self.footer:
-            self.close_tag('footer_page')
+            self.close_tag('footer-page')
         self.out = self.body
         self.tag_stack = self.body_stack
 
@@ -341,6 +350,7 @@ class DocState(object):
                 if self.font != item.fontname:
                     self.font = item.fontname
             self.char_bbox = item.bbox
+
         if self.has_new_line:
             self.handle_new_line()
         self.handle_style()
@@ -480,9 +490,9 @@ def canoncialize_pdf(path, tmp):
 
 
 def reorder_intituling(soup):
-    """ reorder the intituling_fields by 'top' attribute  """
+    """ reorder the intituling-fields by 'top' attribute  """
     intituling = soup.find('intituling')
-    fields = intituling.find_all('intituling_field')
+    fields = intituling.find_all('intituling-field')
 
     fields = sorted(fields, key=lambda x: float(x.attrs['top']), reverse=True)
     intituling.clear()
@@ -532,7 +542,7 @@ def generate_body(soup):
             paragraph.name = 'signature-name'
         else:
             # we must stitch this paragraph to the previous one
-            if not paragraph.previous_sibling.contents[-1].string.endswith(' '):
+            if paragraph.previous_sibling.contents[-1].string and not paragraph.previous_sibling.contents[-1].string.endswith(' '):
                 paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
                 paragraph.previous_sibling.append(child)
@@ -563,6 +573,9 @@ def generate_body(soup):
 
 
     for superscript in body.find_all('superscript'):
+        if not len(superscript.contents):
+            superscript.decompose()
+            continue
         superscript.name = 'footnote'
         superscript.string = superscript.string.strip()
 
@@ -644,7 +657,7 @@ def generate_intitular(soup):
 
 
 def full_citation_lines(soup):
-    fields = soup.find('footer_page').find_all('footer_field')
+    fields = soup.find('footer-page').find_all('footer-field')
     strings = map(lambda x: x.text, fields)
     # find first line that has capitals up until the first number, doesn't contain solicitors
     capitals = re.compile('^[A-Z ]{2,}[0-9]*')
@@ -668,7 +681,7 @@ def get_bold(el):
     return el.attrs.get('bold')
 
 
-def find_reg_el(soup, reg, field='intituling_field'):
+def find_reg_el(soup, reg, field='intituling-field'):
     for e in soup.find_all(field):
         if reg.match(e.text):
             return e
@@ -770,7 +783,7 @@ def solicitors(soup):
 
 def find_solicitors(soup):
     reg = re.compile(r'^solicitors?:?\W*', flags=re.IGNORECASE)
-    start = find_reg_el(soup, reg, field=["footer_field", "intituling_field"])
+    start = find_reg_el(soup, reg, field=["footer-field", "intituling-field"])
     strings = []
     if start:
         if re.sub(reg, '', start.text):
@@ -844,7 +857,6 @@ def parties(soup):
 
     def party(row, name):
         el = soup.new_tag(name)
-        print row
         if 'qualifier' in row:
             qualifier = soup.new_tag('qualifier')
             qualifier.string = row['qualifier']
@@ -909,7 +921,7 @@ def find_versus(soup):
 def generate_footer(soup):
     footer = soup.new_tag('footer')
     text = None
-    for f in soup.find_all('footer_field')[1:]:
+    for f in soup.find_all('footer-field')[1:]:
         if not soup.find('superscript'):
             continue
         footnote = soup.new_tag('footnote-text')

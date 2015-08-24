@@ -45,7 +45,7 @@
 		<title>REASONS</title>
 		<paragraph><label>1</label>
 			<text>This application for leave to appeal has its origin in a ruling of the High Court in an admiralty proceeding. Ms Birkenfeld has brought a claim against Yachting New Zealand in consequence of a collision between its rigid inflatable boat (RIB) and a windsurfer ridden by her. Yachting New Zealand moved for a decree of limitation of liability pursuant to s 85 of the Maritime Transport Act 1994, which applies to:</text>
-			<quote>Owners of ships, and any master, seafarer, or other person for whose act, omission, neglect, or default the owner of the ship is responsible.</quote>
+			<quote><quote-paragraph>Owners of ships, and any master, seafarer, or other person for whose act, omission, neglect, or default the owner of the ship is responsible.</quote-paragraph></quote>
 			<text>Keane J made such a decree and awarded costs to YNZ. Ms Birkenfeld appealed unsuccessfully to the Court of Appeal, which also awarded costs to YNZ.</text>
 		</paragraph>
 
@@ -56,7 +56,7 @@
 
 		<paragraph><label>3</label>
 			<text>The term “ship” is defined in Part 7, s 84 of the Maritime Transport Act as follows:</text>
-			<quote>Ship means every description of vessel (including barges, lighters, and like vessels) used or intended to be used in navigation, however propelled; and includes any structure (whether completed or not) launched and intended for use as a ship or part of a ship; and also includes any ship used by or set aside for the New Zealand Defence Force.</quote>
+			<quote><quote-paragraph>Ship means every description of vessel (including barges, lighters, and like vessels) used or intended to be used in navigation, however propelled; and includes any structure (whether completed or not) launched and intended for use as a ship or part of a ship; and also includes any ship used by or set aside for the New Zealand Defence Force.</quote-paragraph></quote>
 		</paragraph>
 
 		<paragraph><label>4</label>
