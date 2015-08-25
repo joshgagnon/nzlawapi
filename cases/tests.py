@@ -15,7 +15,7 @@ class CaseConversion(unittest.TestCase):
             for test_file in sorted(os.listdir(path)):
                 if test_file.endswith('xml') and not test_file.startswith('template.'): # and 'BIRKENFELD' not in test_file:
                     print 'Running test for %s' % test_file
-                    result = process_case(os.path.join(path, test_file.replace('.xml', '.pdf')), debug=False) #=test_file=='005_R V HOWELL HC ROT.xml')
+                    result = process_case(os.path.join(path, test_file.replace('.xml', '.pdf')), debug=True) #test_file=='006_ASB v Black NZCOA_1-5.xml')
                     expected = etree.parse(open(os.path.join(path, test_file))).getroot()
                     def p(x):
                         print x

@@ -23,10 +23,22 @@ from cStringIO import StringIO
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, \
-    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB
+    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal
 from pdfminer.utils import bbox2str, enc
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
+
+
+def find_neighbors (self, plane, ratio):
+    objs = plane.find((self.x0-1000, self.y0, self.x1+1000, self.y1))
+    d = 3
+    objs = [obj for obj in objs
+                if (isinstance(obj, LTTextLineHorizontal))]
+    print 'HERE', self, obj
+    return objs
+
+
+LTTextLineHorizontal.find_neighbors = find_neighbors
 
 
 def encodeXMLText(text):
@@ -73,9 +85,10 @@ def dist(r1, r2):
 
 
 RULES = [
-    Match(string='[1]', open='body,paragraph', close='intituling', tests=['is_left_aligned']),
+    Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned']),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='Para No', open='table', close='paragraph', tests=['is_bold', 'is_right_aligned'])
+    Match(string='Para No', open='table', close='paragraph', tests=['is_bold', 'is_right_aligned']),
+    Match(string='Table of Contents', open='table', close='paragraph', tests=['is_bold', 'is_center_aligned']),
 ]
 
 
@@ -102,6 +115,7 @@ class DocState(object):
     thresholds = {
         'paragraph_vertical_threshold': 20,
         'quote_vertical_threshold': 12,
+        'table_vertical_threshold': 20,
         'footer': 100,
         'footer_size': 10,
         'quote': 140,
@@ -182,11 +196,12 @@ class DocState(object):
                      self.out.write('<%s>' % t)
 
     def close_tag(self, tag, flush=True):
-        if tag in self.tag_stack and flush:
-            self.flush()
-        while tag in self.tag_stack:
-            _tag = self.tag_stack.pop()
-            self.out.write('</%s>' % _tag)
+        for t in tag.split(','):
+            if t in self.tag_stack and flush:
+                self.flush()
+            while t in self.tag_stack:
+                _tag = self.tag_stack.pop()
+                self.out.write('</%s>' % _tag)
 
     def flush(self):
         self.out.write(self.buffer.getvalue())
@@ -228,7 +243,8 @@ class DocState(object):
                 self.close_tag('entry')
                 self.open_tag('entry')
 
-            if self.is_bold():
+            if self.is_header():
+                print 'damn, header'
                 self.close_tag('table')
                 self.open_tag('paragraph')
         else:
@@ -300,16 +316,25 @@ class DocState(object):
     def is_table(self):
         return 'table' in self.body_stack
 
-    def is_right_aligned(self):
-        return (self.bbox[0] > self.thresholds['right_align_thresholds'][0])
+    def is_right_aligned(self, bbox=None):
+        bbox = bbox or self.bbox
+        return (bbox[0] > self.thresholds['right_align_thresholds'][0])
 
-    def is_left_aligned(self):
-        return (self.bbox[0] < self.thresholds['left_align_thresholds'][0])
+    def is_left_aligned(self, bbox=None):
+        bbox = bbox or self.bbox
+        return (bbox[0] < self.thresholds['left_align_thresholds'][0])
 
     def is_center_aligned(self, bbox=None):
         bbox = bbox or self.bbox
         return (bbox[0] > self.thresholds['center_align_thresholds'][0] and
                 bbox[2] < self.thresholds['center_align_thresholds'][1])
+
+    def is_header(self, bbox=None):
+        bbox = bbox or self.bbox
+        if self.is_center_aligned(bbox) and self.is_bold():
+            return True
+        if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['center_align_thresholds'][1] and self.is_bold():
+            return True
 
     def handle_hline(self, item):
         #return self.close_tag('intituling')
@@ -399,7 +424,7 @@ class Converter(PDFConverter):
 
                 item._objs = sorted(item._objs, cmp=compare)
                 for child in item:
-                    #print child
+                    print child
                     render(child)
 
             elif isinstance(item, LTLine):
@@ -421,6 +446,7 @@ class Converter(PDFConverter):
 
             elif isinstance(item, LTTextLine):
                 # only a new if some content
+                print item
                 if get_text(item).strip():
                     self.doc.new_line(item.bbox)
                     for child in item:
