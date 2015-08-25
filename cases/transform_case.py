@@ -1,5 +1,5 @@
 from __future__ import division
-from bs4 import BeautifulSoup, element
+from bs4 import BeautifulSoup, element, NavigableString
 import os
 import json
 import re
@@ -28,6 +28,11 @@ from pdfminer.utils import bbox2str, enc, apply_matrix_pt
 from pdfminer.pdffont import PDFCIDFont
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
+
+""" global regex """
+separator_reg = re.compile('^[_\.]{5,}$')
+
+
 
 
 """ force horizontal lines """
@@ -245,7 +250,7 @@ class DocState(object):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
                 if t in ['paragraph', 'intituling-field', 'entry'] and self.bbox:
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" unkown-font="%s"' %
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" unknown-font="%s"' %
                           (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
                             '1' if self.is_italic(self.font) else '0',
                             '1' if self.is_bold(self.font) else '0',
@@ -366,6 +371,13 @@ class DocState(object):
         elif 'emphasis' in self.tag_stack:
             self.close_tag('emphasis')
 
+
+        #if self.is_bold(self.font):
+        #    self.open_tag('strong')
+
+        #elif 'strong' in self.tag_stack:
+        #    self.close_tag('strong')
+
         if not self.calibrated and self.size:
             self.thresholds['footer_size'] = self.size - 2
             #self.thresholds['superscript_size'] = self.size - 4
@@ -462,7 +474,7 @@ class DocState(object):
     def write_text(self, text, item=None):
 
         text = self.CONTROL.sub(u'', text)
-        text = encodeXMLText(text)
+        #text = encodeXMLText(text)
         if item and text.strip():
             self.register_font(item)
         if self.has_new_line:
@@ -630,12 +642,19 @@ def massage_xml(soup, debug):
 
 def generate_body(soup):
     number_reg = re.compile('^\[(\d+)\]')
-    separator_reg = re.compile('^__{3,}')
+
     brackets_reg = re.compile('^\W*\(.*\)\W*$')
 
     body = soup.find('body')
 
+    # Remove empty nodes
+    for el in body.find_all(['emphasis', 'strong', 'paragraph']):
+        if not len(el.contents):
+            el.decompose()
+
     format_indents(soup)
+
+
 
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
@@ -652,10 +671,17 @@ def generate_body(soup):
             paragraph.clear()
             paragraph.name = 'signature-line'
         # In capitals?  probably  a title
-        elif paragraph.text and (paragraph.text.upper() == paragraph.text or paragraph.attrs['bold'] == '1'):
+        elif paragraph.text and (paragraph.text.upper() == paragraph.text or \
+            len(paragraph.contents) == 1 and paragraph.contents[0].name == 'strong') or \
+            paragraph.attrs['bold'] == '1':
             paragraph.name = 'title'
+            if len(paragraph.contents) and not isinstance(paragraph.contents[0], NavigableString):
+                paragraph.contents[0].unwrap()
         elif paragraph.text and brackets_reg.match(paragraph.text) and paragraph.attrs['center'] == '1':
             paragraph.name = 'subtitle'
+        elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
+            paragraph.name = 'subtitle'
+            paragraph.contents[0].unwrap()
         elif paragraph.previous_sibling and paragraph.previous_sibling.name == 'signature-line':
             paragraph.name = 'signature-name'
         else:
@@ -711,8 +737,8 @@ def format_table(soup, el):
         entry = el.find('emphasis')
         entry.find_parents('row')[0].decompose()
 
-    while el.find('entry', {'unkown-font': '1'}):
-        entry = el.find('entry', {'unkown-font': '1'})
+    while el.find('entry', {'unknown-font': '1'}):
+        entry = el.find('entry', {'unknown-font': '1'})
         entry.find_parents('row')[0].decompose()
 
     for entry in el.find_all('entry'):
@@ -989,6 +1015,7 @@ def waistband(soup):
 
 
 def find_waistband(soup):
+    # TODO, italics etc
     reg = re.compile(r'^(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     parts = [start]+ find_until(start, None, use_position=False)
@@ -1004,7 +1031,7 @@ def find_waistband(soup):
             entry = {'label': char, 'text':  p[2:]}
             entries.append(entry)
             char = chr(ord(char) + 1)
-        else:
+        elif not separator_reg.match(p):
            entry['text'] += ' ' + p
     if len(entries) == 0:
         result = {'title': parts[0], 'text': entry['text']}

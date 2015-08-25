@@ -143,9 +143,8 @@ def xml_compare(x1, x2, reporter=None, do_attr=True):
         # print etree.tostring(x1)
         #print etree.tostring(x2)
         if reporter:
-            #for c1, c2 in zip(cl1, cl2):
-            #    print etree.tostring(c1)
-            #    print etree.tostring(c2)
+            for c1, c2 in zip(cl1, cl2):
+                print c1.tag,  c2.tag
             reporter('children length differs, %i != %i'
                      % (len(cl1), len(cl2)))
         return False
