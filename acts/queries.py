@@ -270,7 +270,7 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
 
     definitions = Definitions()
 
-    extra_formatting(tree)
+    extra_formatting(tree, row.get('version'))
     start = time.time()
     tree = strategy['links'](tree, db)
     current_app.logger.debug('Populated Links in %.2f seconds' % (time.time() - start))
@@ -503,11 +503,16 @@ def prep_instrument(result, replace, db):
 
 def get_instrument_object(id=None, db=None, replace=False):
     try:
-        with (db or get_db()).cursor(cursor_factory=extras.RealDictCursor) as cur:
+        db = db or get_db()
+        with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
             query = """SELECT * from get_processed_instrument(%(id)s) """
             cur.execute(query, {'id': id})
-            return prep_instrument(dict(cur.fetchone()), replace, db)
-    except TypeError:
+            result = cur.fetchone()
+            if result:
+                return prep_instrument(result, replace, db)
+            return prep_instrument(get_unprocessed_instrument(id, db))
+    except TypeError, e:
+        print e
         raise CustomException('Document does not exist')
 
 def get_unprocessed_instrument(id=None, db=None):
