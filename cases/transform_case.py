@@ -23,22 +23,66 @@ from cStringIO import StringIO
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, \
-    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal
-from pdfminer.utils import bbox2str, enc
+    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal, LTComponent
+from pdfminer.utils import bbox2str, enc, apply_matrix_pt
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
 
+""" force horizontal lines """
 def find_neighbors (self, plane, ratio):
-    objs = plane.find((self.x0-1000, self.y0, self.x1+1000, self.y1))
-    d = 3
+    objs = plane.find((self.x0-1000, self.y0+2, self.x1+1000, self.y1-2))
     objs = [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal))]
-    print 'HERE', self, obj
     return objs
 
-
 LTTextLineHorizontal.find_neighbors = find_neighbors
+
+def init_char(self, matrix, font, fontsize, scaling, rise,
+                 text, textwidth, textdisp):
+        LTText.__init__(self)
+        self._text = text
+        self.matrix = matrix
+        self.fontsize = fontsize
+        self.fontname = font.fontname
+        self.adv = textwidth * fontsize * scaling
+        # compute the boundary rectangle.
+        if font.is_vertical():
+            # vertical
+            width = font.get_width() * fontsize
+            (vx, vy) = textdisp
+            if vx is None:
+                vx = width * 0.5
+            else:
+                vx = vx * fontsize * .001
+            vy = (1000 - vy) * fontsize * .001
+            tx = -vx
+            ty = vy + rise
+            bll = (tx, ty+self.adv)
+            bur = (tx+width, ty)
+        else:
+            # horizontal
+            height = font.get_height() * fontsize
+            descent = font.get_descent() * fontsize
+            ty = descent + rise
+            bll = (0, ty)
+            bur = (self.adv, ty+height)
+        (a, b, c, d, e, f) = self.matrix
+        self.upright = (0 < a*d*scaling and b*c <= 0)
+        (x0, y0) = apply_matrix_pt(self.matrix, bll)
+        (x1, y1) = apply_matrix_pt(self.matrix, bur)
+        if x1 < x0:
+            (x0, x1) = (x1, x0)
+        if y1 < y0:
+            (y0, y1) = (y1, y0)
+        LTComponent.__init__(self, (x0, y0, x1, y1))
+        if font.is_vertical():
+            self.size = self.width
+        else:
+            self.size = self.height
+        return
+
+LTChar.__init__ = init_char
 
 
 def encodeXMLText(text):
@@ -102,8 +146,11 @@ class DocState(object):
 
     calibrated = False
     has_new_line = False
+    has_new_chunk = False
     bbox = None
     prev_bbox = None
+    line_bbox = None
+    prev_line_bbox = None
     size = None
     font = None
     body = None
@@ -119,11 +166,11 @@ class DocState(object):
         'footer': 100,
         'footer_size': 10,
         'quote': 140,
-        'quote_size': 11.0,
+        'quote_size': 12.0,
         'superscript': 8.0,
+        'superscript_offset': 1.5,
         'line_tolerance': 4.0,
         'column_gap': 100,
-        'superscript_offset': 0.5,
         'indent_threshold': 10.0,
         'right_align_thresholds': [280, 480],
         'left_align_thresholds': [160],
@@ -161,7 +208,7 @@ class DocState(object):
             return True
 
     def footer_threshold(self):
-        return self.bbox[0] < (self.max_width[0] + self.thresholds['indent_threshold'])
+        return self.line_bbox[0] < (self.max_width[0] + self.thresholds['indent_threshold'])
 
     def column_join_threshold(self):
         if (self.prev_bbox and
@@ -175,10 +222,16 @@ class DocState(object):
             return False
         return abs(self.prev_bbox[3] - value if value is not None else self.bbox[3]) > self.thresholds['line_tolerance']
 
-    def new_line(self, bbox):
-        self.has_new_line = True
+    def new_chunk(self, bbox):
+        self.has_new_chunk = True
         self.prev_bbox = self.bbox
         self.bbox = bbox
+
+    def new_line(self, bbox):
+        self.has_new_line = True
+        self.prev_line_bbox = self.line_bbox
+        self.line_bbox = bbox
+
 
     def open_tag(self, tag, flush=True, attributes=None):
         if flush:
@@ -187,10 +240,12 @@ class DocState(object):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
                 if t in ['paragraph', 'intituling-field'] and self.bbox:
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s"' %
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s"' %
                           (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
                             '1' if self.is_italic(self.font) else '0',
-                            '1' if self.is_bold(self.font) else '0'))
+                            '1' if self.is_bold(self.font) else '0',
+                            '1' if self.is_center_aligned() else '0'
+                            ))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
                      self.out.write('<%s>' % t)
@@ -208,9 +263,30 @@ class DocState(object):
         self.buffer.close()
         self.buffer = StringIO()
 
+    def handle_hline(self, item):
+        pass
+
+    def handle_new_chunk(self):
+        self.has_new_chunk = False
+
+        if self.is_footer():
+
+            if self.footer_threshold() or self.is_intituling():
+                self.close_tag('footer-field')
+            self.open_tag('footer-field')
+
+        elif self.is_intituling():
+            # we will keep everyline in the intituling separate
+            self.close_tag('intituling-field')
+            self.open_tag('intituling-field')
+
+        elif self.is_table():
+            self.close_tag('entry')
+            self.open_tag('entry')
+
     def handle_new_line(self):
         self.has_new_line = False
-
+        handle_space = False
         if not self.max_width[0] or self.bbox[0] < self.max_width[0]:
             self.max_width[0] = self.bbox[0]
         if not self.max_width[1] or self.bbox[2] > self.max_width[1]:
@@ -218,59 +294,57 @@ class DocState(object):
 
         if self.is_footer():
             self.switch_footer()
+            self.open_tag('footer-page')
         else:
             self.switch_body()
 
-        if self.is_footer():
-            self.open_tag('footer-page')
-            if self.footer_threshold():
-                self.close_tag('footer-field')
-            self.open_tag('footer-field')
-
-        elif self.is_intituling():
-            # we will keep everyline in the intituling separate
-            self.close_tag('intituling-field')
-            self.open_tag('intituling-field',
-                          attributes='left="%d" top="%d" bold="%s"' %
-                          (self.bbox[0], self.bbox[1], '1' if self.is_bold(self.font) else '0'))
+        if self.is_intituling():
+            pass
+        elif self.is_footer():
+            pass
 
         elif self.is_table():
-            if self.is_left_aligned():
-                self.close_tag('row')
-                self.open_tag('row')
-                self.open_tag('entry')
-            else:
-                self.close_tag('entry')
-                self.open_tag('entry')
+            self.close_tag('row')
+            self.open_tag('row')
 
-            if self.is_header():
-                print 'damn, header'
+            if self.is_header(self.line_bbox):
                 self.close_tag('table')
                 self.open_tag('paragraph')
-        else:
-            handle_space = False
-            if self.is_quote():
-                if 'quote' not in self.tag_stack:
-                    self.open_tag('quote')
-                if self.para_threshold('quote_vertical_threshold'):
-                    self.close_tag('quote-paragraph')
-                if 'quote-paragraph' not in self.tag_stack:
-                    self.open_tag('quote-paragraph')
-                else:
-                    handle_space = True
-            else:
-                if 'quote' in self.tag_stack:
-                    self.close_tag('quote')
-                if self.para_threshold():
-                    self.close_tag('paragraph')
 
-                if 'paragraph' not in self.tag_stack:
-                    self.open_tag('paragraph')
-                else:
-                    handle_space = True
-            if handle_space and self.last_char != ' ':
-                # we have to add a space between line, if not one already
-                self.write_text(' ')
+        elif self.is_quote():
+            if 'quote' not in self.tag_stack:
+                self.open_tag('quote')
+            if self.para_threshold('quote_vertical_threshold'):
+                self.close_tag('quote-paragraph')
+            if 'quote-paragraph' not in self.tag_stack:
+                self.open_tag('quote-paragraph')
+            else:
+                handle_space = True
+
+        elif self.is_left_indented():
+            if 'indent' in self.tag_stack and self.para_threshold():
+                self.close_tag('indent')
+            if 'indent' not in self.tag_stack:
+                self.open_tag('indent')
+            else:
+                handle_space = True
+        else: # if standard paragraph
+            if 'quote' in self.tag_stack:
+                self.close_tag('quote')
+
+            if 'indent' in self.tag_stack:
+                self.close_tag('indent')
+
+            if self.para_threshold() or self.is_center_aligned(self.line_bbox):
+                self.close_tag('paragraph')
+
+            if 'paragraph' not in self.tag_stack:
+                self.open_tag('paragraph')
+            else:
+                handle_space = True
+        if handle_space and self.last_char != ' ':
+            # we have to add a space between line, if not one already
+            self.write_text(' ')
 
     def handle_style(self):
         if self.is_superscript():
@@ -293,14 +367,13 @@ class DocState(object):
 
     def is_superscript(self):
         #self.size < self.thresholds['superscript'] or
-        return self.char_bbox[1] > (self.bbox[1] + self.thresholds['superscript_offset'])
+        return self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset'])
 
     def is_quote(self):
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
 
     def is_footer(self):
-        return (
-            self.calibrated and
+        return (self.calibrated and
             (self.size and self.size < self.thresholds['footer_size']))
 
     def is_bold(self, font=None):
@@ -329,16 +402,16 @@ class DocState(object):
         return (bbox[0] > self.thresholds['center_align_thresholds'][0] and
                 bbox[2] < self.thresholds['center_align_thresholds'][1])
 
+    def is_left_indented(self, bbox=None):
+        bbox = bbox or self.line_bbox
+        return bbox[0] > (self.max_width[0] + self.thresholds['indent_threshold']) and not self.is_center_aligned(bbox) and not self.is_right_aligned()
+
     def is_header(self, bbox=None):
         bbox = bbox or self.bbox
         if self.is_center_aligned(bbox) and self.is_bold():
             return True
         if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['center_align_thresholds'][1] and self.is_bold():
             return True
-
-    def handle_hline(self, item):
-        #return self.close_tag('intituling')
-        pass
 
     def switch_footer(self):
         if self.out != self.footer:
@@ -364,12 +437,13 @@ class DocState(object):
         return ( '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
 
     def write_text(self, text, item=None):
+
         text = self.CONTROL.sub(u'', text)
         text = encodeXMLText(text)
         if item and text.strip():
-            if hasattr(item, 'size'):
-                if self.size != item.size:
-                    self.size = item.size
+            if hasattr(item, 'fontsize'):
+                if self.size != item.fontsize:
+                    self.size = item.fontsize
 
             if hasattr(item, 'fontname'):
                 if self.font != item.fontname:
@@ -378,13 +452,13 @@ class DocState(object):
 
         if self.has_new_line:
             self.handle_new_line()
+        if self.has_new_chunk:
+            self.handle_new_chunk()
         self.handle_style()
         self.buffer.write(enc(text, 'utf-8'))
         self.state.step(enc(text, 'utf-8'))
         self.last_char = text
         return
-
-
 
 
 class Converter(PDFConverter):
@@ -414,17 +488,12 @@ class Converter(PDFConverter):
 
         def render(item):
             if isinstance(item, LTPage):
-                #new_page = LTTextGroupLRTB(item._objs)
-
-                #new_page.analyze(self.laparams)
                 def compare(a, b):
                     if a.y1 == b.y1:
                         return int(a.x1 - b.x1)
                     return int(b.y1 - a.y1)
-
                 item._objs = sorted(item._objs, cmp=compare)
                 for child in item:
-                    print child
                     render(child)
 
             elif isinstance(item, LTLine):
@@ -446,14 +515,13 @@ class Converter(PDFConverter):
 
             elif isinstance(item, LTTextLine):
                 # only a new if some content
-                print item
                 if get_text(item).strip():
-                    self.doc.new_line(item.bbox)
+                    self.doc.new_chunk(item.bbox)
                     for child in item:
                         render(child)
 
             elif isinstance(item, LTTextBox):
-                #
+                self.doc.new_line(item.bbox)
                 for child in item:
                     render(child)
 
@@ -546,24 +614,35 @@ def massage_xml(soup, debug):
 def generate_body(soup):
     number_reg = re.compile('^\[(\d+)\]')
     separator_reg = re.compile('^__{3,}')
+    brackets_reg = re.compile('^\W*\(.*\)\W*$')
+
+    for indent in soup.find_all('indent'):
+        if not len(indent.contents):
+            indent.decompose()
+
     body = soup.find('body')
+
+    format_indents(soup)
+
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
-        # If a number, then a new paragraph
         if paragraph.name == 'table':
             format_table(soup, paragraph)
+        # If a number, then a new paragraph
         elif number:
             first = paragraph.strings.next()
             first.replace_with(re.sub(number_reg, '', first))
             label = soup.new_tag("label")
             label.string = number.group(1)
             paragraph.insert(0, label)
-        # In capitals?  probably  a title
         elif separator_reg.match(paragraph.text):
             paragraph.clear()
             paragraph.name = 'signature-line'
+        # In capitals?  probably  a title
         elif paragraph.text and (paragraph.text.upper() == paragraph.text or paragraph.attrs['bold'] == '1'):
             paragraph.name = 'title'
+        elif paragraph.text and brackets_reg.match(paragraph.text) and paragraph.attrs['center'] == '1':
+            paragraph.name = 'subtitle'
         elif paragraph.previous_sibling and paragraph.previous_sibling.name == 'signature-line':
             paragraph.name = 'signature-name'
         else:
@@ -597,7 +676,6 @@ def generate_body(soup):
         for child in children:
             paragraph.append(child)
 
-
     for superscript in body.find_all('superscript'):
         if not len(superscript.contents):
             superscript.decompose()
@@ -609,17 +687,51 @@ def generate_body(soup):
 
 
 def format_table(soup, el):
-    para_reg = re.compile('\W*Para No\W*')
-    if para_reg.match(el.contents[0].string):
-        el.contents[0].replace_with('')
+    contents_reg = re.compile('^\W*(Para No|Table of Contents)\W*$')
+    matches = el.find_all(text=contents_reg)
+    if matches:
         el.wrap(soup.new_tag('contents'))
-    # remove empty entry
+        for m in matches:
+            m.extract()
+    # remove empty entry'
+    while el.find('emphasis'):
+        entry = el.find('emphasis')
+        entry.find_parents('row')[0].decompose()
+
     for entry in el.find_all('entry'):
         if entry.is_empty_element:
             entry.decompose()
     for entry in el.find_all('row'):
         if entry.is_empty_element:
             entry.decompose()
+
+
+def format_indents(soup):
+    listlike_reg = re.compile('^\(?([a-z\d+])\)?\W+(.*)', flags=re.IGNORECASE)
+    indent = soup.find('indent', text=listlike_reg)
+    while indent:
+        indent.name = 'entry'
+        match = listlike_reg.match(indent.string)
+        label = soup.new_tag('label')
+        label.string = match.group(1)
+        text = soup.new_tag('text')
+        text.string = match.group(2)
+        text.extend(indent.contents)
+        indent.insert(0, label)
+        indent.insert(1, text)
+        if not (indent.previous_sibling and indent.previous_sibling.name == 'list'):
+            new_list = soup.new_tag('list')
+            entry = indent.replace_with(new_list)
+            new_list.append(entry)
+        else:
+
+            indent.previous_sibling.append(indent)
+        indent = soup.find('indent', text=listlike_reg)
+
+
+
+
+
 
 
 def generate_intitular(soup):
@@ -947,14 +1059,18 @@ def find_versus(soup):
 def generate_footer(soup):
     footer = soup.new_tag('footer')
     text = None
+    #for f in soup.find_all('footer-field'):
+    #    if not len(f.contents):
+    #        f.decompose()
+    # first footer should always be FULL CITATION
     for f in soup.find_all('footer-field')[1:]:
         if not soup.find('superscript'):
             continue
+
         footnote = soup.new_tag('footnote-text')
         for child in f.contents[:]:
             if child.name == 'superscript':
                 child.name = 'key'
-
                 footnote.append(child)
                 text = soup.new_tag('text')
                 footnote.append(text)

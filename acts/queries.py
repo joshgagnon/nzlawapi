@@ -270,7 +270,7 @@ def process_instrument(row=None, db=None, refresh=False, tree=None, latest=False
 
     definitions = Definitions()
 
-    format_dates(tree)
+    extra_formatting(tree)
     start = time.time()
     tree = strategy['links'](tree, db)
     current_app.logger.debug('Populated Links in %.2f seconds' % (time.time() - start))
