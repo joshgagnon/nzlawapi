@@ -25,6 +25,7 @@ from pdfminer.pdfdocument import PDFDocument
 from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, \
     LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal, LTComponent
 from pdfminer.utils import bbox2str, enc, apply_matrix_pt
+from pdfminer.pdffont import PDFCIDFont
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
@@ -44,6 +45,7 @@ def init_char(self, matrix, font, fontsize, scaling, rise,
         self._text = text
         self.matrix = matrix
         self.fontsize = fontsize
+        self.font = font
         self.fontname = font.fontname
         self.adv = textwidth * fontsize * scaling
         # compute the boundary rectangle.
@@ -129,7 +131,7 @@ def dist(r1, r2):
 
 
 RULES = [
-    Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned']),
+    Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Para No', open='table', close='paragraph', tests=['is_bold', 'is_right_aligned']),
     Match(string='Table of Contents', open='table', close='paragraph', tests=['is_bold', 'is_center_aligned']),
@@ -160,15 +162,15 @@ class DocState(object):
 
     # train these numbers
     thresholds = {
-        'paragraph_vertical_threshold': 20,
+        'paragraph_vertical_threshold': 15,
         'quote_vertical_threshold': 12,
         'table_vertical_threshold': 20,
         'footer': 100,
         'footer_size': 10,
         'quote': 140,
         'quote_size': 12.0,
-        'superscript': 8.0,
-        'superscript_offset': 1.5,
+        'superscript': 10.0,
+        'superscript_offset': 2.2,
         'line_tolerance': 4.0,
         'column_gap': 100,
         'indent_threshold': 10.0,
@@ -189,20 +191,23 @@ class DocState(object):
         self.open_tag('footer')
         self.switch_body()
         self.open_tag('intituling')
+        self.font = None
+        self.unknown_font = False
 
     def para_threshold(self, threshold_key='paragraph_vertical_threshold'):
+        (prev_bbox, bbox) = (self.prev_line_bbox, self.line_bbox)
         # if not first bbox
         if not self.prev_bbox:
             return False
 
         # vertical distance so great it is likely a new paragraph
-        if dist((self.prev_bbox[1], self.prev_bbox[3]), (self.bbox[1], self.bbox[3])) > self.thresholds[threshold_key]:
+        if dist((prev_bbox[1], prev_bbox[3]), (bbox[1], bbox[3])) > self.thresholds[threshold_key]:
             return True
 
         # has started a new line horizontal before the previous, probably a column in table
-        if self.bbox[2] < self.prev_bbox[0]:
+        if bbox[2] < prev_bbox[0]:
             return True
-        if self.is_center_aligned(self.prev_bbox):
+        if self.is_center_aligned(prev_bbox):
             return True
         if self.is_right_aligned():
             return True
@@ -239,12 +244,13 @@ class DocState(object):
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
-                if t in ['paragraph', 'intituling-field'] and self.bbox:
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s"' %
+                if t in ['paragraph', 'intituling-field', 'entry'] and self.bbox:
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" unkown-font="%s"' %
                           (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
                             '1' if self.is_italic(self.font) else '0',
                             '1' if self.is_bold(self.font) else '0',
-                            '1' if self.is_center_aligned() else '0'
+                            '1' if self.is_center_aligned() else '0',
+                            '1' if self.unknown_font else '0'
                             ))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
@@ -366,8 +372,8 @@ class DocState(object):
             self.calibrated = True
 
     def is_superscript(self):
-        #self.size < self.thresholds['superscript'] or
-        return self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset'])
+
+        return self.size < self.thresholds['superscript']  and self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset'])
 
     def is_quote(self):
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
@@ -375,6 +381,23 @@ class DocState(object):
     def is_footer(self):
         return (self.calibrated and
             (self.size and self.size < self.thresholds['footer_size']))
+
+    def is_body(self):
+        return not self.is_footer() and not self.is_intituling()
+
+    def register_font(self, item):
+
+        if hasattr(item, 'fontsize'):
+            if self.size != item.fontsize:
+                self.size = item.fontsize
+
+        if hasattr(item, 'fontname'):
+            if self.font != item.fontname:
+                self.font = item.fontname
+
+            self.unknown_font = isinstance(item.font, PDFCIDFont)
+        self.char_bbox = item.bbox
+
 
     def is_bold(self, font=None):
         font = font or self.font
@@ -441,15 +464,7 @@ class DocState(object):
         text = self.CONTROL.sub(u'', text)
         text = encodeXMLText(text)
         if item and text.strip():
-            if hasattr(item, 'fontsize'):
-                if self.size != item.fontsize:
-                    self.size = item.fontsize
-
-            if hasattr(item, 'fontname'):
-                if self.font != item.fontname:
-                    self.font = item.fontname
-            self.char_bbox = item.bbox
-
+            self.register_font(item)
         if self.has_new_line:
             self.handle_new_line()
         if self.has_new_chunk:
@@ -487,12 +502,10 @@ class Converter(PDFConverter):
 
 
         def render(item):
+            def sort_x(a, b):
+                return int(a.x0 - b.x0)
+
             if isinstance(item, LTPage):
-                def compare(a, b):
-                    if a.y1 == b.y1:
-                        return int(a.x1 - b.x1)
-                    return int(b.y1 - a.y1)
-                item._objs = sorted(item._objs, cmp=compare)
                 for child in item:
                     render(child)
 
@@ -517,10 +530,13 @@ class Converter(PDFConverter):
                 # only a new if some content
                 if get_text(item).strip():
                     self.doc.new_chunk(item.bbox)
+                    #print item
                     for child in item:
                         render(child)
 
             elif isinstance(item, LTTextBox):
+                # major change: sort boxes by x
+                item._objs = sorted(item._objs, cmp=sort_x)
                 self.doc.new_line(item.bbox)
                 for child in item:
                     render(child)
@@ -561,6 +577,7 @@ def generate_parsable_xml(path, tmp):
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     password = ''
     path = canoncialize_pdf(path, tmp)
+    # print path
     with open(path, 'rb') as fp:
         parser = PDFParser(fp)
         document = PDFDocument(parser)
@@ -615,10 +632,6 @@ def generate_body(soup):
     number_reg = re.compile('^\[(\d+)\]')
     separator_reg = re.compile('^__{3,}')
     brackets_reg = re.compile('^\W*\(.*\)\W*$')
-
-    for indent in soup.find_all('indent'):
-        if not len(indent.contents):
-            indent.decompose()
 
     body = soup.find('body')
 
@@ -698,7 +711,12 @@ def format_table(soup, el):
         entry = el.find('emphasis')
         entry.find_parents('row')[0].decompose()
 
+    while el.find('entry', {'unkown-font': '1'}):
+        entry = el.find('entry', {'unkown-font': '1'})
+        entry.find_parents('row')[0].decompose()
+
     for entry in el.find_all('entry'):
+        entry.attrs = {}
         if entry.is_empty_element:
             entry.decompose()
     for entry in el.find_all('row'):
@@ -706,27 +724,36 @@ def format_table(soup, el):
             entry.decompose()
 
 
+
 def format_indents(soup):
-    listlike_reg = re.compile('^\(?([a-z\d+])\)?\W+(.*)', flags=re.IGNORECASE)
-    indent = soup.find('indent', text=listlike_reg)
-    while indent:
+    for indent in soup.find_all('indent'):
+        if not len(indent.contents):
+            indent.decompose()
+
+    listlike_reg = re.compile('^\ *\(?([a-z\d+])\)?\ +(.*)', flags=re.IGNORECASE)
+
+
+    for indent in soup.find_all('indent'):
+        match = listlike_reg.match(indent.contents[0])
+        if not match:
+            continue
         indent.name = 'entry'
-        match = listlike_reg.match(indent.string)
         label = soup.new_tag('label')
         label.string = match.group(1)
         text = soup.new_tag('text')
         text.string = match.group(2)
-        text.extend(indent.contents)
+        indent.contents[0].replace_with('')
+        for c in indent.contents[:]:
+            text.append(c)
         indent.insert(0, label)
         indent.insert(1, text)
+
         if not (indent.previous_sibling and indent.previous_sibling.name == 'list'):
             new_list = soup.new_tag('list')
             entry = indent.replace_with(new_list)
             new_list.append(entry)
         else:
-
             indent.previous_sibling.append(indent)
-        indent = soup.find('indent', text=listlike_reg)
 
 
 
