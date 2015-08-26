@@ -1,5 +1,5 @@
 from __future__ import division
-from bs4 import BeautifulSoup, element, NavigableString
+from bs4 import BeautifulSoup, element, NavigableString, Tag
 import os
 import json
 import re
@@ -814,26 +814,21 @@ def format_indents(soup):
         indent.attrs = {}
         prev_left = left
 
-
-
-
-
-
-
 def generate_intitular(soup):
-
     for strong in soup.find('intituling').find_all('strong'):
         strong.unwrap()
-
     intituling = soup.new_tag('intituling')
 
     def optional_section(name, func, intituling):
         try:
             result = func(soup)
             if result:
-                for string in result or []:
-                    el = soup.new_tag(name)
-                    el.string = string
+                for r in result or []:
+                    if isinstance(r, Tag):
+                        el = r
+                    else:
+                        el = soup.new_tag(name)
+                        el.append(r)
                     intituling.append(el)
         except AttributeError: pass
 
@@ -842,6 +837,8 @@ def generate_intitular(soup):
     optional_section('registry', find_registry, intituling)
     optional_section('court-file', find_court_file, intituling)
     optional_section('neutral-citation', find_neutral, intituling)
+    optional_section(None, matters, intituling)
+
 
     intituling.append(parties(soup))
 
@@ -861,15 +858,19 @@ def generate_intitular(soup):
 
 
 def full_citation_lines(soup):
+    # must be first page
     fields = soup.find('footer-page').find_all('footer-field')
     strings = map(lambda x: x.text, fields)
-    # find first line that has capitals up until the first number, doesn't contain solicitors
-    capitals = re.compile('^[A-Z ]{2,}[0-9]*')
-    solicitors = re.compile(r'^solicitors?:?', flags=re.IGNORECASE)
+    court_file = find_court_file(soup)[0]
+
+    #for i, s in enumerate(strings):
+    #    if court_file in s:
+    #        return strings[i:]
+    # might be a typo in there
     for i, s in enumerate(strings):
-        if not solicitors.match(s) and capitals.match(s):
-            break
-    return strings[i:]
+        if len(s) > 20 and sum(1 for c in s if c.isupper()) > (len(s) / 2): #dangerous magic numbers
+            return strings[i:]
+    return [strings[-1]]
 
 
 def find_full_citation(soup):
@@ -956,41 +957,54 @@ def find_hearing(soup):
     reg = re.compile(r'hearing:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
-        results = [start] + find_until(start, re.compile('\w+:'))
+        results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
         return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
 
+
 def find_judgment(soup):
     reg = re.compile(r'(judgments?|sentences?d?):', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    return [re.sub(reg, '', start.text)]
+    if start:
+        results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
+        return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
+    else:
+        return None
+
 
 def find_plea(soup):
     reg = re.compile(r'(pleas?):', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     return [re.sub(reg, '', start.text)]
 
+
 def find_counsel(soup):
     reg = re.compile(r'(counsel:|appearances:)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
-    return map(lambda x: re.sub(reg, '',  x.text.strip()), results)
+    return filter(None, map(lambda x: re.sub(reg, '',  x.text.strip()), results))
+
 
 def find_received(soup):
     reg = re.compile(r'(received):', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     return [re.sub(reg, '', start.text)]
 
+
 def solicitors(soup):
     solicitors = []
     full_citation = full_citation_lines(soup)
+    counsel_pat = re.compile('^counsel:?', flags=re.IGNORECASE)
     for s in find_solicitors(soup) or []:
-        if s not in full_citation:
+        if s not in full_citation and not counsel_pat.match(s):
             solicitor = soup.new_tag('solicitor')
             solicitor.string = s
             solicitors.append(solicitor)
+        else:
+            break
     return solicitors
+
 
 
 def find_solicitors(soup):
@@ -1094,7 +1108,7 @@ def parties(soup):
     for p in party_dict['defendants']:
         defendants.append(party(p, 'defendant'))
 
-    if 'thirdparties' in party_dict:
+    if len(party_dict.get('thirdparties', [])):
         thirdparties = soup.new_tag('thirdparties')
         parties.append(thirdparties)
         for p in party_dict['thirdparties']:
@@ -1103,41 +1117,65 @@ def parties(soup):
     return parties
 
 
+qualifier_pattern = re.compile('(and between|and|between)', flags=re.IGNORECASE)
+
 def find_parties(soup):
-    """ needs a bit of work to handle lists """
-    parties = {'plantiffs': [], 'defendants': []}
-    reg = re.compile(r'BETWEEN', flags=re.IGNORECASE)
-    between = find_reg_el(soup, reg)
-    plantiffs = between.next_sibling
-    plantiffs = [plantiffs] + find_until(plantiffs)
+    parties = {'plantiffs': [], 'defendants': [], 'thirdparties': []}
 
-    #for plantiff in plantiffs:
-    parties['plantiffs'].append({
-        'qualifier': between.text,
-        'value': ' '.join(map(lambda x: x.text, plantiffs[:-1])),
-        'descriptor': plantiffs[-1].text
-        })
-    defendant_descriptor = plantiffs[-1].next_sibling
-    defendants = defendant_descriptor.next_sibling
-    defendants = [defendants] + find_until(defendants)
+    def add_persons(qualifier, column):
+        name = ' '.join(map(lambda x: x.text, column[:-1]))
+        descriptor = column[-1].text
+        group = 'defendants'
+        if plantiff_pattern.match(descriptor):
+            group = 'plantiffs'
+        elif thirdparty_pattern.match(descriptor):
+            group = 'thirdparty'
+        parties[group].append({
+            'qualifier': qualifier,
+            'value': name,
+            'descriptor': descriptor
+            })
+    plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
+    thirdparty_pattern = re.compile('.*Third [Pp]art(y|ies)')
+    #join_pattern = re.compile('and', flags=re.IGNORECASE)
+    next_qualifier = find_reg_el(soup, qualifier_pattern)
 
-    #for defendant in defendants:
-    parties['defendants'].append({
-        'qualifier': defendant_descriptor.text,
-        'value': ' '.join(map(lambda x: x.text, defendants[:-1])),
-        'descriptor': defendants[-1].text
-        })
+    while qualifier_pattern.match(next_qualifier.text):
+        segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
+        add_persons(next_qualifier.text, segments)
+        next_qualifier = segments[-1].next_sibling
+
     return parties
 
 def find_versus(soup):
+    """ If find_parties fails, assume this """
     start = find_reg_el(soup, re.compile('^v$'))
     parties = {
         'plantiffs': [{'value': start.previous_sibling.string}]
     }
-
     defendants = [start.next_sibling] + find_until(start.next_sibling, use_position=False)
     parties['defendants'] = [{'value': ' '.join(map(lambda x: x.text, defendants))}]
     return parties
+
+
+def matters(soup):
+    matter_pattern = re.compile('(and )?(in the matter of|in the estate of|under)', flags=re.IGNORECASE)
+    next_qualifier = find_reg_el(soup, matter_pattern)
+    results = []
+    while matter_pattern.match(next_qualifier.text):
+        matter = soup.new_tag('matter')
+        qualifier = soup.new_tag('qualifier')
+        value = soup.new_tag('value')
+        segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
+        qualifier.string = next_qualifier.text
+        value.string = ' '.join(map(lambda x: x.text, segments))
+        next_qualifier = segments[-1].next_sibling
+        matter.append(qualifier)
+        matter.append(value)
+        results.append(matter)
+    return results
+
+
 
 
 def generate_footer(soup):
@@ -1170,17 +1208,6 @@ class NoText(Exception):
     pass
 
 
-
-def matter(soup):
-    result = {}
-    result['UNDER'] = texts_after_column(soup, ['UNDER'])
-    result['IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
-    result['AND IN THE MATTER OF'] = texts_after_column(soup, ['IN THE MATTER OF'])
-    result['IN THE ESTATE OF'] = texts_after_column(soup, ['IN THE ESTATE OF'])
-    for k, i in result.items():
-        if not i:
-            del result[k]
-    return result
 
 
 def is_appeal(info):
