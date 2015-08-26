@@ -23,7 +23,7 @@
             </plantiff>
                  <plantiff>
                 <qualifier>AND</qualifier>
-                <value>BROWN BROS (NZ) L TD</value>
+                <value>BROWN BROS (NZ) LTD</value>
                 <descriptor>Second Plaintiff</descriptor>
             </plantiff>
         </plantiffs>
@@ -33,14 +33,13 @@
                     <value>THE DISTRICT COURT AT AUCKLAND</value>
                     <descriptor>First Defendant</descriptor>
                 </defendant>
-            </defendants>
-            <thirdparties>
-                <thirdparty>
+
+                 <defendant>
                     <qualifier>AND</qualifier>
                     <value>AUCKLAND REGIONAL COUNCIL</value>
                     <descriptor>Second Defendant</descriptor>
-                </thirdparty>
-            </thirdparties>
+               </defendant>
+            </defendants>
 
         </parties>
         <hearing>9 June 2009</hearing>

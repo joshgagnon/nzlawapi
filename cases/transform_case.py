@@ -138,6 +138,7 @@ def dist(r1, r2):
 RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Para No', open='table', close='paragraph', tests=['is_bold', 'is_right_aligned']),
     Match(string='Table of Contents', open='table', close='paragraph', tests=['is_bold', 'is_center_aligned']),
 ]
@@ -304,8 +305,7 @@ class DocState(object):
         self.has_new_chunk = False
 
         if self.is_footer():
-
-            if self.footer_threshold() or self.is_intituling():
+            if self.is_intituling():
                 self.close_tag('footer-field')
             self.open_tag('footer-field')
 
@@ -329,6 +329,9 @@ class DocState(object):
         if self.is_footer():
             self.switch_footer()
             self.open_tag('footer-page')
+            if self.footer_threshold():
+                self.close_tag('footer-field')
+            self.open_tag('footer-field')
         else:
             self.switch_body()
 
@@ -609,7 +612,7 @@ def generate_parsable_xml(path, tmp):
     retstr = StringIO()
 
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=False, char_margin=6, line_margin=0.01)#,line_margin=2)
+    laparams = LAParams(detect_vertical=False, char_margin=3, line_margin=0.01)#,line_margin=2)
     # Create a PDF page aggregator object.
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -947,7 +950,7 @@ def find_bench(soup):
     reg = re.compile(r'court:', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
-        results = [start] + find_until(start, re.compile('\w+:'))
+        results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
         return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
@@ -1062,7 +1065,7 @@ def find_waistband(soup):
     line = ''
     for p in parts[1:]:
         p = p.strip()
-        if p.startswith('%s ' % char):
+        if re.match('%s($|\s)' % char, p):
             entry = {'label': char, 'text':  p[2:]}
             entries.append(entry)
             char = chr(ord(char) + 1)
@@ -1159,20 +1162,32 @@ def find_versus(soup):
 
 
 def matters(soup):
-    matter_pattern = re.compile('(and )?(in the matter of|in the estate of|under)', flags=re.IGNORECASE)
+    matter_pattern = re.compile('(and )?(in the matter of|in the estate of|under) ?', flags=re.IGNORECASE)
     next_qualifier = find_reg_el(soup, matter_pattern)
+    print next_qualifier
     results = []
-    while matter_pattern.match(next_qualifier.text):
-        matter = soup.new_tag('matter')
-        qualifier = soup.new_tag('qualifier')
-        value = soup.new_tag('value')
-        segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
-        qualifier.string = next_qualifier.text
-        value.string = ' '.join(map(lambda x: x.text, segments))
-        next_qualifier = segments[-1].next_sibling
-        matter.append(qualifier)
-        matter.append(value)
-        results.append(matter)
+    try:
+        while matter_pattern.match(next_qualifier.text):
+            matter = soup.new_tag('matter')
+            qualifier = soup.new_tag('qualifier')
+            value = soup.new_tag('value')
+            text = re.sub(matter_pattern, '', next_qualifier.text)
+            print 'text ', text,next_qualifier.text
+            if len(text):
+                qualifier.string = next_qualifier.text.replace(text, '')
+                value.string = text
+                next_qualifier = next_qualifier.next_sibling
+            else:
+                qualifier.string = next_qualifier.text
+                segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
+                value.string = ' '.join(map(lambda x: x.text, segments))
+                next_qualifier = segments[-1].next_sibling
+            matter.append(qualifier)
+            matter.append(value)
+            results.append(matter)
+    except Exception, e:
+        print e
+
     return results
 
 
@@ -1184,11 +1199,10 @@ def generate_footer(soup):
     #for f in soup.find_all('footer-field'):
     #    if not len(f.contents):
     #        f.decompose()
-    # first footer should always be FULL CITATION
+    # first footer page should always be FULL CITATION
     for f in soup.find_all('footer-field')[1:]:
         if not soup.find('superscript'):
             continue
-
         footnote = soup.new_tag('footnote-text')
         for child in f.contents[:]:
             if child.name == 'superscript':
@@ -1199,6 +1213,9 @@ def generate_footer(soup):
             else:
                 text.append(child)
         footer.append(footnote)
+    for f in footer.find_all('footnote-text'):
+        if not len(f.contents):
+            f.decompose()
     if footer.findChildren():
         return footer
     return None
