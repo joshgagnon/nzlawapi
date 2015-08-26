@@ -168,7 +168,8 @@ class DocState(object):
     # train these numbers
     thresholds = {
         'paragraph_vertical_threshold': 15,
-        'quote_vertical_threshold': 12,
+        'quote_vertical_threshold': 10,
+        'list_vertical_threshold': 12,
         'table_vertical_threshold': 20,
         'footer': 100,
         'footer_size': 10,
@@ -181,7 +182,8 @@ class DocState(object):
         'indent_threshold': 10.0,
         'right_align_thresholds': [280, 480],
         'left_align_thresholds': [160],
-        'center_align_thresholds': [250, 400]
+        'center_align_thresholds': [250, 400],
+        'paragraph_early_newline': 16
     }
 
     def __init__(self):
@@ -192,6 +194,8 @@ class DocState(object):
         self.out = self.body
         self.body_stack = []
         self.foot_stack = []
+        self.body_style_stack = []
+        self.foot_style_stack = []
         self.switch_footer()
         self.open_tag('footer')
         self.switch_body()
@@ -207,6 +211,9 @@ class DocState(object):
 
         # vertical distance so great it is likely a new paragraph
         if dist((prev_bbox[1], prev_bbox[3]), (bbox[1], bbox[3])) > self.thresholds[threshold_key]:
+            return True
+
+        if bbox[2] - prev_bbox[2] > self.thresholds['paragraph_early_newline']:
             return True
 
         # has started a new line horizontal before the previous, probably a column in table
@@ -246,10 +253,11 @@ class DocState(object):
     def open_tag(self, tag, flush=True, attributes=None):
         if flush:
             self.flush()
+
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
-                if t in ['paragraph', 'intituling-field', 'entry'] and self.bbox:
+                if t in ['paragraph', 'intituling-field', 'entry', 'indent'] and self.bbox:
                     attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" unknown-font="%s"' %
                           (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
                             '1' if self.is_italic(self.font) else '0',
@@ -261,7 +269,11 @@ class DocState(object):
                 else:
                      self.out.write('<%s>' % t)
 
+
     def close_tag(self, tag, flush=True):
+        if flush:
+            [self.close_style(s) for s in self.style_stack]
+
         for t in tag.split(','):
             if t in self.tag_stack and flush:
                 self.flush()
@@ -269,10 +281,21 @@ class DocState(object):
                 _tag = self.tag_stack.pop()
                 self.out.write('</%s>' % _tag)
 
+    def open_style(self, style):
+        if style not in self.style_stack:
+            self.style_stack.append(style)
+            self.buffer.write('<%s>' % style)
+
+    def close_style(self, style):
+        while style in self.style_stack:
+            _tag = self.style_stack.pop()
+            self.buffer.write('</%s>' % _tag)
+
     def flush(self):
         self.out.write(self.buffer.getvalue())
         self.buffer.close()
         self.buffer = StringIO()
+
 
     def handle_hline(self, item):
         pass
@@ -333,7 +356,7 @@ class DocState(object):
                 handle_space = True
 
         elif self.is_left_indented():
-            if 'indent' in self.tag_stack and self.para_threshold():
+            if 'indent' in self.tag_stack:# and self.para_threshold('list_vertical_threshold'):
                 self.close_tag('indent')
             if 'indent' not in self.tag_stack:
                 self.open_tag('indent')
@@ -365,19 +388,20 @@ class DocState(object):
             self.close_tag('superscript')
             self.buffer.write(' ')
 
-        if self.is_italic(self.font):
-            self.open_tag('emphasis')
+        if True:
+            if self.is_italic(self.font):
+                self.open_style('emphasis')
 
-        elif 'emphasis' in self.tag_stack:
-            self.close_tag('emphasis')
+            elif 'emphasis' in self.style_stack:
+                self.close_style('emphasis')
 
+            if self.is_bold(self.font):
+                self.open_style('strong')
 
-        #if self.is_bold(self.font):
-        #    self.open_tag('strong')
+            elif 'strong' in self.style_stack:
+                self.close_style('strong')
 
-        #elif 'strong' in self.tag_stack:
-        #    self.close_tag('strong')
-
+        # guess that footer doesn't come first.  should instead maybe sample whole document
         if not self.calibrated and self.size:
             self.thresholds['footer_size'] = self.size - 2
             #self.thresholds['superscript_size'] = self.size - 4
@@ -453,6 +477,7 @@ class DocState(object):
             self.flush()
             self.out = self.footer
             self.tag_stack = self.foot_stack
+            self.style_stack = self.foot_style_stack
             # transistion from body/footer, clear prev
             self.prev_bbox = None
 
@@ -461,6 +486,7 @@ class DocState(object):
             self.close_tag('footer-page')
         self.out = self.body
         self.tag_stack = self.body_stack
+        self.style_stack = self.body_style_stack
 
     def finalize(self):
         self.switch_body()
@@ -612,17 +638,6 @@ def canoncialize_pdf(path, tmp):
     return output
 
 
-def reorder_intituling(soup):
-    """ reorder the intituling-fields by 'top' attribute  """
-    intituling = soup.find('intituling')
-    fields = intituling.find_all('intituling-field')
-
-    fields = sorted(fields, key=lambda x: float(x.attrs['top']), reverse=True)
-    intituling.clear()
-    for f in fields:
-        intituling.append(f)
-    return soup
-
 
 def massage_xml(soup, debug):
     if debug:
@@ -647,10 +662,11 @@ def generate_body(soup):
 
     body = soup.find('body')
 
-    # Remove empty nodes
-    for el in body.find_all(['emphasis', 'strong', 'paragraph']):
-        if not len(el.contents):
-            el.decompose()
+    def remove_empty_nodes(soup):
+        # Remove empty nodes
+        for el in soup.find_all(['emphasis', 'strong', 'paragraph', 'title']):
+            if not len(el.contents):
+                el.decompose()
 
     format_indents(soup)
 
@@ -686,8 +702,7 @@ def generate_body(soup):
             paragraph.name = 'signature-name'
         else:
             # we must stitch this paragraph to the previous one
-            if paragraph.previous_sibling.contents[-1].string and not paragraph.previous_sibling.contents[-1].string.endswith(' '):
-                paragraph.previous_sibling.append(' ')
+            paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
                 paragraph.previous_sibling.append(child)
             paragraph.decompose()
@@ -722,6 +737,8 @@ def generate_body(soup):
         superscript.name = 'footnote'
         superscript.string = superscript.string.strip()
 
+    remove_empty_nodes(body)
+
     return body
 
 
@@ -732,6 +749,9 @@ def format_table(soup, el):
         el.wrap(soup.new_tag('contents'))
         for m in matches:
             m.extract()
+    # upwrap strong
+    for strong in el.find_all('strong'):
+        strong.unwrap()
     # remove empty entry'
     while el.find('emphasis'):
         entry = el.find('emphasis')
@@ -752,22 +772,33 @@ def format_table(soup, el):
 
 
 def format_indents(soup):
+    """ Needs clean up """
     for indent in soup.find_all('indent'):
         if not len(indent.contents):
             indent.decompose()
 
     listlike_reg = re.compile('^\ *\(?([a-z\d+])\)?\ +(.*)', flags=re.IGNORECASE)
 
-
+    prev_left = None
     for indent in soup.find_all('indent'):
         match = listlike_reg.match(indent.contents[0])
-        if not match:
-            continue
+        left = float(indent.attrs['left'])
+        if not match or (prev_left and left > prev_left):
+
+            if indent.previous_sibling:
+                text = indent.previous_sibling.find_all('text')[-1]
+                text.append(' ')
+                for c in indent.contents[:]:
+                    text.append(c)
+                indent.decompose()
+                continue
+
         indent.name = 'entry'
         label = soup.new_tag('label')
         label.string = match.group(1)
         text = soup.new_tag('text')
         text.string = match.group(2)
+
         indent.contents[0].replace_with('')
         for c in indent.contents[:]:
             text.append(c)
@@ -780,6 +811,8 @@ def format_indents(soup):
             new_list.append(entry)
         else:
             indent.previous_sibling.append(indent)
+        indent.attrs = {}
+        prev_left = left
 
 
 
@@ -788,7 +821,10 @@ def format_indents(soup):
 
 
 def generate_intitular(soup):
-    #print soup.prettify()
+
+    for strong in soup.find('intituling').find_all('strong'):
+        strong.unwrap()
+
     intituling = soup.new_tag('intituling')
 
     full_citation = soup.new_tag('full-citation')
@@ -1190,4 +1226,4 @@ def process_case(filename, debug=False):
     results = massage_xml(soup, debug)
     shutil.rmtree(tmp)
     #print results.prettify()
-    return unicode(results)
+    return re.sub(' +', ' ', unicode(results))
