@@ -1,0 +1,92 @@
+<case>
+    <intituling>
+        <full-citation>URS NEW ZEALAND LTD AND ANOR V THE DISTRICT COURT AT AUCKLAND AND ANOR HC AK CIV 2009-404-3054 10 June 2009</full-citation>
+        <court>IN THE HIGH COURT OF NEW ZEALAND</court>
+        <registry>AUCKLAND REGISTRY</registry>
+        <court-file>CIV 2009-404-3054</court-file>
+
+        <matter>
+                <qualifier>UNDER</qualifier>
+                <value>the Judicature Amendment Act 1972</value>
+        </matter>
+        <matter>
+                <qualifier>IN THE MATTER OF</qualifier>
+        		<value>an application for judicial review</value>
+        </matter>
+
+        <parties>
+        	<plantiffs>
+            <plantiff>
+                <qualifier>BETWEEN</qualifier>
+                <value>URS NEW ZEALAND LTD</value>
+                <descriptor>First Plaintiff</descriptor>
+            </plantiff>
+                 <plantiff>
+                <qualifier>AND</qualifier>
+                <value>BROWN BROS (NZ) L TD</value>
+                <descriptor>Second Plaintiff</descriptor>
+            </plantiff>
+        </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier>AND</qualifier>
+                    <value>THE DISTRICT COURT AT AUCKLAND</value>
+                    <descriptor>First Defendant</descriptor>
+                </defendant>
+            </defendants>
+            <thirdparties>
+                <thirdparty>
+                    <qualifier>AND</qualifier>
+                    <value>AUCKLAND REGIONAL COUNCIL</value>
+                    <descriptor>Second Defendant</descriptor>
+                </thirdparty>
+            </thirdparties>
+
+        </parties>
+        <hearing>9 June 2009</hearing>
+        <counsel>Paul David and Allison Ferguson for First Plaintiff</counsel>
+        <counsel>Daniel McLellan for Second Plaintiff</counsel>
+        <counsel>No appearance for First Defendant (abiding decision)</counsel>
+        <counsel>Deborah Hollings QC, Lana Hamilton and Toby Futter for Second</counsel>
+        <counsel>Defendant</counsel>
+        <judgment>10 June 2009</judgment>
+        <waistband>
+            <title>JUDGMENT OF HARRISON J</title>
+        </waistband>
+        <solicitor>Wilson Harle (Auckland) for First Plaintiff</solicitor>
+        <solicitor>Tompkins Wake (Hamilton) for Second Plaintiff</solicitor>
+        <solicitor>Crown Law (Wellington) for First Defendant</solicitor>
+        <solicitor>Auckland Regional Council (Auckland) for Second Defendant</solicitor>
+    </intituling>
+
+    <body>
+        <title>Introduction</title>
+         <paragraph>
+            <label>1</label>
+            <text>This application for judicial review of a decision in the District Court at Auckland, dismissing a submission of no case to answer made at the conclusion of the prosecution case in a summary trial, is being heard and determined under constraints of urgency.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>2</label>
+            <text>The Auckland Regional Council (ARC) has charged the plaintiffs, URS New Zealand Ltd and Brown Bros (NZ) Ltd, with offences under the Resource Management Act 1991 (RMA): by discharging a contaminant either onto or into land in circumstances which may have resulted in the contaminant entering water other than as allowed by a rule in the regional plan, a resource consent or regulations (s 15(1)(b) RMA) or from industrial trade premises into or onto land (s 15(1)(d)).
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>3</label>
+            <text>The trial commenced before Judge McElrea in the District Court on 17 February 2009. The scheduled duration was five days. But the trial has actually lasted for 12 days, spread over a two month period. At the conclusion of the prosecution case on 15 April both defendants submitted that the proceeding should be dismissed. In a reserved decision delivered the next day, the Judge held there was a case to answer. However, a typed copy of his judgment was not available until 11 May, causing a delay in filing this application. The trial is due to resume tomorrow, 11 June. In the event that the plaintiffs call evidence, another 12 days of hearing will be required.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>4</label>
+            <text>The plaintiffs concede that this application is novel and that in most cases the High Court should not interfere in a District Court criminal trial before its conclusion. However, they say that this Court should exercise its statutory jurisdiction to cure legal errors made by Judge McElrea, sparing the state and the parties the cost, inconvenience and uncertainty of what they contend will be two further unnecessary weeks of trial. The ARC counters that this Court has no jurisdiction to review but, if it has, the Judge did not make a reviewable error.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>5</label>
+            <text>I have enjoyed the benefit of written and oral submissions of high quality, which have assisted me in reaching an immediate decision. I am conscious, though,
+            </text>
+        </paragraph>
+
+    </body>
+
+</case>
