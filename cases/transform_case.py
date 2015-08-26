@@ -827,53 +827,30 @@ def generate_intitular(soup):
 
     intituling = soup.new_tag('intituling')
 
-    full_citation = soup.new_tag('full-citation')
-    full_citation.string = find_full_citation(soup)
-    intituling.append(full_citation)
+    def optional_section(name, func, intituling):
+        try:
+            result = func(soup)
+            if result:
+                for string in result or []:
+                    el = soup.new_tag(name)
+                    el.string = string
+                    intituling.append(el)
+        except AttributeError: pass
 
-    court = soup.new_tag('court')
-    court.string = find_court(soup)
-    intituling.append(court)
-
-    court_file = soup.new_tag('court-file')
-    court_file.string = find_court_file(soup)
-
-    registry_string = find_registry(soup)
-    if registry_string:
-        registry = soup.new_tag('registry')
-        registry.string = registry_string
-        intituling.append(registry)
-
-    intituling.append(court_file)
-
-    neutral_string = find_neutral(soup)
-    if neutral_string:
-        neutral = soup.new_tag('neutral-citation')
-        neutral.string = neutral_string
-        intituling.append(neutral)
+    optional_section('full-citation', find_full_citation, intituling)
+    optional_section('court', find_court, intituling)
+    optional_section('registry', find_registry, intituling)
+    optional_section('court-file', find_court_file, intituling)
+    optional_section('neutral-citation', find_neutral, intituling)
 
     intituling.append(parties(soup))
 
-    hearing_string = find_hearing(soup)
-    if hearing_string:
-        hearing = soup.new_tag('hearing')
-        hearing.string = hearing_string
-        intituling.append(hearing)
-
-    for c in find_counsel(soup):
-        counsel = soup.new_tag('counsel')
-        counsel.string = c
-        intituling.append(counsel)
-
-    bench_string = find_bench(soup)
-    if bench_string:
-        bench = soup.new_tag('bench')
-        bench.string = bench_string
-        intituling.append(bench)
-
-    judgment = soup.new_tag('judgment')
-    judgment.string = find_judgment(soup)
-    intituling.append(judgment)
+    optional_section('hearing', find_hearing, intituling)
+    optional_section('counsel', find_counsel, intituling)
+    optional_section('bench', find_bench, intituling)
+    optional_section('plea', find_plea, intituling)
+    optional_section('received', find_plea, intituling)
+    optional_section('judgment', find_judgment, intituling)
 
     intituling.append(waistband(soup))
 
@@ -897,7 +874,7 @@ def full_citation_lines(soup):
 
 def find_full_citation(soup):
     strings = full_citation_lines(soup)
-    return ' '.join(strings)
+    return [' '.join(strings)]
 
 
 def get_left(el):
@@ -933,7 +910,7 @@ def find_until(el, reg=None, use_position=True, forward=True):
 
 def find_court(soup):
     reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?\W*$', flags=re.IGNORECASE)
-    return find_reg_el(soup, reg).text
+    return [find_reg_el(soup, reg).text]
 
 
 def find_registry(soup):
@@ -941,7 +918,7 @@ def find_registry(soup):
     start = find_reg_el(soup, court_reg)
     registry = find_until(start, None, use_position=True)
     if registry:
-        return registry[-1].text
+        return [registry[-1].text]
 
 
 def find_court_file(soup):
@@ -955,13 +932,13 @@ def find_court_file(soup):
         'AP \d{2}\/\d{4}']
 
     courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
-    return find_reg_el(soup, courtfile_num).text
+    return [find_reg_el(soup, courtfile_num).text]
 
 
 def find_neutral(soup):
     reg = re.compile(r'\W*\[(\d){4}\] NZ(HC|CA|SC) (\d+)\W*$')
     try:
-        return find_reg_el(soup, reg).text.strip()
+        return [find_reg_el(soup, reg).text.strip()]
     except AttributeError:
         return None
 
@@ -970,7 +947,7 @@ def find_bench(soup):
     start = find_reg_el(soup, reg)
     if start:
         results = [start] + find_until(start, re.compile('\w+:'))
-        return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
+        return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
 
@@ -980,15 +957,19 @@ def find_hearing(soup):
     start = find_reg_el(soup, reg)
     if start:
         results = [start] + find_until(start, re.compile('\w+:'))
-        return re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))
+        return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
 
 def find_judgment(soup):
-    reg = re.compile(r'judgment:', flags=re.IGNORECASE)
+    reg = re.compile(r'(judgments?|sentences?d?):', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    return re.sub(reg, '', start.text)
+    return [re.sub(reg, '', start.text)]
 
+def find_plea(soup):
+    reg = re.compile(r'(pleas?):', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    return [re.sub(reg, '', start.text)]
 
 def find_counsel(soup):
     reg = re.compile(r'(counsel:|appearances:)', flags=re.IGNORECASE)
@@ -996,6 +977,10 @@ def find_counsel(soup):
     results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
     return map(lambda x: re.sub(reg, '',  x.text.strip()), results)
 
+def find_received(soup):
+    reg = re.compile(r'(received):', flags=re.IGNORECASE)
+    start = find_reg_el(soup, reg)
+    return [re.sub(reg, '', start.text)]
 
 def solicitors(soup):
     solicitors = []
@@ -1109,15 +1094,23 @@ def parties(soup):
     for p in party_dict['defendants']:
         defendants.append(party(p, 'defendant'))
 
+    if 'thirdparties' in party_dict:
+        thirdparties = soup.new_tag('thirdparties')
+        parties.append(thirdparties)
+        for p in party_dict['thirdparties']:
+            defendants.append(party(p, 'thirdparty'))
+
     return parties
 
 
 def find_parties(soup):
+    """ needs a bit of work to handle lists """
     parties = {'plantiffs': [], 'defendants': []}
     reg = re.compile(r'BETWEEN', flags=re.IGNORECASE)
     between = find_reg_el(soup, reg)
     plantiffs = between.next_sibling
     plantiffs = [plantiffs] + find_until(plantiffs)
+
     #for plantiff in plantiffs:
     parties['plantiffs'].append({
         'qualifier': between.text,
@@ -1127,6 +1120,7 @@ def find_parties(soup):
     defendant_descriptor = plantiffs[-1].next_sibling
     defendants = defendant_descriptor.next_sibling
     defendants = [defendants] + find_until(defendants)
+
     #for defendant in defendants:
     parties['defendants'].append({
         'qualifier': defendant_descriptor.text,

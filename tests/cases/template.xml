@@ -20,6 +20,14 @@
                     <descriptor></descriptor>
                 </defendant>
             </defendants>
+            <thirdparties>
+                <thirdparty>
+                    <qualifier></qualifier>
+                    <value></value>
+                    <descriptor></descriptor>
+                </thirdparty>
+            </thirdparties>
+
         </parties>
         <hearing></hearing>
         <counsel></counsel>
