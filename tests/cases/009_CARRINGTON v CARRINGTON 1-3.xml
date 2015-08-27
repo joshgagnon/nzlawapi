@@ -1,0 +1,103 @@
+<case>
+    <intituling>
+        <full-citation>CARRINGTON v CARRINGTON [2014] NZHC 869 [30 April 2014]</full-citation>
+        <court>IN THE HIGH COURT OF NEW ZEALAND</court>
+        <registry>AUCKLAND REGISTRY</registry>
+        <court-file>CIV-2011-404-3775</court-file>
+        <neutral-citation>[2014] NZHC 869</neutral-citation>
+        <matter>
+        		<qualifier>IN THE MATTER OF</qualifier>
+                <value>the Declaratory Judgments Act 1908, declarations at common law and orders under the inherent jurisdiction of the High Court that are analagous to orders under the Protection of Personal and Property Rights Act 1988.
+        		</value>
+
+    	</matter>
+        <parties>
+        	<plantiffs>
+            <plantiff>
+                <qualifier>BETWEEN</qualifier>
+                <value>YVONNE CARRINGTON</value>
+                <descriptor>Applicant</descriptor>
+            </plantiff>
+        </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier>AND</qualifier>
+                    <value>BRIAN CARRINGTON</value>
+                    <descriptor>Respondent</descriptor>
+                </defendant>
+            </defendants>
+        </parties>
+        <hearing>31 March 2014, 1 April 2014</hearing>
+        <counsel>J G Miles QC and S Grant for Applicant</counsel>
+        <counsel>H Waalkens QC, F Monteiro and R M Gale for Respondent</counsel>
+        <counsel>K Davenport QC for Interested Party A</counsel>
+        <counsel>R B Stewart QC and B Tompkins for Interested Parties B and C</counsel>
+        <counsel>M Sandelin for Respondent's Property Manager
+</counsel>
+        <judgment>30 April 2014</judgment>
+        <waistband>
+            <title>JUDGMENT OF KATZ J</title>
+        </waistband>
+        <solicitor>Harmos Horton Lusk, Auckland</solicitor>
+        <solicitor>Wilson Harle, Auckland</solicitor>
+        <solicitor>Gilbert Walker, Auckland</solicitor>
+        <solicitor>Minter Ellison Rudd Watts, Auckland</solicitor>
+    </intituling>
+
+    <body>
+    <contents>
+    <table>
+        <row><entry>Introduction</entry><entry>1</entry></row>
+        <row><entry>Background and overview of issues</entry><entry>3</entry></row>
+        <row><entry>The High Court’s parens patriae jurisdiction</entry><entry>10</entry></row>
+        <row><entry>The Declaratory Judgments Act 1908</entry><entry>20</entry></row>
+        <row><entry>The Family Court’s jurisdiction under the PPPRA</entry><entry>22</entry></row>
+        <row><entry>The interface between the jurisdiction of the High Court and Family Court</entry><entry>30</entry></row>
+        <row><entry>Orders and declarations sought in relation to enduring powers of attorney</entry><entry>62</entry></row>
+        <row><entry>Orders and declarations sought regarding Mr Carrington’s will</entry><entry>72</entry></row>
+        <row><entry>Declarations sought in relation to whether Mr Carrington had capacity in 2011 to bring proceedings in the Family Court</entry><entry>96</entry></row>
+        <row><entry>Confidentiality and suppression orders</entry><entry>101</entry></row>
+        <row><entry>Summary and conclusion</entry><entry>102</entry></row>
+        <row><entry>Result</entry><entry>107</entry></row>
+    </table>
+    </contents>
+
+        <title>Introduction</title>
+         <paragraph>
+            <label>1</label>
+            <text>Mrs Carrington claims in these proceedings that her estranged husband, Mr Carrington,<footnote>1</footnote> was unduly influenced to change his will and enduring powers of attorney in May 2011, at a time when he lacked mental capacity to do so. She seeks orders and declarations that Mr Carrington’s new will and powers of attorney are invalid, together with a declaration that he lacked mental capacity to file proceedings in the Family Court in 2011 seeking dissolution of marriage and a division of relationship property.
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>2</label>
+            <text>Mr Carrington has applied to strike out Mrs Carrington’s proceedings.<footnote>2</footnote> He says that this Court has no jurisdiction to make the various orders and declarations sought and, further, that the proceedings are an abuse of process. In particular, counsel for Mr Carrington submitted that bringing proceedings in this Court was a “cynical attempt” to circumvent the jurisdiction of the Family Court under the Protection of Property and Personal Rights Act 1988 (“PPPRA”). To the extent that these proceedings raise issues that are justiciable at all, Mr Carrington says that the proper forum for them is the Family Court.
+            </text>
+        </paragraph>
+        <title>Background and overview of issues</title>
+        <paragraph>
+            <label>3</label>
+            <text>Mr and Mrs Carrington married in 1988 and have been separated since 2006. In addition to the two children of their marriage, they both have adult children from prior marriages. Mr Carrington appointed Mrs Carrington as his power of attorney in relation to property in 1992 and also executed a will in her favour in 2004. Their subsequent separation in 2006 appears to have been largely amicable. Indeed, in 2009, Mr Carrington appointed Mrs Carrington his enduring power of attorney in relation to personal care and welfare.
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>4</label>
+            <text>In 2011, however, things changed. Mr Carrington revoked the powers of attorney he had granted in favour of Mrs Carrington and appointed new attorneys. He executed a new will. He also applied to the Family Court for dissolution of marriage and a division of relationship property.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>5</label>
+            <text>Mrs Carrington claims that Mr Carrington, who is elderly, lacked the necessary mental capacity to undertake these actions. She says that they were undertaken as a consequence of Mr Carrington being subjected to undue influence by one of his adult children. As a result, Mrs Carrington filed an originating application in this Court in June 2011. The second amended originating application seeks declarations under “the Declaratory Judgments Act 1908, declarations at common law, and orders under the inherent jurisdiction of the High Court that are <emphasis>analogous</emphasis> to orders under the [PPPRA]” (emphasis added).
+            </text>
+        </paragraph>
+    </body>
+    <footer>
+        <footnote-text>
+            <key>1</key>
+            <text>I have used pseudonyms to protect the identities of the parties.</text>
+        </footnote-text>
+        <footnote-text>
+            <key>2</key>
+            <text>His strike out application is supported by interested parties B and C.</text>
+        </footnote-text>
+    </footer>
+</case>

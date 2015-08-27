@@ -59,8 +59,6 @@ def extra_formatting(tree, version):
     tree.attrib['version'] = '%.1f' % version
 
 
-
-
 def measure_heights(html):
     css_path = os.path.abspath(os.path.join(current_app.config.get("BUILD_DIR"), 'css/style.css'))
     js = os.path.abspath(os.path.join(current_app.config.get("SCRIPT_DIR"), 'measure_heights.js'))
@@ -431,6 +429,7 @@ def get_contents(document_id):
         else:
             contents = result.get('contents')
         return {'html': contents}
+
 
 def get_summary(document_id):
     db = get_db()

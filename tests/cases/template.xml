@@ -5,12 +5,9 @@
         <registry></registry>
         <court-file></court-file>
         <neutral-citation></neutral-citation>
-        <matter><under>
-        		</under>
-        		<matter-of>
-        		</matter-of>
-        </under>
-
+        <matter><qualifier></qualifier>
+        <value>
+        </value>
     	</matter>
         <parties>
         	<plantiffs>

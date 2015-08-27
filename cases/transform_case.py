@@ -139,8 +139,8 @@ RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='Para No', open='table', close='paragraph', tests=['is_bold', 'is_right_aligned']),
-    Match(string='Table of Contents', open='table', close='paragraph', tests=['is_bold', 'is_center_aligned']),
+    Match(string='Para No', open='table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
+    Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
 ]
 
 
@@ -258,7 +258,7 @@ class DocState(object):
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
-                if t in ['paragraph', 'intituling-field', 'entry', 'indent'] and self.bbox:
+                if t in ['paragraph', 'intituling-field', 'row', 'entry', 'indent'] and self.bbox:
                     attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" unknown-font="%s"' %
                           (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
                             '1' if self.is_italic(self.font) else '0',
@@ -546,7 +546,11 @@ class Converter(PDFConverter):
             def sort_x(a, b):
                 return int(a.x0 - b.x0)
 
+            def sort_y(a, b):
+                return int(b.y0 - a.y0)
+
             if isinstance(item, LTPage):
+                item._objs = sorted(item._objs, cmp=sort_y)
                 for child in item:
                     render(child)
 
@@ -752,26 +756,68 @@ def format_table(soup, el):
         el.wrap(soup.new_tag('contents'))
         for m in matches:
             m.extract()
-    # upwrap strong
+    """ unwrap method need to be generalized """
     for strong in el.find_all('strong'):
+        parent = strong.parent
         strong.unwrap()
-    # remove empty entry'
-    while el.find('emphasis'):
-        entry = el.find('emphasis')
-        entry.find_parents('row')[0].decompose()
+        if parent.name == 'entry' and len(parent.contents) > 1:
+            i = len(parent.contents)-2
+            for c in parent.contents[1:][::-1]:
+                if isinstance(c, NavigableString) and isinstance(parent.contents[i], NavigableString):
+                    parent.contents[i].replace_with('%s %s' % (parent.contents[i],  c))
+                i -= 1
+                #c.replace_with('')
+                c.extract()
 
-    while el.find('entry', {'unknown-font': '1'}):
-        entry = el.find('entry', {'unknown-font': '1'})
-        entry.find_parents('row')[0].decompose()
+
+    """ get size limits """
+    left = min(get_left(x) for x in el.find_all('entry'))
+    right = max(get_right(x) for x in el.find_all('entry'))
+
+    contents_split = re.compile('^(.*?)(\.*)\s\[?(\d+)\]?\s?$')
+
+    """ find cases where there is no columns but a single line,
+        eg  Introduction.......... 1
+        or  The interface between 10 """
+    for row in el.find_all('row'):
+        print row, len(row.contents) == 1, get_left(row), left, get_right(row), right
+        if len(row.contents) == 1 and get_left(row) == left and get_right(row) == right:
+            match = contents_split.match(row.contents[0].text)
+            if not match:
+                continue
+            row.contents[0].string.replace_with(match.group(1))
+            entry = soup.new_tag('entry')
+            entry.append(match.group(3))
+            row.append(entry)
+
+
+    # if a row has only 1 entry, put it on previous
+    for row in el.find_all('row'):
+        if len(row.contents) == 1 and row.previous_sibling and get_left(row) == get_left(row.next_sibling):
+            next_sibling = row.next_sibling.find('entry')
+            if not next_sibling:
+                continue
+            for e in row.contents[0].contents[::-1]:
+                next_sibling.insert(0, e)
+                next_sibling.insert(0, ' ')
+            row.decompose()
+
 
     for entry in el.find_all('entry'):
         entry.attrs = {}
         if entry.is_empty_element:
             entry.decompose()
-    for entry in el.find_all('row'):
-        if entry.is_empty_element:
-            entry.decompose()
 
+    for row in el.find_all('row'):
+        if row.is_empty_element:
+            row.decompose()
+
+    left_margin = get_left(el.find('row'))
+
+    for row in el.find_all('row'):
+        if get_left(row) > left_margin:
+            row.decompose()
+        row.attrs = {}
 
 
 def format_indents(soup):
@@ -785,7 +831,7 @@ def format_indents(soup):
     prev_left = None
     for indent in soup.find_all('indent'):
         match = listlike_reg.match(indent.contents[0])
-        left = float(indent.attrs['left'])
+        left = get_left(indent)
         if not match or (prev_left and left > prev_left):
 
             if indent.previous_sibling:
@@ -884,6 +930,8 @@ def find_full_citation(soup):
 def get_left(el):
     return float(el.attrs.get('left', 0))
 
+def get_right(el):
+    return float(el.attrs.get('right', 0))
 
 def get_bold(el):
     return el.attrs.get('bold')
@@ -895,7 +943,7 @@ def find_reg_el(soup, reg, field='intituling-field'):
             return e
 
 
-def find_until(el, reg=None, use_position=True, forward=True):
+def find_until(el, reg=None, use_position=True, forward=True, more_left=False, debug=False):
     results = []
     left = get_left(el)
     bold = get_bold(el)
@@ -906,7 +954,8 @@ def find_until(el, reg=None, use_position=True, forward=True):
         return el.previous_sibling
 
     while direction(el) and not (reg and reg.match(direction(el).text)) and (
-        not use_position or get_left(direction(el)) == left) and get_bold(direction(el)) == bold:
+        not use_position or get_left(direction(el)) == left) and get_bold(direction(el)) == bold and (
+        not more_left or get_left(direction(el)) > left):
         results.append(direction(el))
         el = direction(el)
     return results
@@ -947,7 +996,7 @@ def find_neutral(soup):
         return None
 
 def find_bench(soup):
-    reg = re.compile(r'court:', flags=re.IGNORECASE)
+    reg = re.compile(r'court[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
         results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
@@ -957,17 +1006,24 @@ def find_bench(soup):
 
 
 def find_hearing(soup):
-    reg = re.compile(r'hearing:', flags=re.IGNORECASE)
+    reg = re.compile(r'hearing[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
-        results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
+        more_left = False
+        use_position = True
+        if re.sub(reg, '', start.text).strip():
+            use_position = False
+            more_left = True
+        else:
+            start = start.next_sibling
+        results = [start] + find_until(start, re.compile('\w+:'), use_position=use_position, more_left=more_left)
         return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
 
 
 def find_judgment(soup):
-    reg = re.compile(r'(judgments?|sentences?d?):', flags=re.IGNORECASE)
+    reg = re.compile(r'(judgments?|sentences?d?)[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
         results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
@@ -977,20 +1033,20 @@ def find_judgment(soup):
 
 
 def find_plea(soup):
-    reg = re.compile(r'(pleas?):', flags=re.IGNORECASE)
+    reg = re.compile(r'(pleas?)[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     return [re.sub(reg, '', start.text)]
 
 
 def find_counsel(soup):
-    reg = re.compile(r'(counsel:|appearances:)', flags=re.IGNORECASE)
+    reg = re.compile(r'(counsel|appearances)[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
     return filter(None, map(lambda x: re.sub(reg, '',  x.text.strip()), results))
 
 
 def find_received(soup):
-    reg = re.compile(r'(received):', flags=re.IGNORECASE)
+    reg = re.compile(r'(received)[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     return [re.sub(reg, '', start.text)]
 
@@ -998,7 +1054,7 @@ def find_received(soup):
 def solicitors(soup):
     solicitors = []
     full_citation = full_citation_lines(soup)
-    counsel_pat = re.compile('^counsel:?', flags=re.IGNORECASE)
+    counsel_pat = re.compile('^counsel[:;]?', flags=re.IGNORECASE)
     for s in find_solicitors(soup) or []:
         if s not in full_citation and not counsel_pat.match(s):
             solicitor = soup.new_tag('solicitor')
@@ -1011,7 +1067,7 @@ def solicitors(soup):
 
 
 def find_solicitors(soup):
-    reg = re.compile(r'^solicitors?:?\W*', flags=re.IGNORECASE)
+    reg = re.compile(r'^solicitors?[:;]?\W*', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg, field=["footer-field", "intituling-field"])
     strings = []
     if start:
@@ -1164,7 +1220,6 @@ def find_versus(soup):
 def matters(soup):
     matter_pattern = re.compile('(and )?(in the matter of|in the estate of|under) ?', flags=re.IGNORECASE)
     next_qualifier = find_reg_el(soup, matter_pattern)
-    print next_qualifier
     results = []
     try:
         while matter_pattern.match(next_qualifier.text):
@@ -1172,14 +1227,13 @@ def matters(soup):
             qualifier = soup.new_tag('qualifier')
             value = soup.new_tag('value')
             text = re.sub(matter_pattern, '', next_qualifier.text)
-            print 'text ', text,next_qualifier.text
             if len(text):
                 qualifier.string = next_qualifier.text.replace(text, '')
                 value.string = text
                 next_qualifier = next_qualifier.next_sibling
             else:
                 qualifier.string = next_qualifier.text
-                segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
+                segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling, debug=True)
                 value.string = ' '.join(map(lambda x: x.text, segments))
                 next_qualifier = segments[-1].next_sibling
             matter.append(qualifier)
@@ -1200,7 +1254,9 @@ def generate_footer(soup):
     #    if not len(f.contents):
     #        f.decompose()
     # first footer page should always be FULL CITATION
-    for f in soup.find_all('footer-field')[1:]:
+    # remove firstpage
+    soup.find('footer-page').decompose()
+    for f in soup.find_all('footer-field'):
         if not soup.find('superscript'):
             continue
         footnote = soup.new_tag('footnote-text')
@@ -1223,8 +1279,6 @@ def generate_footer(soup):
 
 class NoText(Exception):
     pass
-
-
 
 
 def is_appeal(info):
