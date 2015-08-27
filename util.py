@@ -383,3 +383,10 @@ def format_govt_date(date):
         return '%s %s %s' % (date.day, months[date.month-1], date.year)
     return None
 
+def indexsplit(some_list, *args):
+    results = []
+    offset = 0
+    for arg in args:
+        results.append(some_list[offset:arg])
+        offset += arg
+    return results

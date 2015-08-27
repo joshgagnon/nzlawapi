@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 from bs4 import BeautifulSoup, element, NavigableString, Tag
 import os
@@ -26,11 +27,12 @@ from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
     LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal, LTComponent
 from pdfminer.utils import bbox2str, enc, apply_matrix_pt
 from pdfminer.pdffont import PDFCIDFont
+from util import indexsplit
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
 """ global regex """
-separator_reg = re.compile('^[_\.]{5,}$')
+separator_reg = re.compile('^[…_\.]{5,}$')
 
 
 
@@ -326,6 +328,10 @@ class DocState(object):
         if not self.max_width[1] or self.bbox[2] > self.max_width[1]:
             self.max_width[1] = self.bbox[2]
 
+        elif 'superscript' in self.style_stack:
+            self.close_style('superscript')
+            self.buffer.write(' ')
+
         if self.is_footer():
             self.switch_footer()
             self.open_tag('footer-page')
@@ -385,24 +391,24 @@ class DocState(object):
 
     def handle_style(self):
         if self.is_superscript():
-            self.open_tag('superscript')
+            self.open_style('superscript')
 
-        elif 'superscript' in self.tag_stack:
-            self.close_tag('superscript')
+        elif 'superscript' in self.style_stack:
+            self.close_style('superscript')
             self.buffer.write(' ')
 
-        if True:
-            if self.is_italic(self.font):
-                self.open_style('emphasis')
 
-            elif 'emphasis' in self.style_stack:
-                self.close_style('emphasis')
+        if self.is_italic(self.font):
+            self.open_style('emphasis')
 
-            if self.is_bold(self.font):
-                self.open_style('strong')
+        elif 'emphasis' in self.style_stack:
+            self.close_style('emphasis')
 
-            elif 'strong' in self.style_stack:
-                self.close_style('strong')
+        if self.is_bold(self.font):
+            self.open_style('strong')
+
+        elif 'strong' in self.style_stack:
+            self.close_style('strong')
 
         # guess that footer doesn't come first.  should instead maybe sample whole document
         if not self.calibrated and self.size:
@@ -742,6 +748,7 @@ def generate_body(soup):
             superscript.decompose()
             continue
         superscript.name = 'footnote'
+        print superscript.contents
         superscript.string = superscript.string.strip()
 
     remove_empty_nodes(body)
@@ -1054,7 +1061,7 @@ def find_received(soup):
 def solicitors(soup):
     solicitors = []
     full_citation = full_citation_lines(soup)
-    counsel_pat = re.compile('^counsel[:;]?', flags=re.IGNORECASE)
+    counsel_pat = re.compile('^(counsel|copy to)[:;]?', flags=re.IGNORECASE)
     for s in find_solicitors(soup) or []:
         if s not in full_citation and not counsel_pat.match(s):
             solicitor = soup.new_tag('solicitor')
@@ -1067,7 +1074,7 @@ def solicitors(soup):
 
 
 def find_solicitors(soup):
-    reg = re.compile(r'^solicitors?[:;]?\W*', flags=re.IGNORECASE)
+    reg = re.compile(r'^solicitors?(/counsel)?s?[:;]?\W*', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg, field=["footer-field", "intituling-field"])
     strings = []
     if start:
@@ -1201,7 +1208,10 @@ def find_parties(soup):
 
     while qualifier_pattern.match(next_qualifier.text):
         segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
-        add_persons(next_qualifier.text, segments)
+        """ Must also split on lines that aren't all caps """
+        splits = [i+1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
+        for seg in indexsplit(segments, *splits):
+            add_persons(next_qualifier.text, seg)
         next_qualifier = segments[-1].next_sibling
 
     return parties
@@ -1218,7 +1228,7 @@ def find_versus(soup):
 
 
 def matters(soup):
-    matter_pattern = re.compile('(and )?(in the matter of|in the estate of|under) ?', flags=re.IGNORECASE)
+    matter_pattern = re.compile('(and\s)?(in the matter|in the estate|under)(\sof)?\s?', flags=re.IGNORECASE)
     next_qualifier = find_reg_el(soup, matter_pattern)
     results = []
     try:

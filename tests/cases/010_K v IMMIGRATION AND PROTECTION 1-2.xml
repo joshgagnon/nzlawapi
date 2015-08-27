@@ -1,0 +1,94 @@
+<case>
+    <intituling>
+        <full-citation>K v IMMIGRATION AND PROTECTION TRIBUNAL [2014] NZHC 1800 [1 August 2014]</full-citation>
+        <court>IN THE HIGH COURT OF NEW ZEALAND</court>
+        <registry>AUCKLAND REGISTRY</registry>
+        <court-file>CIV-2013-404-003520</court-file>
+        <neutral-citation>[2014] NZHC 1800</neutral-citation>
+        <matter><qualifier>UNDER</qualifier>
+        <value>the Judicature Amendment Act 1972 and the Immigration Act 2009
+        </value>
+    </matter>
+        <matter><qualifier>IN THE MATTER</qualifier>
+        <value>of an application for leave to bring judicial review proceedings
+        </value>
+    	</matter>
+        <parties>
+        	<plantiffs>
+            <plantiff>
+                <qualifier>BETWEEN</qualifier>
+                <value>K</value>
+                <descriptor>Plaintiff</descriptor>
+            </plantiff>
+        </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier>AND</qualifier>
+                    <value>IMMIGRATION AND PROTECTION TRIBUNAL</value>
+                    <descriptor>First Defendant</descriptor>
+                </defendant>
+
+                <defendant>
+                    <qualifier>AND</qualifier>
+                    <value>CHIEF EXECUTIVE OF THE MINISTRY OF BUSINESS, INNOVATION AND EMPLOYMENT</value>
+                    <descriptor>Second Defendant</descriptor>
+              </defendant>
+            </defendants>
+        </parties>
+        <hearing>12 June 2014</hearing>
+        <counsel>Plaintiff in person</counsel>
+        <counsel>RE Savage for Defendants</counsel>
+        <judgment>1 August 2014</judgment>
+        <waistband>
+            <title>JUDGMENT OF ASHER J</title>
+        </waistband>
+        <solicitor>Meredith Connell, Auckland.</solicitor>
+    </intituling>
+
+    <body>
+        <title>Introduction</title>
+         <paragraph>
+            <label>1</label>
+            <text>The plaintiff who I will refer to as “K” applies for leave to judicially review a decision of the Immigration Protection Tribunal (IPT) dated 21 June 2013.<footnote>1</footnote> That decision dismissed an appeal against a decision of a Refugee and Protection Officer of the Refugee Status Branch (RSB) declining to grant refugee and protected person status to K.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>2</label>
+            <text>K is a Romanian citizen. He has a significant immigration history. He initially arrived in New Zealand on 12 November 2008. On 26 November 2008 he was sentenced by an appellate court in Romania to four years and two months’ imprisonment for his part in a fraudulent transaction in which a VAT refund of €120,000 was procured by a company in which he had an interest. On 2 December 2008 he applied for refugee status.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>3</label>
+            <text>His application was declined on 17 April 2009. There then followed a very lengthy history of court hearings or applications involving on my calculation no less than 44 steps in the Refugee Status Appeals Authority, High Court, Court of Appeal and Supreme Court. Total costs have been awarded against him of $19,663.83. They have not been paid.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>4</label>
+            <text>The plaintiff filed his appeal against the RSB’s decision on 20 April 2012. The IPT heard his appeal on 24 January 2013, and it was dismissed on 21 June 2013. On 17 July 2013 K filed this application for judicial review of the IPT’s decision.
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>5</label><text>K’s most recent work visa expired on 11 September 2013. The plaintiff would appear to be presently unlawfully in New Zealand.
+
+            </text>
+        </paragraph>
+         <paragraph>
+            <label>6</label>
+            <text>The plaintiff’s statement of claim in his application for leave to appeal on a point of law in summary alleges:</text>
+                <list>
+                    <entry>
+                        <label>a</label>
+                        <text>The IPT erred in law in its application of ss 130 and 131 of the Immigration Act 2009 (the Act) with reference to Article 7 of the International Covenant on Civil and Political Rights and the
+                        </text>
+                    </entry>
+                </list>
+        </paragraph>
+
+    </body>
+    <footer>
+        <footnote-text>
+            <key>1</key>
+            <text><emphasis>M v RSB</emphasis>[2013] NZIPT 800339.</text>
+        </footnote-text>
+    </footer>
+</case>
