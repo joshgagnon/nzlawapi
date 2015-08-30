@@ -3,7 +3,6 @@
         <full-citation>URS NEW ZEALAND LTD AND ANOR V THE DISTRICT COURT AT AUCKLAND AND ANOR HC AK CIV 2009-404-3054 10 June 2009</full-citation>
         <court>IN THE HIGH COURT OF NEW ZEALAND</court>
         <registry>AUCKLAND REGISTRY</registry>
-        <court-file>CIV 2009-404-3054</court-file>
 
         <matter>
                 <qualifier>UNDER</qualifier>
@@ -11,10 +10,11 @@
         </matter>
         <matter>
                 <qualifier>IN THE MATTER OF</qualifier>
-        		<value>an application for judicial review</value>
+                <value>an application for judicial review</value>
         </matter>
 
         <parties>
+        <court-file>CIV 2009-404-3054</court-file>
         	<plantiffs>
             <plantiff>
                 <qualifier>BETWEEN</qualifier>

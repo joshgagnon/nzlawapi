@@ -3,7 +3,6 @@
         <full-citation>K v IMMIGRATION AND PROTECTION TRIBUNAL [2014] NZHC 1800 [1 August 2014]</full-citation>
         <court>IN THE HIGH COURT OF NEW ZEALAND</court>
         <registry>AUCKLAND REGISTRY</registry>
-        <court-file>CIV-2013-404-003520</court-file>
         <neutral-citation>[2014] NZHC 1800</neutral-citation>
         <matter><qualifier>UNDER</qualifier>
         <value>the Judicature Amendment Act 1972 and the Immigration Act 2009
@@ -12,8 +11,9 @@
         <matter><qualifier>IN THE MATTER</qualifier>
         <value>of an application for leave to bring judicial review proceedings
         </value>
-    	</matter>
+        </matter>
         <parties>
+            <court-file>CIV-2013-404-003520</court-file>
         	<plantiffs>
             <plantiff>
                 <qualifier>BETWEEN</qualifier>

@@ -33,7 +33,16 @@ from util import indexsplit
 
 """ global regex """
 separator_reg = re.compile('^[…_\.]{5,}$')
-
+courtfile_variants = [
+    '(CA|SC|CIV|CIVP|CRI)[ :]?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
+    'T NO\. S\d{4,}',
+    '(S|T)\d{4,}',
+    'B \d+IM\d+',
+    '\d{2,}\/\d{2,}',
+    '\d{4}-\d{3}-\d{6}',
+    'AP \d{2}\/\d{4}']
+# TODO expand ranges
+courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
 
 
@@ -748,7 +757,6 @@ def generate_body(soup):
             superscript.decompose()
             continue
         superscript.name = 'footnote'
-        print superscript.contents
         superscript.string = superscript.string.strip()
 
     remove_empty_nodes(body)
@@ -787,7 +795,6 @@ def format_table(soup, el):
         eg  Introduction.......... 1
         or  The interface between 10 """
     for row in el.find_all('row'):
-        print row, len(row.contents) == 1, get_left(row), left, get_right(row), right
         if len(row.contents) == 1 and get_left(row) == left and get_right(row) == right:
             match = contents_split.match(row.contents[0].text)
             if not match:
@@ -886,12 +893,12 @@ def generate_intitular(soup):
                         el = soup.new_tag(name)
                         el.append(r)
                     intituling.append(el)
-        except AttributeError: pass
+        except AttributeError, e:
+            pass
 
     optional_section('full-citation', find_full_citation, intituling)
     optional_section('court', find_court, intituling)
     optional_section('registry', find_registry, intituling)
-    optional_section('court-file', find_court_file, intituling)
     optional_section('neutral-citation', find_neutral, intituling)
     optional_section(None, matters, intituling)
 
@@ -917,8 +924,6 @@ def full_citation_lines(soup):
     # must be first page
     fields = soup.find('footer-page').find_all('footer-field')
     strings = map(lambda x: x.text, fields)
-    court_file = find_court_file(soup)[0]
-
     #for i, s in enumerate(strings):
     #    if court_file in s:
     #        return strings[i:]
@@ -950,7 +955,7 @@ def find_reg_el(soup, reg, field='intituling-field'):
             return e
 
 
-def find_until(el, reg=None, use_position=True, forward=True, more_left=False, debug=False):
+def find_until(el, reg=None, use_left=True, forward=True, more_left=False, debug=False):
     results = []
     left = get_left(el)
     bold = get_bold(el)
@@ -961,7 +966,7 @@ def find_until(el, reg=None, use_position=True, forward=True, more_left=False, d
         return el.previous_sibling
 
     while direction(el) and not (reg and reg.match(direction(el).text)) and (
-        not use_position or get_left(direction(el)) == left) and get_bold(direction(el)) == bold and (
+        not use_left or get_left(direction(el)) == left) and get_bold(direction(el)) == bold and (
         not more_left or get_left(direction(el)) > left):
         results.append(direction(el))
         el = direction(el)
@@ -976,23 +981,20 @@ def find_court(soup):
 def find_registry(soup):
     court_reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?\W*$', flags=re.IGNORECASE)
     start = find_reg_el(soup, court_reg)
-    registry = find_until(start, None, use_position=True)
+    registry = find_until(start, None, use_left=True)
     if registry:
         return [registry[-1].text]
 
 
 def find_court_file(soup):
-    courtfile_variants = [
-        '(SC |CA )?(CA|SC|CIV|CIVP|CRI):?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
-        'T NO\. S\d{4,}',
-        '(S|T)\d{4,}',
-        'B \d+IM\d+',
-        '\d{2,}\/\d{2,}',
-        '\d{4}-\d{3}-\d{6}',
-        'AP \d{2}\/\d{4}']
+    return map(lambda x: x.text, soup.find_all('intituling-field', text=courtfile_num))
 
-    courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
-    return [find_reg_el(soup, courtfile_num).text]
+
+def court_file_before(soup, el):
+    while not courtfile_num.match(el.text):
+        el = el.previous_sibling
+    return el.text
+
 
 
 def find_neutral(soup):
@@ -1006,7 +1008,7 @@ def find_bench(soup):
     reg = re.compile(r'court[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
-        results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
+        results = [start] + find_until(start, re.compile('\w+:'), use_left=False)
         return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
@@ -1017,13 +1019,13 @@ def find_hearing(soup):
     start = find_reg_el(soup, reg)
     if start:
         more_left = False
-        use_position = True
+        use_left = True
         if re.sub(reg, '', start.text).strip():
-            use_position = False
+            use_left = False
             more_left = True
         else:
             start = start.next_sibling
-        results = [start] + find_until(start, re.compile('\w+:'), use_position=use_position, more_left=more_left)
+        results = [start] + find_until(start, re.compile('\w+:'), use_left=use_left, more_left=more_left)
         return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
@@ -1033,7 +1035,7 @@ def find_judgment(soup):
     reg = re.compile(r'(judgments?|sentences?d?)[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     if start:
-        results = [start] + find_until(start, re.compile('\w+:'), use_position=False)
+        results = [start] + find_until(start, re.compile('\w+:'), use_left=False)
         return [re.sub(reg, '', ' '.join(map(lambda x: x.text, results)))]
     else:
         return None
@@ -1048,7 +1050,7 @@ def find_plea(soup):
 def find_counsel(soup):
     reg = re.compile(r'(counsel|appearances)[:;]', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    results = [start]+ find_until(start, re.compile('\w+:'), use_position=False)
+    results = [start]+ find_until(start, re.compile('\w+:'), use_left=False)
     return filter(None, map(lambda x: re.sub(reg, '',  x.text.strip()), results))
 
 
@@ -1080,7 +1082,7 @@ def find_solicitors(soup):
     if start:
         if re.sub(reg, '', start.text):
             strings += [re.sub(reg, '', start.text)]
-        results = find_until(start, None, use_position=False)
+        results = find_until(start, None, use_left=False)
         strings += map(lambda x: x.text, results)
         strings = filter(lambda x: not x.startswith('('), strings)
         strings = filter(lambda x: x, strings)
@@ -1119,7 +1121,7 @@ def find_waistband(soup):
     # TODO, italics etc
     reg = re.compile(r'^(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    parts = [start]+ find_until(start, None, use_position=False)
+    parts = [start]+ find_until(start, use_left=False)
     parts = filter(None, map(lambda x: x.text, parts))
     entries = []
     entry = {'text': ''}
@@ -1142,9 +1144,12 @@ def find_waistband(soup):
 
 
 def parties(soup):
+
+    courtfile = soup.new_tag('court-file')
     parties = soup.new_tag('parties')
     plantiffs = soup.new_tag('plantiffs')
     defendants = soup.new_tag('defendants')
+    parties.append(courtfile)
     parties.append(plantiffs)
     parties.append(defendants)
 
@@ -1168,6 +1173,8 @@ def parties(soup):
     except AttributeError, e:
         party_dict = find_versus(soup)
 
+    courtfile.string = party_dict['court-file']
+
     for p in party_dict['plantiffs']:
         plantiffs.append(party(p, 'plantiff'))
 
@@ -1185,8 +1192,9 @@ def parties(soup):
 
 qualifier_pattern = re.compile('(and between|and|between)', flags=re.IGNORECASE)
 
+
 def find_parties(soup):
-    parties = {'plantiffs': [], 'defendants': [], 'thirdparties': []}
+    parties = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
 
     def add_persons(qualifier, column):
         name = ' '.join(map(lambda x: x.text, column[:-1]))
@@ -1203,8 +1211,9 @@ def find_parties(soup):
             })
     plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
     thirdparty_pattern = re.compile('.*Third [Pp]art(y|ies)')
-    #join_pattern = re.compile('and', flags=re.IGNORECASE)
     next_qualifier = find_reg_el(soup, qualifier_pattern)
+
+    parties['court-file'] = court_file_before(soup, next_qualifier)
 
     while qualifier_pattern.match(next_qualifier.text):
         segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
@@ -1222,7 +1231,8 @@ def find_versus(soup):
     parties = {
         'plantiffs': [{'value': start.previous_sibling.string}]
     }
-    defendants = [start.next_sibling] + find_until(start.next_sibling, use_position=False)
+    parties['court-file'] = court_file_before(soup, start.previous_sibling)
+    defendants = [start.next_sibling] + find_until(start.next_sibling, use_left=False)
     parties['defendants'] = [{'value': ' '.join(map(lambda x: x.text, defendants))}]
     return parties
 
