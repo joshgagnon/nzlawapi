@@ -1100,58 +1100,45 @@ def find_solicitors(soup):
 
 
 def waistband(soup):
-    waistband_dict = find_waistband(soup)
-    waistband = soup.new_tag('waistband')
-    title = soup.new_tag('title')
-    title.string = waistband_dict['title']
-    waistband.append(title)
-
-    if 'list' in waistband_dict:
-        waistband_list = soup.new_tag('list')
-        waistband.append(waistband_list)
-        for e in waistband_dict['list']:
-            entry = soup.new_tag('entry')
-            label = soup.new_tag('label')
-            label.string = e['label']
-            text = soup.new_tag('text')
-            text.string= e['text']
-            entry.append(label)
-            entry.append(text)
-            waistband_list.append(entry)
-    else:
-        text = soup.new_tag('text')
-        if waistband_dict['text']:
-            text.string= waistband_dict['text']
-            waistband.append(text)
-
-    return waistband
-
-
-def find_waistband(soup):
-    # TODO, italics etc
+    # find all waistband rows
     reg = re.compile(r'^(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
-    parts = [start]+ find_until(start, use_left=False)
+    parts = find_until(start, use_left=False)
     parts = filter(lambda x: x.text, parts)
-    entries = []
-    entry = {'text': ''}
-    # for now assume alphabetical list
-    char = 'A'
-    line = ''
-    for p in parts[1:]:
 
-        p = p.text.strip()
-        if re.match('%s($|\s)' % char, p):
-            entry = {'label': char, 'text':  p[2:]}
-            entries.append(entry)
-            char = chr(ord(char) + 1)
-        elif not separator_reg.match(p):
-           entry['text'] += ' ' + p
-    if len(entries) == 0:
-        result = {'title': parts[0].text, 'text': entry['text']}
-    else:
-        result = {'title': parts[0].text, 'list': entries}
-    return result
+    waistband = soup.new_tag('waistband')
+    title = soup.new_tag('title')
+    title.string = start.text
+    waistband.append(title)
+
+    counter = 'A'
+    for part in parts:
+        text = part.text.strip()
+        if part.find('underline'):
+            subtitle = soup.new_tag('subtitle')
+            subtitle.string = text
+            waistband.append(subtitle)
+        elif separator_reg.match(text):
+            continue
+        elif re.match('%s($|\s)' % counter, text):
+            if waistband.contents[-1].name != 'list':
+                waistband.append(soup.new_tag('list'))
+            entry = soup.new_tag('entry')
+            label = soup.new_tag('label')
+            label.string = counter
+            text_el = soup.new_tag('text')
+            text_el.string = text[2:]
+            entry.append(label)
+            entry.append(text_el)
+            waistband.contents[-1].append(entry)
+            counter = chr(ord(counter) + 1)
+        else:
+            if not waistband.find('text'):
+                text_el = soup.new_tag('text')
+                waistband.append(text_el)
+            waistband.find_all('text')[-1].append(' '+text)
+
+    return waistband
 
 
 def parties(soup):
