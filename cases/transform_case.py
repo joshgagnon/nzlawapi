@@ -48,10 +48,16 @@ courtfile_variants = [
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
 
 
+def extend_el(source, dest):
+    for c in source.contents[:]:
+        dest.append(c)
+    source.decompose()
+    return dest
+
 
 """ force horizontal lines """
 def find_neighbors (self, plane, ratio):
-    objs = plane.find((self.x0-1000, self.y0+2, self.x1+1000, self.y1-2))
+    objs = plane.find((self.x0-1000, self.y0+3, self.x1+1000, self.y1-3))
     objs = [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal))]
     return objs
@@ -106,8 +112,20 @@ def init_char(self, matrix, font, fontsize, scaling, rise,
 LTChar.__init__ = init_char
 
 
-Match = namedtuple('Match', 'string open close tests')
+class Match(object):
+    def __init__(self, string, open, close, tests, post_action=None):
+        self.string = string
+        self.open = open
+        self.close = close
+        self.tests = tests
+        self.post_action = post_action
 
+
+class Not(object):
+    def __init__(self, test):
+        self.test = test
+    def __repr__(self):
+        return self.test
 
 class DocStateMachine(object):
     def __init__(self, inputs, doc):
@@ -116,16 +134,22 @@ class DocStateMachine(object):
         self.doc = doc
 
     def step(self, char):
+        def do_test(test):
+            result = getattr(self.doc, str(t))()
+            return not result if isinstance(t, Not) else result
+
         for i in xrange(len(self.inputs)):
             if self.inputs[i].string[self.positions[i]] == char:
                 self.positions[i] += 1
                 if len(self.inputs[i].string) == self.positions[i]:
                     self.positions[i] = 0
-                    if all([getattr(self.doc, t)() for t in self.inputs[i].tests]):
+                    if all([do_test(t) for t in self.inputs[i].tests]):
                         if self.inputs[i].close:
                             self.doc.close_tag(self.inputs[i].close, flush=False)
                         if self.inputs[i].open:
                             self.doc.open_tag(self.inputs[i].open, flush=False)
+                        if self.inputs[i].post_action:
+                            self.inputs[i].post_action(self.doc)
             else:
                 self.positions[i] = 0
 
@@ -141,13 +165,44 @@ def dist(r1, r2):
     return 0
 
 
+
+
+def close_entry(doc):
+    doc.close_tag('entry')
+    doc.open_tag('entry')
+
+
 RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Para No', open='table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
     Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
+    Match(string='[', open='table,row,entry', close='paragraph,intituling', tests=['is_right_aligned', 'is_body', Not('is_table')], post_action=close_entry),
 ]
+
+THRESHOLDS = {
+        # train these numbers
+    'paragraph_vertical_threshold': 15,
+    'quote_vertical_threshold': 10,
+    'list_vertical_threshold': 12,
+    'table_vertical_threshold': 15,
+    'footer': 100,
+    'footer_size': 10,
+    'quote': 140,
+    'quote_size': 12.0,
+    'superscript': 10.0,
+    'superscript_offset': 2.2,
+    'line_tolerance': 4.0,
+    'column_gap': 100,
+    'indent_threshold': 10.0,
+    'right_align_thresholds': [280, 480],
+    'left_align_thresholds': [160],
+    'center_align_thresholds': [250, 400],
+    'paragraph_early_newline': 16,
+    'top_of_page': 730,
+    'table_column_overflow': 200
+}
 
 
 class DocState(object):
@@ -172,26 +227,7 @@ class DocState(object):
     last_char = None
     max_width = [None, None]
 
-    # train these numbers
-    thresholds = {
-        'paragraph_vertical_threshold': 15,
-        'quote_vertical_threshold': 10,
-        'list_vertical_threshold': 12,
-        'table_vertical_threshold': 20,
-        'footer': 100,
-        'footer_size': 10,
-        'quote': 140,
-        'quote_size': 12.0,
-        'superscript': 10.0,
-        'superscript_offset': 2.2,
-        'line_tolerance': 4.0,
-        'column_gap': 100,
-        'indent_threshold': 10.0,
-        'right_align_thresholds': [280, 480],
-        'left_align_thresholds': [160],
-        'center_align_thresholds': [250, 400],
-        'paragraph_early_newline': 16
-    }
+
 
     def __init__(self):
         self.state = DocStateMachine(RULES, self)
@@ -209,6 +245,7 @@ class DocState(object):
         self.open_tag('intituling')
         self.font = None
         self.unknown_font = False
+        self.thresholds = copy.deepcopy(THRESHOLDS)
 
     def para_threshold(self, threshold_key='paragraph_vertical_threshold'):
         (prev_bbox, bbox) = (self.prev_line_bbox, self.line_bbox)
@@ -265,12 +302,12 @@ class DocState(object):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
                 if t in ['paragraph', 'intituling-field', 'row', 'entry', 'indent'] and self.bbox:
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" unknown-font="%s"' %
-                          (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3],
+                    bbox = self.bbox if t in ['intituling-field', 'entry'] else self.line_bbox
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s"' %
+                          (bbox[0], bbox[1], bbox[2], bbox[3],
                             '1' if self.is_italic(self.font) else '0',
                             '1' if self.is_bold(self.font) else '0',
-                            '1' if self.is_center_aligned() else '0',
-                            '1' if self.unknown_font else '0'
+                            '1' if self.is_center_aligned() else '0'
                             ))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
@@ -488,9 +525,10 @@ class DocState(object):
 
     def is_header(self, bbox=None):
         bbox = bbox or self.bbox
+        """ headers can be center and bold, or left and bold if they are vertically far enough away """
         if self.is_center_aligned(bbox) and self.is_bold():
             return True
-        if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['center_align_thresholds'][1] and self.is_bold():
+        if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['center_align_thresholds'][1] and self.is_bold() and self.para_threshold('table_vertical_threshold'):
             return True
 
     def switch_footer(self):
@@ -527,8 +565,8 @@ class DocState(object):
         if self.has_new_chunk:
             self.handle_new_chunk()
         self.handle_style()
-        self.buffer.write(enc(text, 'utf-8'))
         self.state.step(enc(text, 'utf-8'))
+        self.buffer.write(enc(text, 'utf-8'))
         self.last_char = text
         return
 
@@ -695,10 +733,11 @@ def generate_body(soup):
 
 
 
+
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
-        if paragraph.name == 'table':
-            format_table(soup, paragraph)
+        if paragraph.name in ['table']:
+            pass
         # If a number, then a new paragraph
         elif number:
             first = paragraph.strings.next()
@@ -716,6 +755,8 @@ def generate_body(soup):
             paragraph.name = 'title'
             if len(paragraph.contents) and not isinstance(paragraph.contents[0], NavigableString):
                 paragraph.contents[0].unwrap()
+            if paragraph.is_empty_element:
+                paragraph.decompose()
         elif paragraph.text and brackets_reg.match(paragraph.text) and paragraph.attrs['center'] == '1':
             paragraph.name = 'subtitle'
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
@@ -728,10 +769,10 @@ def generate_body(soup):
             paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
                 paragraph.previous_sibling.append(child)
-            paragraph.decompose()
-        if paragraph.attrs:
-            for k in paragraph.attrs.keys():
-                del paragraph[k]
+
+
+
+    format_tables(soup)
 
     for paragraph in body.find_all('paragraph', recursive=False):
         # next, wrap everything thats not quotes or emphasis in text element
@@ -750,8 +791,11 @@ def generate_body(soup):
         if len(current.contents):
             children.append(current)
         paragraph.clear()
+        paragraph.attrs = {}
         for child in children:
             paragraph.append(child)
+
+
 
     for superscript in body.find_all('superscript'):
         if not len(superscript.contents):
@@ -760,39 +804,51 @@ def generate_body(soup):
         superscript.name = 'footnote'
         superscript.string = superscript.string.strip()
 
+
+    for content in body.contents:
+        content.attrs = {}
+
     remove_empty_nodes(body)
 
     return body
 
-
 def format_table(soup, el):
     contents_reg = re.compile('^\W*(Para No|Table of Contents)\W*$')
     matches = el.find_all(text=contents_reg)
+
     if matches:
         el.wrap(soup.new_tag('contents'))
         for m in matches:
             m.extract()
-    """ unwrap method need to be generalized """
-    for strong in el.find_all('strong'):
+    else:
+        if el.find('entry', text=re.compile('^\[\d+\]$')):
+            el.wrap(soup.new_tag('contents'))
+
+    """ unwrap method need to be generalized, use this version """
+    for strong in el.find_all(['strong', 'emphasis']):
         parent = strong.parent
+        if not parent:
+            continue
         strong.unwrap()
+
         if parent.name == 'entry' and len(parent.contents) > 1:
             i = len(parent.contents)-2
             for c in parent.contents[1:][::-1]:
                 if isinstance(c, NavigableString) and isinstance(parent.contents[i], NavigableString):
-                    parent.contents[i].replace_with('%s %s' % (parent.contents[i],  c))
+                    parent.contents[i].replace_with('%s%s' % (parent.contents[i], c))
+                    c.extract()
                 i -= 1
-                #c.replace_with('')
-                c.extract()
+
+
 
 
     """ get size limits """
-    left = min(get_left(x) for x in el.find_all('entry'))
-    right = max(get_right(x) for x in el.find_all('entry'))
+    left = min(get_left(x) for x in el.find_all('entry') if get_left(x))
+    right = max(get_right(x) for x in el.find_all('entry') if get_right(x))
 
-    contents_split = re.compile('^(.*?)(\.*)\s\[?(\d+)\]?\s?$')
+    contents_split = re.compile('^(.*?)(\.*)\s(\[?\d+\]?)\s?$')
 
-    """ find cases where there is no columns but a single line,
+    """ Find cases where there is no columns but a single line,
         eg  Introduction.......... 1
         or  The interface between 10 """
     for row in el.find_all('row'):
@@ -805,16 +861,51 @@ def format_table(soup, el):
             entry.append(match.group(3))
             row.append(entry)
 
+    """ Find case of a row not ending with a number and not finding a previous
+        row join.
 
-    # if a row has only 1 entry, put it on previous
+        example:
+            The relationship between the parens patriae jurisdiction  45
+            and the PPPRA jurisdiction
+
+            vs
+
+            The relationship between the parens patriae jurisdiction
+            and the PPPRA jurisdiction                                45
+
+        Not perfect by a long shot but all I can think of at the moment
+    """
+    forward = False
+
+    def direction(el):
+        if forward:
+            return el.next_sibling
+        return el.previous_sibling
+
     for row in el.find_all('row'):
-        if len(row.contents) == 1 and row.previous_sibling and get_left(row) == get_left(row.next_sibling):
-            next_sibling = row.next_sibling.find('entry')
-            if not next_sibling:
+        if len(row.contents) == 1 and not row.contents[0].is_empty_element and (
+            not direction(row) or get_left(row) != get_left(direction(row))):
+            forward = True
+            break
+
+
+    # if a row has only 1 entry, put it on next or previous
+    for row in el.find_all('row'):
+        if len(row.contents) == 1  and direction(row) and get_left(row) == get_left(direction(row)):
+            sibling = direction(row).find('entry')
+            if not sibling:
+                continue
+            if forward and get_width(row) < THRESHOLDS['table_column_overflow']:
+                continue
+            elif not forward and get_width(sibling) < THRESHOLDS['table_column_overflow']:
                 continue
             for e in row.contents[0].contents[::-1]:
-                next_sibling.insert(0, e)
-                next_sibling.insert(0, ' ')
+                if forward:
+                    sibling.insert(0, ' ')
+                    sibling.insert(0, e)
+                else:
+                    sibling.append(' ')
+                    sibling.append(e)
             row.decompose()
 
 
@@ -827,12 +918,32 @@ def format_table(soup, el):
         if row.is_empty_element:
             row.decompose()
 
-    left_margin = get_left(el.find('row'))
-
     for row in el.find_all('row'):
-        if get_left(row) > left_margin:
-            row.decompose()
+        this_left = get_left(row)
         row.attrs = {}
+        if this_left > left or row.contents[0].renderContents().startswith(' '):
+            row.attrs['minor'] = "true"
+
+
+def format_tables(soup):
+    """ The first pass is very conservative about joining things between different pages,
+        so for now we will assume that a heading between two tables at the top of a page
+        is just a row in that table. maybe. """
+
+    for title in soup.find_all('title'):
+        if (title.previous_sibling and title.previous_sibling.name == 'table' and
+            title.next_sibling and title.next_sibling.name == 'table') and get_top(title) > THRESHOLDS['top_of_page']:
+            row = soup.new_tag('row')
+            row.attrs = title.attrs
+            prev = title.previous_sibling
+            next_sibling = title.next_sibling
+            row.append(extend_el(title, soup.new_tag('entry')))
+            prev.append(row)
+            extend_el(next_sibling, prev)
+
+    for el in soup.find_all('table')[:]:
+        format_table(soup, el)
+
 
 
 def format_indents(soup):
@@ -952,8 +1063,14 @@ def find_full_citation(soup):
 def get_left(el):
     return float(el.attrs.get('left', 0))
 
+def get_top(el):
+    return float(el.attrs.get('top', 0))
+
 def get_right(el):
     return float(el.attrs.get('right', 0))
+
+def get_width(el):
+    return get_right(el) - get_left(el)
 
 def get_bold(el):
     return el.attrs.get('bold')

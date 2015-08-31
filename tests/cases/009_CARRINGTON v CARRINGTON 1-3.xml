@@ -5,20 +5,19 @@
         <registry>AUCKLAND REGISTRY</registry>
         <neutral-citation>[2014] NZHC 869</neutral-citation>
         <matter>
-                <qualifier>IN THE MATTER OF</qualifier>
-                <value>the Declaratory Judgments Act 1908, declarations at common law and orders under the inherent jurisdiction of the High Court that are analagous to orders under the Protection of Personal and Property Rights Act 1988.
-                </value>
-
+            <qualifier>IN THE MATTER OF</qualifier>
+            <value>the Declaratory Judgments Act 1908, declarations at common law and orders under the inherent jurisdiction of the High Court that are analagous to orders under the Protection of Personal and Property Rights Act 1988.
+            </value>
         </matter>
         <parties>
-        <court-file>CIV-2011-404-3775</court-file>
-        	<plantiffs>
-            <plantiff>
-                <qualifier>BETWEEN</qualifier>
-                <value>YVONNE CARRINGTON</value>
-                <descriptor>Applicant</descriptor>
-            </plantiff>
-        </plantiffs>
+            <court-file>CIV-2011-404-3775</court-file>
+            <plantiffs>
+                <plantiff>
+                    <qualifier>BETWEEN</qualifier>
+                    <value>YVONNE CARRINGTON</value>
+                    <descriptor>Applicant</descriptor>
+                </plantiff>
+            </plantiffs>
             <defendants>
                 <defendant>
                     <qualifier>AND</qualifier>
@@ -33,7 +32,7 @@
         <counsel>K Davenport QC for Interested Party A</counsel>
         <counsel>R B Stewart QC and B Tompkins for Interested Parties B and C</counsel>
         <counsel>M Sandelin for Respondent's Property Manager
-</counsel>
+        </counsel>
         <judgment>30 April 2014</judgment>
         <waistband>
             <title>JUDGMENT OF KATZ J</title>
@@ -45,32 +44,123 @@
     </intituling>
 
     <body>
-    <contents>
-    <table>
-        <row><entry>Introduction</entry><entry>1</entry></row>
-        <row><entry>Background and overview of issues</entry><entry>3</entry></row>
-        <row><entry>The High Court’s parens patriae jurisdiction</entry><entry>10</entry></row>
-        <row><entry>The Declaratory Judgments Act 1908</entry><entry>20</entry></row>
-        <row><entry>The Family Court’s jurisdiction under the PPPRA</entry><entry>22</entry></row>
-        <row><entry>The interface between the jurisdiction of the High Court and Family Court</entry><entry>30</entry></row>
-        <row><entry>Orders and declarations sought in relation to enduring powers of attorney</entry><entry>62</entry></row>
-        <row><entry>Orders and declarations sought regarding Mr Carrington’s will</entry><entry>72</entry></row>
-        <row><entry>Declarations sought in relation to whether Mr Carrington had capacity in 2011 to bring proceedings in the Family Court</entry><entry>96</entry></row>
-        <row><entry>Confidentiality and suppression orders</entry><entry>101</entry></row>
-        <row><entry>Summary and conclusion</entry><entry>102</entry></row>
-        <row><entry>Result</entry><entry>107</entry></row>
-    </table>
-    </contents>
+        <contents>
+            <table>
+                <row>
+                    <entry>Introduction</entry>
+                    <entry>1</entry>
+                </row>
+                <row>
+                    <entry>Background and overview of issues</entry>
+                    <entry>3</entry>
+                </row>
+                <row>
+                    <entry>The High Court’s parens patriae jurisdiction</entry>
+                    <entry>10</entry>
+                </row>
+                <row minor="true">
+                    <entry>Historical origins and current status of the jurisdiction - England</entry>
+                    <entry>10</entry>
+                </row>
+                <row minor="true">
+                    <entry>The parens patriae jurisdiction in New Zealand</entry>
+                    <entry>15</entry>
+                </row>
+                <row minor="true">
+                    <entry>The scope of the jurisdiction</entry>
+                    <entry>18</entry>
+                </row>
+                <row>
+                    <entry>The Declaratory Judgments Act 1908</entry>
+                    <entry>20</entry>
+                </row>
+                <row>
+                    <entry>The Family Court’s jurisdiction under the PPPRA</entry>
+                    <entry>22</entry>
+                </row>
+                <row minor="true">
+                    <entry>Overview of the PPPRA</entry>
+                    <entry>22</entry>
+                </row>
+                <row minor="true">
+                    <entry>Provisions relating to wills</entry>
+                    <entry>25</entry>
+                </row>
+                <row minor="true">
+                    <entry>Enduring powers of attorney</entry>
+                    <entry>28</entry>
+                </row>
+                <row>
+                    <entry>The interface between the jurisdiction of the High Court and Family Court</entry>
+                    <entry>30</entry>
+                </row>
+                <row minor="true">
+                    <entry>The key issue</entry>
+                    <entry>30</entry>
+                </row>
+                <row minor="true">
+                    <entry>The relationship between the Declaratory Judgments Act and the PPPRA</entry>
+                    <entry>31</entry>
+                </row>
+                <row minor="true">
+                    <entry>Can the Declaratory Judgments Act jurisdiction be invoked where there are significant factual disputes?</entry>
+                    <entry>39</entry>
+                </row>
+                <row minor="true">
+                    <entry>The relationship between the parens patriae jurisdiction and the PPPRA jurisdiction</entry>
+                    <entry>45</entry>
+                </row>
 
+                <row>
+                    <entry>Orders and declarations sought in relation to enduring powers of attorney</entry>
+                    <entry>62</entry>
+                </row>
+                <row>
+                    <entry>Orders and declarations sought regarding Mr Carrington’s will</entry>
+                    <entry>72</entry>
+                </row>
+                <row minor="true">
+                    <entry>
+                        Does the Declaratory Judgments Act provide jurisdiction to determine the validity of the will of a living will-maker?</entry>
+                    <entry>76</entry>
+                </row>
+                <row minor="true">
+                    <entry>Can the High Court determine the validity of the will of a living will-maker in its parens patriae jurisdiction?</entry>
+                    <entry>90</entry>
+                </row>
+                <row minor="true">
+                    <entry>Order sought in relation to evidence in potential future proceedings regarding Mr Carrington’s will</entry>
+                    <entry>93</entry>
+                </row>
+                <row>
+                    <entry>Declarations sought in relation to whether Mr Carrington had capacity in 2011 to bring proceedings in the Family Court</entry>
+                    <entry>96</entry>
+                </row>
+                <row>
+                    <entry>Confidentiality and suppression orders</entry>
+                    <entry>101</entry>
+                </row>
+                <row>
+                    <entry>Summary and conclusion</entry>
+                    <entry>102</entry>
+                </row>
+                <row>
+                    <entry>Result</entry>
+                    <entry>107</entry>
+                </row>
+            </table>
+        </contents>
         <title>Introduction</title>
-         <paragraph>
+        <paragraph>
             <label>1</label>
-            <text>Mrs Carrington claims in these proceedings that her estranged husband, Mr Carrington,<footnote>1</footnote> was unduly influenced to change his will and enduring powers of attorney in May 2011, at a time when he lacked mental capacity to do so. She seeks orders and declarations that Mr Carrington’s new will and powers of attorney are invalid, together with a declaration that he lacked mental capacity to file proceedings in the Family Court in 2011 seeking dissolution of marriage and a division of relationship property.
+            <text>Mrs Carrington claims in these proceedings that her estranged husband, Mr Carrington,
+                <footnote>1</footnote> was unduly influenced to change his will and enduring powers of attorney in May 2011, at a time when he lacked mental capacity to do so. She seeks orders and declarations that Mr Carrington’s new will and powers of attorney are invalid, together with a declaration that he lacked mental capacity to file proceedings in the Family Court in 2011 seeking dissolution of marriage and a division of relationship property.
             </text>
         </paragraph>
         <paragraph>
             <label>2</label>
-            <text>Mr Carrington has applied to strike out Mrs Carrington’s proceedings.<footnote>2</footnote> He says that this Court has no jurisdiction to make the various orders and declarations sought and, further, that the proceedings are an abuse of process. In particular, counsel for Mr Carrington submitted that bringing proceedings in this Court was a “cynical attempt” to circumvent the jurisdiction of the Family Court under the Protection of Property and Personal Rights Act 1988 (“PPPRA”). To the extent that these proceedings raise issues that are justiciable at all, Mr Carrington says that the proper forum for them is the Family Court.
+            <text>Mr Carrington has applied to strike out Mrs Carrington’s proceedings.
+                <footnote>2</footnote> He says that this Court has no jurisdiction to make the various orders and declarations sought and, further, that the proceedings are an abuse of process. In particular, counsel for Mr Carrington submitted that bringing proceedings in this Court was a “cynical attempt” to circumvent the jurisdiction of the Family Court under the Protection of Property and Personal Rights Act 1988 (“PPPRA”). To the extent that these proceedings raise issues that are justiciable at all, Mr Carrington says that the proper forum for them is the Family Court.
             </text>
         </paragraph>
         <title>Background and overview of issues</title>
@@ -84,9 +174,10 @@
             <text>In 2011, however, things changed. Mr Carrington revoked the powers of attorney he had granted in favour of Mrs Carrington and appointed new attorneys. He executed a new will. He also applied to the Family Court for dissolution of marriage and a division of relationship property.
             </text>
         </paragraph>
-         <paragraph>
+        <paragraph>
             <label>5</label>
-            <text>Mrs Carrington claims that Mr Carrington, who is elderly, lacked the necessary mental capacity to undertake these actions. She says that they were undertaken as a consequence of Mr Carrington being subjected to undue influence by one of his adult children. As a result, Mrs Carrington filed an originating application in this Court in June 2011. The second amended originating application seeks declarations under “the Declaratory Judgments Act 1908, declarations at common law, and orders under the inherent jurisdiction of the High Court that are <emphasis>analogous</emphasis> to orders under the [PPPRA]” (emphasis added).
+            <text>Mrs Carrington claims that Mr Carrington, who is elderly, lacked the necessary mental capacity to undertake these actions. She says that they were undertaken as a consequence of Mr Carrington being subjected to undue influence by one of his adult children. As a result, Mrs Carrington filed an originating application in this Court in June 2011. The second amended originating application seeks declarations under “the Declaratory Judgments Act 1908, declarations at common law, and orders under the inherent jurisdiction of the High Court that are
+                <emphasis>analogous</emphasis> to orders under the [PPPRA]” (emphasis added).
             </text>
         </paragraph>
     </body>

@@ -1,104 +1,247 @@
 <case>
-<intituling>
-<full-citation>BLACK V ASB BANK LIMITED COA CA398/2011 [24 August 2012]</full-citation>
-<court>IN THE COURT OF APPEAL OF NEW ZEALAND</court>
-<neutral-citation>[2012] NZCA 384</neutral-citation>
-<parties>
-<court-file>CA398/2011</court-file>
-	<plantiffs>
-		<plantiff>
-			<qualifier>BETWEEN</qualifier>
-			<value>RICHARD JOHN CARSON BLACK</value>
-			<descriptor>Appellant</descriptor>
-		</plantiff>
-	</plantiffs>
-	<defendants>
-	<defendant>
-	<qualifier>AND</qualifier>
-	<value>ASB BANK LIMITED</value>
-	<descriptor>Respondent</descriptor>
-	</defendant>
-	</defendants>
-</parties>
-<hearing>23 July 2012</hearing>
-<counsel>M C Black for Appellant</counsel>
-<counsel>M V Robinson and E C Gellert for Respondent</counsel>
-<bench>Randerson, Wild and Venning JJ</bench>
-<judgment>24 August 2012 at 2.30 pm</judgment>
-<waistband>
-<title>JUDGMENT OF THE COURT</title>
-<list>
-	<entry>
-	<label>A</label>
-	<text>The appeal is dismissed.</text>
-	</entry>
-	<entry>
-	<label>B</label>
-	<text>The appellant is to indemnify the respondent for its actual costs reasonably incurred in respect of this appeal plus usual disbursements.</text>
-	</entry>
-</list>
-</waistband>
-</intituling>
-<body>
-	<title>REASONS OF THE COURT</title>
-	<subtitle>(Given by Wild J)</subtitle>
-	<contents>
-	<table>
-		<row><entry>Introduction</entry><entry>[1]</entry></row>
-		<row><entry>Factual background</entry><entry>[11]</entry></row>
-		<row><entry>The issues</entry><entry>[28]</entry></row>
-		<row><entry>Result</entry><entry>[109]</entry></row>
-	</table>
-	</contents>
-	<title>Introduction</title>
-	<paragraph><label>1</label><text>This appeal results from the business failure of a company called Deli Ca Sea Wholesale Limited (Deli). The respondent (the ASB) held securities from Deli and from two family trusts which owned Deli. The trusts were associated with the two directors of Deli, the appellant Mr Richard Black and Mr Peter Osborne. The trusts are the Black Family Trust (the BFT) and the Osborne Family Trust (the OFT) respectively. The trustees of the two family trusts (including Mr Black and Mr Osborne) also provided personal guarantees to the ASB.</text></paragraph>
-	<paragraph><label>2</label><text>The ASB was owed substantial sums by Deli as well as by Mr and Mrs Black, and Mr and Mrs Osborne, for their personal borrowings. The OFT trustees voluntarily sold the property they owned which was secured to the ASB and paid the sale proceeds to the ASB. The ASB applied most of those monies to repay the Osbornes personal borrowings. The BFT trustees then sold their property, also secured to the ASB, and accounted to the ASB for the proceeds. The ASB applied these monies first to discharge the whole of Deli’s indebtedness. Mr Black raised two principal objections to this. First, he maintained that the BFT trustees’ personal guarantee was limited to $300,000. Secondly, he argued that the proceeds of sale of the property owned by the OFT should first have been applied in payment of Deli’s indebtedness rather than to the Osbornes’ personal borrowings.</text></paragraph>
-	<paragraph><label>3</label><text>Mr Black issued a proceeding seeking by way of summary judgment a declaration that the BFT trustees’ personal guarantee and an associated mortgage were limited to $300,000, and a declaration as to the correct application of the proceeds of sale of the two mortgaged properties. The ASB responded by seeking summary judgment against Mr Black on all the causes of action in his statement of claim or, alternatively, an order striking out those claims.<footnote>1</footnote> </text></paragraph>
-	<paragraph><label>4</label><text>The appellant, Mr Black, appeals against two judgments of Associate Judge Bell. In the first judgment, delivered on 8 July 2011, the Judge dismissed Mr Black’s application for summary judgment against the ASB, but granted the ASB’s application for summary judgment against Mr Black.<footnote>2</footnote></text></paragraph>
+    <intituling>
+        <full-citation>BLACK V ASB BANK LIMITED COA CA398/2011 [24 August 2012]</full-citation>
+        <court>IN THE COURT OF APPEAL OF NEW ZEALAND</court>
+        <neutral-citation>[2012] NZCA 384</neutral-citation>
+        <parties>
+            <court-file>CA398/2011</court-file>
+            <plantiffs>
+                <plantiff>
+                    <qualifier>BETWEEN</qualifier>
+                    <value>RICHARD JOHN CARSON BLACK</value>
+                    <descriptor>Appellant</descriptor>
+                </plantiff>
+            </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier>AND</qualifier>
+                    <value>ASB BANK LIMITED</value>
+                    <descriptor>Respondent</descriptor>
+                </defendant>
+            </defendants>
+        </parties>
+        <hearing>23 July 2012</hearing>
+        <counsel>M C Black for Appellant</counsel>
+        <counsel>M V Robinson and E C Gellert for Respondent</counsel>
+        <bench>Randerson, Wild and Venning JJ</bench>
+        <judgment>24 August 2012 at 2.30 pm</judgment>
+        <waistband>
+            <title>JUDGMENT OF THE COURT</title>
+            <list>
+                <entry>
+                    <label>A</label>
+                    <text>The appeal is dismissed.</text>
+                </entry>
+                <entry>
+                    <label>B</label>
+                    <text>The appellant is to indemnify the respondent for its actual costs reasonably incurred in respect of this appeal plus usual disbursements.</text>
+                </entry>
+            </list>
+        </waistband>
+    </intituling>
 
-	<paragraph><label>5</label><text>Mr Black had applied for summary judgment in his capacity as one of the trustees of the BFT. Essentially, he sought summary judgment that the liability of the BFT trustees to the ASB under the securities they had given the ASB was:</text>
-		<list>
-<entry><label>a</label><text>“expressly limited to $300,000”;<footnote>3</footnote> and</text></entry>
-<entry><label>b</label><text>reduced by the $300,000 it received from the sale of the OFT trustees’ property.<footnote>4</footnote></text></entry></list>
-</paragraph>
-<paragraph><label>6</label><text>The Judge dismissed Mr Black’s application for summary judgment but granted the ASB’s cross-application, entering judgment for it against Mr Black.</text></paragraph>
-<paragraph><label>7</label><text>In his second judgment given on 30 September 2011, the Judge ordered Mr Black to pay the ASB indemnity costs plus disbursements totalling $93,268.90.<footnote>5</footnote></text></paragraph>
-<paragraph><label>8</label><text>The grounds on which Mr Black appeals the substantive judgment relate to the correct interpretation of provisions in the security documents, the manner in which the ASB went about realising its securities, the ASB’s disclosure obligations to the BFT trustees as guarantors of Deli’s indebtedness to the ASB and whether the Judge was wrong to enter summary judgment without first ordering the ASB to make discovery to Mr Black.</text></paragraph>
-<paragraph><label>9</label><text>The costs judgment is challenged on two bases. First, that indemnity costs ought not to have been awarded. Secondly, that even if indemnity costs were appropriate, $93,268.90 was excessive.
-</text></paragraph>
-
-<paragraph><label>10</label><text>Some factual background is necessary before these issues can be addressed in a comprehensible way.
-</text></paragraph>
-<title>Factual background</title>
-<paragraph><label>11</label><text>As its name suggests, Deli operated a seafood business. The business was Whakatane based. It had its own retail store in Mount Maunganui, and supplied licence holders in other cities and towns.
-</text></paragraph>
-<paragraph><label>12</label><text>Deli was a joint venture between the Black and Osborne families. In addition to being one of Deli’s two directors, Mr Black was a trustee of the BFT which owned approximately 43 per cent of the shares in Deli. <footnote>6</footnote> Mr Osborne held matching roles: he was the other director, and a trustee of the OFT which also owned 43 per cent of Deli’s shares.</text></paragraph>
-<paragraph><label>13</label><text>Deli first borrowed from the ASB in April 2007. The bank gave Deli a revolving credit facility with a $50,000 limit and a term loan of $150,000. Both facilities were documented in an ASB Facility Agreement dated 20 April 2007. That Agreement listed the following securities for the two facilities:</text>
-		<list>
-<entry><label>a</label><text>a new all obligations general security deed over all Deli’s assets and undertaking;</text></entry>
-<entry><label>b</label><text> an existing all obligations mortgage over the property at Papamoa (owned by the BFT);</text></entry>
-<entry><label>c</label><text>a new limited guarantee and indemnity from the trustees of the BFT, limited to $300,000;</text></entry>
-<entry><label>d</label><text>a new all obligations mortgage over the property at Ohope (owned by the OFT); and</text></entry>
-<entry><label>e</label><text>a new limited guarantee and indemnity from the trustees of the OFT, limited to $300,000.</text></entry></list>
-</paragraph>
-<paragraph><label>14</label><text>The term loan continued throughout to be governed by the 20 April 2007 Facility Agreement.
-</text></paragraph>
-<paragraph><label>15</label><text>In July 2007 the ASB agreed to increase Deli’s revolving credit facility to $250,000. To support this increase, the trustees of the BFT and of the OFT each gave a new guarantee and indemnity, each limited to $600,000. Both these guarantees were dated 21 August 2007.
-</text></paragraph>
-<paragraph><label>16</label><text>In November 2007 the ASB agreed to a further increase in the revolving credit facility limit, to $475,000. This was documented in a new Facility Agreement dated 12 November 2007. The list of securities listed in the 12 November 2007 Facility Agreement included:</text>
-<quote><quote-paragraph>
-An existing limited guarantee and indemnity on our standard form, from [the trustees of the BFT]. Limited to $600,000.00.
-</quote-paragraph></quote></paragraph>
-<paragraph><label>17</label><text>On 13 May 2008 the trustees of the BFT gave the ASB a new guarantee, this time unlimited. The ASB’s Commercial Manager, Mr Bresnahan, deposed that this guarantee was given in contemplation of the ASB further increasing its finance facilities to Deli.<footnote>7</footnote>
-It is not clear whether Mr Black disputes this. In one place in his</text></paragraph>
-</body>
-<footer>
-<footnote-text><key>1</key><text>Amended interlocutory application by the ASB for summary judgment or strike out, 1 November 2010.</text></footnote-text>
-<footnote-text><key>2</key><text><emphasis>Black v ASB Bank Ltd</emphasis> HC Auckland CIV-2010-404-3252, 8 July 2011 [Summary judgment decision].</text></footnote-text>
-<footnote-text><key>3</key><text>Amended notice of application by plaintiff against first defendant for summary judgment, 29 October 2010, at [1](b) and [1](c).</text></footnote-text>
-<footnote-text><key>4</key><text>At [1](d).</text></footnote-text>
-<footnote-text><key>5</key><text><emphasis>Black v ASB Bank Ltd</emphasis> HC Auckland CIV-2010-404-3252, 30 September 2011 [Costs decision].</text></footnote-text>
-<footnote-text><key>6</key><text>In the affidavit he swore on 30 September 2010 in opposition to the ASB’s application for summary judgment and in support of his own cross-application, Mr Black deposed that the shareholding of Deli was Mr and Mrs Black 510 shares, Mr and Mrs Osborne 510 shares, Mr O’Sullivan 180 shares.</text></footnote-text>
-<footnote-text><key>7</key><text>Affidavit of Rhys Jeffrey Bresnahan in support of interlocutory application seeking summary judgment sworn on 2 September 2010 at [17]. Mr Bresnahan explained at [18] that an unlimited guarantee was not sought from the OFT trustees because a valuation obtained by the ASB of the OFT’s Ohope property had indicated the property “had insufficient equity to secure any further lending”.</text></footnote-text>
-</footer>
+    <body>
+        <title>REASONS OF THE COURT</title>
+        <subtitle>(Given by Wild J)</subtitle>
+        <contents>
+            <table>
+                <row>
+                    <entry>Introduction</entry>
+                    <entry>[1]</entry>
+                </row>
+                <row>
+                    <entry>Factual background</entry>
+                    <entry>[11]</entry>
+                </row>
+                <row>
+                    <entry>The issues</entry>
+                    <entry>[28]</entry>
+                </row>
+                <row minor="true">
+                    <entry>Issue One: Did the Judge err in holding that Deli’s revolving credit facility was secured by the unlimited guarantee of Deli’s indebtedness to the ASB which the trustees of the BFT had given the ASB on 13 May 2008?</entry>
+                    <entry>[29]</entry>
+                </row>
+                <row minor="true">
+                    <entry>Issue Two: Did the Judge err in dismissing, as not reasonably arguable, Mr Black’s causes of action under the Fair Trading Act 1986, the Contractual Remedies Act 1979, or upon an estoppel by deed?</entry>
+                    <entry>[45]</entry>
+                </row>
+                <row minor="true">
+                    <entry>Issue Three: Did the Judge err in holding that the ASB was entitled to apply the proceeds of the realisation of the securities it held in respect of its lending to Deli as it chose?</entry>
+                    <entry>[46]</entry>
+                </row>
+                <row minor="true">
+                    <entry>Issue Four: Did the Judge err in holding that the ASB neither had nor breached any relevant disclosure obligations it had to the BFT trustees?</entry>
+                    <entry>[55]</entry>
+                </row>
+                <row minor="true">
+                    <entry>Issue Five: Did the Judge err in entering summary judgment in favour of the ASB without first giving the BFT trustees discovery?</entry>
+                    <entry>[65</entry>
+                </row>
+                <row minor="true">
+                    <entry>Issue Six: Did the Judge err in awarding the ASB costs of $93,268.90</entry>
+                    <entry>[69]</entry>
+                </row>
+                <row>
+                    <entry>Result</entry>
+                    <entry>[109]</entry>
+                </row>
+            </table>
+        </contents>
+        <title>Introduction</title>
+        <paragraph>
+            <label>1</label>
+            <text>This appeal results from the business failure of a company called Deli Ca Sea Wholesale Limited (Deli). The respondent (the ASB) held securities from Deli and from two family trusts which owned Deli. The trusts were associated with the two directors of Deli, the appellant Mr Richard Black and Mr Peter Osborne. The trusts are the Black Family Trust (the BFT) and the Osborne Family Trust (the OFT) respectively. The trustees of the two family trusts (including Mr Black and Mr Osborne) also provided personal guarantees to the ASB.</text>
+        </paragraph>
+        <paragraph>
+            <label>2</label>
+            <text>The ASB was owed substantial sums by Deli as well as by Mr and Mrs Black, and Mr and Mrs Osborne, for their personal borrowings. The OFT trustees voluntarily sold the property they owned which was secured to the ASB and paid the sale proceeds to the ASB. The ASB applied most of those monies to repay the Osbornes personal borrowings. The BFT trustees then sold their property, also secured to the ASB, and accounted to the ASB for the proceeds. The ASB applied these monies first to discharge the whole of Deli’s indebtedness. Mr Black raised two principal objections to this. First, he maintained that the BFT trustees’ personal guarantee was limited to $300,000. Secondly, he argued that the proceeds of sale of the property owned by the OFT should first have been applied in payment of Deli’s indebtedness rather than to the Osbornes’ personal borrowings.</text>
+        </paragraph>
+        <paragraph>
+            <label>3</label>
+            <text>Mr Black issued a proceeding seeking by way of summary judgment a declaration that the BFT trustees’ personal guarantee and an associated mortgage were limited to $300,000, and a declaration as to the correct application of the proceeds of sale of the two mortgaged properties. The ASB responded by seeking summary judgment against Mr Black on all the causes of action in his statement of claim or, alternatively, an order striking out those claims.
+                <footnote>1</footnote>
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>4</label>
+            <text>The appellant, Mr Black, appeals against two judgments of Associate Judge Bell. In the first judgment, delivered on 8 July 2011, the Judge dismissed Mr Black’s application for summary judgment against the ASB, but granted the ASB’s application for summary judgment against Mr Black.
+                <footnote>2</footnote>
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>5</label>
+            <text>Mr Black had applied for summary judgment in his capacity as one of the trustees of the BFT. Essentially, he sought summary judgment that the liability of the BFT trustees to the ASB under the securities they had given the ASB was:</text>
+            <list>
+                <entry>
+                    <label>a</label>
+                    <text>“expressly limited to $300,000”;
+                        <footnote>3</footnote> and</text>
+                </entry>
+                <entry>
+                    <label>b</label>
+                    <text>reduced by the $300,000 it received from the sale of the OFT trustees’ property.
+                        <footnote>4</footnote>
+                    </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label>6</label>
+            <text>The Judge dismissed Mr Black’s application for summary judgment but granted the ASB’s cross-application, entering judgment for it against Mr Black.</text>
+        </paragraph>
+        <paragraph>
+            <label>7</label>
+            <text>In his second judgment given on 30 September 2011, the Judge ordered Mr Black to pay the ASB indemnity costs plus disbursements totalling $93,268.90.
+                <footnote>5</footnote>
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>8</label>
+            <text>The grounds on which Mr Black appeals the substantive judgment relate to the correct interpretation of provisions in the security documents, the manner in which the ASB went about realising its securities, the ASB’s disclosure obligations to the BFT trustees as guarantors of Deli’s indebtedness to the ASB and whether the Judge was wrong to enter summary judgment without first ordering the ASB to make discovery to Mr Black.</text>
+        </paragraph>
+        <paragraph>
+            <label>9</label>
+            <text>The costs judgment is challenged on two bases. First, that indemnity costs ought not to have been awarded. Secondly, that even if indemnity costs were appropriate, $93,268.90 was excessive.
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>10</label>
+            <text>Some factual background is necessary before these issues can be addressed in a comprehensible way.
+            </text>
+        </paragraph>
+        <title>Factual background</title>
+        <paragraph>
+            <label>11</label>
+            <text>As its name suggests, Deli operated a seafood business. The business was Whakatane based. It had its own retail store in Mount Maunganui, and supplied licence holders in other cities and towns.
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>12</label>
+            <text>Deli was a joint venture between the Black and Osborne families. In addition to being one of Deli’s two directors, Mr Black was a trustee of the BFT which owned approximately 43 per cent of the shares in Deli.
+                <footnote>6</footnote> Mr Osborne held matching roles: he was the other director, and a trustee of the OFT which also owned 43 per cent of Deli’s shares.</text>
+        </paragraph>
+        <paragraph>
+            <label>13</label>
+            <text>Deli first borrowed from the ASB in April 2007. The bank gave Deli a revolving credit facility with a $50,000 limit and a term loan of $150,000. Both facilities were documented in an ASB Facility Agreement dated 20 April 2007. That Agreement listed the following securities for the two facilities:</text>
+            <list>
+                <entry>
+                    <label>a</label>
+                    <text>a new all obligations general security deed over all Deli’s assets and undertaking;</text>
+                </entry>
+                <entry>
+                    <label>b</label>
+                    <text> an existing all obligations mortgage over the property at Papamoa (owned by the BFT);</text>
+                </entry>
+                <entry>
+                    <label>c</label>
+                    <text>a new limited guarantee and indemnity from the trustees of the BFT, limited to $300,000;</text>
+                </entry>
+                <entry>
+                    <label>d</label>
+                    <text>a new all obligations mortgage over the property at Ohope (owned by the OFT); and</text>
+                </entry>
+                <entry>
+                    <label>e</label>
+                    <text>a new limited guarantee and indemnity from the trustees of the OFT, limited to $300,000.</text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label>14</label>
+            <text>The term loan continued throughout to be governed by the 20 April 2007 Facility Agreement.
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>15</label>
+            <text>In July 2007 the ASB agreed to increase Deli’s revolving credit facility to $250,000. To support this increase, the trustees of the BFT and of the OFT each gave a new guarantee and indemnity, each limited to $600,000. Both these guarantees were dated 21 August 2007.
+            </text>
+        </paragraph>
+        <paragraph>
+            <label>16</label>
+            <text>In November 2007 the ASB agreed to a further increase in the revolving credit facility limit, to $475,000. This was documented in a new Facility Agreement dated 12 November 2007. The list of securities listed in the 12 November 2007 Facility Agreement included:</text>
+            <quote>
+                <quote-paragraph>
+                    An existing limited guarantee and indemnity on our standard form, from [the trustees of the BFT]. Limited to $600,000.00.
+                </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label>17</label>
+            <text>On 13 May 2008 the trustees of the BFT gave the ASB a new guarantee, this time unlimited. The ASB’s Commercial Manager, Mr Bresnahan, deposed that this guarantee was given in contemplation of the ASB further increasing its finance facilities to Deli.
+                <footnote>7</footnote>
+                It is not clear whether Mr Black disputes this. In one place in his</text>
+        </paragraph>
+    </body>
+    <footer>
+        <footnote-text>
+            <key>1</key>
+            <text>Amended interlocutory application by the ASB for summary judgment or strike out, 1 November 2010.</text>
+        </footnote-text>
+        <footnote-text>
+            <key>2</key>
+            <text>
+                <emphasis>Black v ASB Bank Ltd</emphasis> HC Auckland CIV-2010-404-3252, 8 July 2011 [Summary judgment decision].</text>
+        </footnote-text>
+        <footnote-text>
+            <key>3</key>
+            <text>Amended notice of application by plaintiff against first defendant for summary judgment, 29 October 2010, at [1](b) and [1](c).</text>
+        </footnote-text>
+        <footnote-text>
+            <key>4</key>
+            <text>At [1](d).</text>
+        </footnote-text>
+        <footnote-text>
+            <key>5</key>
+            <text>
+                <emphasis>Black v ASB Bank Ltd</emphasis> HC Auckland CIV-2010-404-3252, 30 September 2011 [Costs decision].</text>
+        </footnote-text>
+        <footnote-text>
+            <key>6</key>
+            <text>In the affidavit he swore on 30 September 2010 in opposition to the ASB’s application for summary judgment and in support of his own cross-application, Mr Black deposed that the shareholding of Deli was Mr and Mrs Black 510 shares, Mr and Mrs Osborne 510 shares, Mr O’Sullivan 180 shares.</text>
+        </footnote-text>
+        <footnote-text>
+            <key>7</key>
+            <text>Affidavit of Rhys Jeffrey Bresnahan in support of interlocutory application seeking summary judgment sworn on 2 September 2010 at [17]. Mr Bresnahan explained at [18] that an unlimited guarantee was not sought from the OFT trustees because a valuation obtained by the ASB of the OFT’s Ohope property had indicated the property “had insufficient equity to secure any further lending”.</text>
+        </footnote-text>
+    </footer>
 </case>

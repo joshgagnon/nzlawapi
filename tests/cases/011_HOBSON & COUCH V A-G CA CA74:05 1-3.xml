@@ -5,13 +5,12 @@
         <parties>
             <court-file>CA74/05</court-file>
             <plantiffs>
-            <plantiff>
-                <qualifier>BETWEEN</qualifier>
-                <value>TAI HOBSON</value>
-                <descriptor>Appellant</descriptor>
-            </plantiff>
-
-        </plantiffs>
+                <plantiff>
+                    <qualifier>BETWEEN</qualifier>
+                    <value>TAI HOBSON</value>
+                    <descriptor>Appellant</descriptor>
+                </plantiff>
+            </plantiffs>
             <defendants>
                 <defendant>
                     <qualifier>AND</qualifier>
@@ -23,13 +22,12 @@
         <parties>
             <court-file>CA238/05</court-file>
             <plantiffs>
-            <plantiff>
-                <qualifier>BETWEEN</qualifier>
-                <value>SUSAN COUCH</value>
-                <descriptor>Plaintiff</descriptor>
-            </plantiff>
-
-        </plantiffs>
+                <plantiff>
+                    <qualifier>BETWEEN</qualifier>
+                    <value>SUSAN COUCH</value>
+                    <descriptor>Plaintiff</descriptor>
+                </plantiff>
+            </plantiffs>
             <defendants>
                 <defendant>
                     <qualifier>AND</qualifier>
@@ -49,59 +47,174 @@
             <title>JUDGMENT OF THE COURT</title>
             <subtitle>CA74/05</subtitle>
             <list>
-                <entry><label>A</label><text>The appeal is dismissed.</text></entry>
-                <entry><label>B</label><text>An order is made striking out the entire statement of claim.</text></entry>
-                <entry><label>C</label><text>Costs are reserved.</text></entry>
+                <entry>
+                    <label>A</label>
+                    <text>The appeal is dismissed.</text>
+                </entry>
+                <entry>
+                    <label>B</label>
+                    <text>An order is made striking out the entire statement of claim.</text>
+                </entry>
+                <entry>
+                    <label>C</label>
+                    <text>Costs are reserved.</text>
+                </entry>
             </list>
             <subtitle>CA238/05</subtitle>
             <list>
-                <entry><label>D</label><text>The question of law posed for the consideration of this Court is answered thus: the statement of claim discloses no reasonable cause of action and should be struck out.</text></entry>
-                <entry><label>E</label><text>Costs are reserved.</text></entry>
-                <entry><label>F</label><text>Order prohibiting publication of name or particulars likely to lead to the identification of witness X’s name.</text></entry>
+                <entry>
+                    <label>D</label>
+                    <text>The question of law posed for the consideration of this Court is answered thus: the statement of claim discloses no reasonable cause of action and should be struck out.</text>
+                </entry>
+                <entry>
+                    <label>E</label>
+                    <text>Costs are reserved.</text>
+                </entry>
+                <entry>
+                    <label>F</label>
+                    <text>Order prohibiting publication of name or particulars likely to lead to the identification of witness X’s name.</text>
+                </entry>
             </list>
-
         </waistband>
     </intituling>
 
     <body>
         <title>REASONS</title>
         <contents>
-
-        </contents>
-
-        <title>HAMMOND J</title>
+            <table>
+                <row>
+                    <entry>Hammond J (dissenting in part)</entry>
+                    <entry>[1]</entry>
+                </row>
+                <row>
+                    <entry>William Young P</entry>
+                    <entry>[101]</entry>
+                </row>
+                <row>
+                    <entry>Chambers J</entry>
+                    <entry>[144]</entry>
+                </row>
+                </table>
+                </contents>
+        <title>HAMMOND J
+        </title>
         <contents>
+            <table>
+                <row>
+                    <entry>Introduction</entry>
+                    <entry>[1]</entry>
+                </row>
+                <row>
+                    <entry>Background</entry>
+                    <entry>[2]</entry>
+                </row>
+                <row>
+                    <entry>
+                        The respondent acknowledges blame</entry>
+                    <entry>[10]</entry>
+                </row>
+                <row>
+                    <entry>The claimants</entry>
+                    <entry>[12]</entry>
+                </row>
+                <row>
+                    <entry>Some procedural matters</entry>
+                    <entry>[16]</entry>
+                </row>
+                <row>
+                    <entry>Negligence</entry>
+                </row>
+                <row minor="true">
+                    <entry>(1) The nature of a claim for negligence</entry>
+                    <entry>[25]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(2) Establishing a duty of care</entry>
+                    <entry>[28]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(3) Pleading negligence</entry>
+                    <entry>[35]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(4) Breach of statutory duty</entry>
+                    <entry>[37]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(5) The pleadings in this case</entry>
+                    <entry>[44]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(6) The statutory context</entry>
+                    <entry>[48]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(7) Strike-out principles</entry>
+                    <entry>[51]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(8) This case</entry>
+                    <entry>[60]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(9) Conclusion: negligence</entry>
+                    <entry>[86]</entry>
+                </row>
+                <row>
+                    <entry>Misfeasance in public office</entry>
+                </row>
+                <row minor="true">
+                    <entry>(1) The pleading</entry>
+                    <entry>[87]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(2) Misfeasance: the law</entry>
+                    <entry>[88]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(3) Mr Hobson</entry>
+                    <entry>[95]</entry>
+                </row>
+                <row minor="true">
+                    <entry>(4) Ms Couch</entry>
+                    <entry>[97]</entry>
+                </row>
+                <row>
+                    <entry>Conclusion</entry>
+                    <entry>[98]</entry>
+                </row>
+                <row>
+                    <entry>Costs</entry>
+                    <entry>[100]</entry>
+                </row>
+            </table>
         </contents>
-
         <title>Introduction</title>
-         <paragraph>
+        <paragraph>
             <label>1</label>
             <text>This is an appeal from a decision of Heath J reported in [2005] 2 NZLR 220, on a strike-out application.
             </text>
         </paragraph>
-
         <title>Background</title>
-         <paragraph>
+        <paragraph>
             <label>2</label>
             <text>In 1997, Mr William Bell was sentenced to five years imprisonment following his conviction for the aggravated robbery of a service station. This robbery involved the use of a blunt instrument on the sole attendant, who escaped further injury only after locking himself in a bathroom.
             </text>
         </paragraph>
-
-         <paragraph>
+        <paragraph>
             <label>3</label>
             <text>As required by the legislation in force at that time, Mr Bell was released on parole on 4 July 2001 when he had served two-thirds of the finite term of imprisonment imposed upon him.
             </text>
         </paragraph>
-
-         <paragraph>
+        <paragraph>
             <label>4</label>
             <text>A number of special conditions were imposed on Mr Bell. He was:
             </text>
             <list>
-                <entry>to make an appointment within 72 hours of release with a departmental psychologist and thereafter to keep such appointments and attend such counselling as was directed by his probation officer;
-</entry>
-                <entry>to undertake such employment as was directed by his probation officer;</entry>
-                <entry>to complete an assessment for the Straight Thinking Programme as directed by his probation officer;</entry>
+                <entry><text>to make an appointment within 72 hours of release with a departmental psychologist and thereafter to keep such appointments and attend such counselling as was directed by his probation officer;
+                </text></entry>
+                <entry><text>to undertake such employment as was directed by his probation officer;</text></entry>
+                <entry><text>to complete an assessment for the Straight Thinking Programme as directed by his probation officer;</text></entry>
             </list>
         </paragraph>
     </body>
