@@ -28,6 +28,9 @@ from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
 from pdfminer.utils import bbox2str, enc, apply_matrix_pt
 from pdfminer.pdffont import PDFCIDFont
 from util import indexsplit
+import copy
+
+
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
@@ -102,14 +105,6 @@ def init_char(self, matrix, font, fontsize, scaling, rise,
 
 LTChar.__init__ = init_char
 
-
-def encodeXMLText(text):
-    text = text.replace("&", "&amp;")
-    text = text.replace("\"", "&quot;")
-    text = text.replace("'", "&apos;")
-    text = text.replace("<", "&lt;")
-    text = text.replace(">", "&gt;")
-    return text
 
 Match = namedtuple('Match', 'string open close tests')
 
@@ -310,7 +305,15 @@ class DocState(object):
 
 
     def handle_hline(self, item):
-        pass
+        self.handle_style()
+        if (item.bbox[3] - item.bbox[1] < 3.0 and
+            abs(item.bbox[0] - self.line_bbox[0]) < 1.0 and
+            abs(item.bbox[2] - self.line_bbox[2]) < 1.0 and
+            item.bbox[3] - self.line_bbox[1] < 2.0):
+            [self.close_style(s) for s in self.style_stack]
+            self.open_tag('underline')
+            self.close_tag('underline')
+
 
     def handle_new_chunk(self):
         self.has_new_chunk = False
@@ -516,9 +519,7 @@ class DocState(object):
         return ( '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
 
     def write_text(self, text, item=None):
-
         text = self.CONTROL.sub(u'', text)
-        #text = encodeXMLText(text)
         if item and text.strip():
             self.register_font(item)
         if self.has_new_line:
@@ -567,6 +568,7 @@ class Converter(PDFConverter):
             if isinstance(item, LTPage):
                 item._objs = sorted(item._objs, cmp=sort_y)
                 for child in item:
+                    #print child
                     render(child)
 
             elif isinstance(item, LTLine):
@@ -647,7 +649,6 @@ def generate_parsable_xml(path, tmp):
 
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
-
         return re.sub(' +', ' ', device.get_result())
 
 
@@ -711,7 +712,7 @@ def generate_body(soup):
         # In capitals?  probably  a title
         elif paragraph.text and (paragraph.text.upper() == paragraph.text or \
             len(paragraph.contents) == 1 and paragraph.contents[0].name == 'strong') or \
-            paragraph.attrs['bold'] == '1':
+            paragraph.attrs.get('bold') == '1':
             paragraph.name = 'title'
             if len(paragraph.contents) and not isinstance(paragraph.contents[0], NavigableString):
                 paragraph.contents[0].unwrap()
@@ -840,15 +841,14 @@ def format_indents(soup):
         if not len(indent.contents):
             indent.decompose()
 
-    listlike_reg = re.compile('^\ *\(?([a-z\d+])\)?\ +(.*)', flags=re.IGNORECASE)
+    listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*])\)?\s+(.*)', flags=re.IGNORECASE)
 
     prev_left = None
     for indent in soup.find_all('indent'):
         match = listlike_reg.match(indent.contents[0])
         left = get_left(indent)
         if not match or (prev_left and left > prev_left):
-
-            if indent.previous_sibling:
+            if indent.previous_sibling and indent.previous_sibling and indent.previous_sibling.name == 'list':
                 text = indent.previous_sibling.find_all('text')[-1]
                 text.append(' ')
                 for c in indent.contents[:]:
@@ -857,16 +857,27 @@ def format_indents(soup):
                 continue
 
         indent.name = 'entry'
-        label = soup.new_tag('label')
-        label.string = match.group(1)
-        text = soup.new_tag('text')
-        text.string = match.group(2)
+        if match:
+            text = soup.new_tag('text')
+            text.string = match.group(2)
 
-        indent.contents[0].replace_with('')
-        for c in indent.contents[:]:
-            text.append(c)
-        indent.insert(0, label)
-        indent.insert(1, text)
+            indent.contents[0].replace_with('')
+
+            for c in indent.contents[:]:
+                text.append(c)
+            insert = 0
+            if match.group(1) != u'•':
+                label = soup.new_tag('label')
+                label.string = match.group(1)
+                indent.insert(insert, label)
+                insert += 1
+            indent.insert(insert, text)
+        else:
+            text = soup.new_tag('text')
+            #indent.contents[0].replace_with('')
+            for c in indent.contents[:]:
+                text.append(c)
+            indent.insert(0, text)
 
         if not (indent.previous_sibling and indent.previous_sibling.name == 'list'):
             new_list = soup.new_tag('list')
@@ -876,6 +887,7 @@ def format_indents(soup):
             indent.previous_sibling.append(indent)
         indent.attrs = {}
         prev_left = left
+
 
 def generate_intitular(soup):
     for strong in soup.find('intituling').find_all('strong'):
@@ -901,9 +913,7 @@ def generate_intitular(soup):
     optional_section('registry', find_registry, intituling)
     optional_section('neutral-citation', find_neutral, intituling)
     optional_section(None, matters, intituling)
-
-
-    intituling.append(parties(soup))
+    optional_section(None, parties, intituling)
 
     optional_section('hearing', find_hearing, intituling)
     optional_section('counsel', find_counsel, intituling)
@@ -1122,14 +1132,15 @@ def find_waistband(soup):
     reg = re.compile(r'^(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     parts = [start]+ find_until(start, use_left=False)
-    parts = filter(None, map(lambda x: x.text, parts))
+    parts = filter(lambda x: x.text, parts)
     entries = []
     entry = {'text': ''}
     # for now assume alphabetical list
     char = 'A'
     line = ''
     for p in parts[1:]:
-        p = p.strip()
+
+        p = p.text.strip()
         if re.match('%s($|\s)' % char, p):
             entry = {'label': char, 'text':  p[2:]}
             entries.append(entry)
@@ -1137,21 +1148,13 @@ def find_waistband(soup):
         elif not separator_reg.match(p):
            entry['text'] += ' ' + p
     if len(entries) == 0:
-        result = {'title': parts[0], 'text': entry['text']}
+        result = {'title': parts[0].text, 'text': entry['text']}
     else:
-        result = {'title': parts[0], 'list': entries}
+        result = {'title': parts[0].text, 'list': entries}
     return result
 
 
 def parties(soup):
-
-    courtfile = soup.new_tag('court-file')
-    parties = soup.new_tag('parties')
-    plantiffs = soup.new_tag('plantiffs')
-    defendants = soup.new_tag('defendants')
-    parties.append(courtfile)
-    parties.append(plantiffs)
-    parties.append(defendants)
 
     def party(row, name):
         el = soup.new_tag(name)
@@ -1169,32 +1172,47 @@ def parties(soup):
         return el
 
     try:
-        party_dict = find_parties(soup)
-    except AttributeError, e:
-        party_dict = find_versus(soup)
+        party_dicts = find_parties(soup)
+    except AttributeError:
+        party_dicts = find_versus(soup)
 
-    courtfile.string = party_dict['court-file']
+    results = []
 
-    for p in party_dict['plantiffs']:
-        plantiffs.append(party(p, 'plantiff'))
+    for party_dict in party_dicts:
+        parties = soup.new_tag('parties')
+        courtfile = soup.new_tag('court-file')
+        plantiffs = soup.new_tag('plantiffs')
+        defendants = soup.new_tag('defendants')
+        parties.append(courtfile)
+        parties.append(plantiffs)
+        parties.append(defendants)
 
-    for p in party_dict['defendants']:
-        defendants.append(party(p, 'defendant'))
+        courtfile.string = party_dict['court-file']
 
-    if len(party_dict.get('thirdparties', [])):
-        thirdparties = soup.new_tag('thirdparties')
-        parties.append(thirdparties)
-        for p in party_dict['thirdparties']:
-            defendants.append(party(p, 'thirdparty'))
+        for p in party_dict['plantiffs']:
+            plantiffs.append(party(p, 'plantiff'))
 
-    return parties
+        for p in party_dict['defendants']:
+            defendants.append(party(p, 'defendant'))
+
+        if len(party_dict.get('thirdparties', [])):
+            thirdparties = soup.new_tag('thirdparties')
+            parties.append(thirdparties)
+            for p in party_dict['thirdparties']:
+                defendants.append(party(p, 'thirdparty'))
+
+        results.append(parties)
+
+    return results
 
 
 qualifier_pattern = re.compile('(and between|and|between)', flags=re.IGNORECASE)
 
 
 def find_parties(soup):
-    parties = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
+    party_dict = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
+    parties = [copy.deepcopy(party_dict)]
+
 
     def add_persons(qualifier, column):
         name = ' '.join(map(lambda x: x.text, column[:-1]))
@@ -1204,26 +1222,33 @@ def find_parties(soup):
             group = 'plantiffs'
         elif thirdparty_pattern.match(descriptor):
             group = 'thirdparty'
-        parties[group].append({
+        parties[-1][group].append({
             'qualifier': qualifier,
             'value': name,
             'descriptor': descriptor
             })
+
     plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
     thirdparty_pattern = re.compile('.*Third [Pp]art(y|ies)')
     next_qualifier = find_reg_el(soup, qualifier_pattern)
 
-    parties['court-file'] = court_file_before(soup, next_qualifier)
+    parties[-1]['court-file'] = court_file_before(soup, next_qualifier)
 
     while qualifier_pattern.match(next_qualifier.text):
         segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
         """ Must also split on lines that aren't all caps """
-        splits = [i+1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
+        splits = [i + 1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
         for seg in indexsplit(segments, *splits):
             add_persons(next_qualifier.text, seg)
         next_qualifier = segments[-1].next_sibling
 
+        if not qualifier_pattern.match(next_qualifier.text) and courtfile_num.match(next_qualifier.text):
+            parties += [copy.deepcopy(party_dict)]
+            parties[-1]['court-file'] = next_qualifier.text
+            next_qualifier = next_qualifier.next_sibling
+
     return parties
+
 
 def find_versus(soup):
     """ If find_parties fails, assume this """
@@ -1234,7 +1259,7 @@ def find_versus(soup):
     parties['court-file'] = court_file_before(soup, start.previous_sibling)
     defendants = [start.next_sibling] + find_until(start.next_sibling, use_left=False)
     parties['defendants'] = [{'value': ' '.join(map(lambda x: x.text, defendants))}]
-    return parties
+    return [parties]
 
 
 def matters(soup):
@@ -1260,7 +1285,7 @@ def matters(soup):
             matter.append(value)
             results.append(matter)
     except Exception, e:
-        print e
+        pass
 
     return results
 
@@ -1334,8 +1359,7 @@ def iso_date(value):
 def process_case(filename, debug=False):
     tmp = mkdtemp()
     xml = generate_parsable_xml(filename, tmp)
-    soup = BeautifulSoup(xml, "xml")
+    soup = BeautifulSoup(xml, features='lxml-xml')
     results = massage_xml(soup, debug)
     shutil.rmtree(tmp)
-    #print results.prettify()
-    return re.sub(' +', ' ', unicode(results))
+    return re.sub(' +', ' ', results.encode())

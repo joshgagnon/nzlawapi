@@ -2,8 +2,10 @@
 	"folders":
 	[
 		{
-			"follow_symlinks": true,
 			"path": "."
+		},
+		{
+			"path": "/usr/local/lib/python2.7/site-packages/bs4"
 		}
 	]
 }

@@ -3,13 +3,17 @@
         <full-citation></full-citation>
         <court></court>
         <registry></registry>
-        <court-file></court-file>
         <neutral-citation></neutral-citation>
         <matter><qualifier></qualifier>
         <value>
         </value>
-    	</matter>
+        </matter>
+        <matter><qualifier></qualifier>
+        <value>
+        </value>
+        </matter>
         <parties>
+        <court-file></court-file>
         	<plantiffs>
             <plantiff>
                 <qualifier></qualifier>
