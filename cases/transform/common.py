@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-
+from bs4 import element, Tag
 separator_reg = re.compile('^[…_\.]{5,}$')
 
 class NoText(Exception):
@@ -12,6 +12,15 @@ def extend_el(source, dest):
     source.decompose()
     return dest
 
+
+def remove_empty_elements(soup):
+    ignore_tags = ['underline', 'signature-line']
+    if isinstance(soup, Tag):
+        for c in soup.contents:
+            remove_empty_elements(c)
+        if soup.is_empty_element and soup.name not in ignore_tags:
+            soup.decompose()
+    return soup
 
 def get_left(el):
     return float(el.attrs.get('left', 0))

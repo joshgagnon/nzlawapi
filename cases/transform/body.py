@@ -41,12 +41,6 @@ def generate_body(soup):
 
     body = soup.find('body')
 
-    def remove_empty_nodes(soup):
-        # Remove empty nodes
-        for el in soup.find_all(['emphasis', 'strong', 'paragraph', 'title']):
-            if not len(el.contents):
-                el.decompose()
-
     format_indents(soup)
 
     for paragraph in body.contents[:]:
@@ -115,8 +109,6 @@ def generate_body(soup):
 
     for content in body.contents:
         content.attrs = {}
-
-    remove_empty_nodes(body)
 
     return body
 
