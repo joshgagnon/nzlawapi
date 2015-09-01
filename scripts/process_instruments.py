@@ -19,8 +19,8 @@ if __name__ == "__main__":
         raise Exception('Missing configuration file')
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
-
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+
     from celeries.tasks import process_instrument
 
     logging.basicConfig(level=logging.INFO)

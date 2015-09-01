@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-from common import get_left,  separator_reg
+from common import get_left, separator_reg
 from bs4 import element, NavigableString
 from tables import format_tables
 
