@@ -9,7 +9,8 @@ import importlib
 from os import path
 import os
 from collections import defaultdict
-
+import psycopg2
+from time import sleep
 """
 This script scrapes https://www.comlaw.gov.au
 
@@ -23,10 +24,11 @@ dates and download links.
 start = 'https://www.comlaw.gov.au/Browse/'
 series = 'https://www.comlaw.gov.au/Series/%s'
 download = 'https://www.comlaw.gov.au/Details/%s/Download'
+details = 'https://www.comlaw.gov.au/Details/%s'
 top_level_sel = '#ctl00_MainContent_pnlBrowse a font'
 
 THREAD_MAX = 10
-
+SLEEP = 2
 
 thread_limiter = [
     threading.BoundedSemaphore(THREAD_MAX),
@@ -42,6 +44,7 @@ def thread_limit(index):
             try:
                 return func(*args, **kwargs)
             finally:
+                sleep(SLEEP)
                 thread_limiter[index].release()
         return func_wrapper
     return apply_decorator
@@ -79,7 +82,7 @@ def table_loop(url, headers=None):
 
 
 @thread_limit(1)
-def get_document_info(id):
+def get_document_info((id, series)):
     """ will contain dates before 1900, so must do manually """
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -90,9 +93,9 @@ def get_document_info(id):
     req = urllib2.Request(download % id)
     response = urllib2.urlopen(req)
     page = BeautifulSoup(response.read(), 'lxml')
-    page.find('ctl00_MainContent_ucItemPane_tdRight')
     result = defaultdict(lambda: None)
-    result['id'] = id,
+    result['id'] = id
+    result['series'] = series
     result['links'] = map(lambda x: x['href'], page.find_all('a', onclick=re.compile("Primary Document Icon")))
     try:
         result['superseded'] = page.select('#ctl00_MainContent_ucItemPane_lblStatus')[0].text == 'Superseded'
@@ -117,23 +120,49 @@ def get_document_info(id):
 
     print 'Document Info: ', result
 
-    return result
+    documents = download_documents(result)
+    add_info_to_db(result, documents)
 
-def add_to_db(result):
+
+def download_documents(info):
+    results = []
+    if len(info['links']):
+        for link in info['links']:
+            req = urllib2.Request(link)
+            response = urllib2.urlopen(req)
+            filename = response.info()['Content-Disposition'].replace('attachment; filename=', '')
+            results.append({'document': response.read(), 'format': filename.rsplit('.', 1)[1].lower(), 'filename': filename, 'comlaw_id': info['id']})
+    else:
+        req = urllib2.Request(details % info['id'])
+        response = urllib2.urlopen(req)
+        soup = BeautifulSoup(response.read(), 'lxml')
+        text = soup.select('#RAD_SPLITTER_PANE_CONTENT_ctl00_MainContent_ctl05_RadPane2')[0].renderContents()
+
+        results.append({'document': text, 'format': 'html', 'filename': None, 'comlaw_id': info['id']})
+
+    return results
+
+
+def add_info_to_db(info, documents):
     db = connect_db_config(config)
     with db.cursor() as cur:
-        cur.execute('delete from comlaw_info where id = %(id)s', result)
+        cur.execute('delete from comlaw_info where id = %(id)s', info)
+        cur.execute('delete from comlaw_documents where comlaw_id = %(id)s', info)
         cur.execute("""insert into comlaw_info """
             """(id, superseded, prepared_date, published_date, start_date, end_date, links, series) values"""
             """(%(id)s, %(superseded)s, %(prepared_date)s, %(published_date)s, %(start_date)s, %(end_date)s, %(links)s, %(series)s)""",
-            result)
+            info)
+        for document in documents:
+            document = dict(document.items())
+            document['document'] = psycopg2.Binary(document['document'])
+            cur.execute("""insert into comlaw_documents (comlaw_id, document, format, filename) values """
+                """ (%(comlaw_id)s, %(document)s, %(format)s, %(filename)s) """, document)
     db.commit()
     db.close()
 
 
 @thread_limit(0)
 def get_series(id):
-    results = []
     for page in table_loop(series % id):
         ids = map(lambda x: x.text, page.select('#ctl00_MainContent_SeriesCompilations_RadGrid1_ctl00 > tbody > tr > td:nth-of-type(2)'))
         """ If has no previous versions, will not have table """
@@ -141,18 +170,11 @@ def get_series(id):
             ids = [id]
         print "Series", ids
         pool = ThreadPool(THREAD_MAX)
-        _results = pool.map(get_document_info, ids)
+        _results = pool.map(get_document_info, zip(ids, [id]*len(ids)))
         pool.close()
         pool.join()
-        for _result in _results:
-            _result['series'] = id
-            add_to_db(_result)
-            results.append(_result)
-    return results
-
 
 def open_index(url):
-    results = []
     for page in table_loop(url):
         buttons = page.find_all('input', id=re.compile('_btnSeries$'))
         ids = map(lambda x: x['onclick'].split(',')[4].split('/')[-1].replace('"', ''), buttons)
@@ -161,13 +183,12 @@ def open_index(url):
         _results = pool.map(get_series, ids)
         pool.close()
         pool.join()
-        results += _results
-    return results
 
 
 if __name__ == '__main__':
     if not len(sys.argv) > 1:
         raise Exception('Missing configuration file')
+    sys.setrecursionlimit(10000)
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
@@ -176,7 +197,7 @@ if __name__ == '__main__':
     indices = ['https://www.comlaw.gov.au/Browse/Results/ByTitle/Acts/Current/Wo/0']
     try:
         for index in indices:
-            print open_index(index)
+            open_index(index)
     except KeyboardInterrupt:
         print 'Exiting early'
         sys.exit()
