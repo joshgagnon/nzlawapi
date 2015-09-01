@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import XMLConverter, HTMLConverter
 from pdfminer.converter import PDFPageAggregator, PDFConverter
@@ -27,6 +28,7 @@ def find_neighbors (self, plane, ratio):
     objs = [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal))]
     return objs
+
 
 LTTextLineHorizontal.find_neighbors = find_neighbors
 
@@ -79,12 +81,13 @@ LTChar.__init__ = init_char
 
 
 class Match(object):
-    def __init__(self, string, open, close, tests, post_action=None):
+    def __init__(self, string, open=None, close=None, tests=[], post_action=None, dependants=[]):
         self.string = string
         self.open = open
         self.close = close
         self.tests = tests
         self.post_action = post_action
+        self.dependants = dependants
 
 
 class Not(object):
@@ -97,7 +100,7 @@ class Not(object):
 
 class DocStateMachine(object):
     def __init__(self, inputs, doc):
-        self.inputs = inputs
+        self.inputs = inputs[:]
         self.positions = [0] * len(inputs)
         self.doc = doc
 
@@ -106,8 +109,11 @@ class DocStateMachine(object):
             result = getattr(self.doc, str(t))()
             return not result if isinstance(t, Not) else result
 
+        def equal(char1, char2):
+        	return char1 == '*' or char1 == char2
+
         for i in xrange(len(self.inputs)):
-            if self.inputs[i].string[self.positions[i]] == char:
+            if equal(self.inputs[i].string[self.positions[i]], char):
                 self.positions[i] += 1
                 if len(self.inputs[i].string) == self.positions[i]:
                     self.positions[i] = 0
@@ -118,8 +124,12 @@ class DocStateMachine(object):
                             self.doc.open_tag(self.inputs[i].open, flush=False)
                         if self.inputs[i].post_action:
                             self.inputs[i].post_action(self.doc)
+                        if self.inputs[i].dependants:
+                        	self.inputs += self.inputs[i].dependants
+                        	self.positions += [0] * len(self.inputs[i].dependants)
             else:
                 self.positions[i] = 0
+
 
     def reset(self):
         for i in xrange(len(self.inputs)):
@@ -139,6 +149,9 @@ def close_entry(doc):
 
 RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
+    #Match(string='JUDGMENT', tests=['is_center_aligned', 'is_intituling'], dependants=[
+    	#Match(string='*', open='body,paragraph', close='intituling', tests=['is_left_aligned', 'is_bold', Not('is_table'), 'is_intituling'])
+    #]),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Para No', open='table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
@@ -458,8 +471,15 @@ class DocState(object):
 
     def is_center_aligned(self, bbox=None):
         bbox = bbox or self.bbox
-        return (bbox[0] > self.thresholds['center_align_thresholds'][0] and
-                bbox[2] < self.thresholds['center_align_thresholds'][1])
+        """ nothing should be centered until we get something else """
+        if not self.max_width[0]:
+        	return
+        """ should be within 'center_tolerance_threshold' of margins
+        	and at least center_margin_min from the edge """
+        return ( self.thresholds['center_tolerance_threshold'] >
+        		abs((bbox[0]- self.max_width[0]) -  (self.max_width[1] - bbox[2])) and
+        		(bbox[0]- self.max_width[0] > self.thresholds['center_margin_min'] and
+	             self.max_width[1] - bbox[2] >  self.thresholds['center_margin_min']))
 
     def is_left_indented(self, bbox=None):
         bbox = bbox or self.line_bbox
@@ -470,7 +490,7 @@ class DocState(object):
         """ headers can be center and bold, or left and bold if they are vertically far enough away """
         if self.is_center_aligned(bbox) and self.is_bold():
             return True
-        if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['center_align_thresholds'][1] and self.is_bold() and self.para_threshold('table_vertical_threshold'):
+        if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['right_align_thresholds'][1] and self.is_bold() and self.para_threshold('table_vertical_threshold'):
             return True
 
     def switch_footer(self):

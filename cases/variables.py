@@ -14,9 +14,14 @@ THRESHOLDS = {
     'column_gap': 100,
     'indent_threshold': 10.0,
     'right_align_thresholds': [280, 480],
-    'left_align_thresholds': [160],
-    'center_align_thresholds': [250, 400],
+    'left_align_thresholds': [140],
+    'center_tolerance_threshold': 20,
+    'center_margin_min': 60,
     'paragraph_early_newline': 16,
     'top_of_page': 730,
-    'table_column_overflow': 200
+    'table_column_overflow': 200,
+    'width': 595,
+    'height': 842
+
 }
+

@@ -27,7 +27,7 @@ download = 'https://www.comlaw.gov.au/Details/%s/Download'
 details = 'https://www.comlaw.gov.au/Details/%s'
 top_level_sel = '#ctl00_MainContent_pnlBrowse a font'
 
-THREAD_MAX = 10
+THREAD_MAX = 3
 SLEEP = 2
 
 thread_limiter = [
@@ -160,6 +160,13 @@ def add_info_to_db(info, documents):
     db.commit()
     db.close()
 
+def get_unfetched_ids(ids):
+    db = connect_db_config(config)
+    with db.cursor() as cur:
+        cur.execute("""select array_agg(x) from unnest(%(ids)s) as x left join comlaw_info as c on c.id = x where c.id is null;""",
+            {'ids': ids})
+        filtered_ids = cur.fetchone()[0]
+        return filtered_ids
 
 @thread_limit(0)
 def get_series(id):
@@ -168,11 +175,13 @@ def get_series(id):
         """ If has no previous versions, will not have table """
         if not len(ids):
             ids = [id]
+        ids = get_unfetched_ids(ids)
         print "Series", ids
-        pool = ThreadPool(THREAD_MAX)
-        _results = pool.map(get_document_info, zip(ids, [id]*len(ids)))
-        pool.close()
-        pool.join()
+        if ids:
+            pool = ThreadPool(THREAD_MAX)
+            _results = pool.map(get_document_info, zip(ids, [id]*len(ids)))
+            pool.close()
+            pool.join()
 
 def open_index(url):
     for page in table_loop(url):
@@ -193,8 +202,8 @@ if __name__ == '__main__':
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     from db import connect_db_config
-    #indices = [get_indices()]
-    indices = ['https://www.comlaw.gov.au/Browse/Results/ByTitle/Acts/Current/Wo/0']
+    indices = get_indices()
+    #indices = ['https://www.comlaw.gov.au/Browse/Results/ByTitle/Acts/Current/Wo/0']
     try:
         for index in indices:
             open_index(index)

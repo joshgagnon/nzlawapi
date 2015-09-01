@@ -202,7 +202,7 @@ def find_solicitors(soup):
 
 def waistband(soup):
     # find all waistband rows
-    reg = re.compile(r'^(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
+    reg = re.compile(r'^(ORAL )?(JUDGMENT OF |SENTENCING)', flags=re.IGNORECASE)
     start = find_reg_el(soup, reg)
     parts = find_until(start, use_left=False)
     parts = filter(lambda x: x.text, parts)

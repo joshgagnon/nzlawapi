@@ -1,8 +1,37 @@
 # -*- coding: utf-8 -*-
 import re
-from common import get_left, separator_reg
+from common import get_left, separator_reg, is_center
 from bs4 import element, NavigableString
 from tables import format_tables
+
+
+def is_title(paragraph):
+    #In capitals?  or bold? probably  a title
+    return paragraph.text and (paragraph.text.upper() == paragraph.text or \
+            len(paragraph.contents) == 1 and paragraph.contents[0].name == 'strong') or \
+            paragraph.attrs.get('bold') == '1'
+
+
+def convert_to_title(paragraph):
+    paragraph.name = 'title'
+    if len(paragraph.contents) and not isinstance(paragraph.contents[0], NavigableString):
+        paragraph.contents[0].unwrap()
+    if paragraph.is_empty_element:
+        paragraph.decompose()
+
+
+""" Currently can't think of a way of guaranteeing first title is in body without
+    some sort of look forward technique, which means we can't do it in the first pass.
+    But I would like to move this logic to pdfs.py  """
+def tweak_intituling_interface(soup):
+    first_para = soup.find('body').find('paragraph')
+    if not first_para.text or re.compile('^\s*\[1\]').match(first_para.text):
+        last_line = soup.find('intituling').find_all('intituling-field')[-1]
+        if last_line.find('strong') and not is_center(last_line):
+            soup.find('body').insert(0, last_line)
+            last_line.name = 'paragraph'
+    return soup
+
 
 
 def generate_body(soup):
@@ -34,15 +63,8 @@ def generate_body(soup):
         elif separator_reg.match(paragraph.text):
             paragraph.clear()
             paragraph.name = 'signature-line'
-        # In capitals?  probably  a title
-        elif paragraph.text and (paragraph.text.upper() == paragraph.text or \
-            len(paragraph.contents) == 1 and paragraph.contents[0].name == 'strong') or \
-            paragraph.attrs.get('bold') == '1':
-            paragraph.name = 'title'
-            if len(paragraph.contents) and not isinstance(paragraph.contents[0], NavigableString):
-                paragraph.contents[0].unwrap()
-            if paragraph.is_empty_element:
-                paragraph.decompose()
+        elif is_title(paragraph):
+            convert_to_title(paragraph)
         elif paragraph.text and brackets_reg.match(paragraph.text) and paragraph.attrs['center'] == '1':
             paragraph.name = 'subtitle'
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':

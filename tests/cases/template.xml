@@ -4,23 +4,25 @@
         <court></court>
         <registry></registry>
         <neutral-citation></neutral-citation>
-        <matter><qualifier></qualifier>
-        <value>
-        </value>
+        <matter>
+            <qualifier></qualifier>
+            <value>
+            </value>
         </matter>
-        <matter><qualifier></qualifier>
-        <value>
-        </value>
+        <matter>
+            <qualifier></qualifier>
+            <value>
+            </value>
         </matter>
         <parties>
-        <court-file></court-file>
-        	<plantiffs>
-            <plantiff>
-                <qualifier></qualifier>
-                <value></value>
-                <descriptor></descriptor>
-            </plantiff>
-        </plantiffs>
+            <court-file></court-file>
+            <plantiffs>
+                <plantiff>
+                    <qualifier></qualifier>
+                    <value></value>
+                    <descriptor></descriptor>
+                </plantiff>
+            </plantiffs>
             <defendants>
                 <defendant>
                     <qualifier></qualifier>
@@ -35,7 +37,6 @@
                     <descriptor></descriptor>
                 </thirdparty>
             </thirdparties>
-
         </parties>
         <hearing></hearing>
         <counsel></counsel>
@@ -50,7 +51,7 @@
 
     <body>
         <title></title>
-         <paragraph>
+        <paragraph>
             <label></label>
             <text>
             </text>
@@ -60,7 +61,8 @@
             <text>
             </text>
             <list>
-                <entry><label></label>
+                <entry>
+                    <label></label>
                     <text></text>
                 </entry>
             </list>

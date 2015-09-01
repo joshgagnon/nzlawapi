@@ -28,6 +28,8 @@ def get_width(el):
 def get_bold(el):
     return el.attrs.get('bold')
 
+def is_center(el):
+    return el.attrs.get('center') == '1'
 
 def find_reg_el(soup, reg, field='intituling-field'):
     for e in soup.find_all(field):
