@@ -44,9 +44,9 @@ def find_until(el, reg=None, use_left=True, forward=True, more_left=False, debug
         if forward:
             return el.next_sibling
         return el.previous_sibling
-
+    """ WARNING MAGIC NUMBER BELOW """
     while direction(el) and not (reg and reg.match(direction(el).text)) and (
-        not use_left or get_left(direction(el)) == left) and get_bold(direction(el)) == bold and (
+        not use_left or abs(get_left(direction(el)) -left) < 3.0 ) and get_bold(direction(el)) == bold and (
         not more_left or get_left(direction(el)) > left):
         results.append(direction(el))
         el = direction(el)

@@ -22,7 +22,9 @@ courtfile_variants = [
     '\d{4}-\d{3}-\d{6}',
     'AP \d{2}\/\d{4}']
 # TODO expand ranges
+
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
+qualifier_pattern = re.compile('(AND BETWEEN|AND|BETWEEN)')
 
 def generate_intituling(soup):
     for strong in soup.find('intituling').find_all('strong'):
@@ -292,7 +294,7 @@ def parties(soup):
     return results
 
 
-qualifier_pattern = re.compile('(and between|and|between)', flags=re.IGNORECASE)
+
 
 
 def find_parties(soup):
@@ -317,13 +319,13 @@ def find_parties(soup):
     plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
     thirdparty_pattern = re.compile('.*Third [Pp]art(y|ies)')
     next_qualifier = find_reg_el(soup, qualifier_pattern)
-
     parties[-1]['court-file'] = court_file_before(soup, next_qualifier)
 
     while qualifier_pattern.match(next_qualifier.text):
         segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
         """ Must also split on lines that aren't all caps """
         splits = [i + 1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
+
         for seg in indexsplit(segments, *splits):
             add_persons(next_qualifier.text, seg)
         next_qualifier = segments[-1].next_sibling
@@ -332,7 +334,6 @@ def find_parties(soup):
             parties += [copy.deepcopy(party_dict)]
             parties[-1]['court-file'] = next_qualifier.text
             next_qualifier = next_qualifier.next_sibling
-
     return parties
 
 
@@ -349,29 +350,29 @@ def find_versus(soup):
 
 
 def matters(soup):
-    matter_pattern = re.compile('(and\s)?(in the matter|in the estate|under)(\sof)?\s?', flags=re.IGNORECASE)
+    matter_pattern = re.compile('(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
     next_qualifier = find_reg_el(soup, matter_pattern)
     results = []
-    try:
-        while matter_pattern.match(next_qualifier.text):
-            matter = soup.new_tag('matter')
-            qualifier = soup.new_tag('qualifier')
-            value = soup.new_tag('value')
-            text = re.sub(matter_pattern, '', next_qualifier.text)
-            if len(text):
-                qualifier.string = next_qualifier.text.replace(text, '')
-                value.string = text
-                next_qualifier = next_qualifier.next_sibling
-            else:
-                qualifier.string = next_qualifier.text
-                segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling, debug=True)
-                value.string = ' '.join(map(lambda x: x.text, segments))
-                next_qualifier = segments[-1].next_sibling
-            matter.append(qualifier)
-            matter.append(value)
-            results.append(matter)
-    except Exception, e:
-        pass
+
+    while matter_pattern.match(next_qualifier.text):
+        matter = soup.new_tag('matter')
+        qualifier = soup.new_tag('qualifier')
+        value = soup.new_tag('value')
+        text = re.sub(matter_pattern, '', next_qualifier.text).strip()
+        segments = []
+        if len(text):
+            qualifier.string = next_qualifier.text.replace(text, '')
+        else:
+            qualifier.string = next_qualifier.text
+            next_qualifier = next_qualifier.next_sibling
+            segments += [next_qualifier]
+        segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(text)), use_left=not bool(len(text)))
+        value.string =  u' '.join(filter(None, [text] + map(lambda x: x.text, segments)))
+        segments.insert(0, next_qualifier)
+        next_qualifier = segments[-1].next_sibling
+        matter.append(qualifier)
+        matter.append(value)
+        results.append(matter)
 
     return results
 
