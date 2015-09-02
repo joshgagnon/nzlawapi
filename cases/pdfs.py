@@ -24,7 +24,7 @@ from cases.variables import THRESHOLDS
 
 """ force horizontal lines """
 def find_neighbors (self, plane, ratio):
-    objs = plane.find((self.x0-1000, self.y0+3, self.x1+1000, self.y1-3))
+    objs = plane.find((self.x0-1000, min(self.y0+3, self.y1-3), self.x1+1000, max(self.y0+3 ,self.y1-3)))
     objs = [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal))]
     return objs
@@ -174,6 +174,7 @@ class DocState(object):
     bbox = None
     prev_bbox = None
     line_bbox = None
+    char_bbox = None
     prev_line_bbox = None
     size = None
     font = None
@@ -421,8 +422,7 @@ class DocState(object):
             self.calibrated = True
 
     def is_superscript(self):
-
-        return self.size < self.thresholds['superscript']  and self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset'])
+        return self.size < self.thresholds['superscript']  and (self.char_bbox and self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset']))
 
     def is_quote(self):
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']

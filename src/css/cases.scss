@@ -19,10 +19,10 @@
 		    line-height: normal;
 		 }
 		 .paragraph{
-			 .label:before{
+			 &>.label:before{
 			 	content: '[';
 			 }
-			 .label:after{
+			 &>.label:after{
 			 	content: ']';
 			 }
 			margin-bottom: 30px;
