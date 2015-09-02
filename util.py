@@ -12,7 +12,8 @@ import datetime
 
 xslt = {
     'transform': os.path.join('xslt', 'transform.xslt'),
-    'highlight': os.path.join('xslt', 'highlight.xslt')
+    'highlight': os.path.join('xslt', 'highlight.xslt'),
+    'case': os.path.join('xslt', 'cases.xslt'),
 }
 
 

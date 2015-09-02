@@ -20,10 +20,6 @@ from cases.transform.common import remove_empty_elements
 
 
 
-
-
-
-
 def massage_xml(soup, debug):
     soup = remove_empty_elements(soup)
     if debug:

@@ -72,6 +72,7 @@ def logout():
 @Base.route('/open_article/<sub>')
 @Base.route('/open_article/<sub>/<subsub>')
 @Base.route('/edit_published/<sub>')
+@Base.route('/case_preview', methods=['GET'])
 @require_auth
 def browser(**args):
     return render_template('browser.html')

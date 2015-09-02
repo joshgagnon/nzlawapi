@@ -117,3 +117,20 @@ def query():
     else:
         raise CustomException('Badly formed query')
     return jsonify(result)
+
+
+
+import uuid
+from cases.transform_case import process_case
+from util import tohtml, xslt
+import os
+from lxml import etree
+@Query.route('/case_preview', methods=['POST'])
+def case_preview():
+    file = request.files['file']
+    filename = str(uuid.uuid4())+'.pdf'
+    location = os.path.join('/tmp', filename)
+    request.files['file'].save(location)
+    result = tohtml(etree.fromstring(process_case(location)), xslt['case'])
+    os.unlink(location)
+    return etree.tostring(result, encoding='UTF-8', method="html")

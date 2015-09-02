@@ -61,7 +61,8 @@ var UndoMixin = {
 
             }
         });
-    }
+    },
+    //TODO, unlisten
 }
 
 var Modal = require('react-bootstrap/lib/Modal');

@@ -1,46 +1,36 @@
  .results-container{
-    .case-container{
-        max-width:$screen-lg-min;
-        margin: 0 auto;
-        margin-top:10px;
-        padding-left:10px;
-        @media (min-width: $screen-sm-min) {
-            padding-left: $buttonbar-outer-width;
-        }
-
-
-
-        // fixes
-          -webkit-transform: translatez(0);
-       /* .t span{
-        	display:inline !important;
-        }*/
-    	 -webkit-text-stroke: initial !important;
-    	   transform-style: flat !important;
-
-    	div{
-    		margin:0;
+    .case{
+    	font-family: Times New Roman;
+    	font-size: 16px;
+    	padding:50px 50px 50px;
+    	line-height: 20px;
+    	.court, .full-citation, .judgment{
+    		font-weight: bold;
     	}
 
-   	.d{display:none}
-	.pf{
-		position:relative;
-		margin: 13px auto;
-		border: 1px solid #ccc;
-		border-collapse: separate;
+    	.label{
+    		display: inline;
+
+		    padding: 0 20px 0 0;
+		    font-weight: normal;
+		    white-space: normal;
+		    font-size: 100%;
+		    color: black;
+		    line-height: normal;
+		 }
+		 .paragraph{
+			 .label:before{
+			 	content: '[';
+			 }
+			 .label:after{
+			 	content: ']';
+			 }
+			margin-bottom: 30px;
+		}
+		 .text{
+		 	display: inline;
+		 }
 	}
-	.pc{position:absolute;border:0;padding:0;margin:0;top:0;left:0;width:100%;height:100%;overflow:hidden;display:block;transform-origin:0 0;-ms-transform-origin:0 0;-webkit-transform-origin:0 0}
-	.pc.opened{display:block}
-	.bf{position:absolute;border:0;margin:0;top:0;bottom:0;width:100%;height:100%;-ms-user-select:none;-moz-user-select:none;-webkit-user-select:none;user-select:none}
-	.bi{position:absolute;border:0;margin:0;-ms-user-select:none;-moz-user-select:none;-webkit-user-select:none;user-select:none}
-	.c{position:absolute;border:0;padding:0;margin:0;overflow:hidden;display:block}
-	.t{position:absolute;white-space:pre;transform-origin:0 100%;-ms-transform-origin:0 100%;-webkit-transform-origin:0 100%;unicode-bidi:bidi-override;-moz-font-feature-settings:"liga" 0}
-	.t:after{content:''}
-	.t span{position:relative;unicode-bidi:bidi-override}
-	._{color:transparent;z-index:-1}
-	::selection{background:rgba(127,255,255,0.4)}
-	::-moz-selection{background:rgba(127,255,255,0.4)}
-	.pi{display:none}
-	.d{position:absolute;transform-origin:0 100%;-ms-transform-origin:0 100%;-webkit-transform-origin:0 100%}
-	}
+
+
 }
