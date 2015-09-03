@@ -175,12 +175,14 @@ def generate_footer(soup):
     footer = soup.new_tag('footer')
     text = None
     # remove firstpage
-    soup.find('footer-page').decompose()
+
     for f in soup.find_all('footer-field'):
-        if not soup.find('superscript'):
+        print f
+        if not f.parent.find('superscript'):
             continue
         footnote = soup.new_tag('footnote-text')
         for child in f.contents[:]:
+            print child
             if child.name == 'superscript':
                 child.name = 'key'
                 footnote.append(child)

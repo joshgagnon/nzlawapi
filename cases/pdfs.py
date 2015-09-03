@@ -424,7 +424,8 @@ class DocState(object):
     def is_superscript(self):
         return self.size < self.thresholds['superscript']  and (self.char_bbox and self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset']))
 
-    def is_quote(self):
+    def is_quote(self, bbox=None):
+    	bbox = bbox or self.line_bbox
         return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
 
     def is_footer(self):
@@ -578,15 +579,17 @@ class Converter(PDFConverter):
                 self.doc.handle_hline(item)
 
             elif isinstance(item, LTCurve):
-                self.doc.out.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
-                                 (item.linewidth, bbox2str(item.bbox), item.get_pts()))
+            	if False:
+	                self.doc.out.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
+	                                 (item.linewidth, bbox2str(item.bbox), item.get_pts()))
 
             elif isinstance(item, LTFigure):
-                self.doc.out.write('<figure name="%s" bbox="%s">\n' %
-                                 (item.name, bbox2str(item.bbox)))
-                for child in item:
-                    render(child)
-                self.doc.out.write('</figure>\n')
+            	if False:
+	                self.doc.out.write('<figure name="%s" bbox="%s">\n' %
+	                                 (item.name, bbox2str(item.bbox)))
+	                for child in item:
+	                    render(child)
+	                self.doc.out.write('</figure>\n')
 
             elif isinstance(item, LTTextLine):
                 # only a new if some content

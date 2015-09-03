@@ -131,6 +131,7 @@ def case_preview():
     filename = str(uuid.uuid4())+'.pdf'
     location = os.path.join('/tmp', filename)
     request.files['file'].save(location)
-    result = tohtml(etree.fromstring(process_case(location)), xslt['case'])
+    result = tohtml(etree.fromstring(process_case(location, debug=True)), xslt['case'])
+    print result
     os.unlink(location)
     return etree.tostring(result, encoding='UTF-8', method="html")
