@@ -2,17 +2,30 @@
     .case{
     	font-family: Times New Roman;
     	font-size: 16px;
-    	padding:50px 50px 50px;
+    	padding:3em;
     	line-height: 20px;
-    	.court, .full-citation, .judgment{
+        max-width:$screen-lg-min;
+        margin: 0 auto;
+
+		emphasis {
+		    font-style: italic;
+		}
+    	.court, .registry, .full-citation, .neutral-citation, .court-file, .waistband, h4{
     		font-weight: bold;
     	}
-
+    	.neutral-citation{
+    		text-align: right;
+    	}
+		.full-citation {
+		    width: 100%;
+		    text-align: center;
+		    margin-bottom: 2em;
+		}
     	.label{
     		display: inline;
 
-		    padding: 0 20px 0 0;
-		    font-weight: normal;
+		    padding: 0 2em 0 0;
+		    font-weight: inherit;
 		    white-space: normal;
 		    font-size: 100%;
 		    color: black;
@@ -25,11 +38,108 @@
 			 &>.label:after{
 			 	content: ']';
 			 }
-			margin-bottom: 30px;
+			margin-bottom: 1.5em;
+			text-align: justify;
 		}
 		 .text{
 		 	display: inline;
 		 }
+		 table{
+		 	width:100%;
+		 	border-spacing: 2em 0;
+    		border-collapse: separate;
+    		.table-gap-after td{
+    			    padding-bottom: 2em;
+    		}
+    		.minor td:nth-child(1){
+    			padding-left:1em;
+    			font-style:italic;
+    		}
+
+		 }
+
+		.contents{
+			width:80%;
+			margin:0 auto;
+			td:nth-child(2){
+				text-align: right;
+			}
+		}
+
+		 .parties, .matter{
+		 	td:nth-child(1) {
+		 		text-align:right;
+		 		width: 33%;
+		 	}
+		 	td:nth-child(2) {
+		 		width:33%
+		 	}
+		 	tr.center td{
+		 		text-align: center;
+		 	}
+
+		 }
+		 .hearing, .counsel, .bench, .plea, .judgment, .solicitor{
+		 	margin-bottom:1em;
+
+		 	td:nth-child(1){
+		 		width:25%;
+		 		text-align: right;
+		 	}
+		 }
+
+		 .signature-name, .signature-line{
+		 	margin-left: 50%;
+		 }
+
+		 .signature-line{
+		 	    margin-top: 4em;
+    		margin-bottom: 0;
+		 }
+		 hr{
+		 	border-color:#000;
+		 }
+		 h5{
+		 	   font-size: 16px;
+    		font-style: italic;
+		 }
+
+		 ol{
+		 	list-style: none;
+		 	li{
+		 		padding-left:3em;
+		 		margin-bottom:0.5em;
+		 		.label{
+				    margin-left: -3em;
+				    padding: 0;
+				    width: 3em;
+				    display: inline-block;
+				    text-align: left;
+		 		}
+		 	}
+		 }
+
+		 .paragraph ol{
+		 	    margin: 1em 0;
+		 	    li .label:after{
+			 	content: ')';
+			 }
+		}
+
+		 .waistband{
+		 	width:100%;
+		 	&>h4{
+		 		text-align:center
+		 	}
+		 	&>.text, &>ol{
+			    padding: 1em 4em;
+			    display: inline-block;
+		 	}
+		 }
+		 .quote {
+		    margin: 1em 4em;
+		    font-size: 90%;
+		}
 	}
 
 

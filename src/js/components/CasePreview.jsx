@@ -21,6 +21,7 @@ module.exports = React.createClass({
             if(e.keyCode === 32 && this._droppedFiles){
                 this.post(this._droppedFiles)
             }
+            e.preventDefault();
         }.bind(this));
     },
     onDragEnter: function(e) {
@@ -70,9 +71,6 @@ module.exports = React.createClass({
         var fileInput = React.findDOMNode(this.refs.fileInput);
         fileInput.value = null;
         fileInput.click();
-    },
-    onKeyDown: function(e){
-        console.log(e)
     },
     render: function(){
       return <div className="browser"

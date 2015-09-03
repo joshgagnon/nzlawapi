@@ -55,14 +55,14 @@ def generate_intituling(soup):
     optional_section('hearing', find_hearing, intituling)
     optional_section('counsel', find_counsel, intituling)
     optional_section('bench', find_bench, intituling)
+    #optional_section('solicitor', find_solicitors, intituling)
+    for solicitor in solicitors(soup):
+        intituling.append(solicitor)
     optional_section('plea', find_plea, intituling)
     optional_section('received', find_plea, intituling)
     optional_section('judgment', find_judgment, intituling)
 
     intituling.append(waistband(soup))
-
-    for solicitor in solicitors(soup):
-        intituling.append(solicitor)
 
     return intituling
 
@@ -227,9 +227,9 @@ def waistband(soup):
             entry = soup.new_tag('entry')
             label = soup.new_tag('label')
             label.string = counter
-            text_el = soup.new_tag('text')
-            text_el.string = text[2:]
             entry.append(label)
+            text_el = soup.new_tag('text')
+            text_el.string = text[2:].strip()
             entry.append(text_el)
             waistband.contents[-1].append(entry)
             counter = chr(ord(counter) + 1)
@@ -237,7 +237,10 @@ def waistband(soup):
             if not waistband.find('text'):
                 text_el = soup.new_tag('text')
                 waistband.append(text_el)
-            waistband.find_all('text')[-1].append(' '+text)
+            last_text = waistband.find_all('text')[-1]
+            if len(last_text.contents) and  last_text.contents[-1]:
+                last_text.append(' ')
+            last_text.append(text)
 
     return waistband
 
