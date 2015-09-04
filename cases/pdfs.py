@@ -16,10 +16,12 @@ import re
 import os
 import copy
 from cases.variables import THRESHOLDS
+from collections import Counter
+
 
 """ This module reads from a pdf file and generates an xml doc.
-	It makes a few assumptions, and will divide the doc into intituling, body and footer,
-	as well as create tables, indents, quotes and paragraphs """
+    It makes a few assumptions, and will divide the doc into intituling, body and footer,
+    as well as create tables, indents, quotes and paragraphs """
 
 
 """ force horizontal lines """
@@ -110,7 +112,7 @@ class DocStateMachine(object):
             return not result if isinstance(t, Not) else result
 
         def equal(char1, char2):
-        	return char1 == '*' or char1 == char2
+            return char1 == '*' or char1 == char2
 
         for i in xrange(len(self.inputs)):
             if equal(self.inputs[i].string[self.positions[i]], char):
@@ -125,8 +127,8 @@ class DocStateMachine(object):
                         if self.inputs[i].post_action:
                             self.inputs[i].post_action(self.doc)
                         if self.inputs[i].dependants:
-                        	self.inputs += self.inputs[i].dependants
-                        	self.positions += [0] * len(self.inputs[i].dependants)
+                            self.inputs += self.inputs[i].dependants
+                            self.positions += [0] * len(self.inputs[i].dependants)
             else:
                 self.positions[i] = 0
 
@@ -150,7 +152,7 @@ def close_entry(doc):
 RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
     #Match(string='JUDGMENT', tests=['is_center_aligned', 'is_intituling'], dependants=[
-    	#Match(string='*', open='body,paragraph', close='intituling', tests=['is_left_aligned', 'is_bold', Not('is_table'), 'is_intituling'])
+        #Match(string='*', open='body,paragraph', close='intituling', tests=['is_left_aligned', 'is_bold', Not('is_table'), 'is_intituling'])
     #]),
     Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
@@ -168,7 +170,6 @@ class DocState(object):
 
     CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f\n]')
 
-    calibrated = False
     has_new_line = False
     has_new_chunk = False
     bbox = None
@@ -201,7 +202,15 @@ class DocState(object):
         self.open_tag('intituling')
         self.font = None
         self.unknown_font = False
+        self.font_stats = {'mean': 0, 'count': 0}
         self.thresholds = copy.deepcopy(THRESHOLDS)
+
+    def analyse_stats(self, sizes):
+        mean = sum(sizes) / len(sizes)
+        mode = Counter(sizes).most_common(1)[0][0]
+        self.thresholds['footer_size'] = mode - 1;
+        self.thresholds['quote_size'] = mode;
+
 
     def para_threshold(self, threshold_key='paragraph_vertical_threshold'):
         (prev_bbox, bbox) = (self.prev_line_bbox, self.line_bbox)
@@ -325,6 +334,9 @@ class DocState(object):
             self.close_tag('entry')
             self.open_tag('entry')
 
+    def handle_page(self):
+        self.switch_body()
+
     def handle_new_line(self):
         self.has_new_line = False
         handle_space = False
@@ -346,9 +358,9 @@ class DocState(object):
         else:
             self.switch_body()
 
-        if self.is_intituling():
+        if self.is_footer():
             pass
-        elif self.is_footer():
+        elif self.is_intituling():
             pass
 
         elif self.is_table():
@@ -370,7 +382,8 @@ class DocState(object):
                 handle_space = True
 
         elif self.is_left_indented():
-            if 'indent' in self.tag_stack:# and self.para_threshold('list_vertical_threshold'):
+
+            if 'indent' in self.tag_stack:
                 self.close_tag('indent')
             if 'indent' not in self.tag_stack:
                 self.open_tag('indent')
@@ -402,7 +415,6 @@ class DocState(object):
             self.close_style('superscript')
             self.buffer.write(' ')
 
-
         if self.is_italic(self.font):
             self.open_style('emphasis')
 
@@ -415,36 +427,36 @@ class DocState(object):
         elif 'strong' in self.style_stack:
             self.close_style('strong')
 
-        # guess that footer doesn't come first.  should instead maybe sample whole document
-        if not self.calibrated and self.size:
-            self.thresholds['footer_size'] = self.size - 2
-            #self.thresholds['superscript_size'] = self.size - 4
-            self.calibrated = True
+        if not self.is_footer():
+            self.switch_body()
 
     def is_superscript(self):
         return self.size < self.thresholds['superscript']  and (self.char_bbox and self.char_bbox[1] > (self.line_bbox[1] + self.thresholds['superscript_offset']))
 
     def is_quote(self, bbox=None):
-    	bbox = bbox or self.line_bbox
-        return self.bbox[0] > self.thresholds['quote'] and self.size < self.thresholds['quote_size']
+        bbox = bbox or self.line_bbox
+        margin = bbox[0] > self.thresholds['quote']
+        size = self.size < self.thresholds['quote_size']
+        return margin and size
 
     def is_footer(self):
-        return (self.calibrated and
-            (self.size and self.size < self.thresholds['footer_size']))
+        correct_size = (self.size and self.size <= self.thresholds['footer_size'])
+        return correct_size and (not self.is_quote() or self.out == self.footer)
+
+   # def larger_than_footer(self):
+        #print self.size, self.thresholds['footer_size']
+    #    return (self.size and self.size > self.thresholds['footer_size'])
 
     def is_body(self):
         return not self.is_footer() and not self.is_intituling()
 
     def register_font(self, item):
-
         if hasattr(item, 'fontsize'):
             if self.size != item.fontsize:
                 self.size = item.fontsize
-
         if hasattr(item, 'fontname'):
             if self.font != item.fontname:
                 self.font = item.fontname
-
             self.unknown_font = isinstance(item.font, PDFCIDFont)
         self.char_bbox = item.bbox
 
@@ -474,13 +486,13 @@ class DocState(object):
         bbox = bbox or self.bbox
         """ nothing should be centered until we get something else """
         if not self.max_width[0]:
-        	return
+            return
         """ should be within 'center_tolerance_threshold' of margins
-        	and at least center_margin_min from the edge """
+            and at least center_margin_min from the edge """
         return ( self.thresholds['center_tolerance_threshold'] >
-        		abs((bbox[0]- self.max_width[0]) -  (self.max_width[1] - bbox[2])) and
-        		(bbox[0]- self.max_width[0] > self.thresholds['center_margin_min'] and
-	             self.max_width[1] - bbox[2] >  self.thresholds['center_margin_min']))
+                abs((bbox[0]- self.max_width[0]) -  (self.max_width[1] - bbox[2])) and
+                (bbox[0]- self.max_width[0] > self.thresholds['center_margin_min'] and
+                 self.max_width[1] - bbox[2] >  self.thresholds['center_margin_min']))
 
     def is_left_indented(self, bbox=None):
         bbox = bbox or self.line_bbox
@@ -523,10 +535,10 @@ class DocState(object):
         text = self.CONTROL.sub(u'', text)
         if item and text.strip():
             self.register_font(item)
-        if self.has_new_line:
-            self.handle_new_line()
-        if self.has_new_chunk:
-            self.handle_new_chunk()
+            if self.has_new_line:
+                self.handle_new_line()
+            if self.has_new_chunk:
+                self.handle_new_chunk()
         self.handle_style()
         self.state.step(enc(text, 'utf-8'))
         self.buffer.write(enc(text, 'utf-8'))
@@ -536,12 +548,12 @@ class DocState(object):
 
 class Converter(PDFConverter):
 
-    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
+    def __init__(self, rsrcmgr, doc, codec='utf-8', pageno=1,
              laparams=None, imagewriter=None):
-        PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
+        PDFConverter.__init__(self, rsrcmgr, None, codec=codec, pageno=pageno, laparams=laparams)
         self.imagewriter = imagewriter
         self.laparams = laparams
-        self.doc = DocState()
+        self.doc = doc
         return
 
     def receive_layout(self, ltpage):
@@ -567,6 +579,7 @@ class Converter(PDFConverter):
                 return int(b.y0 - a.y0)
 
             if isinstance(item, LTPage):
+                self.doc.handle_page()
                 item._objs = sorted(item._objs, cmp=sort_y)
                 for child in item:
                     #print child
@@ -579,17 +592,17 @@ class Converter(PDFConverter):
                 self.doc.handle_hline(item)
 
             elif isinstance(item, LTCurve):
-            	if False:
-	                self.doc.out.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
-	                                 (item.linewidth, bbox2str(item.bbox), item.get_pts()))
+                if False:
+                    self.doc.out.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
+                                     (item.linewidth, bbox2str(item.bbox), item.get_pts()))
 
             elif isinstance(item, LTFigure):
-            	if False:
-	                self.doc.out.write('<figure name="%s" bbox="%s">\n' %
-	                                 (item.name, bbox2str(item.bbox)))
-	                for child in item:
-	                    render(child)
-	                self.doc.out.write('</figure>\n')
+                if False:
+                    self.doc.out.write('<figure name="%s" bbox="%s">\n' %
+                                     (item.name, bbox2str(item.bbox)))
+                    for child in item:
+                        render(child)
+                    self.doc.out.write('</figure>\n')
 
             elif isinstance(item, LTTextLine):
                 # only a new if some content
@@ -623,7 +636,6 @@ class Converter(PDFConverter):
             else:
                 assert 0, item
             return
-
         render(ltpage)
         return
 
@@ -631,25 +643,43 @@ class Converter(PDFConverter):
         return self.doc.finalize()
 
 
+class StatsConverter(Converter):
+    def __init__(self, *args, **kwargs):
+        Converter.__init__(self, *args, **kwargs)
+        self.sizes = []
+
+    def receive_layout(self, ltpage):
+        def recurse(item):
+            try:
+                for i in item:
+                    recurse(i)
+            except TypeError:
+                if hasattr(item, 'fontsize'):
+                    self.sizes.append(item.fontsize)
+        recurse(ltpage)
+
+    def finalize():
+        self.doc.analyse_stats(sizes=self.sizes)
+
+
 def generate_parsable_xml(path, tmp):
     rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-
     # Set parameters for analysis.
     laparams = LAParams(detect_vertical=False, char_margin=3, line_margin=0.01)#,line_margin=2)
     # Create a PDF page aggregator object.
-    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
     password = ''
     path = canoncialize_pdf(path, tmp)
     # print path
     with open(path, 'rb') as fp:
         parser = PDFParser(fp)
         document = PDFDocument(parser)
-        device = Converter(rsrcmgr, retstr, codec='utf-8', laparams=laparams)
-
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-
+        doc = DocState()
+        stats_device = StatsConverter(rsrcmgr, doc, codec='utf-8', laparams=laparams)
+        device = Converter(rsrcmgr, doc, codec='utf-8', laparams=laparams)
+        interpreter = PDFPageInterpreter(rsrcmgr, stats_device)
+        for page in PDFPage.create_pages(document):
+            interpreter.process_page(page)
+        interpreter.device = device
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
         return re.sub(' +', ' ', device.get_result())

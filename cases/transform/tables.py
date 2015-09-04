@@ -5,6 +5,21 @@ from bs4 import NavigableString
 from cases.variables import THRESHOLDS
 
 
+def unwrap(el):
+    parent = el.parent
+    if not parent:
+        return
+    el.unwrap()
+
+    if parent.name == 'entry' and len(parent.contents) > 1:
+        i = len(parent.contents)-2
+        for c in parent.contents[1:][::-1]:
+            if isinstance(c, NavigableString) and isinstance(parent.contents[i], NavigableString):
+                parent.contents[i].replace_with('%s%s' % (parent.contents[i], c))
+                c.extract()
+            i -= 1
+
+
 def format_table(soup, el):
     contents_reg = re.compile('^\W*(Para No|Table of Contents)\W*$')
     matches = el.find_all(text=contents_reg)
@@ -19,19 +34,8 @@ def format_table(soup, el):
 
     """ unwrap method need to be generalized, use this version """
     for strong in el.find_all(['strong', 'emphasis']):
-        parent = strong.parent
-        if not parent:
-            continue
-        strong.unwrap()
 
-        if parent.name == 'entry' and len(parent.contents) > 1:
-            i = len(parent.contents)-2
-            for c in parent.contents[1:][::-1]:
-                if isinstance(c, NavigableString) and isinstance(parent.contents[i], NavigableString):
-                    parent.contents[i].replace_with('%s%s' % (parent.contents[i], c))
-                    c.extract()
-                i -= 1
-
+        unwrap(strong)
 
 
 
@@ -114,7 +118,7 @@ def format_table(soup, el):
     for row in el.find_all('row'):
         this_left = get_left(row)
         row.attrs = {}
-        if this_left > left or row.contents[0].renderContents().startswith(' '):
+        if this_left > left or (row.contents[0] and row.contents[0].contents[0].startswith('(')):
             row.attrs['minor'] = "true"
 
 

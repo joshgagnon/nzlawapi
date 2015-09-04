@@ -22,11 +22,6 @@ class CaseConversion(unittest.TestCase):
                     self.assertTrue(xml_compare(etree.fromstring(result), expected, p))
                     print 'Passed test for %s' % test_file
 
-class PluralsTest(unittest.TestCase):
-
-    def test_plural_sets(self):
-        print 'myma'
-
 
 
 if __name__ == '__main__':

@@ -76,6 +76,8 @@ def full_citation_lines(soup):
     #        return strings[i:]
     # might be a typo in there
     for i, s in enumerate(strings):
+        if not re.compile('[a-z0-9]', flags=re.IGNORECASE).match(s):
+            continue
         if len(s) > 20 and sum(1 for c in s if c.isupper()) > (len(s) / 2): #dangerous magic numbers
             return strings[i:]
     return [strings[-1]]
@@ -370,7 +372,7 @@ def matters(soup):
             next_qualifier = next_qualifier.next_sibling
             segments += [next_qualifier]
         segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(text)), use_left=not bool(len(text)))
-        value.string =  u' '.join(filter(None, [text] + map(lambda x: x.text, segments)))
+        value.string = u' '.join(filter(None, [text] + map(lambda x: x.text, segments)))
         segments.insert(0, next_qualifier)
         next_qualifier = segments[-1].next_sibling
         matter.append(qualifier)
