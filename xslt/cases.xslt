@@ -60,7 +60,11 @@
 	</xsl:template>
 
 	<xsl:template match="court-file">
-			<tr><td colspan="3" class="court-file"><xsl:value-of select="." /></td></tr>
+			<tr><td></td><td></td><td class="court-file"><xsl:value-of select="." /></td></tr>
+	</xsl:template>
+
+	<xsl:template match="neutral-citation">
+		<table><tr><td></td><td></td><td class="neutral-citation"><xsl:value-of select="." /></td></tr></table>
 	</xsl:template>
 
 	<xsl:template match="defendants|plantiffs|thirdparties">

@@ -677,8 +677,10 @@ def generate_parsable_xml(path, tmp):
         stats_device = StatsConverter(rsrcmgr, doc, codec='utf-8', laparams=laparams)
         device = Converter(rsrcmgr, doc, codec='utf-8', laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, stats_device)
+
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
+
         interpreter.device = device
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)

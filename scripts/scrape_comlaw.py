@@ -27,7 +27,7 @@ download = 'https://www.comlaw.gov.au/Details/%s/Download'
 details = 'https://www.comlaw.gov.au/Details/%s'
 top_level_sel = '#ctl00_MainContent_pnlBrowse a font'
 
-THREAD_MAX = 3
+THREAD_MAX = 10
 SLEEP = 2
 
 thread_limiter = [
@@ -36,6 +36,8 @@ thread_limiter = [
     threading.BoundedSemaphore(THREAD_MAX)
     ]
 
+import sys
+sys.setrecursionlimit(10000)
 
 def thread_limit(index):
     def apply_decorator(func):
@@ -97,6 +99,7 @@ def get_document_info((id, series)):
     result['id'] = id
     result['series'] = series
     result['links'] = map(lambda x: x['href'], page.find_all('a', onclick=re.compile("Primary Document Icon")))
+    result['title'] = page.select('#ctl00_MainContent_ucItemPane_lblTitleGeneric')[0].text
     try:
         result['superseded'] = page.select('#ctl00_MainContent_ucItemPane_lblStatus')[0].text == 'Superseded'
     except AttributeError:
@@ -149,8 +152,8 @@ def add_info_to_db(info, documents):
         cur.execute('delete from comlaw_info where id = %(id)s', info)
         cur.execute('delete from comlaw_documents where comlaw_id = %(id)s', info)
         cur.execute("""insert into comlaw_info """
-            """(id, superseded, prepared_date, published_date, start_date, end_date, links, series) values"""
-            """(%(id)s, %(superseded)s, %(prepared_date)s, %(published_date)s, %(start_date)s, %(end_date)s, %(links)s, %(series)s)""",
+            """(id, title, superseded, prepared_date, published_date, start_date, end_date, links, series) values"""
+            """(%(id)s, %(title)s, %(superseded)s, %(prepared_date)s, %(published_date)s, %(start_date)s, %(end_date)s, %(links)s, %(series)s)""",
             info)
         for document in documents:
             document = dict(document.items())
