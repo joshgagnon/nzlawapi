@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, NavigableString
 import re
 import sys
 import datetime
@@ -19,9 +19,23 @@ from cases.transform.common import remove_empty_elements
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
 
 
+def join_adjacent_styles(soup):
+    for el in soup.find_all(['strong', 'emphasis'])[:-1][::-1]:
+        if isinstance(el.next_sibling, Tag) and el.next_sibling.name == el.name:
+            for content in el.next_sibling.contents:
+                last = el.contents[-1]
+                if isinstance(content, NavigableString) and isinstance(last, NavigableString):
+                    last.replace_with('%s%s' % (last, content))
+                else:
+                    el.append(content)
+            el.next_sibling.decompose()
+
+    return soup
+
 
 def massage_xml(soup, debug):
     soup = remove_empty_elements(soup)
+    soup = join_adjacent_styles(soup)
     if debug:
         print soup.prettify()
     soup = tweak_intituling_interface(soup)

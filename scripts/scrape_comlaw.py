@@ -31,7 +31,7 @@ top_level_sel = '#ctl00_MainContent_pnlBrowse a'
 
 
 USE_THREADS = True
-THREAD_MAX = 8
+THREAD_MAX = 1
 SLEEP = 2
 
 thread_limiter = [

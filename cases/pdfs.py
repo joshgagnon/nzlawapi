@@ -8,7 +8,7 @@ from cStringIO import StringIO
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve, LTFigure, LTImage, \
-    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal, LTComponent
+    LTChar, LTTextLine, LTTextBox, LTTextBoxVertical, LTTextGroup, LTTextGroupLRTB, LTTextLineHorizontal, LTComponent, LTAnno
 from pdfminer.utils import bbox2str, enc, apply_matrix_pt
 from pdfminer.pdffont import PDFCIDFont
 from subprocess import Popen, PIPE
@@ -29,10 +29,24 @@ def find_neighbors (self, plane, ratio):
     objs = plane.find((self.x0-1000, min(self.y0+3, self.y1-3), self.x1+1000, max(self.y0+3 ,self.y1-3)))
     objs = [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal))]
+
     return objs
 
+def add(self, obj):
+    # Don't let first element be empty strings
+    if isinstance(obj, LTChar) and self.word_margin:
+        margin = self.word_margin * max(obj.width, obj.height)
+        if self._x1 < obj.x0-margin:
+            LTContainer.add(self, LTAnno(' '))
+    if isinstance(obj, LTChar) and not obj.get_text().strip() and not len(self._objs):
+        return
+    self._x1 = obj.x1
+    LTTextLine.add(self, obj)
+    return
 
 LTTextLineHorizontal.find_neighbors = find_neighbors
+LTTextLineHorizontal.add = add
+
 
 LTCharInit = LTChar.__init__
 
@@ -226,9 +240,10 @@ class DocState(object):
 
 
     def open_tag(self, tag, flush=True, attributes=None):
+        #print 'OPENING', tag, self.tag_stack
+        [self.close_style(s) for s in self.style_stack]
         if flush:
             self.flush()
-
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
@@ -246,9 +261,7 @@ class DocState(object):
 
 
     def close_tag(self, tag, flush=True):
-        if flush:
-            [self.close_style(s) for s in self.style_stack]
-
+        [self.close_style(s) for s in self.style_stack]
         for t in tag.split(','):
             if t in self.tag_stack and flush:
                 self.flush()
@@ -332,7 +345,6 @@ class DocState(object):
         elif self.is_table():
             self.close_tag('row')
             self.open_tag('row')
-
             if self.is_header(self.line_bbox):
                 self.close_tag('table')
                 self.open_tag('paragraph')
@@ -501,8 +513,8 @@ class DocState(object):
                 self.handle_new_line()
             if self.has_new_chunk:
                 self.handle_new_chunk()
-        self.handle_style()
         self.state.step(enc(text, 'utf-8'))
+        self.handle_style()
         self.buffer.write(enc(text, 'utf-8'))
         self.last_char = text
         return
@@ -568,9 +580,9 @@ class Converter(PDFConverter):
 
             elif isinstance(item, LTTextLine):
                 # only a new if some content
+                #print item
                 if get_text(item).strip():
                     self.doc.new_chunk(item.bbox)
-                    #print item
                     for child in item:
                         render(child)
 
