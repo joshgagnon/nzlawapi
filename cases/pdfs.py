@@ -190,6 +190,7 @@ class DocState(object):
         mode = Counter(sizes).most_common(1)[0][0]
         self.thresholds['footer_size'] = mode - 1;
         self.thresholds['quote_size'] = mode;
+        print Counter(sizes)
 
 
     def para_threshold(self, threshold_key='paragraph_vertical_threshold'):
@@ -249,11 +250,12 @@ class DocState(object):
                 self.tag_stack.append(t)
                 if t in ['paragraph', 'intituling-field', 'row', 'entry', 'indent'] and self.bbox:
                     bbox = self.bbox if t in ['intituling-field', 'entry'] else self.line_bbox
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s"' %
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" right-aligned="%s"' %
                           (bbox[0], bbox[1], bbox[2], bbox[3],
                             '1' if self.is_italic(self.font) else '0',
                             '1' if self.is_bold(self.font) else '0',
-                            '1' if self.is_center_aligned() else '0'
+                            '1' if self.is_center_aligned() else '0',
+                            '1' if self.is_right_aligned() else '0'
                             ))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
@@ -635,7 +637,7 @@ class StatsConverter(Converter):
         self.pages.append(ltpage)
 
 
-    def finalize():
+    def finalize(self):
         self.doc.analyse_stats(sizes=self.sizes)
 
 
@@ -657,7 +659,7 @@ def generate_parsable_xml(path, tmp):
 
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
-
+        stats_device.finalize()
 
         for page in stats_device.pages:
             device.receive_layout(page)

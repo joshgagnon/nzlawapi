@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-from common import get_left, separator_reg, is_center
+from common import get_left, separator_reg, is_center, is_right_aligned
 from bs4 import element, NavigableString
 from tables import format_tables
 
@@ -31,6 +31,11 @@ def tweak_intituling_interface(soup):
             soup.find('body').insert(0, last_line)
             last_line.name = 'paragraph'
     return soup
+
+
+def is_signature(paragraph):
+    return (paragraph.previous_sibling and paragraph.previous_sibling.name == 'signature-line' or
+        is_right_aligned(paragraph))
 
 
 
@@ -64,7 +69,7 @@ def generate_body(soup):
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
             paragraph.name = 'subtitle'
             paragraph.contents[0].unwrap()
-        elif paragraph.previous_sibling and paragraph.previous_sibling.name == 'signature-line':
+        elif is_signature(paragraph):
             paragraph.name = 'signature-name'
         else:
             # we must stitch this paragraph to the previous one

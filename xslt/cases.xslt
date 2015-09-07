@@ -177,14 +177,21 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template match="waistband/title">
+	<xsl:template match="waistband/title[position() = 1]">
 		<hr/>
-		<h4>
-			<xsl:apply-templates />
-		</h4>
+			<h4>
+				<xsl:apply-templates />
+			</h4>
+		<xsl:for-each select="following-sibling::title">
+			<h4>
+				<xsl:apply-templates />
+			</h4>
+		</xsl:for-each>
 		<hr/>
 	</xsl:template>
 
+	<xsl:template match="waistband/title[position() > 1]">
+	</xsl:template>
 
 	<xsl:template match="signature-line">
 		<hr class="signature-line"/>
