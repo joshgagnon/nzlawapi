@@ -12,6 +12,7 @@ from collections import defaultdict
 import psycopg2
 from time import sleep
 from httplib import IncompleteRead
+
 """
 This script scrapes https://www.comlaw.gov.au
 
@@ -26,17 +27,17 @@ start = 'https://www.comlaw.gov.au/Browse/'
 series = 'https://www.comlaw.gov.au/Series/%s'
 download = 'https://www.comlaw.gov.au/Details/%s/Download'
 details = 'https://www.comlaw.gov.au/Details/%s'
-top_level_sel = '#ctl00_MainContent_pnlBrowse a font'
+top_level_sel = '#ctl00_MainContent_pnlBrowse a'
 
 
-USE_THREADS = False
-THREAD_MAX = 1
+USE_THREADS = True
+THREAD_MAX = 8
 SLEEP = 2
 
 thread_limiter = [
-    threading.BoundedSemaphore(THREAD_MAX),
-    threading.BoundedSemaphore(THREAD_MAX),
-    threading.BoundedSemaphore(THREAD_MAX)
+    threading.BoundedSemaphore(value=THREAD_MAX),
+    threading.BoundedSemaphore(value=THREAD_MAX),
+    threading.BoundedSemaphore(value=THREAD_MAX)
     ]
 
 import sys
@@ -63,7 +64,7 @@ def get_indices():
     response = safe_open(req)
     page = response.read()
     soup = BeautifulSoup(page, 'lxml')
-    return [start + el.parent['href'] for el in soup.select(top_level_sel)]
+    return [start + el['href'] for el in soup.select(top_level_sel) if not el.find('font')]
 
 
 @thread_limit(2)
@@ -161,10 +162,12 @@ def download_documents(info):
         req = urllib2.Request(details % info['id'])
         response = safe_open(req)
         soup = BeautifulSoup(response.read(), 'lxml')
-        text = soup.select('#RAD_SPLITTER_PANE_CONTENT_ctl00_MainContent_ctl05_RadPane2')[0].renderContents()
+        try:
+            text = soup.select('#RAD_SPLITTER_PANE_CONTENT_ctl00_MainContent_ctl05_RadPane2')[0].renderContents()
 
-        results.append({'document': text, 'format': 'html', 'filename': None, 'comlaw_id': info['id']})
-
+            results.append({'document': text, 'format': 'html', 'filename': None, 'comlaw_id': info['id']})
+        except IndexError:
+            pass
     return results
 
 
@@ -213,17 +216,27 @@ def get_series(id):
 
 
 def open_index(url):
-    for page in table_loop(url):
-        buttons = page.find_all('input', id=re.compile('_btnSeries$'))
-        ids = map(lambda x: x['onclick'].split(',')[4].split('/')[-1].replace('"', ''), buttons)
-        print 'Found %d ids' % len(ids), ids
-        if USE_THREADS:
-            pool = ThreadPool(THREAD_MAX)
-            _results = pool.map(get_series, ids)
-            pool.close()
-            pool.join()
-        else:
-            map(get_series, ids)
+    db = connect_db_config(config)
+    with db.cursor() as cur:
+        cur.execute("""select true from comlaw_indices where url = %(url)s""", {'url': url})
+        results = cur.fetchone()
+    if not results:
+        for page in table_loop(url):
+            buttons = page.find_all('input', id=re.compile('_btnSeries$'))
+            ids = map(lambda x: x['onclick'].split(',')[4].split('/')[-1].replace('"', ''), buttons)
+            print 'Found %d ids' % len(ids), ids
+            if USE_THREADS:
+                pool = ThreadPool(THREAD_MAX)
+                pool.map(get_series, ids)
+                pool.close()
+                pool.join()
+            else:
+                map(get_series, ids)
+        with db.cursor() as cur:
+            cur.execute("""insert into comlaw_indices (url, date) values (%(url)s, %(date)s)""",
+                {'url': url, 'date': datetime.datetime.now()})
+        db.commit()
+    db.close()
 
 
 if __name__ == '__main__':
