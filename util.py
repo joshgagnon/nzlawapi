@@ -389,5 +389,5 @@ def indexsplit(some_list, *args):
     offset = 0
     for arg in args:
         results.append(some_list[offset:arg])
-        offset += arg
+        offset = arg
     return results

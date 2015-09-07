@@ -4,7 +4,7 @@ from distutils import spawn
 IP = '0.0.0.0'
 PORT = 5001
 DEBUG = True
-CASE_DIR = os.path.join(os.getcwd(), 'tests/legislation_archive/justice')
+CASE_DIR = os.path.join('/Users/josh', 'legislation_archive/justice')
 ACT_DIR = os.path.join(os.getcwd(), 'tests/legislation_archive/subscribe')
 PDFTOHTML = '/usr/local/Cellar/pdftohtml/0.40a/bin/pdftohtml'  # 0.40
 PDFTOHTMLEX = spawn.find_executable('pdf2htmlEX')

@@ -204,7 +204,8 @@ def find_solicitors(soup):
 
 def waistband(soup):
     # find all waistband rows
-    reg = re.compile(r'^(ORAL |\(ORAL\) )?(JUDGMENT OF |SENTENCING|SENTENCE)', flags=re.IGNORECASE)
+    # VICTORIA STREET APARTMENTS LIMITED V I R MCKAY AND C T MCKAY HC AK CIV2007-404- 2490 17 March 2008 spelt judment wrong
+    reg = re.compile(r'^([\(\)\w ]+)?(JUDGEMENT |JUDGMENT |SENTENCING|SENTENCE|MINUTE OF THE COURT)', flags=re.IGNORECASE)
 
     start = find_reg_el(soup, reg)
     titles = [start] + find_until(start, use_left=False, center=True)
@@ -334,9 +335,9 @@ def find_parties(soup):
         segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
         """ Must also split on lines that aren't all caps """
         splits = [i + 1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
-
         for seg in indexsplit(segments, *splits):
             add_persons(next_qualifier.text, seg)
+
         next_qualifier = segments[-1].next_sibling
 
         if not qualifier_pattern.match(next_qualifier.text) and courtfile_num.match(next_qualifier.text):

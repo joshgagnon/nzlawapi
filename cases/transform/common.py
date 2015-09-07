@@ -62,7 +62,7 @@ def find_until(el, reg=None, use_left=True, forward=True, more_left=False, cente
     while direction(el) and not (reg and reg.match(direction(el).text)) and (
         not use_left or abs(get_left(direction(el)) -left) < 3.0 ) and get_bold(direction(el)) == bold and (
         not more_left or get_left(direction(el)) > left) and (
-        not center or is_center(direction(el)) == is_center(el)):
+        not center or is_center(direction(el)) == '1'):
         results.append(direction(el))
         el = direction(el)
     return results

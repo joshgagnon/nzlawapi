@@ -70,6 +70,28 @@ class Match(object):
         self.tests = tests
         self.post_action = post_action
         self.dependants = dependants
+        self.position = 0
+
+    def next(self, char):
+        def equal(char1, char2):
+            return char1 == '*' or char1 == char2
+
+
+        if equal(self.string[self.position], char):
+            if self.position + 1 < len(self.string) and self.string[self.position+1] == '*':
+                pass
+            else:
+                self.position += 1
+        elif self.position + 2 < len(self.string) and self.string[self.position+1] == '*':
+                self.position += 2
+        else:
+            self.reset()
+
+    def reset(self):
+        self.position = 0
+
+    def finished(self):
+        return self.position == len(self.string)
 
 
 class Not(object):
@@ -83,7 +105,6 @@ class Not(object):
 class DocStateMachine(object):
     def __init__(self, inputs, doc):
         self.inputs = inputs[:]
-        self.positions = [0] * len(inputs)
         self.doc = doc
 
     def step(self, char):
@@ -91,31 +112,22 @@ class DocStateMachine(object):
             result = getattr(self.doc, str(t))()
             return not result if isinstance(t, Not) else result
 
-        def equal(char1, char2):
-            return char1 == '*' or char1 == char2
-
         for i in xrange(len(self.inputs)):
-            if equal(self.inputs[i].string[self.positions[i]], char):
-                self.positions[i] += 1
-                if len(self.inputs[i].string) == self.positions[i]:
-                    self.positions[i] = 0
-                    if all([do_test(t) for t in self.inputs[i].tests]):
-                        if self.inputs[i].close:
-                            self.doc.close_tag(self.inputs[i].close, flush=False)
-                        if self.inputs[i].open:
-                            self.doc.open_tag(self.inputs[i].open, flush=False)
-                        if self.inputs[i].post_action:
-                            self.inputs[i].post_action(self.doc)
-                        if self.inputs[i].dependants:
-                            self.inputs += self.inputs[i].dependants
-                            self.positions += [0] * len(self.inputs[i].dependants)
-            else:
-                self.positions[i] = 0
+            self.inputs[i].next(char)
+            if self.inputs[i].finished():
+                self.inputs[i].reset()
+                if all([do_test(t) for t in self.inputs[i].tests]):
+                    if self.inputs[i].close:
+                        self.doc.close_tag(self.inputs[i].close, flush=False)
+                    if self.inputs[i].open:
+                        self.doc.open_tag(self.inputs[i].open, flush=False)
+                    if self.inputs[i].post_action:
+                        self.inputs[i].post_action(self.doc)
+                    if self.inputs[i].dependants:
+                        self.inputs += self.inputs[i].dependants
+                        self.positions += [0] * len(self.inputs[i].dependants)
 
 
-    def reset(self):
-        for i in xrange(len(self.inputs)):
-            self.positions[i] = 0
 
 
 def dist(r1, r2):
@@ -134,7 +146,9 @@ RULES = [
     #Match(string='JUDGMENT', tests=['is_center_aligned', 'is_intituling'], dependants=[
         #Match(string='*', open='body,paragraph', close='intituling', tests=['is_left_aligned', 'is_bold', Not('is_table'), 'is_intituling'])
     #]),
-    Match(string='REASON', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    # DANGEROUS
+    Match(string='REASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Para No', open='table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
     Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
@@ -183,6 +197,7 @@ class DocState(object):
         self.font = None
         self.unknown_font = False
         self.font_stats = {'mean': 0, 'count': 0}
+        self.max_width = [None, None]
         self.thresholds = copy.deepcopy(THRESHOLDS)
 
     def analyse_stats(self, sizes):
@@ -235,6 +250,7 @@ class DocState(object):
         self.bbox = bbox
 
     def new_line(self, bbox):
+        self.state.step('\n')
         self.has_new_line = True
         self.prev_line_bbox = self.line_bbox
         self.line_bbox = bbox
@@ -326,9 +342,9 @@ class DocState(object):
         if not self.max_width[1] or self.bbox[2] > self.max_width[1]:
             self.max_width[1] = self.bbox[2]
 
-        elif 'superscript' in self.style_stack:
-            self.close_style('superscript')
-            self.buffer.write(' ')
+        #elif 'superscript' in self.style_stack:
+        #    self.close_style('superscript')
+        #    self.buffer.write(' ')
 
         if self.is_footer():
             self.switch_footer()
@@ -645,8 +661,7 @@ def generate_parsable_xml(path, tmp):
     rsrcmgr = PDFResourceManager()
     # Set parameters for analysis.
     laparams = LAParams(detect_vertical=False, char_margin=3, line_margin=0.01)#,line_margin=2)
-    # Create a PDF page aggregator object.
-    password = ''
+
     path = canoncialize_pdf(path, tmp)
     # print path
     with open(path, 'rb') as fp:
@@ -663,6 +678,7 @@ def generate_parsable_xml(path, tmp):
 
         for page in stats_device.pages:
             device.receive_layout(page)
+        #print device.get_result()
         return re.sub(' +', ' ', device.get_result())
 
 

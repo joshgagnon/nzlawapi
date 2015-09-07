@@ -34,29 +34,53 @@ def join_adjacent_styles(soup):
 
 
 def massage_xml(soup, debug):
-    soup = remove_empty_elements(soup)
-    soup = join_adjacent_styles(soup)
     if debug:
         print soup.prettify()
+    soup = remove_empty_elements(soup)
+    soup = join_adjacent_styles(soup)
+
     soup = tweak_intituling_interface(soup)
     intituling = generate_intituling(soup)
     body = generate_body(soup)
     footer = generate_footer(soup)
     case = soup.new_tag('case')
     case.append(intituling)
-    case.append(body)
+    if body:
+        case.append(body)
     if footer:
         case.append(footer)
-    case= remove_empty_elements(case)
+    case = remove_empty_elements(case)
     if debug:
         print case.prettify()
     return case
 
 
-def process_case(filename, debug=False):
+def process_case(path, debug=False):
     tmp = mkdtemp()
-    xml = generate_parsable_xml(filename, tmp)
+    xml = generate_parsable_xml(path, tmp)
     soup = BeautifulSoup(xml, features='lxml-xml')
     results = massage_xml(soup, debug)
     shutil.rmtree(tmp)
     return re.sub(' +', ' ', results.encode())
+
+
+if __name__ == '__main__':
+    import sys
+    import importlib
+    import os
+    from os import listdir
+    import os.path as path
+    from os.path import isfile, join
+    if not len(sys.argv) > 1:
+        raise Exception('Missing configuration file')
+    sys.path.append(os.getcwd())
+    config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    for f in listdir(config.CASE_DIR):
+        if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
+            #try:
+            print 'OPENING: ', f
+            process_case(join(config.CASE_DIR, f))
+            #except Exception, e:
+            #    print 'FAILED ON: ', join(config.CASE_DIR, f)
+            #    print e

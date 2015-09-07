@@ -24,7 +24,10 @@ def convert_to_title(paragraph):
     some sort of look forward technique, which means we can't do it in the first pass.
     But I would like to move this logic to pdfs.py  """
 def tweak_intituling_interface(soup):
-    first_para = soup.find('body').find('paragraph')
+    body = soup.find('body')
+    if not body:
+        return soup
+    first_para = body.find('paragraph')
     if not first_para.text or re.compile('^\s*\[1\]').match(first_para.text):
         last_line = soup.find('intituling').find_all('intituling-field')[-1]
         if last_line.find('strong') and not is_center(last_line):
@@ -45,6 +48,8 @@ def generate_body(soup):
     brackets_reg = re.compile('^\W*\(.*\)\W*$')
 
     body = soup.find('body')
+    if not body:
+        return None
 
     format_indents(soup)
 
@@ -131,7 +136,10 @@ def format_indents(soup):
 
     prev_left = None
     for indent in soup.find_all('indent'):
-        match = listlike_reg.match(indent.contents[0])
+        match = None
+        if isinstance(indent.contents[0], NavigableString):
+            match = listlike_reg.match(indent.contents[0])
+
         left = get_left(indent)
         if not match or (prev_left and left > prev_left):
             if indent.previous_sibling and indent.previous_sibling and indent.previous_sibling.name == 'list':
@@ -191,8 +199,9 @@ def generate_footer(soup):
                 footnote.append(child)
                 text = soup.new_tag('text')
                 footnote.append(text)
-            else:
+            elif text:
                 text.append(child)
+
         footer.append(footnote)
     for f in footer.find_all('footnote-text'):
         if not len(f.contents):
