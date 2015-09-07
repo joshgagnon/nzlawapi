@@ -11,6 +11,7 @@ import os
 from collections import defaultdict
 import psycopg2
 from time import sleep
+from httplib import IncompleteRead
 """
 This script scrapes https://www.comlaw.gov.au
 
@@ -27,7 +28,9 @@ download = 'https://www.comlaw.gov.au/Details/%s/Download'
 details = 'https://www.comlaw.gov.au/Details/%s'
 top_level_sel = '#ctl00_MainContent_pnlBrowse a font'
 
-THREAD_MAX = 10
+
+USE_THREADS = False
+THREAD_MAX = 1
 SLEEP = 2
 
 thread_limiter = [
@@ -42,19 +45,22 @@ sys.setrecursionlimit(10000)
 def thread_limit(index):
     def apply_decorator(func):
         def func_wrapper(*args, **kwargs):
-            thread_limiter[index].acquire()
-            try:
+            if USE_THREADS:
+                thread_limiter[index].acquire()
+                try:
+                    return func(*args, **kwargs)
+                finally:
+                    sleep(SLEEP)
+                    thread_limiter[index].release()
+            else:
                 return func(*args, **kwargs)
-            finally:
-                sleep(SLEEP)
-                thread_limiter[index].release()
         return func_wrapper
     return apply_decorator
 
 
 def get_indices():
     req = urllib2.Request(start)
-    response = urllib2.urlopen(req)
+    response = safe_open(req)
     page = response.read()
     soup = BeautifulSoup(page, 'lxml')
     return [start + el.parent['href'] for el in soup.select(top_level_sel)]
@@ -63,13 +69,12 @@ def get_indices():
 @thread_limit(2)
 def table_loop(url, headers=None):
     """ Find the 'next' button the asp.net table, recursively yields on each page """
-    print 'Open ', url
     if headers:
         data = urllib.urlencode(headers)
         req = urllib2.Request(url, data)
     else:
         req = url
-    response = urllib2.urlopen(req)
+    response = safe_open(req)
     soup = BeautifulSoup(response.read(), 'lxml')
     yield soup
     next_button = soup.find('input', class_='rgPageNext')
@@ -93,7 +98,7 @@ def get_document_info((id, series)):
         return datetime.datetime(int(year), months.index(month)+1, int(day))
 
     req = urllib2.Request(download % id)
-    response = urllib2.urlopen(req)
+    response = safe_open(req)
     page = BeautifulSoup(response.read(), 'lxml')
     result = defaultdict(lambda: None)
     result['id'] = id
@@ -127,17 +132,34 @@ def get_document_info((id, series)):
     add_info_to_db(result, documents)
 
 
+def safe_open(req):
+    if hasattr(req, '_Request__original'):
+        print 'Open ', req._Request__original
+    else:
+        print 'Open ', req
+    multiple = 1
+    while True:
+        try:
+            return urllib2.urlopen(req)
+        except IncompleteRead:
+            sleep(SLEEP * multiple)
+            multiple *= 2
+            if multiple > 1024:
+                raise Exception('Failed to fetch file', req)
+
+
+
 def download_documents(info):
     results = []
     if len(info['links']):
         for link in info['links']:
             req = urllib2.Request(link)
-            response = urllib2.urlopen(req)
+            response = safe_open(req)
             filename = response.info()['Content-Disposition'].replace('attachment; filename=', '')
             results.append({'document': response.read(), 'format': filename.rsplit('.', 1)[1].lower(), 'filename': filename, 'comlaw_id': info['id']})
     else:
         req = urllib2.Request(details % info['id'])
-        response = urllib2.urlopen(req)
+        response = safe_open(req)
         soup = BeautifulSoup(response.read(), 'lxml')
         text = soup.select('#RAD_SPLITTER_PANE_CONTENT_ctl00_MainContent_ctl05_RadPane2')[0].renderContents()
 
@@ -181,20 +203,27 @@ def get_series(id):
         ids = get_unfetched_ids(ids)
         print "Series", ids
         if ids:
-            pool = ThreadPool(THREAD_MAX)
-            _results = pool.map(get_document_info, zip(ids, [id]*len(ids)))
-            pool.close()
-            pool.join()
+            if USE_THREADS:
+                pool = ThreadPool(THREAD_MAX)
+                _results = pool.map(get_document_info, zip(ids, [id] * len(ids)))
+                pool.close()
+                pool.join()
+            else:
+                map(get_document_info, zip(ids, [id] * len(ids)))
+
 
 def open_index(url):
     for page in table_loop(url):
         buttons = page.find_all('input', id=re.compile('_btnSeries$'))
         ids = map(lambda x: x['onclick'].split(',')[4].split('/')[-1].replace('"', ''), buttons)
         print 'Found %d ids' % len(ids), ids
-        pool = ThreadPool(THREAD_MAX)
-        _results = pool.map(get_series, ids)
-        pool.close()
-        pool.join()
+        if USE_THREADS:
+            pool = ThreadPool(THREAD_MAX)
+            _results = pool.map(get_series, ids)
+            pool.close()
+            pool.join()
+        else:
+            map(get_series, ids)
 
 
 if __name__ == '__main__':

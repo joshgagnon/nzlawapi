@@ -34,49 +34,15 @@ def find_neighbors (self, plane, ratio):
 
 LTTextLineHorizontal.find_neighbors = find_neighbors
 
+LTCharInit = LTChar.__init__
+
+
 def init_char(self, matrix, font, fontsize, scaling, rise,
                  text, textwidth, textdisp):
-        LTText.__init__(self)
-        self._text = text
-        self.matrix = matrix
-        self.fontsize = fontsize
+        LTCharInit(self, matrix, font, fontsize, scaling, rise,
+                 text, textwidth, textdisp)
         self.font = font
-        self.fontname = font.fontname
-        self.adv = textwidth * fontsize * scaling
-        # compute the boundary rectangle.
-        if font.is_vertical():
-            # vertical
-            width = font.get_width() * fontsize
-            (vx, vy) = textdisp
-            if vx is None:
-                vx = width * 0.5
-            else:
-                vx = vx * fontsize * .001
-            vy = (1000 - vy) * fontsize * .001
-            tx = -vx
-            ty = vy + rise
-            bll = (tx, ty+self.adv)
-            bur = (tx+width, ty)
-        else:
-            # horizontal
-            height = font.get_height() * fontsize
-            descent = font.get_descent() * fontsize
-            ty = descent + rise
-            bll = (0, ty)
-            bur = (self.adv, ty+height)
-        (a, b, c, d, e, f) = self.matrix
-        self.upright = (0 < a*d*scaling and b*c <= 0)
-        (x0, y0) = apply_matrix_pt(self.matrix, bll)
-        (x1, y1) = apply_matrix_pt(self.matrix, bur)
-        if x1 < x0:
-            (x0, x1) = (x1, x0)
-        if y1 < y0:
-            (y0, y1) = (y1, y0)
-        LTComponent.__init__(self, (x0, y0, x1, y1))
-        if font.is_vertical():
-            self.size = self.width
-        else:
-            self.size = self.height
+        self.fontsize = fontsize
         return
 
 LTChar.__init__ = init_char
@@ -443,10 +409,6 @@ class DocState(object):
         correct_size = (self.size and self.size <= self.thresholds['footer_size'])
         return correct_size and (not self.is_quote() or self.out == self.footer)
 
-   # def larger_than_footer(self):
-        #print self.size, self.thresholds['footer_size']
-    #    return (self.size and self.size > self.thresholds['footer_size'])
-
     def is_body(self):
         return not self.is_footer() and not self.is_intituling()
 
@@ -647,6 +609,7 @@ class StatsConverter(Converter):
     def __init__(self, *args, **kwargs):
         Converter.__init__(self, *args, **kwargs)
         self.sizes = []
+        self.pages = []
 
     def receive_layout(self, ltpage):
         def recurse(item):
@@ -657,6 +620,8 @@ class StatsConverter(Converter):
                 if hasattr(item, 'fontsize'):
                     self.sizes.append(item.fontsize)
         recurse(ltpage)
+        self.pages.append(ltpage)
+
 
     def finalize():
         self.doc.analyse_stats(sizes=self.sizes)
@@ -681,9 +646,9 @@ def generate_parsable_xml(path, tmp):
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
 
-        interpreter.device = device
-        for page in PDFPage.create_pages(document):
-            interpreter.process_page(page)
+
+        for page in stats_device.pages:
+            device.receive_layout(page)
         return re.sub(' +', ' ', device.get_result())
 
 
