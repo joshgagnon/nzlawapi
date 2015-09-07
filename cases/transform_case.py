@@ -29,7 +29,9 @@ def join_adjacent_styles(soup):
                 else:
                     el.append(content)
             el.next_sibling.decompose()
-
+    for el in soup.find_all('hline')[:-1][::-1]:
+        if False and el.next_sibling and el.next_sibling.name == 'hline':
+            el.next_sibling.decompose()
     return soup
 
 
@@ -38,8 +40,8 @@ def massage_xml(soup, debug):
         print soup.prettify()
     soup = remove_empty_elements(soup)
     soup = join_adjacent_styles(soup)
-
     soup = tweak_intituling_interface(soup)
+    #soup = BeautifulSoup(soup.encode(), 'lxml-xml')
     intituling = generate_intituling(soup)
     body = generate_body(soup)
     footer = generate_footer(soup)
@@ -76,11 +78,17 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    for f in listdir(config.CASE_DIR):
+    offset = 458
+    for i, f in enumerate(listdir(config.CASE_DIR)[offset:]):
         if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
             #try:
-            print 'OPENING: ', f
-            process_case(join(config.CASE_DIR, f))
+            print 'OPENING: (%d) ' % (i + offset), f
+            result = process_case(join(config.CASE_DIR, f))
+            if not result.find('parties'):
+                raise Exception('no parties')
+            if not result.find('full-citation'):
+                raise Exception('no full citation')
+
             #except Exception, e:
             #    print 'FAILED ON: ', join(config.CASE_DIR, f)
             #    print e

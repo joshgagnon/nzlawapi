@@ -21,7 +21,7 @@ def unwrap(el):
 
 
 def format_table(soup, el):
-    contents_reg = re.compile('^\W*(Para No|Table of Contents)\W*$')
+    contents_reg = re.compile('^\W*(Para No|Table of Contents|Contents|Paragraph Number)\W*$')
     matches = el.find_all(text=contents_reg)
 
     if matches:
@@ -49,7 +49,7 @@ def format_table(soup, el):
         eg  Introduction.......... 1
         or  The interface between 10 """
     for row in el.find_all('row'):
-        if len(row.contents) == 1 and get_left(row) == left and get_right(row) == right:
+        if len(row.contents) == 1 and get_right(row) == right:
             match = contents_split.match(row.contents[0].text)
             if not match:
                 continue
@@ -87,8 +87,14 @@ def format_table(soup, el):
 
 
     # if a row has only 1 entry, put it on next or previous
-    for row in el.find_all('row'):
+    rows = el.find_all('row')
+    if forward:
+        rows = rows[::-1]
+    for row in rows:
         if len(row.contents) == 1  and direction(row) and get_left(row) == get_left(direction(row)):
+            if contents_reg.match(row.contents[0].text):
+                row.decompose()
+                continue
             sibling = direction(row).find('entry')
             if not sibling:
                 continue
@@ -96,7 +102,8 @@ def format_table(soup, el):
                 continue
             elif not forward and get_width(sibling) < THRESHOLDS['table_column_overflow']:
                 continue
-            for e in row.contents[0].contents[::-1]:
+
+            for e in row.contents[0].contents[:][::-1]:
                 if forward:
                     sibling.insert(0, ' ')
                     sibling.insert(0, e)

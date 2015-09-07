@@ -44,7 +44,6 @@ def generate_intituling(soup):
                     intituling.append(el)
         except AttributeError, e:
             pass
-
     optional_section('full-citation', find_full_citation, intituling)
     optional_section('court', find_court, intituling)
     optional_section('registry', find_registry, intituling)
@@ -105,9 +104,13 @@ def find_court_file(soup):
 
 
 def court_file_before(soup, el):
+    results = []
     while not courtfile_num.match(el.text):
         el = el.previous_sibling
-    return el.text
+    while courtfile_num.match(el.text):
+        results.append(el.text)
+        el = el.previous_sibling
+    return results[::-1]
 
 
 
@@ -205,7 +208,7 @@ def find_solicitors(soup):
 def waistband(soup):
     # find all waistband rows
     # VICTORIA STREET APARTMENTS LIMITED V I R MCKAY AND C T MCKAY HC AK CIV2007-404- 2490 17 March 2008 spelt judment wrong
-    reg = re.compile(r'^([\(\)\w ]+)?(JUDGEMENT |JUDGMENT |SENTENCING|SENTENCE|MINUTE OF THE COURT)', flags=re.IGNORECASE)
+    reg = re.compile(r'^([][\(\)\w ]+)?(JUDGEMENT |JUDGMENT |SENTENCING|SENTENCE|MINUTE OF THE COURT|ORDERS OF|RULING OF)', flags=re.IGNORECASE)
 
     start = find_reg_el(soup, reg)
     titles = [start] + find_until(start, use_left=False, center=True)
@@ -278,15 +281,16 @@ def parties(soup):
 
     for party_dict in party_dicts:
         parties = soup.new_tag('parties')
-        courtfile = soup.new_tag('court-file')
+
+        for p in party_dict['court-file']:
+            courtfile = soup.new_tag('court-file')
+            courtfile.string = p
+            parties.append(courtfile)
+
         plantiffs = soup.new_tag('plantiffs')
         defendants = soup.new_tag('defendants')
-        parties.append(courtfile)
         parties.append(plantiffs)
         parties.append(defendants)
-
-        courtfile.string = party_dict['court-file']
-
         for p in party_dict['plantiffs']:
             plantiffs.append(party(p, 'plantiff'))
 
@@ -304,9 +308,6 @@ def parties(soup):
     return results
 
 
-
-
-
 def find_parties(soup):
     party_dict = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
     parties = [copy.deepcopy(party_dict)]
@@ -319,7 +320,7 @@ def find_parties(soup):
         if plantiff_pattern.match(descriptor):
             group = 'plantiffs'
         elif thirdparty_pattern.match(descriptor):
-            group = 'thirdparty'
+            group = 'thirdparties'
         parties[-1][group].append({
             'qualifier': qualifier,
             'value': name,
@@ -342,8 +343,11 @@ def find_parties(soup):
 
         if not qualifier_pattern.match(next_qualifier.text) and courtfile_num.match(next_qualifier.text):
             parties += [copy.deepcopy(party_dict)]
-            parties[-1]['court-file'] = next_qualifier.text
-            next_qualifier = next_qualifier.next_sibling
+            court_files = []
+            while courtfile_num.match(next_qualifier.text):
+                court_files += [next_qualifier.text]
+                next_qualifier = next_qualifier.next_sibling
+            parties[-1]['court-file'] = court_files
     return parties
 
 

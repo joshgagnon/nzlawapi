@@ -30,7 +30,7 @@ def tweak_intituling_interface(soup):
     first_para = body.find('paragraph')
     if not first_para.text or re.compile('^\s*\[1\]').match(first_para.text):
         last_line = soup.find('intituling').find_all('intituling-field')[-1]
-        if last_line.find('strong') and not is_center(last_line):
+        if last_line.find('strong') and not is_center(last_line) and not last_line.find('hline'):
             soup.find('body').insert(0, last_line)
             last_line.name = 'paragraph'
     return soup
@@ -38,7 +38,7 @@ def tweak_intituling_interface(soup):
 
 def is_signature(paragraph):
     return (paragraph.previous_sibling and paragraph.previous_sibling.name == 'signature-line' or
-        is_right_aligned(paragraph))
+        (not paragraph.next_sibling and is_right_aligned(paragraph)))
 
 
 
@@ -67,6 +67,8 @@ def generate_body(soup):
         elif separator_reg.match(paragraph.text):
             paragraph.clear()
             paragraph.name = 'signature-line'
+        elif is_signature(paragraph):
+            paragraph.name = 'signature-name'
         elif is_title(paragraph):
             convert_to_title(paragraph)
         elif paragraph.text and brackets_reg.match(paragraph.text) and paragraph.attrs['center'] == '1':
@@ -74,8 +76,6 @@ def generate_body(soup):
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
             paragraph.name = 'subtitle'
             paragraph.contents[0].unwrap()
-        elif is_signature(paragraph):
-            paragraph.name = 'signature-name'
         else:
             # we must stitch this paragraph to the previous one
             paragraph.previous_sibling.append(' ')
@@ -132,7 +132,7 @@ def format_indents(soup):
         if not len(indent.contents):
             indent.decompose()
 
-    listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*])\)?\s+(.*)', flags=re.IGNORECASE)
+    listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*]|[ivx]{,3})\)?\s+(.*)', flags=re.IGNORECASE)
 
     prev_left = None
     for indent in soup.find_all('indent'):

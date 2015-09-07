@@ -108,7 +108,7 @@ def get_document_info((id, series)):
     result['title'] = page.select('#ctl00_MainContent_ucItemPane_lblTitleGeneric')[0].text
     try:
         result['superseded'] = page.select('#ctl00_MainContent_ucItemPane_lblStatus')[0].text == 'Superseded'
-    except AttributeError:
+    except (AttributeError, IndexError):
         pass
     try:
         result['prepared_date'] = date(page.select('#ctl00_MainContent_ucItemPane_trPreparedDate td:nth-of-type(2)')[0].text.strip())
@@ -153,11 +153,14 @@ def safe_open(req):
 def download_documents(info):
     results = []
     if len(info['links']):
-        for link in info['links']:
-            req = urllib2.Request(link)
-            response = safe_open(req)
-            filename = response.info()['Content-Disposition'].replace('attachment; filename=', '')
-            results.append({'document': response.read(), 'format': filename.rsplit('.', 1)[1].lower(), 'filename': filename, 'comlaw_id': info['id']})
+        try:
+            for link in info['links']:
+                req = urllib2.Request(link)
+                response = safe_open(req)
+                filename = response.info()['Content-Disposition'].replace('attachment; filename=', '')
+                results.append({'document': response.read(), 'format': filename.rsplit('.', 1)[1].lower(), 'filename': filename, 'comlaw_id': info['id']})
+        except IndexError:
+            pass
     else:
         req = urllib2.Request(details % info['id'])
         response = safe_open(req)
