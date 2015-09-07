@@ -404,24 +404,27 @@ class DocState(object):
             self.write_text(' ')
 
     def handle_style(self):
+        if not self.is_superscript() and 'superscript' in self.style_stack:
+            self.close_style('superscript')
+            self.buffer.write(' ')
+
+        if not self.is_italic(self.font) and 'emphasis' in self.style_stack:
+            self.close_style('emphasis')
+
+        elif not self.is_bold(self.font) and 'strong' in self.style_stack:
+            self.close_style('strong')
+
         if self.is_superscript():
             self.open_style('superscript')
 
-        elif 'superscript' in self.style_stack:
-            self.close_style('superscript')
-            self.buffer.write(' ')
 
         if self.is_italic(self.font):
             self.open_style('emphasis')
 
-        elif 'emphasis' in self.style_stack:
-            self.close_style('emphasis')
 
         if self.is_bold(self.font):
             self.open_style('strong')
 
-        elif 'strong' in self.style_stack:
-            self.close_style('strong')
 
         if not self.is_footer():
             self.switch_body()
