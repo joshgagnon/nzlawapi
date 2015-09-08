@@ -208,9 +208,10 @@ def find_solicitors(soup):
 def waistband(soup):
     # find all waistband rows
     # VICTORIA STREET APARTMENTS LIMITED V I R MCKAY AND C T MCKAY HC AK CIV2007-404- 2490 17 March 2008 spelt judment wrong
-    reg = re.compile(r'^([][\(\)\w ]+)?(JUDGEMENT |JUDGMENT |SENTENCING|SENTENCE|MINUTE OF THE COURT|ORDERS OF|RULING OF)', flags=re.IGNORECASE)
+    #reg = re.compile(r'^([][\(\)\w ]+)?(JUDGEMENT |JUDGMENT |SENTENCING|SENTENCE|MINUTE OF THE COURT|ORDERS OF|RULING )', flags=re.IGNORECASE)
 
-    start = find_reg_el(soup, reg)
+    #start = find_reg_el(soup, reg)
+    start = soup.find('hline').parent.next_sibling
     titles = [start] + find_until(start, use_left=False, center=True)
     start = titles[-1]
     parts = find_until(start, use_left=False)

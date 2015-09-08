@@ -30,7 +30,7 @@ details = 'https://www.comlaw.gov.au/Details/%s'
 top_level_sel = '#ctl00_MainContent_pnlBrowse a'
 
 
-USE_THREADS = True
+USE_THREADS = False
 THREAD_MAX = 1
 SLEEP = 2
 
@@ -100,7 +100,7 @@ def get_document_info((id, series)):
 
     req = urllib2.Request(download % id)
     response = safe_open(req)
-    page = BeautifulSoup(response.read(), 'lxml')
+    page = BeautifulSoup(response.read(), 'html5lib')
     result = defaultdict(lambda: None)
     result['id'] = id
     result['series'] = series
@@ -129,7 +129,10 @@ def get_document_info((id, series)):
 
     print 'Document Info: ', result
 
-    documents = download_documents(result)
+    documents = download_documents(result, page)
+
+    print 'Got Files, now insert',
+
     add_info_to_db(result, documents)
 
 
@@ -145,12 +148,13 @@ def safe_open(req):
         except IncompleteRead:
             sleep(SLEEP * multiple)
             multiple *= 2
+            print 'Trying again'
             if multiple > 1024:
                 raise Exception('Failed to fetch file', req)
 
 
 
-def download_documents(info):
+def download_documents(info, soup=None):
     results = []
     if len(info['links']):
         try:
@@ -162,12 +166,11 @@ def download_documents(info):
         except IndexError:
             pass
     else:
-        req = urllib2.Request(details % info['id'])
-        response = safe_open(req)
-        soup = BeautifulSoup(response.read(), 'lxml')
+        #req = urllib2.Request(details % info['id'])
+        #response = safe_open(req)
+        #soup = BeautifulSoup(response.read(), 'lxml')
         try:
             text = soup.select('#RAD_SPLITTER_PANE_CONTENT_ctl00_MainContent_ctl05_RadPane2')[0].renderContents()
-
             results.append({'document': text, 'format': 'html', 'filename': None, 'comlaw_id': info['id']})
         except IndexError:
             pass
@@ -208,7 +211,7 @@ def get_series(id):
             ids = [id]
         ids = get_unfetched_ids(ids)
         print "Series", ids
-        if ids:
+        if ids and len(ids):
             if USE_THREADS:
                 pool = ThreadPool(THREAD_MAX)
                 _results = pool.map(get_document_info, zip(ids, [id] * len(ids)))

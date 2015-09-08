@@ -78,7 +78,7 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    offset = 458
+    offset = 1024
     for i, f in enumerate(listdir(config.CASE_DIR)[offset:]):
         if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
             #try:
@@ -88,7 +88,8 @@ if __name__ == '__main__':
                 raise Exception('no parties')
             if not result.find('full-citation'):
                 raise Exception('no full citation')
-
+            if not result.find('waistband'):
+                raise Exception('no waistband')
             #except Exception, e:
             #    print 'FAILED ON: ', join(config.CASE_DIR, f)
             #    print e

@@ -117,6 +117,7 @@ class DocStateMachine(object):
             if self.inputs[i].finished():
                 self.inputs[i].reset()
                 if all([do_test(t) for t in self.inputs[i].tests]):
+
                     if self.inputs[i].close:
                         self.doc.close_tag(self.inputs[i].close, flush=False)
                     if self.inputs[i].open:
@@ -147,10 +148,12 @@ RULES = [
     Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Para No', open='table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
-    Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
+    Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold']),
     Match(string='Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
-    Match(string='[', open='table,row,entry', close='paragraph,intituling', tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
-    Match(string=']\n', open='table,row,entry', close='paragraph,intituling', tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
+    Match(string='[', open='table,row,entry', close='paragraph,intituling',
+        tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
+    Match(string='[1] *\n', open='table,row,entry', close='paragraph,intituling',
+        tests=['is_body', Not('is_table'), Not('is_quote'), 'is_full_width']),
 ]
 
 
@@ -400,6 +403,7 @@ class DocState(object):
 
             if 'paragraph' not in self.tag_stack:
                 self.open_tag('paragraph')
+
             else:
                 handle_space = True
         if handle_space and self.last_char != ' ':
@@ -493,8 +497,16 @@ class DocState(object):
                  self.max_width[1] - bbox[2] >  self.thresholds['center_margin_min']))
 
     def is_left_indented(self, bbox=None):
+        """ if left indented, not right indented, not centered unless the previous line was left indented """
         bbox = bbox or self.line_bbox
-        return bbox[0] > (self.max_width[0] + self.thresholds['indent_threshold']) and not self.is_center_aligned(bbox) and not self.is_right_aligned()
+        return (bbox[0] > (self.max_width[0] + self.thresholds['indent_threshold']) and
+            (not self.is_center_aligned(bbox) or bbox != self.prev_line_bbox and self.is_left_indented(self.prev_line_bbox)) and
+            not self.is_right_aligned())
+
+
+    def is_full_width(self, bbox=None):
+        bbox = bbox or self.line_bbox
+        return abs(bbox[0] - self.max_width[0]) + abs(bbox[2] - self.max_width[1]) < 15
 
     def is_header(self, bbox=None):
         bbox = bbox or self.bbox

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from common import get_left, separator_reg, is_center, is_right_aligned
-from bs4 import element, NavigableString
+from bs4 import element, NavigableString, BeautifulSoup
 from tables import format_tables
 
 
@@ -86,7 +86,7 @@ def generate_body(soup):
 
     format_tables(soup)
 
-    for paragraph in body.find_all('paragraph', recursive=False):
+    for paragraph in list(body.find_all('paragraph', recursive=False)):
         # next, wrap everything thats not quotes or emphasis in text element
         children = []
         current = soup.new_tag("text")
@@ -97,32 +97,32 @@ def generate_body(soup):
                     current = soup.new_tag("text")
                 children.append(child)
             else:
-                if isinstance(child, element.NavigableString):
+                if isinstance(child, NavigableString):
                     child.string = child.string.strip()
                 current.append(child)
         if len(current.contents):
             children.append(current)
-        paragraph.clear()
+        # avoids a bug in bs4
+        #paragraph.clear()
         paragraph.attrs = {}
         for child in children:
             paragraph.append(child)
 
+   #body = BeautifulSoup(body.encode(), 'lxml-xml')
 
-
-    for superscript in body.find_all('superscript'):
+    for superscript in list(body.find_all('superscript')):
         if not len(superscript.contents):
             superscript.decompose()
             continue
         superscript.name = 'footnote'
-        superscript.string = superscript.string.strip()
+        if isinstance(superscript.contents[-1], NavigableString):
+            superscript.contents[-1].replace_with(superscript.contents[-1].strip())
 
 
     for content in body.contents:
         content.attrs = {}
 
     return body
-
-
 
 
 
