@@ -33,7 +33,7 @@ def format_table(soup, el):
         for m in matches:
             m.extract()
     else:
-        if el.find('entry', text=re.compile('\[\d+\]$')):
+        if el.find('entry', text=re.compile('^\s*(\[\d+\]|\d+)\s*$')):
             el.wrap(soup.new_tag('contents'))
 
     """ unwrap method need to be generalized, use this version """

@@ -74,8 +74,7 @@ class Match(object):
 
     def next(self, char):
         def equal(char1, char2):
-            return char1 == '*' or char1 == char2
-
+            return (char1 == char2) or (char1 == '%' and char2.isdigit())
 
         if equal(self.string[self.position], char):
             if self.position + 1 < len(self.string) and self.string[self.position+1] == '*':
@@ -88,7 +87,9 @@ class Match(object):
             self.reset()
 
     def reset(self):
+        """ todo, dont reset to 0 """
         self.position = 0
+
 
     def finished(self):
         return self.position == len(self.string)
@@ -155,6 +156,9 @@ RULES = [
         tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
     Match(string='[1] *\n', open='body,table,row,entry', close='paragraph,intituling',
         tests=['is_body', Not('is_table'), Not('is_quote'), 'is_full_width']),
+    Match(string='%%* *\n', open='body,table,row,entry', close='paragraph,intituling',
+        tests=['is_body', Not('is_table'), 'has_adjacent_chunks', 'is_right_aligned']),
+
 ]
 
 
@@ -235,9 +239,7 @@ class DocState(object):
         return self.line_bbox[0] < (self.max_width[0] + self.thresholds['indent_threshold'])
 
     def column_join_threshold(self):
-        if (self.prev_bbox and
-            abs(self.prev_bbox[1] - self.bbox[3]) > self.thresholds['line_tolerance'] and
-                self.bbox[0] - self.prev_bbox[2] > self.thresholds['column_gap']):
+        if self.has_adjacent_chunks() and (self.bbox[0] - self.prev_bbox[2] > self.thresholds['column_gap']):
             # emit join
             return True
 
@@ -481,11 +483,11 @@ class DocState(object):
 
     def is_right_aligned(self, bbox=None):
         bbox = bbox or self.bbox
-        return (bbox[0] > self.thresholds['right_align_thresholds'][0])
+        return bbox and (bbox[0] > self.thresholds['right_align_thresholds'][0])
 
     def is_left_aligned(self, bbox=None):
         bbox = bbox or self.bbox
-        return (bbox[0] < self.thresholds['left_align_thresholds'][0])
+        return bbox and (bbox[0] < self.thresholds['left_align_thresholds'][0])
 
     def is_center_aligned(self, bbox=None):
         bbox = bbox or self.bbox
@@ -518,6 +520,9 @@ class DocState(object):
             return True
         if self.is_left_aligned(bbox) and bbox[2] < self.thresholds['right_align_thresholds'][1] and self.is_bold() and self.para_threshold('table_vertical_threshold'):
             return True
+
+    def has_adjacent_chunks(self):
+         return self.prev_bbox and self.bbox and abs(self.prev_bbox[1] - self.bbox[3]) > self.thresholds['line_tolerance']
 
     def switch_footer(self):
         if self.out != self.footer:
