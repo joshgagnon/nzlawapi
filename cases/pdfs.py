@@ -15,7 +15,7 @@ from subprocess import Popen, PIPE
 import re
 import os
 import copy
-from cases.variables import THRESHOLDS
+from variables import THRESHOLDS
 from collections import Counter
 
 
