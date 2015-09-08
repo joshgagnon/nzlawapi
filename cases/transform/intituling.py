@@ -212,8 +212,10 @@ def waistband(soup):
 
     #start = find_reg_el(soup, reg)
     start = soup.find('hline').parent.next_sibling
-    titles = [start] + find_until(start, use_left=False, center=True)
+    titles = [start] + find_until(start, use_left=False, center=True, debug=True)
+
     start = titles[-1]
+
     parts = find_until(start, use_left=False)
     parts = filter(lambda x: x.text, parts)
 

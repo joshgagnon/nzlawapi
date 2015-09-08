@@ -1,0 +1,624 @@
+<case>
+    <intituling>
+        <full-citation> STRATEGIC NOMINEES LIMITED (IN RECEIVERSHIP) V BOS INTERNATIONAL (AUSTRALIA) LIMITED HC AK CIV 2012-404-006007 [29 April 2013] </full-citation>
+        <court> IN THE HIGH COURT OF NEW ZEALAND </court>
+        <registry> AUCKLAND REGISTRY </registry>
+        <neutral-citation> [2013] NZHC 904 </neutral-citation>
+        <matter>
+            <qualifier> UNDER </qualifier>
+            <value> Part 12 of the High Court Rules </value>
+        </matter>
+        <matter>
+            <qualifier> IN THE MATTER OF </qualifier>
+            <value> an application for summary judgment </value>
+        </matter>
+        <parties>
+            <court-file> CIV 2012-404-006007 </court-file>
+            <plantiffs>
+                <plantiff>
+                    <qualifier> BETWEEN </qualifier>
+                    <value> STRATEGIC NOMINEES LIMITED (IN RECEIVERSHIP) </value>
+                    <descriptor> Plaintiff </descriptor>
+                </plantiff>
+            </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> BOS INTERNATIONAL (AUSTRALIA) LIMITED </value>
+                    <descriptor> Defendant </descriptor>
+                </defendant>
+            </defendants>
+        </parties>
+        <hearing> 19 April 2013 </hearing>
+        <counsel> M V Robinson for the plaintiff </counsel>
+        <counsel> Z Kennedy for the defendant </counsel>
+        <solicitor> M Robinson, Simpson Grierson, Auckland – Michael.robinson@simpsongrierson.com </solicitor>
+        <solicitor> Z Kennedy, Minter Ellison, Auckland – zane.kennedy@minterellison.com </solicitor>
+        <judgment> 29 April 2013 </judgment>
+        <waistband>
+            <title>JUDGMENT OF</title>
+            <title>ASSOCIATE JUDGE CHRISTIANSEN </title>
+        </waistband>
+    </intituling>
+
+    <body>
+        <paragraph>
+            <label> 1 </label>
+            <text> For consideration upon the plaintiff’s application for summary judgment is the interpretation of an inter creditor deed dated 1 July 2008 which governs the parties relationship as lenders to Takapuna Village Limited (In Liquidation) (Takapuna) as trustee of the Takapuna Village Trust. </text>
+        </paragraph>
+        <paragraph>
+            <label> 2 </label>
+            <text> For the purpose of the enquiry the Court needs consider also the parties respective facility agreements. That of the plaintiff will be referred to as the Strategic Facility Agreement and that for the defendant shall be referred to as the Senior Facility Agreement. </text>
+        </paragraph>
+        <paragraph>
+            <label> 3 </label>
+            <text> In that enquiry the Court will focus on the interpretation of the terms of Nominated Amount and Priority Amount as defined in the inter creditor deed, and whether the defendant (BOS) is entitled to recalculate interest on a compound interest basis under clause 22.1 of the Senior Facility Agreement/clause 11.1 of the inter creditor deed. </text>
+        </paragraph>
+        <title> Background </title>
+        <paragraph>
+            <label> 4 </label>
+            <text> On 12 March 2010 Mr McCloy and Mr Fisk were appointed as the joint and several receivers and managers of the plaintiff (Strategic). BOS has a company registered in New Zealand as an overseas ASIC company under the Companies Act 1993. </text>
+        </paragraph>
+        <paragraph>
+            <label> 5 </label>
+            <text> On 23 December 2010 Takapuna was placed into liquidation by a special resolution of its shareholders. Mr Hoole and Mr Turner were appointed liquidators. </text>
+        </paragraph>
+        <paragraph>
+            <label> 6 </label>
+            <text> Takapuna was the developer of an apartment complex known as the Sentinel Apartments in Takapuna. </text>
+        </paragraph>
+        <paragraph>
+            <label> 7 </label>
+            <text> Pursuant to a loan agreement dated 29 November 2005 (Strategic Facility Agreement) Strategic lent Takapuna $10,730,000. </text>
+        </paragraph>
+        <paragraph>
+            <label> 8 </label>
+            <text> In about June 2008 Takapuna obtained funding from BOS for purposes including the refinancing of other indebtedness in relation to the Sentinel development. BOS provided a loan facility on the condition, among others, that Takapuna and Strategic enter into the arrangements recorded in the inter creditor deed, the terms of which were subsequently amended pursuant to a deed of amendment dated 13 May 2009. </text>
+        </paragraph>
+        <paragraph>
+            <label> 9 </label>
+            <text> On 1 July 2008 BOS entered into the Senior Facility Agreement as contemplated by the inter creditor deed. The Senior Facility Agreement was subsequently amended pursuant to a deed of amendment dated 13 May 2009. </text>
+        </paragraph>
+        <paragraph>
+            <label> 10 </label>
+            <text> The inter creditor deed provided: </text>
+            <quote>
+                <quote-paragraph> <strong>      Obligor     </strong> means: </quote-paragraph>
+                <quote-paragraph> (a) [Takapuna] </quote-paragraph>
+                <quote-paragraph> ... </quote-paragraph>
+                <quote-paragraph> <strong>      Priority Amount     </strong> means, at any time and in respect of a Creditor the aggregate of: </quote-paragraph>
+                <quote-paragraph> (a) an amount equivalent to its indebtedness (including, on any day, interest capitalised prior to that day) at that time, but limited to its Nominated Amount as such amount is reduced pursuant to clause 7.2. </quote-paragraph>
+                <quote-paragraph> (b) an amount equivalent to the interest due or accrued due to that Creditor at that time but limited to an amount equal to the interest that would accrue in a period of twenty four months, at the maximum rate chargeable by that Creditor to the Debtor under the Creditor’s Facility Agreement. </quote-paragraph>
+                <quote-paragraph> (c) an amount equivalent to that Creditor’s Costs of Realisation (including all interest and taxes on that amount). </quote-paragraph>
+                <quote-paragraph> ... </quote-paragraph>
+                <quote-paragraph> 4. <strong>      ORDER OF PAYMENTS     </strong> </quote-paragraph>
+                <quote-paragraph> All amounts received, realised, or recovered by a Creditor under a Security Document upon Enforcement are to be applied as follows: </quote-paragraph>
+                <quote-paragraph> (a) first, in or towards payment to BOS of the Senior Indebtedness but limited to BOS’ Priority Amount; </quote-paragraph>
+                <quote-paragraph> (b) second, in or towards payment to Strategic of the Strategic Indebtedness but limited to Strategic’s Priority Amount. </quote-paragraph>
+                <quote-paragraph> 7. <strong>      Repayments prior to Enforcement     </strong> </quote-paragraph>
+                <quote-paragraph> 7.1 <strong>      Repayments     </strong> </quote-paragraph>
+                <quote-paragraph> Subject to clause 7.4, the parties agree that any Net Proceeds shall be applied in repayment of the Senior Indebtedness in accordance with the provisions of the Senior Facility Agreement. Net proceeds may be applied in repayment of the Strategic Indebtedness only on and from the Termination Date. </quote-paragraph>
+                <quote-paragraph> 7.2 <strong>      Reduction of BOS’ Priority Amount     </strong> </quote-paragraph>
+                <quote-paragraph> Subject to clause 7.4 BOS agrees that all moneys received from the Obligors in relation to Senior Indebtedness (being Net proceeds or otherwise) will be applied in accordance with the Senior Facility Agreement: </quote-paragraph>
+                <quote-paragraph> (a) first in payment of any outstanding interest on the Senior Indebtedness but limited to an amount equal to the interest that would accrue in a period of 24 months at the rate charged by BOS pursuant to the Senior Facility Agreement; and </quote-paragraph>
+                <quote-paragraph> (b) second in permanent repayment of the principal amount of the Senior Indebtedness (a Principal Reduction). </quote-paragraph>
+                <quote-paragraph> With effect from the payment of a Principal Reduction, BOS’ Nominated Account will be reduced by an amount equal to the amount of the Principal Reduction (but subject always to any amount being avoided under any law of insolvency). </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label> 11 </label>
+            <text> BOS’ nominated amount was $27,549,000 as decreased in accordance with clause 7.2 of the inter creditor deed. </text>
+        </paragraph>
+        <paragraph>
+            <label> 12 </label>
+            <text> Strategic’s nominated amount was $20,000,000 as decreased in accordance with clause 7.2 with the inter creditor deed. </text>
+        </paragraph>
+        <paragraph>
+            <label> 13 </label>
+            <text> The law firm Bell Gully acted for both Strategic and BOS in relation to the preparation and negotiation of the inter creditor deed. The initial draft of the inter creditor deed included the words “including capitalised interest” in parenthesis after the word “interest” in para (b) of the definition of Priority Amount (para (b)). In the final version the words “including capitalised interest” had been expressly removed it is said upon the request of Mr David McPherson the lawyer advising Strategic. The parties agreed to that amendment. </text>
+        </paragraph>
+        <paragraph>
+            <label> 14 </label>
+            <text> On 27 June 2008 BOS advanced $24,338,000 together with a capitalised fee payable in the amount of $275,490, to Takapuna under the Senior Facility Agreement. Following the initial drawdown all interest due under the Senior Facility Agreement was capitalised by BOS in a total sum of $3,710,455.19. </text>
+        </paragraph>
+        <paragraph>
+            <label> 15 </label>
+            <text> During the period 15 July 2008 to 10 February 2011 Takapuna made loan payments totalling $28,353,586.91. Of that sum the final payment on 10 February 2011 of $1,782,402.33 came from the net proceeds of the sale of a unit in the Sentinel Apartments. </text>
+        </paragraph>
+        <paragraph>
+            <label> 16 </label>
+            <text> BOS requested that Strategic release its mortgage over that Unit in order to allow settlement of its sale to proceed. Strategic agreed but expressly on the basis that its position in relation to priority to the final payment was reserved. </text>
+        </paragraph>
+        <paragraph>
+            <label> 17 </label>
+            <text> Strategic’s position is that BOS having received $28,353,586.91 it has received $804,586.91 in excess of its nominated amount. It is for this amount that Strategic seeks summary judgment. </text>
+        </paragraph>
+        <title> Legal principles </title>
+        <paragraph>
+            <label> 18 </label>
+            <text> Strategic must prove that BOS has no defence to the claim for summary judgment. </text>
+        </paragraph>
+        <paragraph>
+            <label> 19 </label>
+            <text> The instant case is entirely suitable for disposition upon a summary judgment application. The Court’s interpretation of the relevant facility documents ought to be determinative of the question whether or not BOS has received more than it was entitled to by way of loan repayments. </text>
+        </paragraph>
+        <title> Contractual interpretation </title>
+        <paragraph>
+            <label> 20 </label>
+            <text> The Court needs to establish the meaning the parties intended their words to bear.
+                <footnote> 1 </footnote> The intention of the parties must be ascertained from the totality of words used having regard to the circumstances in which they were used.
+                <footnote> 2 </footnote>
+            </text>
+        </paragraph>
+        <title> Strategic’s case </title>
+        <subtitle> When interest is capitalised is it interest still? </subtitle>
+        <paragraph>
+            <label> 21 </label>
+            <text> It says BOS received $804,856.91 in excess of its nominated amount and that during the course of its loan BOS capitalised all its interest. It says that the definition of priority amount in the inter creditor deed makes it clear that capitalised interest is part of the debt owed – limited to the nominated amount, but is not part of the amount for which interest is due or has accrued due. Indeed it says Strategic’s case that the evidence relating to the deletion of the words (including capitalised interest) from any calculation of interest due, makes it clear that the parties expressly agreed to delete reference to capitalised interest as part of the interest due. Therefore Strategic says because capitalised interest cannot be taken into account as part of the interest due BOS has no simple interest outstanding which can be added to the amount for which it has received and certainly nothing in excess that of the nominated amount. </text>
+        </paragraph>
+        <paragraph>
+            <label> 22 </label>
+            <text> Strategic’s case focuses upon the word “interest”. It contends that the definition of priority amount makes it clear that capitalised interest is to be included in para (a) (which refers to the amount of a borrower’s indebtedness including interest capitalised), and is not included in para (b) which refers to ‘interest due or accrued and does not refer to capitalised interest. </text>
+        </paragraph>
+        <paragraph>
+            <label> 23 </label>
+            <text> As much, it is submitted, is clear from the plain meaning of the words used in the definition of priority amount. Also the plaintiff contends the evidence shows the parties expressly agreed to delete reference to capitalise interest in paragraph (b). </text>
+        </paragraph>
+        <paragraph>
+            <label> 24 </label>
+            <text> Therefore: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> Any capitalised interest cannot be taken into account under para (b); and </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> BOS has no simple interest outstanding that can be taken into account under para (a); and </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> Therefore BOS’ priority amount can be no more than its nominated amount of $27,547,000 and to the extent it has received funds in excess of its priority amount must pay that to Strategic. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 25 </label>
+            <text> Strategic’s position is that references to ‘interest’ in para (b) and clause 7.2 (a) must have the same meaning because the interpretation of the term ‘interest’ should be consistent in the context of the same document and because para (a) provides that a parties nominated amount shall reduce in accordance with clause 7.2 because only under that clause are amounts applied to reduce the nominated amount. Amounts applied under clause 7.2 (a) (for the payment of interest) do not reduce the parties’ nominated amount and must therefore not be payments to which para (a) applies. </text>
+        </paragraph>
+        <paragraph>
+            <label> 26 </label>
+            <text> Mr Robinson for Strategic submits that had the parties intended capitalised interest to be included under both para (b) and clause 7.2 (a) words would have been included in those provisions to that effect – as they were in the case of para (a). However no such words were included in those provisions in the final inter creditor deed – indeed, those words have been deleted from the previous draft. </text>
+        </paragraph>
+        <paragraph>
+            <label> 27 </label>
+            <text> Therefore the parties must have intended the reference to “interest” in those provisions to include only “simple” interest, being interest that has not been capitalised and that remains outstanding. </text>
+        </paragraph>
+        <paragraph>
+            <label> 28 </label>
+            <text> Regarding BOS’ claim that capitalised interest should be taken into account in para (b) would mean that capitalised interest could be taken into account both in paras (a) and (b). This, Mr Robinson submits does not make sense because: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> It would have allowed interest amounts to have been doubled counted; </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> The parties did not intend BOS being entitled to charge interest on the capitalised interest, and also claim that capitalised interest under para (b); and </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> Had it been intended that capitalised interest could have been taken into account in para (a) then there would have been a need for additional provisions to be included in the inter creditor deed regulating how payments received were to be allocated against the payment of pure principal or capitalised interest. Without such it would not have been possible to determine the parties’ priority amount. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 29 </label>
+            <text> Mr Robinson submits that if BOS’ contention of capitalised interest should be taken into account in clause 7.2 (a) it would also mean that, in circumstances where its nominated amount was set at a level which took capitalised interest into account, it would be possible for its nominated amount to never be reduced to zero even if the total amount of pure principal and anticipated capitalised interest had been repaid. This is because, although an amount intended to cover capitalised interest has been included in its nominated amount, payments received in respect of that capitalised interest would be applied under clause 7.2 (a) and never contribute to a principal reduction. Such a result submits Mr Robinson would be wholly inconsistent with the object of the inter creditor deed. </text>
+        </paragraph>
+        <subtitle> What of the evidence of the lawyer who requested the term ‘including capitalised interest’ be deleted from para (b)? </subtitle>
+        <paragraph>
+            <label> 30 </label>
+            <text> It is Strategic’s position that Mr McPherson’s affidavit clearly demonstrates that while negotiating the inter creditor deed, the parties’ specifically considered whether reference to “interest” in para (b) should also include capitalised interest and as those considerations ultimately resulted in a change to para (b) which both parties approved, the affidavit established a fact that demonstrates an objectively apparently consensus as to the meaning operating between the parties with respect to the term “interest”. On that basis it is submitted the term interest in para (b) and, consequently, clause 7.2 (a) should include simple interest only, and not interest which has been capitalised. </text>
+        </paragraph>
+        <subtitle> Whether the interest capitalised can be treated as uncapitalised since Takapuna defaulted upon its obligation to pay BOS’s advance within one year. </subtitle>
+        <paragraph>
+            <label> 31 </label>
+            <text> BOS claims that clause 22.1 of the Senior Facility Agreement and clause 11.1 of the inter creditor deed entitle BOS to now calculate interest on the Senior indebtedness on a basis other than the one which BOS previously adopted. Mr Robinson says it appears to be BOS’ contention that it is now able to ‘un-capitalise’ the interest which it has charged on the Senior indebtedness such that simple interest is left outstanding. </text>
+        </paragraph>
+        <paragraph>
+            <label> 32 </label>
+            <text> Clauses 22.1 and 11.1 relate to circumstances where a creditor fails to exercise a right or delays in exercising it. In such circumstances those clauses provide that the creditor has not waived its right or precluded its ability to further exercise that right. </text>
+        </paragraph>
+        <paragraph>
+            <label> 33 </label>
+            <text> Mr Robinson submits in this case those clauses do not give a creditor the power to reverse a right which has already been exercised, which it says BOS has done to the extent it has acted to capitalise interest. Therefore, it says those clauses do not provide a means of reversing that decision and therefore once interest has been capitalised it clearly falls within para (a) and not para (b). </text>
+        </paragraph>
+        <subtitle> Whether BOS’ legal costs can be claimed for reimbursement. </subtitle>
+        <paragraph>
+            <label> 34 </label>
+            <text> Regarding BOS’ claims to be reimbursed for legal fees incurred ‘for dispute regarding interpretation of inter creditor deed’ Mr Robinson submits that the definition of security documents in the definition of costs of realisation does not include the inter creditor deed; that Strategic is not challenging the validity or scope of BOS’ security; and the issue in dispute concerns a contractual rights as between the parties. Therefore he submits any costs incurred in connection with a dispute relating to the inter creditor deed are not “costs of realisation” and cannot be taken into account for the purposes of determining a parties’ priority amount under the inter creditor deed. </text>
+        </paragraph>
+        <title> BOS’ case </title>
+        <subtitle> When interest is capitalised is it interest still? </subtitle>
+        <paragraph>
+            <label> 35 </label>
+            <text> BOS’ position is that its capitalisation of interest in a manner specifically contemplated by the Senior Facility Agreement does not deprive it of the right to take interest into account in determining either its nominated amount or the priority amount. </text>
+        </paragraph>
+        <paragraph>
+            <label> 36 </label>
+            <text> BOS says it has not received payments from Takapuna in excess of its nominated amount because “outstanding interest” per clause 7.2 (a) includes interest whether or not it has been capitalised; that all interest capitalised after Takapuna fell into default on 27 June 2009 comprised “outstanding interest” under the terms of the Senior Facility Agreement and was to be repaid prior to a permanent reduction in BOS’ nominated amount under clause 7.2. </text>
+        </paragraph>
+        <paragraph>
+            <label> 37 </label>
+            <text> BOS says neither has it received payments in excess of its priority amount because reference to “an amount equivalent to the interest due or accrued due” in para (b) of the definition of priority amount necessarily includes interest which has fallen due and been capitalised by BOS. </text>
+        </paragraph>
+        <paragraph>
+            <label> 38 </label>
+            <text> Mr Kennedy for BOS submits that Strategic’s submissions conflate the separate processes in the definitions of nominated amount and priority amount and fail to apprehend the purpose of a priority amount which is to an extent arbitrary and simply provides a mechanism for the calculation of the priority conferred on BOS. It is not required to correspond to the actual amount they owed, as Strategic asserts. Regardless, Mr Kennedy submits BOS is entitled pursuant to clause 22.1 of the Senior Facility Agreement and clause 11.1 of the inter creditor deed to recalculate interest on a compound interest basis. </text>
+        </paragraph>
+        <paragraph>
+            <label> 39 </label>
+            <text> It is clear by the provisions in clause 7 of the inter creditor deed that all net proceeds (of all payments made by Takapuna) were to be applied in repayment of the Senior indebtedness (i.e. monies owing to BOS) in accordance with the provisions of the Senior Facility Agreement. </text>
+        </paragraph>
+        <paragraph>
+            <label> 40 </label>
+            <text> Takapuna was to repay BOS by 27 June 2009 and its failure to do so meant that it fell into default under the Senior Facility Agreement. The statement produced by BOS records the accrual of interest and the receipt of payments from Takapuna both before and after it fell into default. Mr Kennedy submits it is necessary to analyse each period separately. He refers to clause 5.3 of the Senior Facility Agreement and within that agreement the definition of Interest Payment Date: </text>
+            <quote>
+                <quote-paragraph> Clause 5.3 of the Senior Facility Agreement provided that: </quote-paragraph>
+                <quote-paragraph> 5.3 <strong>      Interest Capitalisation     </strong> </quote-paragraph>
+                <quote-paragraph> On each Interest Payment Date, interest otherwise due and payable on any Advance shall be capitalised to the Facility Outstandings and itself bear interest at the Interest Rate, provided that: </quote-paragraph>
+                <quote-paragraph> (a) if an Event of Default has occurred such interest shall be payable in full on the relevant Interest Payment Date and may only be capitalised at the option of the Lender; and </quote-paragraph>
+                <quote-paragraph> (b) interest may only continue to be capitalised to an amount equal to the Capitalisation Amount. </quote-paragraph>
+                <quote-paragraph> 5.9
+                    <emphasis> Interest Payment Date </emphasis> is defined as each of: </quote-paragraph>
+                <quote-paragraph> (a) the date one calendar month from the initial Drawing Date; </quote-paragraph>
+                <quote-paragraph> (b) the same date in each month thereafter; and </quote-paragraph>
+                <quote-paragraph> (c) the Repayment Date. </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label> 41 </label>
+            <text> The issue is whether interest is no longer outstanding for the purposes of clause 7.2 (a) because capitalisation has occurred under clause 5.3. For BOS it is submitted that although interest has been capitalised and was no longer then due it nonetheless remained outstanding (in the sense that it had not yet been paid by Takapuna) for the purposes of the application of clause 7.2 (a). Mr Kennedy submits this interpretation is supported by: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> The use of the word “outstanding” rather than “due”; </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> The obvious intention of the parties that BOS’ nominated amount would not be reduced by payments of interest but only by permanent reductions in the principal sum; and </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> The definition of Advance (as contained in the Senior Facility Agreement) was:
+                        <quote>
+                            <quote-paragraph> A NZ$ denominated cash advance to the borrower under the facility, or if the content requires, the principal amount of such advance. </quote-paragraph>
+                        </quote>
+                    </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 42 </label>
+            <text> Mr Kennedy submits that for these reasons the parties to the Senior Facility Agreement did not contemplate that advances made for the purposes of meeting Takapuna’s interest obligations by way of capitalisation would become principal for the purposes of the document. In the result any payments BOS received from Takapuna before it went into default were properly applied to meet interest accrued and capitalised under clause 7.2 (a) before being applied in permanent reduction of the principal advance by BOS under clause 7.2 (b). In relation to default occurring on 27 June 2009 events were subject to the provisions of clauses 12.2 and 15 of the Senior Facility Agreement, which provided: </text>
+            <quote>
+                <quote-paragraph> Clause 12.2 of the Senior Facility Agreement provided: </quote-paragraph>
+                <quote-paragraph> 12.2 <strong>      Consequences of Events of Default     </strong> </quote-paragraph>
+                <quote-paragraph> On and after the occurrence of an Event of Default and while it continues: </quote-paragraph>
+                <quote-paragraph> (a) <strong>      Security Documents enforceable     </strong> </quote-paragraph>
+                <quote-paragraph> the Security Documents will become immediately enforceable; and </quote-paragraph>
+                <quote-paragraph> (b) <strong>      Lender may accelerate indebtedness     </strong> </quote-paragraph>
+                <quote-paragraph> The Lender may, at any time, by notice to the Borrower: </quote-paragraph>
+                <quote-paragraph> (i) cancel the Facility; and/or </quote-paragraph>
+                <quote-paragraph> (ii) declare any or all of the Facility Outstandings and any other indebtedness of the Borrower and the Guarantor under the Relevant Documents to be, and those Facility Outstandings and that indebtedness will be, due and payable either immediately or upon demand or at such date as the Lender may specify. </quote-paragraph>
+                <quote-paragraph> Clause 15 of the Senior facility Agreement provided: </quote-paragraph>
+                <quote-paragraph> <strong>      Default Interest     </strong> </quote-paragraph>
+                <quote-paragraph> If the Borrower does not pay, when due, an amount payable by it under a Relevant Document (the overdue amount) then, without prejudice to its other obligations, the Borrower will pay interest on the overdue amount (including interest payable under this clause) calculated from the due date to the date of receipt of the overdue amount by the Lender </quote-paragraph>
+                <quote-paragraph> (after as well as before judgment) compounded and payable at intervals selected by the Lender at its discretion. This obligation to pay default interest is to arise without the need for a notice or demand. The rate of default interest will be the aggregate of the rate that is two per cent per annum above the Interest Rate applicable on the due date of that overdue amount. </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label> 43 </label>
+            <text> Following default BOS wrote to Takapuna recording: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> It was obliged to have repaid the facility in full by 27 June 2009; </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> It had failed to do so and was accordingly in default; and </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> BOS reserved all its rights to take whatever action it deemed appropriate. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 44 </label>
+            <text> Mr Kennedy submits it follows that all sums owed by Takapuna to BOS were outstanding as at 27 June 2009 and remained so thereafter. Certainly at least interest accruing after this date was outstanding for the purposes of clause 7.2 (a) irrespective of whether it was capitalised or otherwise. It follows then that all repayments received from Takapuna were to be applied first in reduction of the outstanding capitalised interest accruing after 27 June 2009 and then in repayment of the principal amount. </text>
+        </paragraph>
+        <paragraph>
+            <label> 45 </label>
+            <text> Mr Kennedy submits as much must have been the parties intention because: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> Clause 7.2 (a) recorded the parties agreement that BOS was entitled to receive up to two years interest before subsequent payments of interest reduced the nominated amount; </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> The Senior Facility Agreement recorded that interest could be capitalised at BOS’ option; and </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> It makes no commercial sense that BOS should lose the right to receive payment of interest before its nominated amount was reduced simply because it elected to capitalise rather than compound interest as it was undoubtedly entitled to do following Takapuna’s default under clause 15 of the Senior Facility Agreement. In support of its contention it has not received payment in excess of its priority amount, Mr Kennedy observes that the definition of priority amount is quite different from that of nominated amount and that they intersect only in the sense that a creditor’s nominated amount acts as a ceiling on the amount equivalent to that creditor’s indebtedness for the purposes of para (a) of priority amount. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 46 </label>
+            <text> Mr Kennedy notes the nominated amount is a specific figure which is reduced by the actual payments received by BOS in accordance with the prescriptive formula set out in clause 7.2 i.e. it is in no sense arbitrary. On the other hand the priority amount definition refers to “an amount equivalent to” a creditor’s indebtedness plus interest due or accrued due and costs of realisation. Therefore the reference to a priority amount is not intended to identify the actual sum owed at any given point in time. </text>
+        </paragraph>
+        <paragraph>
+            <label> 47 </label>
+            <text> From BOS’ point of view the words used in the definition of priority amount are clear in that they confer priority in the aggregate amount equivalent to its indebtedness but limited to its nominated amount, plus interest due or previously accrued due but limited to 24 months, and the costs of realisation. Mr Kennedy submits therefore that it does not follow that BOS is not entitled to claim priority in respect of any interest under para (b) just because it has capitalised interest which falls within the definition of indebtedness in para (a). This is so submits Mr Kennedy because the plain words of para (a) specifically refer to an amount equivalent to the creditor’s indebtedness (not just principal), but limited to its nominated amount. </text>
+        </paragraph>
+        <paragraph>
+            <label> 48 </label>
+            <text> The definition of indebtedness in the Senior Facility Agreement was stated as: </text>
+            <quote>
+                <quote-paragraph> <strong>      Senior Indebtedness     </strong> means, at any time, all indebtedness payable or owing by any Obligator to BOS or incurred by BOS on behalf of any Obligor or sustained in any way by BOS in connection with any such indebtedness or the enforcement or attempted enforcement of any such indebtedness, </quote-paragraph>
+                <quote-paragraph> whether pursuant to the Senior Facility Agreement, the Senior Security Documents or otherwise. </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label> 49 </label>
+            <text> Therefore para (a) captures all indebtedness including interest subject only to the cap of the nominated amount. </text>
+        </paragraph>
+        <paragraph>
+            <label> 50 </label>
+            <text> It is BOS’ position that the submissions for Strategic confuse the separate definitions and purposes of nominated amount and priority amount in that they fail to recognise the arbitrary nature of the definition of priority amount which is simply a formula calculated to provide BOS with a buffer over and above its actual indebtedness in an amount equivalent to the interest due or accrued due, including costs. </text>
+        </paragraph>
+        <paragraph>
+            <label> 51 </label>
+            <text> For BOS it is argued that the reference to “... interest... accrued due...” in para (b) means falling due or becoming due and consequently must refer to interest which has previously fallen due or become due. Therefore it is argued that para (b) is intended to capture both interest which is then due and interest which has previously accrued but is not longer due by reason of it having been capitalised or otherwise paid. </text>
+        </paragraph>
+        <paragraph>
+            <label> 52 </label>
+            <text> Mr Kennedy argues also that Strategic’s contention that BOS’ interpretation of para (b) amounts to “double counting” capitalised interest under paras (a) and (b) is wrong. Mr Kennedy submits the definition of priority amount is simply an arbitrary formula or mechanism to allow the parties to calculate the priority conferred upon the Senior creditor; and it is not intended to reflect the actual amount then due and owing as Strategic appears to be arguing. He submits that the definition of priority amount clearly permits interest (whether capitalised or not) to be taken into account both under para (a) in the definition of indebtedness and again under para (b); that BOS had an express contractual right both to capitalise interest and to compound it upon default; that the manner of payment of interest whether by capitalisation or otherwise is irrelevant to the interpretation of para (b) and that it is not correct as Strategic asserts that there would need to be a mechanism in the inter creditor deed for allocating payments between principal and capitalised interest because the priority amount is limited to the aggregate of an amount equivalent to the objectively ascertainable sums described in paras (a), (b) and (c) – there being no need to distinguish between the components of BOS’ indebtedness in para (a) because it is capped by the calculation of the nominated amount and the interest due or accrued under para (b). </text>
+        </paragraph>
+        <paragraph>
+            <label> 53 </label>
+            <text> As to Strategic claims that payments received by BOS on account of capitalised interest would never contribute to a principal reduction under clause 7.2 (b) Mr Kennedy responds that the amount of interest paid pursuant to that clause is limited to 24 months and all payments received thereafter on account of interest will constitute a binding principal reduction. </text>
+        </paragraph>
+        <subtitle> What value can be placed on Mr McPherson’s evidence about deleting the words “including capitalised interest” from para (b)? </subtitle>
+        <paragraph>
+            <label> 54 </label>
+            <text> Mr Kennedy comments that Strategic relies heavily on the affidavit of Mr McPherson which establishes that during the negotiation of the terms of the inter creditor deed it was agreed by Bell Gully acting for both BOS and Strategic that the words “(including capitalised interest)” would be removed from para (b) of the definition of priority amount. </text>
+        </paragraph>
+        <paragraph>
+            <label> 55 </label>
+            <text> Strategic claims that this is an “objectively apparent consensus as to the meaning operating between the parties with respect to the term interest”. Mr Kennedy submits that this submission conflicts with the approach approved by the Supreme Court in
+                <emphasis> Vector Gas </emphasis>
+                <footnote> 3 </footnote> which rejected recourse to subjective evidencing of the parties understandings and intentions. </text>
+        </paragraph>
+        <paragraph>
+            <label> 56 </label>
+            <text> Mr Kennedy submits that while Strategic adduces objective evidence of a change to the definition of para (b) it asks the Court to draw an inference as to the parties subjective intentions as to the purpose of the change. He submits the Court cannot safely draw such an inference because: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> The words “(including capitalised interest)” were in an inclusive extension of the broader term “interest” used in para (b); </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> The deletion of such an extension does not necessarily constrain the scope of “interest” itself; </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> That if that had been the intended outcome it would have easily been achieved by leaving the deleted words in para (b) but changing the word “including” to “excluding”; </text>
+                </entry>
+                <entry>
+                    <label> d </label>
+                    <text> A likely explanation for deletion of the words is that BOS’ lawyers did not regard them as essential to the proper interpretation of para (b) and were prepared to agree to their deletion as part of the negotiation process; </text>
+                </entry>
+                <entry>
+                    <label> e </label>
+                    <text> That the Court cannot conclude otherwise on the face of the evidence. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <subtitle> Costs of realisation </subtitle>
+        <paragraph>
+            <label> 57 </label>
+            <text> BOS rejects claims that it cannot recover legal fees “for disputes regarding interpretation of inter creditor deed”. </text>
+        </paragraph>
+        <paragraph>
+            <label> 58 </label>
+            <text> Mr Kennedy’s submission is that it is clear the inter creditor deed cannot stand in isolation because it specifically records that the Strategic indebtedness is to be subordinated to the Senior indebtedness and because the dispute between the parties derives from BOS’ right to receive payment of the Senior indebtedness and interest. </text>
+        </paragraph>
+        <paragraph>
+            <label> 59 </label>
+            <text> BOS’ position is that in defending Strategic’s claim it is clearly protecting or enforcing the security or exercising its powers and authorities to protect its rights under the Senior Facility Agreement. BOS’ position is that para (c) will include the legal costs of BOS in relation to the interpretation of the inter creditor deed. </text>
+        </paragraph>
+        <subtitle> Whether capitalised interest can be recalculated as interest following Takapuna’s default. </subtitle>
+        <paragraph>
+            <label> 60 </label>
+            <text> BOS’ final position is that in any event it is entitled to recalculate interest on a compound interest basis pursuant to clauses 22.1 and 11.1 for those clauses, Mr Kennedy submits, makes it clear that no agreement constituting or evidencing any of the Senior indebtedness will operate as a waiver of that right, and a single or partial exercise of a right will not preclude another or further exercise of that right. </text>
+        </paragraph>
+        <paragraph>
+            <label> 61 </label>
+            <text> What Mr Kennedy is saying is that despite the fact that BOS continued to capitalise interest at regular intervals after default as it had prior to default, it is not precluded by the non waiver clauses in the relevant documents from treating that interest as if it had not been capitalised because the non waiver clauses permitted it to do so. </text>
+        </paragraph>
+        <paragraph>
+            <label> 62 </label>
+            <text> Pursuant to clause 5.3 (previously referred to in para 40 herein) BOS was at liberty to continue to capitalise interest or pursuant to clause 15 of the senior facility agreement it could charge default interest on the overdue amount, compound it and require it to be paid at intervals selected by BOS. Mr Kennedy submits that whilst BOS chose to continue to capitalise interest the non waiver clauses expressly entitled it to change its mind and to exercise the right to charge compound interest. </text>
+        </paragraph>
+        <title> Considerations </title>
+        <subtitle> What is the effect of capitalising interest and how did the parties intend that process to affect BOS’s rights to receive interest payments before the indebtedness due to it was calculated? </subtitle>
+        <paragraph>
+            <label> 63 </label>
+            <text> The Court needs to consider how interest is to be treated by the terms of the inter creditor deed once it has been capitalised i.e. whether it should continue to be regarded as interest for the purpose of calculating BOS’ entitlement to priority, or whether instead it has assumed the character of principal for the purpose of calculating reductions in the debt owing following receipt of payments from Takapuna. </text>
+        </paragraph>
+        <paragraph>
+            <label> 64 </label>
+            <text> BOS’ position is that interest which is capitalised nevertheless retains its character as interest for the purpose of determining the extent of the indebtedness due in terms of cl. 7.2 and therefore it does not form part of the principal amount of indebtedness which is only reduced after interest has been paid. </text>
+        </paragraph>
+        <paragraph>
+            <label> 65 </label>
+            <text> From the beginning and following its advance to Takapuna BOS has, as it had been agreed it would, accumulated interest payments receivable from Takapuna and has capitalised those at three monthly intervals. Loan statements show that when this occurred the capitalised interest was added to the ‘Facility Balance’. After the first three months of the advance interest of $699,667.37 was added to the principal debt owed of $23,024,570.79 to show a Facility Balance due of $23,724,238.16. Therefore all interest received was capitalised and added to the principal debt owed. </text>
+        </paragraph>
+        <paragraph>
+            <label> 66 </label>
+            <text> This practice continued at three monthly intervals during the course of the year during which the facility ran – and beyond for even though the facility fell into default – it not having been repaid in full by 24 June 2009 – the process of capitalising interest that was added to the principal debt due remained unchanged. This continued until 31 January 2011 until the facility was paid albeit in an amount which Strategic says exceeded BOS’ entitlement. The only change after default on 24 June 2009 was that BOS increased its interest margin charge by 2 per cent, as it was entitled to do. </text>
+        </paragraph>
+        <paragraph>
+            <label> 67 </label>
+            <text> The question concerns what happens to interest once it is capitalised. For our purpose is there significance in the fact that the term ‘including capitalised interest’ in para (b), which had been included in the draft inter creditor deed, was deleted from the final deed terms. </text>
+        </paragraph>
+        <paragraph>
+            <label> 68 </label>
+            <text> Capitalised interest increases the total indebtedness in that it increases the amount of the principal loan sum due. The moment interest is capitalised it is treated as principal. BOS’ own senior facility agreement records that purpose in clause 5.3. </text>
+        </paragraph>
+        <paragraph>
+            <label> 69 </label>
+            <text> I have already reviewed the process by which BOS capitalised interest at regular three monthly intervals. On each occasion, before and after default, BOS has added the Capitalised Interest Sum to the balance due under the facility. Whilst BOS retained the right to review that process after the date of default, it did not do so. </text>
+        </paragraph>
+        <paragraph>
+            <label> 70 </label>
+            <text> It was always contemplated that the nominated amount which includes capitalised interest would be reduced in accordance with the inter creditor deed. That deed noted that BOS’ nominated amount was $27,549,000 as decreased in accordance with the terms of this deed. Therefore each time an apartment was sold the proceeds were to be applied to reduce the nominated amount. This is plainly what has occurred as BOS’ own facility loan statement shows. Those proceeds of sale and their application to the payment of capitalised interest as well had the effect of reducing both the nominated amount and the facility amount. As much is confirmed by Mr JHR Fisk a chartered accountant who was appointed receiver of Strategic in March 2010. He says that BOS’ facility loan statement showed that: </text>
+            <quote>
+                <quote-paragraph> 8. ... </quote-paragraph>
+                <quote-paragraph> (a) all interest due under the SFA was capitalised by BOS on each interest payment dated... </quote-paragraph>
+                <quote-paragraph> (b) BOS capitalised interest in the total sum of $3,710,455.19; and </quote-paragraph>
+                <quote-paragraph> (c) between 15 July 2008 and 1 October 2010 [Takapuna] made repayments of its indebtedness (including capitalised interest) to BOS in the total amount of $26,571,184.58. </quote-paragraph>
+            </quote>
+        </paragraph>
+        <subtitle> Can BOS reverse capitalisation of interest post default and treat that interest as if it had not been capitalised? </subtitle>
+        <paragraph>
+            <label> 71 </label>
+            <text> BOS’ approach through Mr Kennedy’s submissions is that because of clauses 11.1 and 22.1 (the non waiver provisions) BOS is entitled post date of default to convert capitalised interest into compound interest to remove any consideration of it being treated as a principal indebtedness component. </text>
+        </paragraph>
+        <paragraph>
+            <label> 72 </label>
+            <text> The Court does not agree that clauses 11.1 and 22.1 have that effect or purpose. Instead they recognise the ability of a lender to reserve its rights about how, post default, it could treat payments received from apartment sales. Indeed in its letter dated 29 June 2009 to Takapuna, BOS advised that it acknowledged and reserved its rights in respect of the default to take whatever action it deemed appropriate to preserve or enforce its rights under the facility agreement. </text>
+        </paragraph>
+        <paragraph>
+            <label> 73 </label>
+            <text> Its facility agreement (clause 12.2) provided that in the event of a default BOS could require the facility debt to be payable either immediately or upon demand. </text>
+        </paragraph>
+        <paragraph>
+            <label> 74 </label>
+            <text> The facts show BOS was content to continue with its regular practice of capitalising interest at three-monthly intervals albeit at an increased interest margin rate. </text>
+        </paragraph>
+        <paragraph>
+            <label> 75 </label>
+            <text> It is the Court’s view that BOS having done that it is not within the scope of clauses 11.1 or 22.1 to permit it to reverse the course of action it undertook when capitalising interest. At no time did it call in the facility. The Court’s view is that it having capitalised interest BOS elected to add the capitalised sum to the amount of the principal debt due. Because it has been capitalised the interest was no longer due or outstanding as interest for the purposes of clause 7.2. As such it was not within the powers provided by 11.1 or 22.1 to change that. </text>
+        </paragraph>
+        <paragraph>
+            <label> 76 </label>
+            <text> The senior facility agreement defined facility outstandings as meaning “at any time, the aggregate principal amount of all outstanding advances”. Therefore the capitalised interest is added to the principal. </text>
+        </paragraph>
+        <paragraph>
+            <label> 77 </label>
+            <text> Upon capitalisation a debtor remains a debtor for principal and not for interest. </text>
+        </paragraph>
+        <paragraph>
+            <label> 78 </label>
+            <text> Clauses 11.1 and 22.1 will not permit BOS to claim payment of interest which has been capitalised and which is therefore no longer interest. It is for that reason interest which has been capitalised does not form part of that interest component albeit limited to a period of 24 months which is to be paid from sale proceeds received before there is any permanent repayment of the principal amount of the senior indebtedness – because the capitalised interest has become part of the principal amount and no longer forms an interest component for the purposes of calculating the extent of the indebtedness due. </text>
+        </paragraph>
+        <paragraph>
+            <label> 79 </label>
+            <text> It is this Court’s view that when interest was capitalised it ceased to become interest due or accruing and instead formed part of the principal sum due under the facility. </text>
+        </paragraph>
+        <subtitle> What of the evidence of Mr McPherson concerning deletion of the words ‘including capitalised interest’? </subtitle>
+        <paragraph>
+            <label> 80 </label>
+            <text> This Court considers the reason for deleting the term ‘including capitalised interest’ from the reference to interest due or accrued due is significant and can properly be taken into account at this time. In
+                <emphasis> Vector Gas </emphasis>
+                <footnote> 4 </footnote> Tipping J stated: </text>
+            <quote>
+                <quote-paragraph> ... I come to the subject of the admissibility of prior negotiations. Some of the difficulties in this area may derive from the concept of “prior negotiations” being employed in a more or less expansive way. Sometimes the concept seems to be used as if it encompassed all conduct and circumstances associated with negotiations towards the formation of a contract. It is necessary, however, to distinguish between the subjective content of negotiations; that is, how the parties were thinking, their individual intentions and the stance they were taking at different stages of the negotiating process, on the one hand, and, on the other, evidence derived from the negotiations which shows objectively the meaning the parties intended their words to convey. Such evidence includes the circumstances in which the contract was entered into, and any objectively apparent consent consensus as to meaning operating between the parties. </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label> 81 </label>
+            <text> A clear objective conclusion to be taken from the deletion of the words “capitalised interest” from para (b) is that the parties agreed to that. It must follow that capitalised interest was to be treated as part of the principal indebtedness due, and no longer as an element of interest, the payment of which was to be regulated by para (a). </text>
+        </paragraph>
+        <subtitle> Costs of realisation </subtitle>
+        <paragraph>
+            <label> 82 </label>
+            <text> It is clear from the inter creditor deed that those costs may be recoverable in the event action is required to protect or enforce the security conferred by the security documents. </text>
+        </paragraph>
+        <paragraph>
+            <label> 83 </label>
+            <text> Mr Kennedy submits that whilst the inter creditor deed is not a security document it specifically records matters of priority of indebtedness. Therefore in acting to protect or enforce the rights provided by the senior facility agreement BOS is acting to defend its right to receive payments by the process prescribed by the inter creditor deed. </text>
+        </paragraph>
+        <paragraph>
+            <label> 84 </label>
+            <text> The Court considers the issue of costs arises in connection with BOS’s ability to enforce its security agreement against its borrower. BOS argues it is not required to effect any repayment of the amounts it received from Takapuna. In fact its rights to recover the costs of realisation are not a matter as between security holders, and that BOS cannot in this instance deduct its solicitor’s costs from any amount it was not entitled to receive in reduction of its nominated amount. </text>
+        </paragraph>
+        <title> Conclusions </title>
+        <paragraph>
+            <label> 85 </label>
+            <text> As a matter of general principle but certainly having regards to the terms of the parties’ deed once interest is capitalised it no longer retains the character of interest but forms part of the principal sum due for repayment. </text>
+        </paragraph>
+        <paragraph>
+            <label> 86 </label>
+            <text> As much was acknowledged by the parties when they agreed to capitalised interest being excluded from that interest which was due or accrued due to which there was accorded priority of payment over any payments made in reduction of the priority lender’s indebtedness. </text>
+        </paragraph>
+        <paragraph>
+            <label> 87 </label>
+            <text> The priority security holder adopted the practice permitted to it to capitalise interest at regular intervals and to add the amount involved to the amount of principal due. It having done this there was no ability to treat the amounts involved any longer as interest unless the subordinate security holder agreed to this and in this case it did not and nor did any of the terms of the parties inter creditor deed permit this. </text>
+        </paragraph>
+        <paragraph>
+            <label> 88 </label>
+            <text> In that outcome in February 2011 by which time BOS had received $28,353,586.91 from its borrower it received $804,586.91 in excess of that which was due to it. </text>
+        </paragraph>
+        <paragraph>
+            <label> 89 </label>
+            <text> Strategic as a subordinate security holder is entitled to that sum and no reduction shall be permitted for the purpose of meeting the legal costs that BOS has incurred for the purposes of resolving this dispute. </text>
+        </paragraph>
+        <title> Judgment </title>
+        <paragraph>
+            <label> 90 </label>
+            <text> Judgment will be entered in favour of the plaintiff in the sum of $804,586.91. </text>
+        </paragraph>
+        <paragraph>
+            <label> 91 </label>
+            <text> Interest will be payable upon that sum pursuant to s 87 of the Judicature Act 1908. </text>
+        </paragraph>
+        <paragraph>
+            <label> 92 </label>
+            <text> Costs are reserved for determination upon application by the plaintiff for that purpose. </text>
+        </paragraph>
+        <paragraph>
+            <label> 93 </label>
+            <text> The matter of costs will be dealt with upon the papers and following receipt of the defendant’s response to the plaintiff’s claim. </text>
+        </paragraph>
+        <title> Associate Judge Christiansen </title>
+    </body>
+    <footer>
+        <footnote-text>
+            <key> 1 </key>
+            <text>
+                <emphasis> Vector Gas Limited v Bay of Plenty Energy Limited </emphasis> [2010] NZSC 5 at [19]. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 2 </key>
+            <text>
+                <emphasis> National Bank of New Zealand Limited v West </emphasis> [1978] NZLR 451 at p 455. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 3 </key>
+            <text> Supra. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 4 </key>
+            <text> Supra at [27]. </text>
+        </footnote-text>
+    </footer>
+</case>
