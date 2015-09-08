@@ -344,6 +344,8 @@ class DocState(object):
         elif self.is_table():
             if self.column_join_threshold():
                 self.close_tag('entry')
+            # if not open
+            self.open_tag('row')
             self.open_tag('entry')
 
     def handle_page(self):
@@ -695,7 +697,6 @@ def generate_parsable_xml(path, tmp):
 
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
-
 
         return re.sub(' +', ' ', device.get_result())
 

@@ -50,7 +50,7 @@ def format_table(soup, el):
     left = min(get_left(x) for x in el.find_all('entry') if get_left(x))
     right = max(get_right(x) for x in el.find_all('entry') if get_right(x))
 
-    contents_split = re.compile('^(.*?)(\.*)\s(\[?\d+\]?)\s?$')
+    contents_split = re.compile('^(.*?)(\.*)\s?(\[?\d+\]?)\s?$')
 
     """ Find cases where there is no columns but a single line,
         eg  Introduction.......... 1
