@@ -144,15 +144,16 @@ def close_entry(doc):
 
 RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
-    Match(string='REASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string='\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='Para No', open='table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
+    Match(string='Para No', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
     Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold']),
     Match(string='Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
+    Match(string='INDEX *\n', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
     Match(string='[', open='table,row,entry', close='paragraph,intituling',
         tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
-    Match(string='[1] *\n', open='table,row,entry', close='paragraph,intituling',
+    Match(string='[1] *\n', open='body,table,row,entry', close='paragraph,intituling',
         tests=['is_body', Not('is_table'), Not('is_quote'), 'is_full_width']),
 ]
 
@@ -315,6 +316,7 @@ class DocState(object):
             self.close_tag('underline')
         elif (item.bbox[0] < self.thresholds['judgment_border_width'][0] and
               item.bbox[2] > self.thresholds['judgment_border_width'][1]):
+            self.open_tag('intituling-field')
             self.open_tag('hline')
             self.out.write(' ')
             self.close_tag('hline')
@@ -334,7 +336,8 @@ class DocState(object):
             self.open_tag('intituling-field')
 
         elif self.is_table():
-            self.close_tag('entry')
+            if self.column_join_threshold():
+                self.close_tag('entry')
             self.open_tag('entry')
 
     def handle_page(self):
@@ -618,6 +621,7 @@ class Converter(PDFConverter):
                 # only a new if some content
                 #print item
                 if get_text(item).strip():
+                    #print item
                     self.doc.new_chunk(item.bbox)
                     for child in item:
                         render(child)
@@ -678,7 +682,7 @@ class StatsConverter(Converter):
 def generate_parsable_xml(path, tmp):
     rsrcmgr = PDFResourceManager()
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=False, char_margin=3, line_margin=0.01)#,line_margin=2)
+    laparams = LAParams(detect_vertical=False, char_margin=8, line_margin=0.01)#,line_margin=2)
 
     path = canoncialize_pdf(path, tmp)
     # print path

@@ -212,7 +212,7 @@ def waistband(soup):
 
     #start = find_reg_el(soup, reg)
     start = soup.find('hline').parent.next_sibling
-    titles = [start] + find_until(start, use_left=False, center=True, debug=True)
+    titles = [start] + find_until(start, use_left=False, center=True)
 
     start = titles[-1]
 
@@ -336,11 +336,22 @@ def find_parties(soup):
     parties[-1]['court-file'] = court_file_before(soup, next_qualifier)
 
     while qualifier_pattern.match(next_qualifier.text):
-        segments = [next_qualifier.next_sibling] + find_until(next_qualifier.next_sibling)
+        remainder_text = re.sub(qualifier_pattern, '', next_qualifier.text).strip()
+        segments = []
+        if len(remainder_text):
+            qualifier_text = next_qualifier.text.replace(remainder_text, '')
+            first = lambda: None
+            first.text = remainder_text
+            segments += [first]
+        else:
+            qualifier_text = next_qualifier.text
+            next_qualifier = next_qualifier.next_sibling
+            segments += [next_qualifier]
+        segments += find_until(next_qualifier, more_left=bool(len(remainder_text)), use_left=not bool(len(remainder_text)))
         """ Must also split on lines that aren't all caps """
         splits = [i + 1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
         for seg in indexsplit(segments, *splits):
-            add_persons(next_qualifier.text, seg)
+            add_persons(qualifier_text, seg)
 
         next_qualifier = segments[-1].next_sibling
 
@@ -351,6 +362,7 @@ def find_parties(soup):
                 court_files += [next_qualifier.text]
                 next_qualifier = next_qualifier.next_sibling
             parties[-1]['court-file'] = court_files
+
     return parties
 
 

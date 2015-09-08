@@ -78,7 +78,7 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    offset = 1024
+    offset = 2976
     for i, f in enumerate(listdir(config.CASE_DIR)[offset:]):
         if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
             #try:

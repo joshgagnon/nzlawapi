@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from common import extend_el, get_left, get_top, get_right, get_width
-from bs4 import NavigableString
+from bs4 import NavigableString, Tag
 from cases.variables import THRESHOLDS
 
 
@@ -40,7 +40,9 @@ def format_table(soup, el):
     for strong in el.find_all(['strong', 'emphasis']):
         unwrap(strong)
 
-
+    for c in el.contents:
+        if not isinstance(c, Tag):
+            c.extract()
 
 
 

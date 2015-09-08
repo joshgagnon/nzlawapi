@@ -11,7 +11,7 @@ THRESHOLDS = {
     'superscript': 10.0,
     'superscript_offset': 2.2,
     'line_tolerance': 4.0,
-    'column_gap': 100,
+    'column_gap': 10,
     'indent_threshold': 10.0,
     'right_align_thresholds': [280, 480],
     'left_align_thresholds': [140],
