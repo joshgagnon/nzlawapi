@@ -9,10 +9,10 @@ import shutil
 from flask import current_app
 from util import indexsplit
 import copy
-from cases.pdfs import generate_parsable_xml
-from cases.transform.intituling import generate_intituling
-from cases.transform.body import generate_body, generate_footer, tweak_intituling_interface
-from cases.transform.common import remove_empty_elements
+from pdfs import generate_parsable_xml
+from transform.intituling import generate_intituling
+from transform.body import generate_body, generate_footer, tweak_intituling_interface
+from transform.common import remove_empty_elements
 
 
 # source
