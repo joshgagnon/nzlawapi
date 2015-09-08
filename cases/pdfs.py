@@ -207,11 +207,15 @@ class DocState(object):
         self.thresholds = copy.deepcopy(THRESHOLDS)
 
     def analyse_stats(self, sizes):
+        """ Font stats are read each page, and are cummulative.
+            Why?  Because some intitulars use a small font, but still
+            have footers, so we can't use document average.  And if
+            we read only one page font size then pages with lots of quotes
+            would be broken """
         mean = sum(sizes) / len(sizes)
         mode = Counter(sizes).most_common(1)[0][0]
         self.thresholds['footer_size'] = mode - 1;
         self.thresholds['quote_size'] = mode;
-        print Counter(sizes)
 
 
     def para_threshold(self, threshold_key='paragraph_vertical_threshold'):
@@ -572,9 +576,20 @@ class Converter(PDFConverter):
         self.imagewriter = imagewriter
         self.laparams = laparams
         self.doc = doc
+        self.sizes = []
         return
 
     def receive_layout(self, ltpage):
+
+        def recurse(item):
+            try:
+                for i in item:
+                    recurse(i)
+            except TypeError:
+                if hasattr(item, 'fontsize'):
+                    self.sizes.append(item.fontsize)
+        recurse(ltpage)
+        self.doc.analyse_stats(self.sizes)
 
         def get_text(item):
             if isinstance(item, LTTextBox):
@@ -653,6 +668,7 @@ class Converter(PDFConverter):
                     self.doc.out.write('<image width="%d" height="%d" />\n' %
                                      (item.width, item.height))
             else:
+                print isinstance(item, LTPage), type(item)
                 assert 0, item
             return
         render(ltpage)
@@ -661,27 +677,6 @@ class Converter(PDFConverter):
     def get_result(self):
         return self.doc.finalize()
 
-
-class StatsConverter(Converter):
-    def __init__(self, *args, **kwargs):
-        Converter.__init__(self, *args, **kwargs)
-        self.sizes = []
-        self.pages = []
-
-    def receive_layout(self, ltpage):
-        def recurse(item):
-            try:
-                for i in item:
-                    recurse(i)
-            except TypeError:
-                if hasattr(item, 'fontsize'):
-                    self.sizes.append(item.fontsize)
-        recurse(ltpage)
-        self.pages.append(ltpage)
-
-
-    def finalize(self):
-        self.doc.analyse_stats(sizes=self.sizes)
 
 
 def generate_parsable_xml(path, tmp):
@@ -695,17 +690,13 @@ def generate_parsable_xml(path, tmp):
         parser = PDFParser(fp)
         document = PDFDocument(parser)
         doc = DocState()
-        stats_device = StatsConverter(rsrcmgr, doc, codec='utf-8', laparams=laparams)
         device = Converter(rsrcmgr, doc, codec='utf-8', laparams=laparams)
-        interpreter = PDFPageInterpreter(rsrcmgr, stats_device)
+        interpreter = PDFPageInterpreter(rsrcmgr, device)
 
         for page in PDFPage.create_pages(document):
             interpreter.process_page(page)
-        stats_device.finalize()
 
-        for page in stats_device.pages:
-            device.receive_layout(page)
-        #print device.get_result()
+
         return re.sub(' +', ' ', device.get_result())
 
 
