@@ -55,7 +55,7 @@ def safe_open(req):
             response = urllib2.urlopen(req)
             page = response.read()
             return response, page
-        except (IncompleteRead, BadStatusLine), e:
+        except (IncompleteRead, BadStatusLine, urllib2.URLError), e:
             sleep(SLEEP * multiple)
             multiple *= 2
             print 'Trying again'
