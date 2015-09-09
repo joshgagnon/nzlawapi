@@ -274,12 +274,13 @@ class DocState(object):
                 self.tag_stack.append(t)
                 if t in ['paragraph', 'intituling-field', 'row', 'entry', 'indent'] and self.bbox:
                     bbox = self.bbox if t in ['intituling-field', 'entry'] else self.line_bbox
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center="%s" right-aligned="%s"' %
+                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center-aligned="%s" right-aligned="%s" left-aligned="%s"' %
                           (bbox[0], bbox[1], bbox[2], bbox[3],
                             '1' if self.is_italic(self.font) else '0',
                             '1' if self.is_bold(self.font) else '0',
                             '1' if self.is_center_aligned() else '0',
-                            '1' if self.is_right_aligned() else '0'
+                            '1' if self.is_right_aligned() else '0',
+                            '1' if self.is_left_aligned() else '0'
                             ))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:

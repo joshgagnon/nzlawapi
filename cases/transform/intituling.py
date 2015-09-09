@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from common import find_reg_el, find_until, separator_reg
+from common import find_reg_el, find_reg_el_all, find_until, separator_reg
 from bs4 import Tag
 import copy
 from util import indexsplit
@@ -20,11 +20,12 @@ courtfile_variants = [
     'B \d+IM\d+',
     '\d{2,}\/\d{2,}',
     '\d{4}-\d{3}-\d{6}',
-    'AP \d{2}\/\d{4}']
+    'AP \d{2}\/\d{4}'
+]
 # TODO expand ranges
 
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
-qualifier_pattern = re.compile('(AND BETWEEN|AND|BETWEEN)')
+qualifier_pattern = re.compile('^\s*(AND BETWEEN|AND|BETWEEN)')
 
 def generate_intituling(soup):
     for strong in soup.find('intituling').find_all('strong'):
@@ -347,6 +348,7 @@ def find_parties(soup):
             qualifier_text = next_qualifier.text
             next_qualifier = next_qualifier.next_sibling
             segments += [next_qualifier]
+
         segments += find_until(next_qualifier, more_left=bool(len(remainder_text)), use_left=not bool(len(remainder_text)))
         """ Must also split on lines that aren't all caps """
         splits = [i + 1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
@@ -379,29 +381,46 @@ def find_versus(soup):
 
 
 def matters(soup):
-    matter_pattern = re.compile('(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
-    next_qualifier = find_reg_el(soup, matter_pattern)
+    matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
+    join_pattern = re.compile('^\s*AND\s+')
     results = []
-
-    while matter_pattern.match(next_qualifier.text):
-        matter = soup.new_tag('matter')
-        qualifier = soup.new_tag('qualifier')
-        value = soup.new_tag('value')
-        text = re.sub(matter_pattern, '', next_qualifier.text).strip()
-        segments = []
-        if len(text):
-            qualifier.string = next_qualifier.text.replace(text, '')
-        else:
-            qualifier.string = next_qualifier.text
-            next_qualifier = next_qualifier.next_sibling
-            segments += [next_qualifier]
-        segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(text)), use_left=not bool(len(text)))
-        value.string = u' '.join(filter(None, [text] + map(lambda x: x.text, segments)))
-        segments.insert(0, next_qualifier)
-        next_qualifier = segments[-1].next_sibling
-        matter.append(qualifier)
-        matter.append(value)
-        results.append(matter)
+    completed = []
+    matches = list(find_reg_el_all(soup, matter_pattern))
+    if not len(matches):
+        return results
+    next_qualifier = matches[0]
+    try:
+        for next_qualifier in matches:
+            print 'for',
+            print next_qualifier
+            if not next_qualifier or next_qualifier in completed:
+                continue
+            while matter_pattern.match(next_qualifier.text) or join_pattern.match(next_qualifier.text):
+                matter = soup.new_tag('matter')
+                qualifier = soup.new_tag('qualifier')
+                value = soup.new_tag('value')
+                text = re.sub(matter_pattern, '', re.sub(join_pattern, '', next_qualifier.text)).strip()
+                segments = []
+                if len(text):
+                    qualifier.string = next_qualifier.text.replace(text, '')
+                else:
+                    qualifier.string = next_qualifier.text
+                    next_qualifier = next_qualifier.next_sibling
+                    segments += [next_qualifier]
+                #segments += find_until(next_qualifier, matter_pattern, more_left=True, use_left=not bool(len(text)))
+                print next_qualifier
+                segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(text)), use_left=not bool(len(text)), more_equal_left=True)
+                print segments
+                value.string = u' '.join(filter(None, [text] + map(lambda x: x.text, segments)))
+                segments.insert(0, next_qualifier)
+                next_qualifier = segments[-1].next_sibling
+                completed.append(next_qualifier)
+                matter.append(qualifier)
+                matter.append(value)
+                results.append(matter)
+                print 'end'
+    except Exception, e:
+        print 'here', e
 
     return results
 

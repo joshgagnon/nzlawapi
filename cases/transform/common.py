@@ -23,35 +23,49 @@ def remove_empty_elements(soup):
     return soup
 
 
-
 def get_left(el):
     return float(el.attrs.get('left', 0))
+
 
 def get_top(el):
     return float(el.attrs.get('top', 0))
 
+
 def get_right(el):
     return float(el.attrs.get('right', 0))
+
 
 def get_width(el):
     return get_right(el) - get_left(el)
 
+
 def get_bold(el):
     return el.attrs.get('bold')
 
+
 def is_center(el):
-    return el.attrs.get('center') == '1'
+    return el.attrs.get('center-aligned') == '1'
+
 
 def is_right_aligned(el):
     return el.attrs.get('right-aligned') == '1'
+
+def is_left_aligned(el):
+    return el.attrs.get('left-aligned') == '1'
+
 
 def find_reg_el(soup, reg, field='intituling-field'):
     for e in soup.find_all(field):
         if reg.match(e.text):
             return e
 
+def find_reg_el_all(soup, reg, field='intituling-field'):
+    for e in soup.find_all(field):
+        if e and reg.match(e.text):
+            yield e
 
-def find_until(el, reg=None, use_left=True, forward=True, more_left=False, center=False, debug=False):
+
+def find_until(el, reg=None, use_left=True, forward=True, more_left=False, more_equal_left=False, center=False, debug=False):
     results = []
     left = get_left(el)
     bold = get_bold(el)
@@ -66,6 +80,7 @@ def find_until(el, reg=None, use_left=True, forward=True, more_left=False, cente
         not use_left or abs(get_left(direction(el)) - left) < 3.0) and (
         get_bold(direction(el)) == bold) and (
         not more_left or get_left(direction(el)) > left) and (
+        not more_equal_left or get_left(direction(el)) >= left) and (
         not center or is_center(direction(el))):
         results.append(direction(el))
         el = direction(el)

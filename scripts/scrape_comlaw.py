@@ -11,7 +11,7 @@ import os
 from collections import defaultdict
 import psycopg2
 from time import sleep
-from httplib import IncompleteRead
+from httplib import IncompleteRead,BadStatusLine
 
 """
 This script scrapes https://www.comlaw.gov.au
@@ -43,6 +43,26 @@ thread_limiter = [
 import sys
 sys.setrecursionlimit(10000)
 
+
+def safe_open(req):
+    if hasattr(req, '_Request__original'):
+        print 'Open ', req._Request__original
+    else:
+        print 'Open ', req
+    multiple = 1
+    while True:
+        try:
+            response = urllib2.urlopen(req)
+            page = response.read()
+            return response, page
+        except (IncompleteRead, BadStatusLine), e:
+            sleep(SLEEP * multiple)
+            multiple *= 2
+            print 'Trying again'
+            if multiple > 1024:
+                raise Exception('Failed to fetch file', req)
+
+
 def thread_limit(index):
     def apply_decorator(func):
         def func_wrapper(*args, **kwargs):
@@ -61,8 +81,7 @@ def thread_limit(index):
 
 def get_indices():
     req = urllib2.Request(start)
-    response = safe_open(req)
-    page = response.read()
+    _, page = safe_open(req)
     soup = BeautifulSoup(page, 'lxml')
     return [start + el['href'] for el in soup.select(top_level_sel) if not el.find('font')]
 
@@ -75,8 +94,8 @@ def table_loop(url, headers=None):
         req = urllib2.Request(url, data)
     else:
         req = url
-    response = safe_open(req)
-    soup = BeautifulSoup(response.read(), 'lxml')
+    _, page = safe_open(req)
+    soup = BeautifulSoup(page, 'lxml')
     yield soup
     next_button = soup.find('input', class_='rgPageNext')
     if next_button and 'onclick' not in next_button.attrs:
@@ -99,8 +118,8 @@ def get_document_info((id, series)):
         return datetime.datetime(int(year), months.index(month)+1, int(day))
 
     req = urllib2.Request(download % id)
-    response = safe_open(req)
-    page = BeautifulSoup(response.read(), 'html5lib')
+    _, page = safe_open(req)
+    page = BeautifulSoup(page, 'html5lib')
     result = defaultdict(lambda: None)
     result['id'] = id
     result['series'] = series
@@ -136,23 +155,6 @@ def get_document_info((id, series)):
     add_info_to_db(result, documents)
 
 
-def safe_open(req):
-    if hasattr(req, '_Request__original'):
-        print 'Open ', req._Request__original
-    else:
-        print 'Open ', req
-    multiple = 1
-    while True:
-        try:
-            return urllib2.urlopen(req)
-        except IncompleteRead:
-            sleep(SLEEP * multiple)
-            multiple *= 2
-            print 'Trying again'
-            if multiple > 1024:
-                raise Exception('Failed to fetch file', req)
-
-
 
 def download_documents(info, soup=None):
     results = []
@@ -160,9 +162,9 @@ def download_documents(info, soup=None):
         try:
             for link in info['links']:
                 req = urllib2.Request(link)
-                response = safe_open(req)
+                response, page = safe_open(req)
                 filename = response.info()['Content-Disposition'].replace('attachment; filename=', '')
-                results.append({'document': response.read(), 'format': filename.rsplit('.', 1)[1].lower(), 'filename': filename, 'comlaw_id': info['id']})
+                results.append({'document': page, 'format': filename.rsplit('.', 1)[1].lower(), 'filename': filename, 'comlaw_id': info['id']})
         except IndexError:
             pass
     else:

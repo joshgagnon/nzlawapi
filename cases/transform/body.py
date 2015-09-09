@@ -69,9 +69,11 @@ def generate_body(soup):
             paragraph.name = 'signature-line'
         elif is_signature(paragraph):
             paragraph.name = 'signature-name'
+        elif paragraph.text == 'This page has been deliberately left blank':
+            paragraph.decompose()
         elif is_title(paragraph):
             convert_to_title(paragraph)
-        elif paragraph.text and brackets_reg.match(paragraph.text) and paragraph.attrs['center'] == '1':
+        elif paragraph.text and brackets_reg.match(paragraph.text) and is_center(paragraph):
             paragraph.name = 'subtitle'
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
             paragraph.name = 'subtitle'
@@ -81,8 +83,6 @@ def generate_body(soup):
             paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
                 paragraph.previous_sibling.append(child)
-
-
 
     format_tables(soup)
 
@@ -95,13 +95,13 @@ def generate_body(soup):
                 if len(current.contents):
                     children.append(current)
                     current = soup.new_tag("text")
-                children.append(child)
+                children.append(child.extract())
             else:
                 if isinstance(child, NavigableString):
                     child.string = child.string.strip()
                 current.append(child)
         if len(current.contents):
-            children.append(current)
+            children.append(current.extract())
         # avoids a bug in bs4
         #paragraph.clear()
         paragraph.attrs = {}
