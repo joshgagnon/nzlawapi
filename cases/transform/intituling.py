@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from common import find_reg_el, find_reg_el_all, find_until, separator_reg
+from common import find_reg_el, find_reg_el_all, find_until, separator_reg, is_left_aligned, get_left
 from bs4 import Tag
 import copy
 from util import indexsplit
@@ -391,36 +391,56 @@ def matters(soup):
     next_qualifier = matches[0]
     try:
         for next_qualifier in matches:
-            print 'for',
-            print next_qualifier
-            if not next_qualifier or next_qualifier in completed:
+            if next_qualifier in completed:
                 continue
-            while matter_pattern.match(next_qualifier.text) or join_pattern.match(next_qualifier.text):
+            while next_qualifier and (matter_pattern.match(next_qualifier.text) or join_pattern.match(next_qualifier.text)):
                 matter = soup.new_tag('matter')
                 qualifier = soup.new_tag('qualifier')
                 value = soup.new_tag('value')
-                text = re.sub(matter_pattern, '', re.sub(join_pattern, '', next_qualifier.text)).strip()
+                remainder_text = re.sub(matter_pattern, '', re.sub(join_pattern, '', next_qualifier.text)).strip()
                 segments = []
-                if len(text):
-                    qualifier.string = next_qualifier.text.replace(text, '')
+
+                """ look before qualifer and see if there is a court file number """
+                if courtfile_num.match(next_qualifier.previous_sibling.text):
+                    courtfile = soup.new_tag('court-file')
+                    courtfile.string = next_qualifier.previous_sibling.text
+                    matter.append(courtfile)
+
+                if len(remainder_text):
+                    qualifier.string = next_qualifier.text.replace(remainder_text, '')
+
+                # joiner
+                elif not (get_left(next_qualifier.next_sibling) > get_left(next_qualifier)):
+                    matter_join = soup.new_tag('matter-join')
+                    matter_join.string = next_qualifier.text
+                    results.append(matter_join)
+                    next_qualifier = next_qualifier.next_sibling
+                    continue
+
                 else:
                     qualifier.string = next_qualifier.text
                     next_qualifier = next_qualifier.next_sibling
                     segments += [next_qualifier]
-                #segments += find_until(next_qualifier, matter_pattern, more_left=True, use_left=not bool(len(text)))
-                print next_qualifier
-                segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(text)), use_left=not bool(len(text)), more_equal_left=True)
-                print segments
-                value.string = u' '.join(filter(None, [text] + map(lambda x: x.text, segments)))
+
+                #print next_qualifier, bool(len(remainder_text))
+                completed.append(next_qualifier)
+                segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(remainder_text)), use_left=not bool(len(remainder_text)), more_equal_left=True)
+                value.string = u' '.join(filter(None, [remainder_text] + map(lambda x: x.text, segments)))
                 segments.insert(0, next_qualifier)
                 next_qualifier = segments[-1].next_sibling
-                completed.append(next_qualifier)
+
+
+                if next_qualifier and is_left_aligned(next_qualifier):
+                    next_qualifier = None
+
                 matter.append(qualifier)
                 matter.append(value)
                 results.append(matter)
-                print 'end'
+
     except Exception, e:
         print 'here', e
+        import traceback
+        print traceback.format_exc()
 
     return results
 

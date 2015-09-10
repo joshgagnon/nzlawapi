@@ -71,6 +71,9 @@
 		 	td:nth-child(1) {
 		 		text-align:right;
 		 		width: 33%;
+		 		&.case-joiner{
+		 		text-align: left;
+		 		}
 		 	}
 		 	td:nth-child(2) {
 		 		width:33%
