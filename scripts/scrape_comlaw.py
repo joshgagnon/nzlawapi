@@ -22,8 +22,7 @@ dates and download links.
 
 """
 
-
-start = 'https://www.comlaw.gov.au/Browse/'
+indices = (('https://www.comlaw.gov.au/Browse/', 'act'), ('https://www.comlaw.gov.au/Browse/ByTitle/LegislativeInstruments/Current/', 'instrument'))
 series = 'https://www.comlaw.gov.au/Series/%s'
 download = 'https://www.comlaw.gov.au/Details/%s/Download'
 details = 'https://www.comlaw.gov.au/Details/%s'
@@ -80,10 +79,13 @@ def thread_limit(index):
 
 
 def get_indices():
-    req = urllib2.Request(start)
-    _, page = safe_open(req)
-    soup = BeautifulSoup(page, 'lxml')
-    return [start + el['href'] for el in soup.select(top_level_sel) if not el.find('font')]
+    results = []
+    for index in indices:
+        req = urllib2.Request(index[0])
+        _, page = safe_open(req)
+        soup = BeautifulSoup(page, 'lxml')
+        results += [(index[0] + el['href'], index[1]) for el in soup.select(top_level_sel) if not el.find('font')]
+    return results
 
 
 @thread_limit(2)
@@ -109,7 +111,7 @@ def table_loop(url, headers=None):
 
 
 @thread_limit(1)
-def get_document_info((id, series)):
+def get_document_info((id, series, leg_type)):
     """ will contain dates before 1900, so must do manually """
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -125,6 +127,7 @@ def get_document_info((id, series)):
     result['series'] = series
     result['links'] = map(lambda x: x['href'], page.find_all('a', onclick=re.compile("Primary Document Icon")))
     result['title'] = page.select('#ctl00_MainContent_ucItemPane_lblTitleGeneric')[0].text
+    result['type'] = leg_type
     try:
         result['superseded'] = page.select('#ctl00_MainContent_ucItemPane_lblStatus')[0].text == 'Superseded'
     except (AttributeError, IndexError):
@@ -185,8 +188,8 @@ def add_info_to_db(info, documents):
         cur.execute('delete from comlaw_info where id = %(id)s', info)
         cur.execute('delete from comlaw_documents where comlaw_id = %(id)s', info)
         cur.execute("""insert into comlaw_info """
-            """(id, title, superseded, prepared_date, published_date, start_date, end_date, links, series) values"""
-            """(%(id)s, %(title)s, %(superseded)s, %(prepared_date)s, %(published_date)s, %(start_date)s, %(end_date)s, %(links)s, %(series)s)""",
+            """(id, title, superseded, prepared_date, published_date, start_date, end_date, links, series, type) values"""
+            """(%(id)s, %(title)s, %(superseded)s, %(prepared_date)s, %(published_date)s, %(start_date)s, %(end_date)s, %(links)s, %(series)s, %(type)s)""",
             info)
         for document in documents:
             document = dict(document.items())
@@ -205,7 +208,7 @@ def get_unfetched_ids(ids):
         return filtered_ids
 
 @thread_limit(0)
-def get_series(id):
+def get_series((id, leg_type)):
     for page in table_loop(series % id):
         ids = map(lambda x: x.text, page.select('#ctl00_MainContent_SeriesCompilations_RadGrid1_ctl00 > tbody > tr > td:nth-of-type(2)'))
         """ If has no previous versions, will not have table """
@@ -216,14 +219,14 @@ def get_series(id):
         if ids and len(ids):
             if USE_THREADS:
                 pool = ThreadPool(THREAD_MAX)
-                _results = pool.map(get_document_info, zip(ids, [id] * len(ids)))
+                _results = pool.map(get_document_info, zip(ids, [id] * len(ids), [leg_type] * len(ids)))
                 pool.close()
                 pool.join()
             else:
-                map(get_document_info, zip(ids, [id] * len(ids)))
+                map(get_document_info, zip(ids, [id] * len(ids), [leg_type] * len(ids)))
 
 
-def open_index(url):
+def open_index(url, leg_type):
     db = connect_db_config(config)
     with db.cursor() as cur:
         cur.execute("""select true from comlaw_indices where url = %(url)s""", {'url': url})
@@ -235,11 +238,11 @@ def open_index(url):
             print 'Found %d ids' % len(ids), ids
             if USE_THREADS:
                 pool = ThreadPool(THREAD_MAX)
-                pool.map(get_series, ids)
+                pool.map(get_series, zip(ids, [leg_type] * len(ids)))
                 pool.close()
                 pool.join()
             else:
-                map(get_series, ids)
+                map(get_series, zip(ids, [leg_type] * len(ids)))
         with db.cursor() as cur:
             cur.execute("""insert into comlaw_indices (url, date) values (%(url)s, %(date)s)""",
                 {'url': url, 'date': datetime.datetime.now()})
@@ -256,10 +259,9 @@ if __name__ == '__main__':
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     from db import connect_db_config
     indices = get_indices()
-    #indices = ['https://www.comlaw.gov.au/Browse/Results/ByTitle/Acts/Current/Wo/0']
     try:
         for index in indices:
-            open_index(index)
+            open_index(*index)
     except KeyboardInterrupt:
         print 'Exiting early'
         sys.exit()
