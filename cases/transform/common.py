@@ -60,6 +60,16 @@ def find_reg_el(soup, reg, field='intituling-field'):
         if reg.match(e.text):
             return e
 
+def find_intituling(el, reg):
+    if not el:
+        return
+    if reg.match(el.text):
+        return el
+    while el.next_sibling:
+        if reg.match(el.text):
+            return el
+        el = el.next_sibling
+
 
 def find_reg_el_all(soup, reg, field='intituling-field', before_test=None):
     valid = not bool(before_test)
