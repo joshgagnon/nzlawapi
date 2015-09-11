@@ -71,15 +71,18 @@
 		<xsl:apply-templates />
 	</xsl:template>
 
+	<xsl:template match="matters">
+		<xsl:apply-templates />
+	</xsl:template>
+
+
+	<xsl:template match="matters/court-file">
+			<table><tr><td></td><td></td><td class="court-file"><xsl:value-of select="." /></td></tr></table>
+	</xsl:template>
+
 	<xsl:template match="matter">
 		<table class="matter">
 			<tbody>
-				<xsl:if test="case-joiner">
-					<tr><td class="case-joiner"><xsl:value-of select="case-joiner" /></td><td></td><td></td></tr>
-				</xsl:if>
-				<xsl:if test="court-file">
-					<tr><td></td><td></td><td class="court-file"><xsl:value-of select="court-file" /></td></tr>
-				</xsl:if>
 				<tr class="table-gap-after">
 					<td><xsl:value-of select="qualifier" /></td>
 					<td><xsl:value-of select="value" /></td>
@@ -100,6 +103,7 @@
 			</tbody>
 		</table>
 	</xsl:template>
+
 
 	<xsl:template match="defendant|plantiff|thirdparty">
 		<xsl:if test="name(.)='defendant' and not(qualifier)">

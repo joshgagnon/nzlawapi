@@ -21,6 +21,7 @@ THRESHOLDS = {
     'top_of_page': 730,
     'table_column_overflow': 200,
     'judgment_border_width': [150, 480],
+    'margin': [80, 50],
     'width': 595,
     'height': 842
 

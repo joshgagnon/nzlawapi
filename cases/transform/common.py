@@ -50,6 +50,7 @@ def is_center(el):
 def is_right_aligned(el):
     return el.attrs.get('right-aligned') == '1'
 
+
 def is_left_aligned(el):
     return el.attrs.get('left-aligned') == '1'
 
@@ -59,10 +60,15 @@ def find_reg_el(soup, reg, field='intituling-field'):
         if reg.match(e.text):
             return e
 
-def find_reg_el_all(soup, reg, field='intituling-field'):
+
+def find_reg_el_all(soup, reg, field='intituling-field', before_test=None):
+    valid = not bool(before_test)
+
     for e in soup.find_all(field):
-        if e and reg.match(e.text):
+        if valid and e and reg.match(e.text):
             yield e
+        if not valid and before_test(e):
+            valid = True
 
 
 def find_until(el, reg=None, use_left=True, forward=True, more_left=False, more_equal_left=False, center=False, debug=False):

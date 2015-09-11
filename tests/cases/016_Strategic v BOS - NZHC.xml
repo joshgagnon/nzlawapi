@@ -4,6 +4,7 @@
         <court> IN THE HIGH COURT OF NEW ZEALAND </court>
         <registry> AUCKLAND REGISTRY </registry>
         <neutral-citation> [2013] NZHC 904 </neutral-citation>
+         <matters>
         <matter>
             <qualifier> UNDER </qualifier>
             <value> Part 12 of the High Court Rules </value>
@@ -12,6 +13,7 @@
             <qualifier> IN THE MATTER OF </qualifier>
             <value> an application for summary judgment </value>
         </matter>
+      </matters>
         <parties>
             <court-file> CIV 2012-404-006007 </court-file>
             <plantiffs>

@@ -51,11 +51,10 @@ def generate_intituling(soup):
     optional_section('neutral-citation', find_neutral, intituling)
     optional_section(None, matters, intituling)
     optional_section(None, parties, intituling)
-
+    optional_section(None, post_waistband_matters, intituling)
     optional_section('hearing', find_hearing, intituling)
     optional_section('counsel', find_counsel, intituling)
     optional_section('bench', find_bench, intituling)
-    #optional_section('solicitor', find_solicitors, intituling)
     for solicitor in solicitors(soup):
         intituling.append(solicitor)
     optional_section('plea', find_plea, intituling)
@@ -106,9 +105,9 @@ def find_court_file(soup):
 
 def court_file_before(soup, el):
     results = []
-    while not courtfile_num.match(el.text):
+    while el and not courtfile_num.match(el.text):
         el = el.previous_sibling
-    while courtfile_num.match(el.text):
+    while el and courtfile_num.match(el.text):
         results.append(el.text)
         el = el.previous_sibling
     return results[::-1]
@@ -311,15 +310,20 @@ def parties(soup):
 
     return results
 
+def split_by_capitals(segments):
+    results = []
+    for i, seg in enumerate(segments):
+        if seg.text and seg.text.upper() != seg.text and (i == len(segments)-1 or segments[i+1].text.upper() == segments[i+1].text):
+            results.append(i+1)
+    return results
 
 def find_parties(soup):
     party_dict = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
     parties = [copy.deepcopy(party_dict)]
 
-
     def add_persons(qualifier, column):
-        name = ' '.join(map(lambda x: x.text, column[:-1]))
-        descriptor = column[-1].text
+        name = ' '.join([x.text for x in column if x.text.upper() == x.text])
+        descriptor = ' '.join([x.text for x in column if x.text.upper() != x.text])
         group = 'defendants'
         if plantiff_pattern.match(descriptor):
             group = 'plantiffs'
@@ -334,6 +338,7 @@ def find_parties(soup):
     plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
     thirdparty_pattern = re.compile('.*Third [Pp]art(y|ies)')
     next_qualifier = find_reg_el(soup, qualifier_pattern)
+
     parties[-1]['court-file'] = court_file_before(soup, next_qualifier)
 
     while qualifier_pattern.match(next_qualifier.text):
@@ -350,8 +355,10 @@ def find_parties(soup):
             segments += [next_qualifier]
 
         segments += find_until(next_qualifier, more_left=bool(len(remainder_text)), use_left=not bool(len(remainder_text)))
+        print segments,bool(len(remainder_text)), remainder_text
         """ Must also split on lines that aren't all caps """
-        splits = [i + 1 for i, seg in enumerate(segments) if seg.text.upper() != seg.text]
+        splits = split_by_capitals(segments)
+
         for seg in indexsplit(segments, *splits):
             add_persons(qualifier_text, seg)
 
@@ -364,7 +371,7 @@ def find_parties(soup):
                 court_files += [next_qualifier.text]
                 next_qualifier = next_qualifier.next_sibling
             parties[-1]['court-file'] = court_files
-
+    print parties
     return parties
 
 
@@ -379,71 +386,82 @@ def find_versus(soup):
     parties['defendants'] = [{'value': ' '.join(map(lambda x: x.text, defendants))}]
     return [parties]
 
+matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
+join_pattern = re.compile('^\s*AND\s+')
+
+
+def matter_loop(soup, next_qualifier, results, courtfile=False, completed=None):
+    if not len(results):
+        results.append(soup.new_tag('matters'))
+
+    matter = soup.new_tag('matter')
+    qualifier = soup.new_tag('qualifier')
+    value = soup.new_tag('value')
+    remainder_text = re.sub(matter_pattern, '', re.sub(join_pattern, '', next_qualifier.text)).strip()
+    segments = []
+
+    """ look before qualifer and see if there is a court file number """
+    if courtfile and courtfile_num.match(next_qualifier.previous_sibling.text):
+
+        results.append(soup.new_tag('matters'))
+        courtfile = soup.new_tag('court-file')
+        courtfile.string = next_qualifier.previous_sibling.text
+        results[-1].append(courtfile)
+
+    if len(remainder_text):
+        qualifier.string = next_qualifier.text.replace(remainder_text, '')
+
+    elif not (get_left(next_qualifier.next_sibling) > get_left(next_qualifier)) and join_pattern.match(next_qualifier.text):
+        matter_join = soup.new_tag('matter-join')
+        matter_join.string = next_qualifier.text
+        results[-1].append(matter_join)
+        return next_qualifier.next_sibling.next_sibling
+
+    else:
+        qualifier.string = next_qualifier.text
+        next_qualifier = next_qualifier.next_sibling
+        segments += [next_qualifier]
+
+    if completed is not None:
+        completed.append(next_qualifier)
+
+    segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(remainder_text)), use_left=not bool(len(remainder_text)))
+    value.string = u' '.join(filter(None, [remainder_text] + map(lambda x: x.text, segments)))
+    segments.insert(0, next_qualifier)
+    next_qualifier = segments[-1].next_sibling
+    if next_qualifier and is_left_aligned(next_qualifier):
+        next_qualifier = next_qualifier.next_sibling
+
+    matter.append(qualifier)
+    matter.append(value)
+    results[-1].append(matter)
+    return next_qualifier
+
 
 def matters(soup):
-    matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
-    join_pattern = re.compile('^\s*AND\s+')
     results = []
-    completed = []
-    matches = list(find_reg_el_all(soup, matter_pattern))
-    if not len(matches):
-        return results
-    next_qualifier = matches[0]
-    try:
-        for next_qualifier in matches:
-            if next_qualifier in completed:
-                continue
-            while next_qualifier and (matter_pattern.match(next_qualifier.text) or join_pattern.match(next_qualifier.text)):
-                matter = soup.new_tag('matter')
-                qualifier = soup.new_tag('qualifier')
-                value = soup.new_tag('value')
-                remainder_text = re.sub(matter_pattern, '', re.sub(join_pattern, '', next_qualifier.text)).strip()
-                segments = []
-
-                """ look before qualifer and see if there is a court file number """
-                if courtfile_num.match(next_qualifier.previous_sibling.text):
-                    courtfile = soup.new_tag('court-file')
-                    courtfile.string = next_qualifier.previous_sibling.text
-                    matter.append(courtfile)
-
-                if len(remainder_text):
-                    qualifier.string = next_qualifier.text.replace(remainder_text, '')
-
-                # joiner
-                elif not (get_left(next_qualifier.next_sibling) > get_left(next_qualifier)):
-                    matter_join = soup.new_tag('matter-join')
-                    matter_join.string = next_qualifier.text
-                    results.append(matter_join)
-                    next_qualifier = next_qualifier.next_sibling
-                    continue
-
-                else:
-                    qualifier.string = next_qualifier.text
-                    next_qualifier = next_qualifier.next_sibling
-                    segments += [next_qualifier]
-
-                #print next_qualifier, bool(len(remainder_text))
-                completed.append(next_qualifier)
-                segments += find_until(next_qualifier, matter_pattern, more_left=bool(len(remainder_text)), use_left=not bool(len(remainder_text)), more_equal_left=True)
-                value.string = u' '.join(filter(None, [remainder_text] + map(lambda x: x.text, segments)))
-                segments.insert(0, next_qualifier)
-                next_qualifier = segments[-1].next_sibling
-
-
-                if next_qualifier and is_left_aligned(next_qualifier):
-                    next_qualifier = None
-
-                matter.append(qualifier)
-                matter.append(value)
-                results.append(matter)
-
-    except Exception, e:
-        print 'here', e
-        import traceback
-        print traceback.format_exc()
+    next_qualifier = find_reg_el(soup, matter_pattern)
+    while next_qualifier and (matter_pattern.match(next_qualifier.text) or join_pattern.match(next_qualifier.text)):
+        next_qualifier = matter_loop(soup, next_qualifier, results)
 
     return results
 
+
+def post_waistband_matters(soup):
+    results = []
+    completed = []
+    matches = list(find_reg_el_all(soup, matter_pattern, before_test=lambda x: x.find('hline')))
+    if not len(matches):
+        return results
+    next_qualifier = matches[0]
+
+    for next_qualifier in matches:
+        if next_qualifier in completed:
+            continue
+        while next_qualifier and (matter_pattern.match(next_qualifier.text) or join_pattern.match(next_qualifier.text)):
+            next_qualifier = matter_loop(soup, next_qualifier, results, True, completed)
+            print next_qualifier
+    return results
 
 
 def is_appeal(info):

@@ -28,7 +28,7 @@ def format_table(soup, el):
 
     matches = el.find_all(text=contents_reg)
 
-    if matches:
+    if matches or True:
         el.wrap(soup.new_tag('contents'))
         for m in matches:
             m.extract()

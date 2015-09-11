@@ -3,7 +3,7 @@
         <full-citation>URS NEW ZEALAND LTD AND ANOR V THE DISTRICT COURT AT AUCKLAND AND ANOR HC AK CIV 2009-404-3054 10 June 2009</full-citation>
         <court>IN THE HIGH COURT OF NEW ZEALAND</court>
         <registry>AUCKLAND REGISTRY</registry>
-
+        <matters>
         <matter>
                 <qualifier>UNDER</qualifier>
                 <value>the Judicature Amendment Act 1972</value>
@@ -12,7 +12,7 @@
                 <qualifier>IN THE MATTER OF</qualifier>
                 <value>an application for judicial review</value>
         </matter>
-
+        </matters>
         <parties>
         <court-file>CIV 2009-404-3054</court-file>
         	<plantiffs>

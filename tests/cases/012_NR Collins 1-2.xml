@@ -3,6 +3,7 @@
         <full-citation>NR COLLINS V DALGANA PTY LIMITED AND ORS HC AK CIV2006-404-3523 22 May 2007</full-citation>
         <court>IN THE HIGH COURT OF NEW ZEALAND</court>
         <registry>AUCKLAND REGISTRY</registry>
+     <matters>
         <matter><qualifier>UNDER</qualifier>
         <value>The Patents Act 1953
         </value>
@@ -11,6 +12,7 @@
         <value>Infringement of New Zealand Letters Patent No. 328961
         </value>
         </matter>
+    </matters>
         <parties>
         <court-file>CIV2006-404-3523</court-file>
         	<plantiffs>

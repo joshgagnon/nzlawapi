@@ -52,8 +52,8 @@ def massage_xml(soup, debug):
     if footer:
         case.append(footer)
     case = remove_empty_elements(case)
-    #if debug:
-    #    print case.prettify()
+    if debug and False:
+        print case.prettify()
     return case
 
 

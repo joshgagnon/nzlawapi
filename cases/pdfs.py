@@ -112,13 +112,11 @@ class DocStateMachine(object):
         def do_test(test):
             result = getattr(self.doc, str(t))()
             return not result if isinstance(t, Not) else result
-
         for i in xrange(len(self.inputs)):
             self.inputs[i].next(char)
             if self.inputs[i].finished():
                 self.inputs[i].reset()
                 if all([do_test(t) for t in self.inputs[i].tests]):
-
                     if self.inputs[i].close:
                         self.doc.close_tag(self.inputs[i].close, flush=False)
                     if self.inputs[i].open:
@@ -129,7 +127,9 @@ class DocStateMachine(object):
                         self.inputs += self.inputs[i].dependants
                         self.positions += [0] * len(self.inputs[i].dependants)
 
-
+    def reset(self):
+        for i in self.inputs:
+            i.reset()
 
 
 def dist(r1, r2):
@@ -142,22 +142,27 @@ def close_entry(doc):
     doc.close_tag('entry')
     doc.open_tag('entry')
 
+def close_blank(doc):
+    doc.close_tag('blank')
 
 RULES = [
     Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
     Match(string='\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string='This page has been deliberately left blank *\n', open='body,blank', close='intituling,table', tests=[], post_action=close_blank),
     Match(string='Para No', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
-    Match(string='Table of Contents', open='body,table', close='paragraph,intituling', tests=['is_bold']),
-    Match(string='Contents', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
-    Match(string='INDEX *\n', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_center_aligned']),
-    Match(string='[', open='table,row,entry', close='paragraph,intituling',
+    Match(string='Table of Contents', open='body,table', close='paragraph,intituling,indent', tests=['is_bold']),
+    Match(string='Contents', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string='INDEX *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string='JUDGMENT PARTS *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string='Outline *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string='[', open='table,row,entry', close='paragraph,intituling,indent',
         tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
-    Match(string='[1] *\n', open='body,table,row,entry', close='paragraph,intituling',
+    Match(string='[1] *\n', open='body,table,row,entry', close='paragraph,intituling,indent',
         tests=['is_body', Not('is_table'), Not('is_quote'), 'is_full_width']),
-    Match(string='%%* *\n', open='body,table,row,entry', close='paragraph,intituling',
-        tests=['is_body', Not('is_table'), 'has_adjacent_chunks', 'is_right_aligned']),
+    Match(string='%%* *\n', open='body,table,row,entry', close='paragraph,intituling,indent',
+        tests=['is_body', Not('is_table'), Not('is_footer'), 'has_adjacent_chunks', 'is_right_aligned']),
 
 ]
 
@@ -206,12 +211,14 @@ class DocState(object):
         self.max_width = [None, None]
         self.thresholds = copy.deepcopy(THRESHOLDS)
 
-    def analyse_stats(self, sizes):
+    def analyse_stats(self, page, sizes):
         """ Font stats are read each page, and are cummulative.
             Why?  Because some intitulars use a small font, but still
             have footers, so we can't use document average.  And if
             we read only one page font size then pages with lots of quotes
             would be broken """
+        self.thresholds['width'] = page.width
+        self.thresholds['height'] = page.height
         mean = sum(sizes) / len(sizes)
         mode = Counter(sizes).most_common(1)[0][0]
         self.thresholds['footer_size'] = mode - 1;
@@ -328,6 +335,10 @@ class DocState(object):
             self.out.write(' ')
             self.close_tag('hline')
 
+    def ignoring(self):
+        return self.is_right_aligned() and ((self.line_bbox[3] > self.thresholds['height'] - self.thresholds['margin'][1]) or (
+            self.line_bbox[1] < self.thresholds['margin'][1])
+            )
 
     def handle_new_chunk(self):
         self.has_new_chunk = False
@@ -375,7 +386,11 @@ class DocState(object):
 
         if self.is_footer():
             pass
+
         elif self.is_intituling():
+            pass
+
+        elif self.ignoring():
             pass
 
         elif self.is_table():
@@ -539,10 +554,12 @@ class DocState(object):
             self.style_stack = self.foot_style_stack
             # transistion from body/footer, clear prev
             self.prev_bbox = None
+            self.state.step(u'\n')
 
     def switch_body(self):
         if self.out == self.footer:
             self.close_tag('footer-page')
+            self.state.step(u'\n')
         self.out = self.body
         self.tag_stack = self.body_stack
         self.style_stack = self.body_style_stack
@@ -557,6 +574,9 @@ class DocState(object):
         return ( '<case>' + self.body.getvalue() + self.footer.getvalue() +'</case>')
 
     def write_text(self, text, item=None):
+        if self.ignoring():
+            self.state.step(u'\n')
+            return
         text = self.CONTROL.sub(u'', text)
         if item and text.strip():
             self.register_font(item)
@@ -592,7 +612,9 @@ class Converter(PDFConverter):
                 if hasattr(item, 'fontsize'):
                     self.sizes.append(item.fontsize)
         recurse(ltpage)
-        self.doc.analyse_stats(self.sizes)
+
+
+        self.doc.analyse_stats(ltpage, self.sizes)
 
         def get_text(item):
             if isinstance(item, LTTextBox):
@@ -685,7 +707,7 @@ class Converter(PDFConverter):
 def generate_parsable_xml(path, tmp):
     rsrcmgr = PDFResourceManager()
     # Set parameters for analysis.
-    laparams = LAParams(detect_vertical=False, char_margin=8, line_margin=0.01)#,line_margin=2)
+    laparams = LAParams(detect_vertical=False, char_margin=4, line_margin=0.01)#,line_margin=2)
 
     path = canoncialize_pdf(path, tmp)
     # print path

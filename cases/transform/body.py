@@ -69,7 +69,7 @@ def generate_body(soup):
             paragraph.name = 'signature-line'
         elif is_signature(paragraph):
             paragraph.name = 'signature-name'
-        elif paragraph.text == 'This page has been deliberately left blank':
+        elif paragraph.text.startswith('This page has been deliberately left blank'):
             paragraph.decompose()
         elif is_title(paragraph):
             convert_to_title(paragraph)
