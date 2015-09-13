@@ -39,8 +39,8 @@ def get_width(el):
     return get_right(el) - get_left(el)
 
 
-def get_bold(el):
-    return el.attrs.get('bold')
+def is_bold(el):
+    return el.attrs.get('bold') == '1'
 
 
 def is_center(el):
@@ -84,7 +84,7 @@ def find_reg_el_all(soup, reg, field='intituling-field', before_test=None):
 def find_until(el, reg=None, use_left=True, forward=True, more_left=False, more_equal_left=False, center=False, debug=False):
     results = []
     left = get_left(el)
-    bold = get_bold(el)
+    bold = is_bold(el)
 
     def direction(el):
         if forward:
@@ -94,7 +94,7 @@ def find_until(el, reg=None, use_left=True, forward=True, more_left=False, more_
 
     while direction(el) and not (reg and reg.match(direction(el).text)) and (
         not use_left or abs(get_left(direction(el)) - left) < 3.0) and (
-        get_bold(direction(el)) == bold) and (
+        is_bold(direction(el)) == bold) and (
         not more_left or get_left(direction(el)) > left) and (
         not more_equal_left or get_left(direction(el)) >= left) and (
         not center or is_center(direction(el))):

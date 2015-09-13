@@ -26,7 +26,7 @@ indices = (('https://www.comlaw.gov.au/Browse/', 'act'), ('https://www.comlaw.go
 series = 'https://www.comlaw.gov.au/Series/%s'
 download = 'https://www.comlaw.gov.au/Details/%s/Download'
 details = 'https://www.comlaw.gov.au/Details/%s'
-top_level_sel = '#ctl00_MainContent_pnlBrowse a'
+top_level_sel = '#ctl00_MainContent_pnlBrowse a, #MainContent_pnlBrowse a'
 
 
 USE_THREADS = False
@@ -62,6 +62,12 @@ def safe_open(req):
                 raise Exception('Failed to fetch file', req)
 
 
+def select(soup, query):
+    results = []
+    for q in query.split(','):
+        results += soup.select(q)
+    return results
+
 def thread_limit(index):
     def apply_decorator(func):
         def func_wrapper(*args, **kwargs):
@@ -84,7 +90,7 @@ def get_indices():
         req = urllib2.Request(index[0])
         _, page = safe_open(req)
         soup = BeautifulSoup(page, 'lxml')
-        results += [(index[0] + el['href'], index[1]) for el in soup.select(top_level_sel) if not el.find('font')]
+        results += [(index[0] + el['href'], index[1]) for el in select(soup, top_level_sel) if not el.find('font')]
     return results
 
 
@@ -102,12 +108,16 @@ def table_loop(url, headers=None):
     next_button = soup.find('input', class_='rgPageNext')
     if next_button and 'onclick' not in next_button.attrs:
         headers = {}
-        for header in soup.find('form', id="aspnetForm").find_all('input'):
-            if 'name' in header.attrs and header['type'] != 'submit':
-                headers[header['name']] = header.get('value', '')
-        headers[next_button['name']] = next_button['value']
-        for page in table_loop (url, headers):
-            yield page
+        try:
+            for header in select(soup, 'form#aspnetForm, form.aspNetHidden, form#Form1')[0].find_all('input'):
+                if 'name' in header.attrs and header['type'] != 'submit':
+                    headers[header['name']] = header.get('value', '')
+            headers[next_button['name']] = next_button['value']
+            for page in table_loop (url, headers):
+                yield page
+        except IndexError:
+            print page, url
+            raise Exception
 
 
 @thread_limit(1)
@@ -126,26 +136,29 @@ def get_document_info((id, series, leg_type)):
     result['id'] = id
     result['series'] = series
     result['links'] = map(lambda x: x['href'], page.find_all('a', onclick=re.compile("Primary Document Icon")))
-    result['title'] = page.select('#ctl00_MainContent_ucItemPane_lblTitleGeneric')[0].text
+    try:
+        result['title'] = select(page, '#ctl00_MainContent_ucItemPane_lblTitleGeneric, #MainContent_ucItemPane_lblTitleGeneric')[0].text
+    except IndexError:
+        return
     result['type'] = leg_type
     try:
-        result['superseded'] = page.select('#ctl00_MainContent_ucItemPane_lblStatus')[0].text == 'Superseded'
+        result['superseded'] = select(page, '#ctl00_MainContent_ucItemPane_lblStatus, #MainContent_ucItemPane_lblStatus')[0].text == 'Superseded'
     except (AttributeError, IndexError):
         pass
     try:
-        result['prepared_date'] = date(page.select('#ctl00_MainContent_ucItemPane_trPreparedDate td:nth-of-type(2)')[0].text.strip())
+        result['prepared_date'] = date(select(page, '#ctl00_MainContent_ucItemPane_trPreparedDate td:nth-of-type(2),#MainContent_ucItemPane_trPreparedDate td:nth-of-type(2)')[0].text.strip())
     except IndexError:
         pass
     try:
-        result['published_date'] = date(page.select('#ctl00_MainContent_ucItemPane_trPublished td:nth-of-type(2)')[0].text.strip())
+        result['published_date'] = date(select(page, '#ctl00_MainContent_ucItemPane_trPublished td:nth-of-type(2),#MainContent_ucItemPane_trPublished td:nth-of-type(2)')[0].text.strip())
     except IndexError:
         pass
     try:
-        result['start_date'] = date(page.select('#ctl00_MainContent_ucItemPane_trStartDate td:nth-of-type(2)')[0].text.strip())
+        result['start_date'] = date(select(page, '#ctl00_MainContent_ucItemPane_trStartDate td:nth-of-type(2),#MainContent_ucItemPane_trStartDate td:nth-of-type(2)')[0].text.strip())
     except IndexError:
         pass
     try:
-        result['end_date'] = date(page.select('#ctl00_MainContent_ucItemPane_trEndDate td:nth-of-type(2)')[0].text.strip())
+        result['end_date'] = date(select(page, '#ctl00_MainContent_ucItemPane_trEndDate td:nth-of-type(2), #MainContent_ucItemPane_trEndDate td:nth-of-type(2)')[0].text.strip())
     except IndexError:
         pass
 
@@ -210,7 +223,7 @@ def get_unfetched_ids(ids):
 @thread_limit(0)
 def get_series((id, leg_type)):
     for page in table_loop(series % id):
-        ids = map(lambda x: x.text, page.select('#ctl00_MainContent_SeriesCompilations_RadGrid1_ctl00 > tbody > tr > td:nth-of-type(2)'))
+        ids = map(lambda x: x.text, page.select('#ctl00_MainContent_SeriesCompilations_RadGrid1_ctl00 > tbody > tr > td:nth-of-type(2), #MainContent_SeriesCompilations_RadGrid1_ctl00 > tbody > tr > td:nth-of-type(2)'))
         """ If has no previous versions, will not have table """
         if not len(ids):
             ids = [id]
