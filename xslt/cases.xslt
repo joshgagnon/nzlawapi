@@ -106,28 +106,31 @@
 
 
 	<xsl:template match="defendant|plantiff|thirdparty">
-		<xsl:if test="name(.)='defendant' and not(qualifier)">
+		<xsl:apply-templates select="court-file"/>
+		<xsl:if test="name(.)='defendant' and @versus = 'true'">
 			<tr class="center table-gap-after"><td>v</td></tr>
 		</xsl:if>
 		<xsl:choose>
-		<xsl:when test="not(qualifier)">
+		<xsl:when test="@versus = 'true'">
 			<tr class="center table-gap-after">
 				<td><xsl:value-of select="value" /></td>
 			</tr>
 		</xsl:when>
 		<xsl:otherwise>
-		<tr>
-			<td><xsl:value-of select="qualifier" /></td>
-			<td><xsl:value-of select="value" /></td>
-			<td>&#160;</td>
-		</tr>
+			<tr>
+				<td><xsl:value-of select="qualifier" /></td>
+				<td><xsl:value-of select="value" /></td>
+				<td>&#160;</td>
+			</tr>
 
-		<tr class="table-gap-after">
-			<td>&#160;</td>
-			<td><xsl:value-of select="descriptor" /></td>
-			<td>&#160;</td>
-		</tr>
-	</xsl:otherwise>
+			<xsl:if test="descriptor">
+				<tr class="table-gap-after">
+					<td>&#160;</td>
+					<td><xsl:value-of select="descriptor" /></td>
+					<td>&#160;</td>
+				</tr>
+			</xsl:if>
+		</xsl:otherwise>
 	</xsl:choose>
 	</xsl:template>
 

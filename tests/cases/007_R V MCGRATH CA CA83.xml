@@ -6,12 +6,12 @@
         <parties>
         <court-file>CA83/2009</court-file>
             <plantiffs>
-                <plantiff>
+                <plantiff versus="true">
                     <value>THE QUEEN</value>
                 </plantiff>
             </plantiffs>
             <defendants>
-                <defendant>
+                <defendant versus="true">
                     <value>JOANNA ELIZABETH MCGRATH</value>
                 </defendant>
             </defendants>

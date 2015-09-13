@@ -5,12 +5,12 @@
         <parties>
             <court-file> CA251/06 </court-file>
             <plantiffs>
-                <plantiff>
+                <plantiff versus="true">
                     <value> THE QUEEN </value>
                 </plantiff>
             </plantiffs>
             <defendants>
-                <defendant>
+                <defendant versus="true">
                     <value> GAVON LLOYD LIDDELL </value>
                 </defendant>
             </defendants>

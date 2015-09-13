@@ -24,7 +24,8 @@ courtfile_variants = [
 ]
 # TODO expand ranges
 
-courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants), flags=re.IGNORECASE)
+courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants))
+courtfile_num_std_embed = re.compile('(^|\s)%s($|\s)' % courtfile_variants[0])
 qualifier_pattern = re.compile('^\s*(AND BETWEEN|AND|BETWEEN)')
 start_qualifier_pattern = re.compile('^\s*(BETWEEN)\s*$')
 matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
@@ -265,24 +266,25 @@ def waistband(soup):
 
 def parties(soup, start):
 
-    def party(row, name):
+    def party(row, name, versus=False):
         el = soup.new_tag(name)
         for courtfile in row.get('courtfile', []):
             c = soup.new_tag('court-file')
-            c.string = c
+            c.string = courtfile
             el.append(c)
-        if 'qualifier' in row:
+        if 'qualifier' in row and row['qualifier']:
             qualifier = soup.new_tag('qualifier')
             qualifier.string = row['qualifier']
             el.append(qualifier)
         value = soup.new_tag('value')
         value.string = row['value']
         el.append(value)
-        if 'descriptor' in row:
+        if 'descriptor' in row and row['descriptor']:
             descriptor = soup.new_tag('descriptor')
             descriptor.string = row['descriptor']
             el.append(descriptor)
-
+        if versus:
+            el['versus'] = 'true'
         return el
 
     try:
@@ -305,20 +307,19 @@ def parties(soup, start):
         parties.append(plantiffs)
         parties.append(defendants)
         for p in party_dict['plantiffs']:
-            plantiffs.append(party(p, 'plantiff'))
+            plantiffs.append(party(p, 'plantiff', p.get('versus')))
 
         for p in party_dict['defendants']:
-            defendants.append(party(p, 'defendant'))
+            defendants.append(party(p, 'defendant', p.get('versus')))
 
         if len(party_dict.get('thirdparties', [])):
             thirdparties = soup.new_tag('thirdparties')
             parties.append(thirdparties)
             for p in party_dict['thirdparties']:
                 defendants.append(party(p, 'thirdparty'))
-
         results.append(parties)
-
     return results, next_qualifier or start
+
 
 def case_change_indices(segments):
     results = []
@@ -332,48 +333,63 @@ def find_parties(soup, start):
     party_dict = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
     parties = [copy.deepcopy(party_dict)]
 
+    def get_group(descriptor):
+        group = 'defendants'
+        if plantiff_pattern.match(descriptor):
+            group = 'plantiffs'
+        elif thirdparty_pattern.match(descriptor):
+            group = 'thirdparties'
+        return group
 
     def split_by_capital(column):
-        i = (i for i,v in enumerate(column) if v.text.upper() != v.text).next()
+        i = (i for i, v in enumerate(column) if v.text.upper() != v.text).next()
         return (column[0:i], column[i:])
 
     def add_persons(qualifier, column):
         name, descriptor = split_by_capital(column)
         name = ' '.join([n.text for n in name])
         descriptor = ' '.join([d.text for d in descriptor])
-        group = 'defendants'
-        if plantiff_pattern.match(descriptor):
-            group = 'plantiffs'
-        elif thirdparty_pattern.match(descriptor):
-            group = 'thirdparties'
+        group = get_group(descriptor)
         parties[-1][group].append({
             'qualifier': qualifier,
             'value': name,
             'descriptor': descriptor
             })
 
-    def split_courtfiles(descriptor, column):
+    def split_courtfiles(qualifier, descriptor, column):
         i = 0
-        group = 'defendants'
-        if plantiff_pattern.match(descriptor):
-            group = 'plantiffs'
-        elif thirdparty_pattern.match(descriptor):
-            group = 'thirdparties'
-        while i < len(column):
-            j = i
-            name = []
-            courtfiles = []
-            while not courtfile_num.match(column[j].text):
-                name.append(column[i].text)
-                j += 1
-            while courtfile_num.match(column[j].text):
-                courtfiles.append(j.text)
-                j += 1
-            parties[-1][group].append({
-                'qualifier': qualifier,
-                'value': ' '.join(name)
-            })
-            i = j
+        group = get_group(descriptor)
+        import traceback
+        import pprint
+        try:
+            while i < len(column):
+                name = []
+                courtfiles = []
+                while i < len(column) and not courtfile_num_std_embed.search(column[i].text):
+                    name.append(column[i].text)
+                    i += 1
+                remainder_name = re.sub(courtfile_num_std_embed, '', column[i].text).strip()
+                if not i < len(column):
+                    break
+                if remainder_name:
+                    name.append(remainder_name)
+                courtfiles.append(column[i].text.replace(remainder_name, ''))
+                i += 1
+                while i < len(column) and courtfile_num_std_embed.match(column[i].text):
+                    courtfiles.append(column[i].text)
+                    i += 1
+                parties[-1][group].append({
+                    'qualifier': qualifier,
+                    'value': ' '.join(name),
+                    'courtfile': courtfiles
+                })
+                qualifier = None
+                pprint.pprint(name)
+            parties[-1][group][-1]['descriptor'] = descriptor
+        except:
+            print traceback.format_exc()
+            raise Exception
+
 
     plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
     thirdparty_pattern = re.compile('.*(Third [Pp]arty|Third [Pp]arties|interested party)')
@@ -405,7 +421,7 @@ def find_parties(soup, start):
             next_qualifier = segments[-1].next_sibling
             names, descriptor = split_by_capital(segments)
             descriptor = ' '.join([d.text for d in descriptor])
-            split_courtfiles(descriptor, names)
+            split_courtfiles(qualifier_text, descriptor, names)
 
         else:
             """ Must also split on lines that aren't all caps """
@@ -430,11 +446,17 @@ def find_versus(soup, start):
     if not start:
         return [], start
     parties = {
-        'plantiffs': [{'value': start.previous_sibling.string}]
+        'plantiffs': [{
+            'value': start.previous_sibling.string,
+            'versus': True
+        }]
     }
     parties['court-file'] = court_file_before(soup, start.previous_sibling)
     defendants = [start.next_sibling] + find_until(start.next_sibling, use_left=False)
-    parties['defendants'] = [{'value': ' '.join(map(lambda x: x.text, defendants))}]
+    parties['defendants'] = [{
+        'value': ' '.join(map(lambda x: x.text, defendants)),
+        'versus': True
+    }]
     return [parties], defendants[-1].next_sibling
 
 
@@ -491,7 +513,6 @@ def matters(soup, start, courtfile=False):
     return results, next_qualifier or start
 
 
-
 def matters_and_parties(soup):
     results = []
     result, start = matters(soup, soup.find('intituling-field'), courtfile=False)
@@ -509,7 +530,6 @@ def matters_and_parties(soup):
             break
         start = party_end
 
-    #result, start = post_waistband_matters(soup, start)
     results += result
 
     return results
