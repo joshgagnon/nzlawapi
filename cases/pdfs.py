@@ -17,11 +17,20 @@ import os
 import copy
 from variables import THRESHOLDS
 from collections import Counter
+from images import encode_image
 
 
 """ This module reads from a pdf file and generates an xml doc.
     It makes a few assumptions, and will divide the doc into intituling, body and footer,
     as well as create tables, indents, quotes and paragraphs """
+
+
+def attribute_string(_dict):
+    string = ''
+    for k, v in _dict.items():
+        string += string + ' %s="%s"' % (k, v)
+    return string
+
 
 
 """ force horizontal lines """
@@ -235,6 +244,9 @@ class DocState(object):
         if dist((prev_bbox[1], prev_bbox[3]), (bbox[1], bbox[3])) > self.thresholds[threshold_key]:
             return True
 
+        #if not self.is_full_width(self.prev_bbox):
+        #    return True
+
         if bbox[2] - prev_bbox[2] > self.thresholds['paragraph_early_newline']:
             return True
 
@@ -279,16 +291,17 @@ class DocState(object):
         for t in tag.split(','):
             if t not in self.tag_stack:
                 self.tag_stack.append(t)
-                if t in ['paragraph', 'intituling-field', 'row', 'entry', 'indent'] and self.bbox:
+                if (t in ['paragraph', 'intituling-field', 'row', 'entry', 'indent'] and self.bbox) or attributes:
                     bbox = self.bbox if t in ['intituling-field', 'entry'] else self.line_bbox
-                    attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center-aligned="%s" right-aligned="%s" left-aligned="%s"' %
-                          (bbox[0], bbox[1], bbox[2], bbox[3],
-                            '1' if self.is_italic(self.font) else '0',
-                            '1' if self.is_bold(self.font) else '0',
-                            '1' if self.is_center_aligned() else '0',
-                            '1' if self.is_right_aligned() else '0',
-                            '1' if self.is_left_aligned() else '0'
-                            ))
+                    if not attributes:
+                        attributes = ('left="%d" top="%d" right="%d" bottom="%d" italic="%s" bold="%s" center-aligned="%s" right-aligned="%s" left-aligned="%s"' %
+                              (bbox[0], bbox[1], bbox[2], bbox[3],
+                                '1' if self.is_italic(self.font) else '0',
+                                '1' if self.is_bold(self.font) else '0',
+                                '1' if self.is_center_aligned() else '0',
+                                '1' if self.is_right_aligned() else '0',
+                                '1' if self.is_left_aligned() else '0'
+                                ))
                     self.out.write('<%s %s>' % (t, attributes))
                 else:
                      self.out.write('<%s>' % t)
@@ -334,6 +347,13 @@ class DocState(object):
             self.open_tag('hline')
             self.out.write(' ')
             self.close_tag('hline')
+
+    def handle_image(self, item):
+        # (item.width, item.height)
+        self.close_tag('quote,indent')
+        self.open_tag('image', attributes=attribute_string({'width': item.width, 'height': item.height, 'src': encode_image(item)}))
+        self.close_tag('image')
+
 
     def ignoring(self):
         return self.is_right_aligned() and ((self.line_bbox[3] > self.thresholds['height'] - self.thresholds['margin'][1]) or (
@@ -425,7 +445,7 @@ class DocState(object):
             if 'indent' in self.tag_stack:
                 self.close_tag('indent')
 
-            if self.para_threshold() or self.is_center_aligned(self.line_bbox):
+            if self.para_threshold() or self.is_center_aligned(self.line_bbox) or not self.is_full_width(self.prev_line_bbox):
                 self.close_tag('paragraph')
 
             if 'paragraph' not in self.tag_stack:
@@ -655,12 +675,11 @@ class Converter(PDFConverter):
                                      (item.linewidth, bbox2str(item.bbox), item.get_pts()))
 
             elif isinstance(item, LTFigure):
-                if False:
-                    self.doc.out.write('<figure name="%s" bbox="%s">\n' %
-                                     (item.name, bbox2str(item.bbox)))
-                    for child in item:
-                        render(child)
-                    self.doc.out.write('</figure>\n')
+                #self.doc.out.write('<figure name="%s" bbox="%s">\n' %
+                #                 (item.name, bbox2str(item.bbox)))
+                for child in item:
+                    render(child)
+                #self.doc.out.write('</figure>\n')
 
             elif isinstance(item, LTTextLine):
                 # only a new if some content
@@ -684,14 +703,9 @@ class Converter(PDFConverter):
             elif isinstance(item, LTText):
                 for t in item.get_text():
                     self.doc.write_text(t, item)
+
             elif isinstance(item, LTImage):
-                if self.imagewriter is not None:
-                    name = self.imagewriter.export_image(item)
-                    self.doc.out.write('<image src="%s" width="%d" height="%d" />\n' %
-                                     (enc(name), item.width, item.height))
-                else:
-                    self.doc.out.write('<image width="%d" height="%d" />\n' %
-                                     (item.width, item.height))
+                self.doc.handle_image(item)
             else:
                 print isinstance(item, LTPage), type(item)
                 assert 0, item

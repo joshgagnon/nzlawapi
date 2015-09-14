@@ -265,4 +265,11 @@
 		</td>
 	</xsl:template>
 
+	<xsl:template match="image">
+		<img>
+	        <xsl:copy-of select="@*"/>
+		</img>
+	</xsl:template>
+
+
 </xsl:stylesheet>

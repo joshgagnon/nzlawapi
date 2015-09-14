@@ -36,7 +36,7 @@ def join_adjacent_styles(soup):
 
 
 def massage_xml(soup, debug):
-    if debug:
+    if debug :
         print soup.prettify()
     soup = remove_empty_elements(soup)
     soup = join_adjacent_styles(soup)
@@ -52,7 +52,7 @@ def massage_xml(soup, debug):
     if footer:
         case.append(footer)
     case = remove_empty_elements(case)
-    if debug:
+    if debug and False:
         print case.prettify()
     return case
 

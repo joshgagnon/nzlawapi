@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from bs4 import element, Tag
+
 separator_reg = re.compile(u'^\s*[…_\.]{5,}\s*$')
 
 class NoText(Exception):
@@ -14,7 +15,7 @@ def extend_el(source, dest):
 
 
 def remove_empty_elements(soup):
-    ignore_tags = ['underline', 'signature-line', 'hline']
+    ignore_tags = ['underline', 'signature-line', 'hline', 'image']
     if isinstance(soup, Tag):
         for c in soup.contents:
             remove_empty_elements(c)
