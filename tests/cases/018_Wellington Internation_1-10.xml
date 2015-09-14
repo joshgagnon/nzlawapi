@@ -1,0 +1,479 @@
+<case>
+    <intituling>
+        <full-citation> WELLINGTON INTERNATIONAL AIRPORT LTD &amp; ORS v COMMERCE COMMISSION [2013] NZHC 3289 [11 December 2013] </full-citation>
+        <court> IN THE HIGH COURT OF NEW ZEALAND </court>
+        <registry> WELLINGTON REGISTRY </registry>
+        <neutral-citation> [2013] NZHC 3289 </neutral-citation>
+        <matters>
+            <matter>
+                <qualifier> UNDER </qualifier>
+                <value> Part 4 of the Commerce Act 1986 </value>
+            </matter>
+            <matter>
+                <qualifier> IN THE MATTER OF </qualifier>
+                <value> appeals under s 52Z of input methodology determinations of the Commerce Commission </value>
+            </matter>
+        </matters>
+        <parties>
+            <plantiffs>
+                <plantiff>
+                    <court-file> CIV-2011-485-249 </court-file>
+                    <qualifier> BETWEEN </qualifier>
+                    <value> WELLINGTON INTERNATIONAL AIRPORT LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-251 </court-file>
+                    <value> CHRISTCHURCH INTERNATIONAL AIRPORT LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-404-802 </court-file>
+                    <value> AIR NEW ZEALAND LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-404-820 </court-file>
+                    <value> AUCKLAND INTERNATIONAL AIRPORT LTD </value>
+                    <descriptor> Appellants as regards Decision no. 709 </descriptor>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-180 </court-file>
+                    <court-file> CIV-2011-485-248 </court-file>
+                    <qualifier> AND </qualifier>
+                    <value> POWERCO LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-229 </court-file>
+                    <court-file> CIV-2012-485-2393 </court-file>
+                    <value> WELLINGTON ELECTRICITY LINES LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-259 </court-file>
+                    <court-file> CIV-2012-485-2178 </court-file>
+                    <value> VECTOR LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-268 </court-file>
+                    <value> THE MAJOR ELECTRICITY USERS' GROUP </value>
+                    <descriptor> Appellants as regards Decisions nos. 710, 711 and 712, [2012] NZCC 26, [2012] NZCC 27 and [2012] NZCC 28 </descriptor>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-1032 </court-file>
+                    <court-file> CIV-2012-485-1656 </court-file>
+                    <qualifier> AND </qualifier>
+                    <value> TRANSPOWER NEW ZEALAND LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-269 </court-file>
+                    <court-file> CIV-2011-485-1660 </court-file>
+                    <value> THE MAJOR ELECTRICITY USERS’ GROUP </value>
+                    <descriptor> Appellants as regards Decisions no. 713 and [2012] NZCC 17 </descriptor>
+                </plantiff>
+            </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> COMMERCE COMMISSION </value>
+                    <descriptor> Respondent </descriptor>
+                </defendant>
+            </defendants>
+            <thirdparties>
+                <thirdparty>
+                    <qualifier> AND </qualifier>
+                    <value> MAUI DEVELOPMENT LTD </value>
+                    <descriptor> an interested party as regards Decision no. </descriptor>
+                </thirdparty>
+            </thirdparties>
+        </parties>
+        <matters>
+            <matter>
+                <qualifier> UNDER </qualifier>
+                <value> Part 6 of the Commerce Act 1986 </value>
+            </matter>
+            <matter>
+                <qualifier> IN THE MATTER OF </qualifier>
+                <value> appeals under s 91(1B) of input methodology determinations of the Commerce Commission </value>
+            </matter>
+        </matters>
+        <parties>
+            <plantiffs>
+                <plantiff>
+                    <court-file> CIV-2011-485-258 </court-file>
+                    <qualifier> BETWEEN </qualifier>
+                    <value> VECTOR LTD </value>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-180 </court-file>
+                    <court-file> CIV-2011-485-248 </court-file>
+                    <value> POWERCO LTD </value>
+                    <descriptor> Appellants as regards Decisions nos. 710, 711 and 712 </descriptor>
+                </plantiff>
+                <plantiff>
+                    <court-file> CIV-2011-485-1032 </court-file>
+                    <court-file> CIV-2012-485-1656 </court-file>
+                    <qualifier> AND </qualifier>
+                    <value> TRANSPOWER LTD </value>
+                    <descriptor> Appellant as regards Decisions nos. 713 and [2012] NZCC 17 </descriptor>
+                </plantiff>
+            </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> COMMERCE COMMISSION </value>
+                    <descriptor> Respondent </descriptor>
+                </defendant>
+            </defendants>
+        </parties>
+        <hearing> 3-7, 10-14, 17-21, 24, 25 September 2012 (cost of capital appeals); 26-27 September, 1-5, 15, 17-19, 23, 25-26 October 2012 (asset valuation appeals); 3-4, 6, 10 December 2012 (cost allocation and treatment of taxation appeals); and 11-14 February 2013 (SPA, asset valuation - capex, IRIS and DPP reopener appeals). </hearing>
+        <counsel> V L Heine and N S Wood for Wellington International Airport </counsel>
+        <counsel> Ltd </counsel>
+        <counsel> J E Hodder SC and B A Davies for Christchurch International </counsel>
+        <counsel> Airport Ltd </counsel>
+        <counsel> J A Farmer QC, S Robertson, M Toner and E Willis for Air New </counsel>
+        <counsel> Zealand Ltd </counsel>
+        <counsel> J D Every-Palmer, C R Shrive and E L Rae with </counsel>
+        <counsel> A R Galbraith QC for Auckland International Airport Ltd </counsel>
+        <counsel> J E Hodder SC, B A Davies and E N L Peart for Powerco Ltd </counsel>
+        <counsel> J Oliver and O Meech for Wellington Electricity Lines Ltd </counsel>
+        <counsel> A Myers QC, A R Galbraith QC, M Borsky, A Butler, N Hegan, </counsel>
+        <counsel> C Marks, R Versteeg and N Lambie for Vector Ltd </counsel>
+        <counsel> N M Pender, S L Franks and J H Williams for the Major </counsel>
+        <counsel> Electricity Users' Group </counsel>
+        <counsel> D H Shavin QC, V L Heine, T D Smith and M On for </counsel>
+        <counsel> Transpower New Zealand Ltd </counsel>
+        <counsel> BWF Brown QC, M T Scholtens QC, V E Casey, D A </counsel>
+        <counsel> Laurenson, A Boadita-Cormican, S Jerebine, C Fleming, T </counsel>
+        <counsel> Hallett-Hook and N Gray for the Commerce Commission </counsel>
+        <counsel> O Meech for Maui Development Ltd (interested party) </counsel>
+        <bench> Clifford J, Mr R Davey (lay member) and Mr R Shogren (lay member) </bench>
+        <solicitor> Chapman Tripp, Wellington for Wellington International Airport Ltd, Christchurch International </solicitor>
+        <solicitor> Airport Ltd, Powerco Ltd and Transpower New Zealand Ltd. </solicitor>
+        <solicitor> Webb Henderson, Auckland for Air New Zealand Ltd. </solicitor>
+        <solicitor> Russell McVeagh, Auckland and Wellington for Auckland International Airport Ltd and Vector Ltd </solicitor>
+        <solicitor> respectively. </solicitor>
+        <solicitor> Minter Ellison, Auckland for Wellington Electricity Lines Ltd and Maui Ltd. </solicitor>
+        <solicitor> Franks &amp; Ogilvie, Wellington for The Major Electricity Users’ Group. </solicitor>
+        <solicitor> Crown Law Office, Wellington for the Commerce Commission. </solicitor>
+        <judgment> 11 December 2013 </judgment>
+        <waistband>
+            <title> JUDGMENT OF THE COURT </title>
+        </waistband>
+    </intituling>
+
+    <body>
+        <contents>
+            <table>
+                <row>
+                    <entry> PART 1 – WHAT THESE PROCEEDINGS ARE ABOUT </entry>
+                    <entry> 3 </entry>
+                </row>
+                <row>
+                    <entry> PART 2 – CONTEXT </entry>
+                    <entry> 31 </entry>
+                </row>
+                <row>
+                    <entry> PART 3 – GENERAL THEMES </entry>
+                    <entry> 73 </entry>
+                </row>
+                <row>
+                    <entry> PART 4 – VECTOR’S SPA APPEALS </entry>
+                    <entry> 91 </entry>
+                </row>
+                <row>
+                    <entry> PART 5 – THE ASSET VALUATION APPEALS </entry>
+                    <entry> 121 </entry>
+                </row>
+                <row>
+                    <entry> PART 6 - THE COST OF CAPITAL APPEALS </entry>
+                    <entry> 343 </entry>
+                </row>
+                <row>
+                    <entry> PART 7 – POWERCO’S TAX APPEAL </entry>
+                    <entry> 571 </entry>
+                </row>
+                <row>
+                    <entry> PART 8 – VECTOR’S COST ALLOCATION APPEAL </entry>
+                    <entry> 585 </entry>
+                </row>
+                <row>
+                    <entry> PART 9 – VECTOR’S REGULATORY PROCESSES AND RULES </entry>
+                </row>
+                <row minor="true">
+                    <entry> APPEAL </entry>
+                    <entry> 615 </entry>
+                </row>
+                <row>
+                    <entry> PART 10 – WELL’S CAPEX ASSET VALUATION APPEAL </entry>
+                    <entry> 631 </entry>
+                </row>
+                <row>
+                    <entry> PART 11 – RESULTS AND COSTS </entry>
+                    <entry> 635 </entry>
+                </row>
+                <row>
+                    <entry> GLOSSARY </entry>
+                    <entry> 637 </entry>
+                </row>
+                <row>
+                    <entry> PART 1 – WHAT THESE PROCEEDINGS ARE ABOUT </entry>
+                </row>
+                <row minor="true">
+                    <entry> Introduction </entry>
+                    <entry> 3 </entry>
+                </row>
+                <row minor="true">
+                    <entry> An overview of Part 4 regulation </entry>
+                    <entry> 5 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Workable competition and prices </entry>
+                    <entry> 5 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Part 4 regulation and prices </entry>
+                    <entry> 12 </entry>
+                </row>
+                <row minor="true">
+                    <entry> ID regulation </entry>
+                    <entry> 12 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Price-quality paths </entry>
+                    <entry> 13 </entry>
+                </row>
+                <row minor="true">
+                    <entry> DPP regulation </entry>
+                    <entry> 13 </entry>
+                </row>
+                <row minor="true">
+                    <entry> CPP regulation </entry>
+                    <entry> 14 </entry>
+                </row>
+                <row minor="true">
+                    <entry> IPP regulation </entry>
+                    <entry> 15 </entry>
+                </row>
+                <row minor="true">
+                    <entry> The role of “building blocks” – BBAR and ROI </entry>
+                    <entry> 16 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Implementation of the Part 4 scheme </entry>
+                    <entry> 17 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Section 52T IM determinations </entry>
+                    <entry> 18 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Section 52P determinations </entry>
+                    <entry> 20 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Part 4 rights of appeal </entry>
+                    <entry> 21 </entry>
+                </row>
+                <row minor="true">
+                    <entry> IMs and regulatory period time frames </entry>
+                    <entry> 21 </entry>
+                </row>
+                <row minor="true">
+                    <entry> The Appellants and their appeals </entry>
+                    <entry> 22 </entry>
+                </row>
+                <row minor="true">
+                    <entry> The Energy Appellants </entry>
+                    <entry> 22 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Powerco </entry>
+                    <entry> 22 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Vector </entry>
+                    <entry> 23 </entry>
+                </row>
+                <row minor="true">
+                    <entry> WELL </entry>
+                    <entry> 24 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Transpower </entry>
+                    <entry> 24 </entry>
+                </row>
+                <row minor="true">
+                    <entry> The Airports and Air NZ </entry>
+                    <entry> 24 </entry>
+                </row>
+                <row minor="true">
+                    <entry> MEUG </entry>
+                    <entry> 25 </entry>
+                </row>
+                <row minor="true">
+                    <entry> The interested parties </entry>
+                    <entry> 25 </entry>
+                </row>
+                <row minor="true">
+                    <entry> MDL </entry>
+                    <entry> 25 </entry>
+                </row>
+                <row minor="true">
+                    <entry> MEUG </entry>
+                    <entry> 26 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Relationship between appeals </entry>
+                    <entry> 26 </entry>
+                </row>
+                <row minor="true">
+                    <entry> How the hearings were organised </entry>
+                    <entry> 27 </entry>
+                </row>
+                <row minor="true">
+                    <entry> Glossary and footnotes </entry>
+                    <entry> 29 </entry>
+                </row>
+            </table>
+        </contents>
+        <title> Introduction </title>
+        <paragraph>
+            <label> 1 </label>
+            <text> Part 4 of the Commerce Act 1986 (the Act)
+                <footnote> 1 </footnote> provides for the regulation of the price and quality of goods and services in markets where there is little or no competition and little or no likelihood of a substantial increase in competition.
+                <footnote> 2 </footnote> Part 4
+                <footnote> 3 </footnote> regulation will, in the future, be imposed on a particular market and the firms within that market following an inquiry by the Commerce Commission (the Commission) and a decision by the Government. But, reflecting previous regulatory arrangements, from the outset Part 4 has provided for the regulation of: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> under subpart 9, electricity distribution businesses (EDBs) and Transpower Ltd (Transpower) as suppliers of electricity lines services;
+                        <footnote> 4 </footnote>
+                    </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> under subpart 10, gas pipeline businesses (GPBs)
+                        <footnote> 5 </footnote> as suppliers of gas pipeline services;
+                        <footnote> 6 </footnote> and </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> under subpart 11, Auckland International Airport Ltd, Wellington International Airport Ltd and Christchurch International Airport Ltd (individually AIAL, WIAL and CIAL and together the Airports) as suppliers of specified airport services.
+                        <footnote> 7 </footnote>
+                    </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 2 </label>
+            <text> An important feature of Part 4 is the requirement, found in s 52T, for the Commission to determine what are known as input methodologies (IMs). IMs set the rules pursuant to which the Commission will determine the parameters of two formulae (building blocks allowable revenue (BBAR) and return on investment (ROI)) that are central to price regulation under Part 4. </text>
+        </paragraph>
+        <paragraph>
+            <label> 3 </label>
+            <text> In these proceedings: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> Powerco Ltd (Powerco), Vector Ltd (Vector), Wellington Electricity Lines Ltd (WELL) (together the Energy Appellants), as EDBs; </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> Transpower; </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> Powerco and Vector, as GPBs; </text>
+                </entry>
+                <entry>
+                    <label> d </label>
+                    <text> the Airports; </text>
+                </entry>
+                <entry>
+                    <label> e </label>
+                    <text> the Major Electricity Users’ Group Inc (MEUG); and </text>
+                </entry>
+                <entry>
+                    <label> f </label>
+                    <text> Air New Zealand Ltd (Air NZ), </text>
+                </entry>
+            </list>
+            <text> appeal against various of the IMs the Commission has determined. </text>
+        </paragraph>
+        <paragraph>
+            <label> 4 </label>
+            <text> The Energy Appellants, Transpower and MEUG are interested parties as regards each other’s energy sector appeals. In the Airports sector appeals, the Airports and Air NZ are interested parties as regards each other’s appeals and MEUG is an interested party in the Airports’ appeals. </text>
+        </paragraph>
+        <paragraph>
+            <label> 5 </label>
+            <text> Maui Development Ltd (MDL) also appeared as an interested party to the EDBs and GPBs’ appeals, but did not itself appeal. MDL’s written submissions were limited in scope and were supportive of the arguments advanced by Vector and Powerco. MDL elected not to make oral submissions. In those circumstances it is not necessary for us to refer to MDL again. </text>
+        </paragraph>
+        <title> An overview of Part 4 regulation </title>
+        <title> <strong>    Workable competition and prices   </strong> </title>
+        <paragraph>
+            <label> 6 </label>
+            <text> The general purpose of the Act is to promote competition, ie workable or effective competition, in markets for the long-term benefit of consumers within New Zealand.
+                <footnote> 8 </footnote>
+            </text>
+        </paragraph>
+        <paragraph>
+            <label> 7 </label>
+            <text> There are, however, a number of markets in which there is little or no competition and little or no likelihood of a substantial increase in competition. In such markets promoting competition cannot, therefore, protect the long-term interests of consumers of goods or services supplied in such markets. Part 4 provides for the regulation of the price and quality of goods and services supplied in such markets. </text>
+        </paragraph>
+        <paragraph>
+            <label> 8 </label>
+            <text> In other words, Part 4 provides for the regulation of natural monopolies and firms that, while falling short of being true natural monopolies, have substantial market power deriving from the structural characteristics of their markets. </text>
+        </paragraph>
+        <paragraph>
+            <label> 9 </label>
+            <text> Section 52A expresses the purpose of Part 4 as follows: </text>
+            <quote>
+                <quote-paragraph> <strong>      Purpose of Part     </strong> </quote-paragraph>
+                <quote-paragraph> (1) The purpose of this Part is to promote the long-term benefit of consumers in markets referred to in section 52 by promoting outcomes that are consistent with outcomes produced in competitive markets such that suppliers of regulated goods or services– </quote-paragraph>
+                <quote-paragraph> (a) have incentives to innovate and to invest, including in replacement, upgraded, and new assets; and </quote-paragraph>
+                <quote-paragraph> (b) have incentives to improve efficiency and provide services at a quality that reflects consumer demands; and </quote-paragraph>
+                <quote-paragraph> (c) share with consumers the benefits of efficiency gains in the supply of the regulated goods or services, including through lower prices; and </quote-paragraph>
+                <quote-paragraph> (d) are limited in their ability to extract excessive profits. </quote-paragraph>
+                <quote-paragraph> (2) In this Part, the purpose set out in subsection (1) applies in place of the purpose set out in section 1A. </quote-paragraph>
+            </quote>
+        </paragraph>
+        <paragraph>
+            <label> 10 </label>
+            <text> Section 52A(1) therefore directs attention to workably competitive markets. Specifically, it speaks of promoting outcomes that are consistent with outcomes produced in competitive markets, where “competition” is defined in s 3(1) as “workable or effective competition”. The outcomes are those listed in s 52A(2)(a) to (d). All this is within the broader context of promoting the long-term benefit of consumers. </text>
+        </paragraph>
+        <paragraph>
+            <label> 11 </label>
+            <text> “Workable” and “competition” are plain English words, but dictionary definitions are not sufficient to give flesh to the term as it is used in economic regulation. The concept of workable competition was first introduced by JM Clark </text>
+        </paragraph>
+    </body>
+    <footer>
+        <footnote-text>
+            <key> 1 </key>
+            <text> All references in this judgment to the Act, Parts, Subparts and sections are, unless otherwise indicated, references to the Commerce Act 1986 and to Parts, Subparts and sections of the Act. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 2 </key>
+            <text> Section 52. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 3 </key>
+            <text> Part 4 came into force on 14 October 2008, except for subpart 9 relating to the electricity industry and other miscellaneous sections, which came into force on 1 April 2009. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 4 </key>
+            <text> Section 54C defines electricity lines services as meaning the conveyance of electricity by line in New Zealand and as including services performed by Transpower as system operator. Small scale providers are excluded from this definition and thus Part 4 regulation. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 5 </key>
+            <text> Although GPBs and EDBs are the acronyms used in this judgment a variety of acronyms have been used throughout the IMs process. Where we quote a passage that uses an alternative acronym the corresponding acronym from this judgment will be indicated. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 6 </key>
+            <text> Section 55A defines gas pipeline services as meaning the conveyance of natural gas by pipeline. Small scale providers are excluded from this definition and thus Part 4 regulation. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 7 </key>
+            <text> Specified airport services are defined in s 56A to mean all of the services supplied by AIAL, WIAL and CIAL in markets relating to airfield, aircraft, freight and specified passenger terminal activities. </text>
+        </footnote-text>
+        <footnote-text>
+            <key> 8 </key>
+            <text> Sections 1A and 3(1). </text>
+        </footnote-text>
+    </footer>
+</case>

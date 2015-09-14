@@ -1,0 +1,142 @@
+<case>
+    <intituling>
+        <full-citation> WESTPAC NEW ZEALAND LIMITED V DENNIS JOSEPH GARDINER HC PMN CIV 2011-454-000586 [8 April 2013] </full-citation>
+        <court> IN THE HIGH COURT OF NEW ZEALAND </court>
+        <registry> PALMERSTON NORTH REGISTRY </registry>
+        <neutral-citation> [2013] NZHC 683 </neutral-citation>
+        <matters>
+            <matter>
+                <qualifier> UNDER </qualifier>
+                <value> Part 12 of the High Court Rules </value>
+            </matter>
+        </matters>
+        <parties>
+            <court-file> CIV 2011-454-000586 </court-file>
+            <plantiffs>
+                <plantiff>
+                    <qualifier> BETWEEN </qualifier>
+                    <value> WESTPAC NEW ZEALAND LIMITED </value>
+                    <descriptor> Plaintiff </descriptor>
+                </plantiff>
+            </plantiffs>
+            <defendants>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> DENNIS JOSEPH GARDINER </value>
+                    <descriptor> First Defendant </descriptor>
+                </defendant>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> HUTIA MONICA GARDINER </value>
+                    <descriptor> Second Defendant </descriptor>
+                </defendant>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> SHELLY JANE OSTEN </value>
+                    <descriptor> Third Defendant </descriptor>
+                </defendant>
+                <defendant>
+                    <qualifier> AND </qualifier>
+                    <value> ZANE JOSEPH GARDINER </value>
+                    <descriptor> Fourth Defendant </descriptor>
+                </defendant>
+            </defendants>
+        </parties>
+        <matters>
+            <court-file> CIV 2011-454-000890 </court-file>
+            <matter>
+                <qualifier> IN THE MATTER </qualifier>
+                <value> of the Insolvency Act 2006 </value>
+            </matter>
+            <matter-join> AND </matter-join>
+            <matter>
+                <qualifier> IN THE MATTER </qualifier>
+                <value> of the bankruptcy of DENNIS JOSEPH GARDINER Judgment Debtor </value>
+            </matter>
+            <matter>
+                <qualifier> AND </qualifier>
+                <value> WESTPAC NEW ZEALAND LIMITED Judgment Creditor </value>
+            </matter>
+        </matters>
+        <matters>
+            <court-file> CIV 2011-454-000891 </court-file>
+            <matter>
+                <qualifier> IN THE MATTER </qualifier>
+                <value> of the bankruptcy of HUTIA MONICA GARDINER Judgment Debtor </value>
+            </matter>
+            <matter>
+                <qualifier> AND </qualifier>
+                <value> WESTPAC NEW ZEALAND LIMITED Judgment Creditor </value>
+            </matter>
+        </matters>
+        <hearing> 10 August 2012 </hearing>
+        <counsel> P V Shackleton/T D Bloy for plaintiff </counsel>
+        <counsel> G N Cruden/L W Goodman for first, second and fourth defendants </counsel>
+        <solicitor> G N Cruden/L W Goodman, Goodmans Solicitors, PO Box 1439, Palmerston North </solicitor>
+        <solicitor> P V Shackleton/T D Bloy, Simpson Grierson, Private Bag 92518, Auckland </solicitor>
+        <judgment> 8 April 2013 </judgment>
+        <waistband>
+            <title> JUDGMENT OF ASSOCIATE JUDGE ABBOTT </title>
+        </waistband>
+    </intituling>
+
+    <body>
+        <paragraph>
+            <label> 1 </label>
+            <text> These proceedings concern a dispute over liability for the balance of bank loans made by the plaintiff bank, Westpac, to Gardost Properties Ltd, after security properties were sold and the proceeds were applied in reduction of the loans. The defendants are the shareholders of Gardost, and who guaranteed the loans. </text>
+        </paragraph>
+        <paragraph>
+            <label> 2 </label>
+            <text> Westpac has obtained judgment against the first and second defendants by default, and has served bankruptcy notices on them based on those judgments. Westpac has settled its claim against the third defendant. </text>
+        </paragraph>
+        <paragraph>
+            <label> 3 </label>
+            <text> The following applications are before the Court:
+                <footnote> 1 </footnote>
+            </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> An application by Westpac for summary judgment against the fourth defendant. </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> Applications by Westpac to adjudicate each of the first and second defendants bankrupt. </text>
+                </entry>
+                <entry>
+                    <label> c </label>
+                    <text> Applications by the first and second defendants to set aside the default judgments, and the bankruptcy notices. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 4 </label>
+            <text> All applications are opposed: </text>
+            <list>
+                <entry>
+                    <label> a </label>
+                    <text> The first and second defendants initially opposed Westpac’s application, and brought their own applications, on the grounds that the guarantees are invalid (primarily because Westpac did not ensure that they received independent legal advice) and because they disputed the quantum of the debt (contending that Westpac breached its duty as mortgagee by selling the security properties below market value, and to the sales person acting on the sale). In further grounds advanced explicitly just before the hearing, the second defendant disputed liability under the guarantee on the grounds that it was executed under the undue influence of the fourth defendant (their son) which Westpac knew or ought to have known, and that Westpac had breached a duty owed to her as guarantor by lending imprudently. Although these further grounds were advanced formally only on behalf of the second defendant, they appear to relate equally to the first defendant. </text>
+                </entry>
+                <entry>
+                    <label> b </label>
+                    <text> The fourth defendant initially opposed Westpac’s application on the grounds that Westpac was in breach of its duty as mortgagee by selling at less than market value, and to the sales person acting on the sale, that the proceeding was not served validly, and that Westpac acted in bad faith by discontinuing the claim against the third defendant without notice to him (preventing him from claiming indemnity or contribution). He also amended his grounds prior to the hearing to include a contention that the guarantees were invalid for failure to ensure the guarantors had independent legal advice, and because Westpac acted imprudently in granting the loans. </text>
+                </entry>
+            </list>
+        </paragraph>
+        <paragraph>
+            <label> 5 </label>
+            <text> For the reasons I will give in this judgment, I find that the first and second defendants have not made out a case for setting aside the judgment against them, nor (consequentially) for the setting aside of the bankruptcy notices. Westpac has established the grounds for an order for adjudication. I also find that the fourth defendant does not have an arguable defence to Westpac’s application for summary judgment. </text>
+        </paragraph>
+        <title> Background </title>
+        <paragraph>
+            <label> 6 </label>
+            <text> Gardost was incorporated on 19 July 2007 for the purpose of purchasing a rural property at 41 County Heights Drive, Palmerston North. The property has an area of 16.6425 hectares comprising three to four hectares of paddocks with the balance of the land planted with a pine forest. The fourth defendant was the sole director of Gardost. He is the son of the first and second defendants, and the former partner of the third defendant. Each of the defendants holds 25% of the shares in Gardost. </text>
+        </paragraph>
+    </body>
+    <footer>
+        <footnote-text>
+            <key> 1 </key>
+            <text> An order was made on 14 June 2012 that the proceedings be heard together and that affidavits filed </text>
+        </footnote-text>
+    </footer>
+</case>

@@ -316,7 +316,7 @@ def parties(soup, start):
             thirdparties = soup.new_tag('thirdparties')
             parties.append(thirdparties)
             for p in party_dict['thirdparties']:
-                defendants.append(party(p, 'thirdparty'))
+                thirdparties.append(party(p, 'thirdparty'))
         results.append(parties)
     return results, next_qualifier or start
 
@@ -359,36 +359,30 @@ def find_parties(soup, start):
     def split_courtfiles(qualifier, descriptor, column):
         i = 0
         group = get_group(descriptor)
-        import traceback
-        import pprint
-        try:
-            while i < len(column):
-                name = []
-                courtfiles = []
-                while i < len(column) and not courtfile_num_std_embed.search(column[i].text):
-                    name.append(column[i].text)
-                    i += 1
-                remainder_name = re.sub(courtfile_num_std_embed, '', column[i].text).strip()
-                if not i < len(column):
-                    break
-                if remainder_name:
-                    name.append(remainder_name)
-                courtfiles.append(column[i].text.replace(remainder_name, ''))
+        while i < len(column):
+            name = []
+            courtfiles = []
+            while i < len(column) and not courtfile_num_std_embed.search(column[i].text):
+                name.append(column[i].text)
                 i += 1
-                while i < len(column) and courtfile_num_std_embed.match(column[i].text):
-                    courtfiles.append(column[i].text)
-                    i += 1
-                parties[-1][group].append({
-                    'qualifier': qualifier,
-                    'value': ' '.join(name),
-                    'courtfile': courtfiles
-                })
-                qualifier = None
-                pprint.pprint(name)
-            parties[-1][group][-1]['descriptor'] = descriptor
-        except:
-            print traceback.format_exc()
-            raise Exception
+            remainder_name = re.sub(courtfile_num_std_embed, '', column[i].text).strip()
+            if not i < len(column):
+                break
+            if remainder_name:
+                name.append(remainder_name)
+            courtfiles.append(column[i].text.replace(remainder_name, ''))
+            i += 1
+            while i < len(column) and courtfile_num_std_embed.match(column[i].text):
+                courtfiles.append(column[i].text)
+                i += 1
+            parties[-1][group].append({
+                'qualifier': qualifier,
+                'value': ' '.join(name),
+                'courtfile': courtfiles
+            })
+            qualifier = None
+        parties[-1][group][-1]['descriptor'] = descriptor
+
 
 
     plantiff_pattern = re.compile('.*(Plaintiff|Applicant|Appellant|Insolvent)s?')
