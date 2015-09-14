@@ -4,8 +4,8 @@ THRESHOLDS = {
     'quote_vertical_threshold': 10,
     'list_vertical_threshold': 12,
     'table_vertical_threshold': 15,
-    'footer': 100,
     'footer_size': 10,
+    'footer_size_min': 9,
     'quote': 140,
     'quote_size': 12.0,
     'superscript': 10.0,
@@ -21,6 +21,7 @@ THRESHOLDS = {
     'top_of_page': 730,
     'table_column_overflow': 200,
     'judgment_border_width': [150, 480],
+    'min_image_width': 30,
     'margin': [80, 50],
     'width': 595,
     'height': 842

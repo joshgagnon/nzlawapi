@@ -44,12 +44,12 @@ def format_table(soup, el):
         if not isinstance(c, Tag):
             c.extract()
 
-
-
     """ get size limits """
-    left = min(get_left(x) for x in el.find_all('entry') if get_left(x))
-    right = max(get_right(x) for x in el.find_all('entry') if get_right(x))
-
+    try:
+        left = min(get_left(x) for x in el.find_all('entry') if get_left(x))
+        right = max(get_right(x) for x in el.find_all('entry') if get_right(x))
+    except ValueError:
+        return
     contents_split = re.compile('^(.*?)(\.*)\s?(\[?\d+\]?)\s?$')
 
     """ Find cases where there is no columns but a single line,

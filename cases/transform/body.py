@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from common import get_left, separator_reg, is_center, is_right_aligned
-from bs4 import element, NavigableString, BeautifulSoup
+from bs4 import element, NavigableString, Tag
 from tables import format_tables
 
 
@@ -55,7 +55,7 @@ def generate_body(soup):
 
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
-        if paragraph.name in ['table']:
+        if paragraph.name in ['table', 'image']:
             pass
         # If a number, then a new paragraph
         elif number:
@@ -120,7 +120,8 @@ def generate_body(soup):
 
 
     for content in body.contents:
-        content.attrs = {}
+        if content.name not in ['image']:
+            content.attrs = {}
 
     return body
 
@@ -132,11 +133,16 @@ def format_indents(soup):
         if not len(indent.contents):
             indent.decompose()
 
-    listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*]|[ivx]{,3})\)?\s+(.*)', flags=re.IGNORECASE)
+    listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*]|[ivx]{1,4})\)?\s+(.*)', flags=re.IGNORECASE)
 
     prev_left = None
     for indent in soup.find_all('indent'):
         match = None
+        print indent
+        if indent.find('sml-image'):
+            indent.find('sml-image').extract()
+            indent.insert(0, NavigableString(u'• '))
+
         if isinstance(indent.contents[0], NavigableString):
             match = listlike_reg.match(indent.contents[0])
 

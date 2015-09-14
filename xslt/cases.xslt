@@ -231,6 +231,9 @@
 
 	<xsl:template match="list/entry">
 		<li>
+			<xsl:if test="not(label)">
+				<span class="label no-bracket">•</span>
+			</xsl:if>
 			<xsl:apply-templates />
 		</li>
 	</xsl:template>
@@ -266,9 +269,11 @@
 	</xsl:template>
 
 	<xsl:template match="image">
-		<img>
-	        <xsl:copy-of select="@*"/>
-		</img>
+		<div class="image">
+			<img>
+		        <xsl:copy-of select="@*"/>
+			</img>
+		</div>
 	</xsl:template>
 
 

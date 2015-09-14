@@ -1,0 +1,1 @@
+alter table comlaw_info add column type text default 'act';

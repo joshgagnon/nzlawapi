@@ -29,9 +29,7 @@ def join_adjacent_styles(soup):
                 else:
                     el.append(content)
             el.next_sibling.decompose()
-    for el in soup.find_all('hline')[:-1][::-1]:
-        if False and el.next_sibling and el.next_sibling.name == 'hline':
-            el.next_sibling.decompose()
+
     return soup
 
 
@@ -41,7 +39,6 @@ def massage_xml(soup, debug):
     soup = remove_empty_elements(soup)
     soup = join_adjacent_styles(soup)
     soup = tweak_intituling_interface(soup)
-    #soup = BeautifulSoup(soup.encode(), 'lxml-xml')
     intituling = generate_intituling(soup)
     body = generate_body(soup)
     footer = generate_footer(soup)
@@ -52,7 +49,7 @@ def massage_xml(soup, debug):
     if footer:
         case.append(footer)
     case = remove_empty_elements(case)
-    if debug and False:
+    if debug:
         print case.prettify()
     return case
 

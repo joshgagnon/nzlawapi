@@ -15,7 +15,7 @@ def extend_el(source, dest):
 
 
 def remove_empty_elements(soup):
-    ignore_tags = ['underline', 'signature-line', 'hline', 'image']
+    ignore_tags = ['underline', 'signature-line', 'hline', 'image', 'sml-image']
     if isinstance(soup, Tag):
         for c in soup.contents:
             remove_empty_elements(c)

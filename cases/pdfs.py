@@ -32,7 +32,6 @@ def attribute_string(_dict):
     return string
 
 
-
 """ force horizontal lines """
 def find_neighbors (self, plane, ratio):
     objs = plane.find((self.x0-1000, min(self.y0+3, self.y1-3), self.x1+1000, max(self.y0+3 ,self.y1-3)))
@@ -111,6 +110,12 @@ class Not(object):
     def __repr__(self):
         return self.test
 
+class Or(object):
+    def __init__(self, tests):
+        self.tests = tests
+
+    def __repr__(self):
+        return self.tests
 
 class DocStateMachine(object):
     def __init__(self, inputs, doc):
@@ -119,8 +124,15 @@ class DocStateMachine(object):
 
     def step(self, char):
         def do_test(test):
-            result = getattr(self.doc, str(t))()
+            if isinstance(test, Or):
+                return any([do_test(t) for t in test.tests])
+            result = getattr(self.doc, str(test))()
+            if isinstance(test, Not):
+                return not result
+            return result
+
             return not result if isinstance(t, Not) else result
+
         for i in xrange(len(self.inputs)):
             self.inputs[i].next(char)
             if self.inputs[i].finished():
@@ -155,7 +167,7 @@ def close_blank(doc):
     doc.close_tag('blank')
 
 RULES = [
-    Match(string='[1]', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', 'is_intituling']),
+    Match(string='[1] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
     Match(string='\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
@@ -228,9 +240,9 @@ class DocState(object):
             would be broken """
         self.thresholds['width'] = page.width
         self.thresholds['height'] = page.height
-        mean = sum(sizes) / len(sizes)
+        # mean = sum(sizes) / len(sizes)
         mode = Counter(sizes).most_common(1)[0][0]
-        self.thresholds['footer_size'] = mode - 1;
+        self.thresholds['footer_size'] = max(mode-1, self.thresholds['footer_size_min'])
         self.thresholds['quote_size'] = mode;
 
 
@@ -350,9 +362,16 @@ class DocState(object):
 
     def handle_image(self, item):
         # (item.width, item.height)
-        self.close_tag('quote,indent')
-        self.open_tag('image', attributes=attribute_string({'width': item.width, 'height': item.height, 'src': encode_image(item)}))
-        self.close_tag('image')
+        if item.width > self.thresholds['min_image_width']:
+            self.close_tag('paragraph,quote,indent')
+            self.open_tag('image', attributes=attribute_string({
+                'width': '%f%%' % (item.width / self.thresholds['width'] * 100),
+                'src': encode_image(item)
+                }))
+            self.close_tag('image')
+        else:
+            self.open_tag('sml-image')
+            self.close_tag('sml-image')
 
 
     def ignoring(self):
@@ -682,10 +701,7 @@ class Converter(PDFConverter):
                 #self.doc.out.write('</figure>\n')
 
             elif isinstance(item, LTTextLine):
-                # only a new if some content
-                #print item
                 if get_text(item).strip():
-                    #print item
                     self.doc.new_chunk(item.bbox)
                     for child in item:
                         render(child)

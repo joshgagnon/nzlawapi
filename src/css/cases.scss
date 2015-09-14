@@ -127,7 +127,7 @@
 
 		 .paragraph ol{
 		 	    margin: 1em 0;
-		 	    li .label:after{
+		 	    li .label:not(.no-bracket):after{
 			 	content: ')';
 			 }
 		}
@@ -145,6 +145,11 @@
 		 .quote {
 		    margin: 1em 4em;
 		    font-size: 90%;
+		}
+
+		.image{
+			width:100%;
+			text-align:center;
 		}
 	}
 
