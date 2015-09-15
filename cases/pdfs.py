@@ -355,6 +355,7 @@ class DocState(object):
             self.close_tag('underline')
         elif (item.bbox[0] < self.thresholds['judgment_border_width'][0] and
               item.bbox[2] > self.thresholds['judgment_border_width'][1]):
+            self.close_tag('intituling-field')
             self.open_tag('intituling-field')
             self.open_tag('hline')
             self.out.write(' ')

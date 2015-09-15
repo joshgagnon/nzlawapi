@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from common import find_reg_el, find_reg_el_all, find_intituling, find_until, separator_reg, is_left_aligned, get_left, is_bold
+from common import find_reg_el, hline_like_reg, find_intituling, find_until, separator_reg, is_left_aligned, get_left, is_bold
 from bs4 import Tag
 import copy
 from util import indexsplit
@@ -14,7 +14,7 @@ hearing_reg = re.compile(r'hearing[:;]', flags=re.IGNORECASE)
 bench_reg = re.compile(r'court[:;]', flags=re.IGNORECASE)
 court_reg = re.compile(r'.*OF NEW ZEALAND( REGISTRY)?\W*$', flags=re.IGNORECASE)
 courtfile_variants = [
-    '(CA|SC|CIV|CIVP|CRI)[ :]?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
+    '(SC )?(CA|SC|CIV|CIVP|CRI)[ :]?[-0-9/\.,(and)(to)(&) ]{2,}(-\w)?',
     'T NO\. S\d{4,}',
     '(S|T)\d{4,}',
     'B \d+IM\d+',
@@ -54,9 +54,6 @@ def generate_intituling(soup):
     optional_section('court', find_court, intituling)
     optional_section('registry', find_registry, intituling)
     optional_section('neutral-citation', find_neutral, intituling)
-    #optional_section(None, matters, intituling)
-    #optional_section(None, parties, intituling)
-    #optional_section(None, post_waistband_matters, intituling)
     optional_section(None, matters_and_parties, intituling)
     optional_section('hearing', find_hearing, intituling)
     optional_section('counsel', find_counsel, intituling)
@@ -210,21 +207,31 @@ def find_solicitors(soup):
         strings = filter(lambda x: x, strings)
         return strings
 
+def get_band(start, reverse=False):
+    results = []
+    found = False
+    el = start
+    while el:
+        if el.name == 'hline' or el.find('hline') or hline_like_reg.match(el.text):
+            if found:
+                break
+            found = True
+        elif found:
+            results.append(el)
+        if reverse:
+            el = el.previous_sibling
+        else:
+            el = el.next_sibling
+    return results[::-1] if reverse else results
+
 
 def waistband(soup):
-    # find all waistband rows
-    # VICTORIA STREET APARTMENTS LIMITED V I R MCKAY AND C T MCKAY HC AK CIV2007-404- 2490 17 March 2008 spelt judment wrong
-    #reg = re.compile(r'^([][\(\)\w ]+)?(JUDGEMENT |JUDGMENT |SENTENCING|SENTENCE|MINUTE OF THE COURT|ORDERS OF|RULING )', flags=re.IGNORECASE)
-
-    #start = find_reg_el(soup, reg)
-    start = soup.find('hline').parent.next_sibling
-    titles = [start] + find_until(start, use_left=False, center=True)
-
-    start = titles[-1]
-
-    parts = find_until(start, use_left=False)
-    parts = filter(lambda x: x.text, parts)
-
+    titles = get_band(soup.find('hline').parent)
+    parts = get_band(soup.find_all('intituling-field')[-1], reverse=True)
+    parts = filter(lambda p: p not in titles, parts)
+    if not parts:
+        parts = find_until(titles[-1], use_left=False)
+        parts = filter(lambda x: x.text, parts)
     waistband = soup.new_tag('waistband')
     for t in titles:
         title = soup.new_tag('title')
@@ -234,13 +241,15 @@ def waistband(soup):
     counter = 'A'
     for part in parts:
         text = part.text.strip()
+        if not text:
+            continue
         if part.find('underline'):
             subtitle = soup.new_tag('subtitle')
             subtitle.string = text
             waistband.append(subtitle)
         elif separator_reg.match(text):
             continue
-        elif re.match('%s($|\s)' % counter, text):
+        elif re.match('%s\.?($|\s)' % counter, text):
             if waistband.contents[-1].name != 'list':
                 waistband.append(soup.new_tag('list'))
             entry = soup.new_tag('entry')
@@ -257,7 +266,7 @@ def waistband(soup):
                 text_el = soup.new_tag('text')
                 waistband.append(text_el)
             last_text = waistband.find_all('text')[-1]
-            if len(last_text.contents) and  last_text.contents[-1]:
+            if len(last_text.contents) and last_text.contents[-1]:
                 last_text.append(' ')
             last_text.append(text)
 

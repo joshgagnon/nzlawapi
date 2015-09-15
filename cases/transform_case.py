@@ -69,10 +69,14 @@ def validate_case(case):
     assert case.find('.//full-citation') is not None
     assert case.find('.//waistband') is not None
     label = 1
-    for p in case.findall('body/paragraph'):
-        assert p.find('label').text == ('%d' % label)
-        label += 1
-    assert label > 2
+    if case.find('body') is not None:
+        for p in case.findall('body/paragraph'):
+            # can reset to 1, in appendixes
+            if p.find('label').text == '1':
+                label = 1
+            assert p.find('label').text == ('%d' % label)
+            label += 1
+        assert label > 2
 
 
 

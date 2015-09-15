@@ -6,6 +6,7 @@ from tables import format_tables
 
 
 listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*]|[ivx]{1,4})\)?\s+(.*)', flags=re.IGNORECASE)
+strict_bullet_reg = re.compile(u'^\s*•\s+')
 
 def is_title(paragraph):
     #In capitals?  or bold? probably  a title
@@ -79,17 +80,17 @@ def generate_body(soup):
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
             paragraph.name = 'subtitle'
             paragraph.contents[0].unwrap()
-        elif listlike_reg.match(paragraph.text):
+        elif strict_bullet_reg.match(paragraph.text):
             paragraph.name = 'indent'
-            paragraph.previous_sibling.append(paragraph)
-
+            paragraph.previous_sibling.append(paragraph.extract())
         else:
             # we must stitch this paragraph to the previous one
             paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
-                paragraph.previous_sibling.append(child)
-    format_indents(soup)
+                paragraph.previous_sibling.append(child.extract())
+            paragraph.decompose()
 
+    format_indents(soup)
     format_tables(soup)
 
     for paragraph in list(body.find_all('paragraph', recursive=False)):

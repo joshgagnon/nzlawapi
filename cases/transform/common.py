@@ -3,6 +3,7 @@ import re
 from bs4 import element, Tag
 
 separator_reg = re.compile(u'^\s*[…_\.]{5,}\s*$')
+hline_like_reg = re.compile(u'^_*$')
 
 class NoText(Exception):
     pass

@@ -65,6 +65,14 @@ def format_table(soup, el):
             entry.append(match.group(3))
             row.append(entry)
 
+        elif len(row.contents) == 3:
+            row.contents[0].append(' ')
+            for c in row.contents[1].contents:
+                row.contents[0].append(c.extract())
+            row.contents[1].decompose()
+
+
+
     """ Find case of a row not ending with a number and not finding a previous
         row join.
 
