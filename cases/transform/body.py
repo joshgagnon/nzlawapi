@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import re
 from common import get_left, separator_reg, is_center, is_right_aligned
-from bs4 import element, NavigableString, Tag
+from bs4 import element, NavigableString
 from tables import format_tables
 
+
+listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*]|[ivx]{1,4})\)?\s+(.*)', flags=re.IGNORECASE)
 
 def is_title(paragraph):
     #In capitals?  or bold? probably  a title
@@ -51,7 +53,6 @@ def generate_body(soup):
     if not body:
         return None
 
-    format_indents(soup)
 
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
@@ -78,11 +79,16 @@ def generate_body(soup):
         elif len(paragraph.contents) == 1 and paragraph.contents[0].name == 'emphasis':
             paragraph.name = 'subtitle'
             paragraph.contents[0].unwrap()
+        elif listlike_reg.match(paragraph.text):
+            paragraph.name = 'indent'
+            paragraph.previous_sibling.append(paragraph)
+
         else:
             # we must stitch this paragraph to the previous one
             paragraph.previous_sibling.append(' ')
             for child in paragraph.contents[:]:
                 paragraph.previous_sibling.append(child)
+    format_indents(soup)
 
     format_tables(soup)
 
@@ -133,8 +139,6 @@ def format_indents(soup):
         if not len(indent.contents):
             indent.decompose()
 
-    listlike_reg = re.compile(u'^\s*\(?([a-z\d+•\*]|[ivx]{1,4})\)?\s+(.*)', flags=re.IGNORECASE)
-
     prev_left = None
     for indent in soup.find_all('indent'):
         match = None
@@ -173,7 +177,6 @@ def format_indents(soup):
             indent.insert(insert, text)
         else:
             text = soup.new_tag('text')
-            #indent.contents[0].replace_with('')
             for c in indent.contents[:]:
                 text.append(c)
             indent.insert(0, text)

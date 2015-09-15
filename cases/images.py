@@ -17,7 +17,6 @@ def export_image(image):
         ext = 'jpg'
     else:
         ext = 'img'
-    print filters, image.bits, image.colorspace[0],LITERALS_DCT_DECODE
     if ext == 'jpg':
         raw_data = stream.get_rawdata()
         if LITERAL_DEVICE_CMYK in image.colorspace:
@@ -29,11 +28,11 @@ def export_image(image):
         else:
             fp.write(raw_data)
     elif image.bits == 1:
-        i = Image.fromstring('1',image.srcsize, stream.get_data())
+        i = Image.fromstring('1', image.srcsize, stream.get_data())
         i.save(fp, 'PNG')
         ext = 'png'
     elif image.bits == 8 and image.colorspace[0] is LITERAL_DEVICE_RGB:
-        i = Image.fromstring('RGB',image.srcsize, stream.get_data())
+        i = Image.fromstring('RGB', image.srcsize, stream.get_data())
         i.save(fp, 'PNG')
         ext = 'png'
     elif image.bits == 8 and image.colorspace[0] is LITERAL_DEVICE_GRAY:

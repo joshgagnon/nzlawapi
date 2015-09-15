@@ -13,7 +13,7 @@ from pdfs import generate_parsable_xml
 from transform.intituling import generate_intituling
 from transform.body import generate_body, generate_footer, tweak_intituling_interface
 from transform.common import remove_empty_elements
-
+from lxml import etree
 
 # source
 """https://forms.justice.govt.nz/solr/jdo/select?q=*:*&rows=500000&fl=FileNumber%2C%20Jurisdiction%2C%20MNC%2C%20Appearances%2C%20JudicialOfficer%2C%20CaseName%2C%20JudgmentDate%2C%20Location%2C%20DocumentName%2C%20id&wt=json&json.wrf=json%22%22%22"""
@@ -63,6 +63,19 @@ def process_case(path, debug=False):
     return re.sub(' +', ' ', results.encode())
 
 
+def validate_case(case):
+    assert case.find('.//court-file') is not None
+    assert case.find('.//parties') is not None
+    assert case.find('.//full-citation') is not None
+    assert case.find('.//waistband') is not None
+    label = 1
+    for p in case.findall('body/paragraph'):
+        assert p.find('label').text == ('%d' % label)
+        label += 1
+    assert label > 2
+
+
+
 if __name__ == '__main__':
     import sys
     import importlib
@@ -75,18 +88,9 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    offset = 2976
+    offset = 0
     for i, f in enumerate(listdir(config.CASE_DIR)[offset:]):
         if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
-            #try:
             print 'OPENING: (%d) ' % (i + offset), f
             result = process_case(join(config.CASE_DIR, f))
-            if not result.find('parties'):
-                raise Exception('no parties')
-            if not result.find('full-citation'):
-                raise Exception('no full citation')
-            if not result.find('waistband'):
-                raise Exception('no waistband')
-            #except Exception, e:
-            #    print 'FAILED ON: ', join(config.CASE_DIR, f)
-            #    print e
+            validate_case(etree.fromstring(result))

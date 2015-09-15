@@ -60,11 +60,11 @@
 	</xsl:template>
 
 	<xsl:template match="court-file">
-			<tr><td></td><td></td><td class="court-file"><xsl:value-of select="." /></td></tr>
+			<tr><td>&#160;</td><td>&#160;</td><td class="court-file"><xsl:value-of select="." /></td></tr>
 	</xsl:template>
 
 	<xsl:template match="neutral-citation">
-		<table><tr><td></td><td></td><td class="neutral-citation"><xsl:value-of select="." /></td></tr></table>
+		<table><tr><td>&#160;</td><td>&#160;</td><td class="neutral-citation"><xsl:value-of select="." /></td></tr></table>
 	</xsl:template>
 
 	<xsl:template match="defendants|plantiffs|thirdparties">
@@ -77,7 +77,7 @@
 
 
 	<xsl:template match="matters/court-file">
-			<table><tr><td></td><td></td><td class="court-file"><xsl:value-of select="." /></td></tr></table>
+			<table><tr><td>&#160;</td><td>&#160;</td><td class="court-file"><xsl:value-of select="." /></td></tr></table>
 	</xsl:template>
 
 	<xsl:template match="matter">
@@ -108,12 +108,12 @@
 	<xsl:template match="defendant|plantiff|thirdparty">
 		<xsl:apply-templates select="court-file"/>
 		<xsl:if test="name(.)='defendant' and @versus = 'true'">
-			<tr class="center table-gap-after"><td>v</td></tr>
+			<tr class="center table-gap-after"><td colspan="3">v</td></tr>
 		</xsl:if>
 		<xsl:choose>
 		<xsl:when test="@versus = 'true'">
 			<tr class="center table-gap-after">
-				<td><xsl:value-of select="value" /></td>
+				<td colspan="3"><xsl:value-of select="value" /></td>
 			</tr>
 		</xsl:when>
 		<xsl:otherwise>

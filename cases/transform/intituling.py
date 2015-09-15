@@ -29,7 +29,7 @@ courtfile_num_std_embed = re.compile('(^|\s)%s($|\s)' % courtfile_variants[0])
 qualifier_pattern = re.compile('^\s*(AND BETWEEN|AND|BETWEEN)')
 start_qualifier_pattern = re.compile('^\s*(BETWEEN)\s*$')
 matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
-join_pattern = re.compile('^\s*AND\s+')
+join_pattern = re.compile('^\s*AND(\s|$)')
 
 
 def generate_intituling(soup):
@@ -523,7 +523,6 @@ def matters_and_parties(soup):
         if start == matter_end and party_end == matter_end:
             break
         start = party_end
-
     results += result
 
     return results
