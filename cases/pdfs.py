@@ -167,7 +167,8 @@ def close_blank(doc):
     doc.close_tag('blank')
 
 RULES = [
-    Match(string='[1] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
+    Match(string='[%] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
+    Match(string='[%%] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
     Match(string='\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),

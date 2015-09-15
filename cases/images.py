@@ -78,10 +78,7 @@ def encode_image(lt_image):
     result = None
     if lt_image.stream:
         file_stream = lt_image.stream
-
-
         if file_stream:
             file_ext, file_stream = export_image(lt_image)
-            print file_ext, len(file_stream)
             result = 'data:image/%s;base64,%s' % (file_ext, file_stream.encode('base64'))
     return result

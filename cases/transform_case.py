@@ -76,7 +76,6 @@ def validate_case(case):
                 label = 1
             assert p.find('label').text == ('%d' % label)
             label += 1
-        assert label > 2
 
 
 
@@ -92,9 +91,12 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     config = importlib.import_module(sys.argv[1].replace('.py', ''), 'parent')
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    offset = 0
+    offset = 71
     for i, f in enumerate(listdir(config.CASE_DIR)[offset:]):
         if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
-            print 'OPENING: (%d) ' % (i + offset), f
+            #print 'OPENING: (%d) ' % (i + offset), f
             result = process_case(join(config.CASE_DIR, f))
-            validate_case(etree.fromstring(result))
+            try:
+                validate_case(etree.fromstring(result))
+            except AssertionError:
+                print 'Error: (%d) ' % (i + offset), f

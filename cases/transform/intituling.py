@@ -27,7 +27,8 @@ courtfile_variants = [
 courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants))
 courtfile_num_std_embed = re.compile('(^|\s)%s($|\s)' % courtfile_variants[0])
 qualifier_pattern = re.compile('^\s*(AND BETWEEN|AND|BETWEEN)')
-start_qualifier_pattern = re.compile('^\s*(BETWEEN)\s*$')
+# YEOH & ANOR V AL SAFFAF & ORS HC AK CIV 2005-404-00964 1 September 2005 starts with 'AND BETWEEN'
+start_qualifier_pattern = re.compile('^\s*(AND )?(BETWEEN)\s*$')
 matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
 join_pattern = re.compile('^\s*AND(\s|$)')
 

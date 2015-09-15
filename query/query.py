@@ -121,7 +121,7 @@ def query():
 
 
 import uuid
-from cases.transform_case import process_case
+from cases.transform_case import process_case, validate_case
 from util import tohtml, xslt
 import os
 from lxml import etree
@@ -131,6 +131,7 @@ def case_preview():
     filename = str(uuid.uuid4())+'.pdf'
     location = os.path.join('/tmp', filename)
     request.files['file'].save(location)
-    result = tohtml(etree.fromstring(process_case(location, debug=False)), xslt['case'])
+    case = etree.fromstring(process_case(location, debug=False))
+    result = tohtml(case, xslt['case'])
     os.unlink(location)
     return etree.tostring(result, encoding='UTF-8', method="html")
