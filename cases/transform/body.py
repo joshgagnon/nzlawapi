@@ -138,7 +138,6 @@ def format_indents(soup):
     prev_left = None
     for indent in soup.find_all('indent'):
         match = None
-        print indent
         if indent.find('sml-image'):
             indent.find('sml-image').extract()
             indent.insert(0, NavigableString(u'• '))

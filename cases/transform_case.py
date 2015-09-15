@@ -34,8 +34,8 @@ def join_adjacent_styles(soup):
 
 
 def massage_xml(soup, debug):
-    if debug :
-        print soup.prettify()
+    if debug:
+        print soup.prettify().encode('utf-8')
     soup = remove_empty_elements(soup)
     soup = join_adjacent_styles(soup)
     soup = tweak_intituling_interface(soup)
@@ -50,7 +50,7 @@ def massage_xml(soup, debug):
         case.append(footer)
     case = remove_empty_elements(case)
     if debug:
-        print case.prettify()
+        print case.prettify().encode('utf-8')
     return case
 
 
