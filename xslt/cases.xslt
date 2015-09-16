@@ -245,13 +245,18 @@
 		</sup>
 	</xsl:template>
 
+	<xsl:template match="table">
+		<table>
+			<xsl:apply-templates />
+		</table>
+	</xsl:template>
+
 	<xsl:template match="contents/table">
 		<h4>Contents</h4>
 		<table>
 			<xsl:apply-templates />
 		</table>
 	</xsl:template>
-
 
 	<xsl:template match="table/row">
 		<tr>

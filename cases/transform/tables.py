@@ -21,20 +21,22 @@ def unwrap(el):
 
 
 def format_table(soup, el):
-    contents_reg = re.compile('^\W*(Para No|Table of Contents|Contents|Paragraph Number)\W*$')
+    contents_reg = re.compile('^\W*(Para No|Table of Contents|Contents|Paragraph Number|Outline)\W*$')
     if not el.find('entry'):
         el.decompose()
         return
 
     matches = el.find_all(text=contents_reg)
 
-    if matches or True:
+    if matches:
         el.wrap(soup.new_tag('contents'))
         for m in matches:
             m.extract()
     else:
         if el.find('entry', text=re.compile('^\s*(\[\d+\]|\d+)\s*$')):
             el.wrap(soup.new_tag('contents'))
+        else:
+            return
 
     """ unwrap method need to be generalized, use this version """
     for strong in el.find_all(['strong', 'emphasis']):

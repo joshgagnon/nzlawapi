@@ -80,22 +80,26 @@ class Match(object):
         self.dependants = dependants
         self.position = 0
 
+
     def next(self, char):
         def equal(char1, char2):
-            return (char1 == char2) or (char1 == '%' and char2.isdigit())
-
+            return (char1 == char2) or (char1 == u'%' and char2.isdigit())
         if equal(self.string[self.position], char):
-            if self.position + 1 < len(self.string) and self.string[self.position+1] == '*':
+            if (self.position + 1) < len(self.string) and self.string[self.position+1] == u'*':
                 pass
             else:
                 self.position += 1
-        elif self.position + 2 < len(self.string) and self.string[self.position+1] == '*':
+        elif (self.position + 2) < len(self.string) and self.string[self.position+1] == u'*':
                 self.position += 2
+                self.next(char)
         else:
+            start = self.position == 0
             self.reset()
+            if not start:
+                self.next(char)
 
     def reset(self):
-        """ todo, dont reset to 0 """
+        """ todo, dont reset to 0, perhaps use knuth morris pratt """
         self.position = 0
 
 
@@ -123,6 +127,7 @@ class DocStateMachine(object):
         self.doc = doc
 
     def step(self, char):
+
         def do_test(test):
             if isinstance(test, Or):
                 return any([do_test(t) for t in test.tests])
@@ -167,23 +172,22 @@ def close_blank(doc):
     doc.close_tag('blank')
 
 RULES = [
-    Match(string='[%] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
-    Match(string='[%%] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
-    Match(string='\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
-    Match(string='This page has been deliberately left blank *\n', open='body,blank', close='intituling,table', tests=[], post_action=close_blank),
-    Match(string='Para No', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
-    Match(string='Table of Contents', open='body,table', close='paragraph,intituling,indent', tests=['is_bold']),
-    Match(string='Contents', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
-    Match(string='INDEX *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
-    Match(string='JUDGMENT PARTS *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
-    Match(string='Outline *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
-    Match(string='[', open='table,row,entry', close='paragraph,intituling,indent',
+    Match(string=u'\n *[%%*] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
+    Match(string=u'\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string=u'REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string=u'Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
+    Match(string=u'This page has been deliberately left blank *\n', open='body,blank', close='intituling,table', tests=[], post_action=close_blank),
+    Match(string=u'Para No', open='body,table', close='paragraph,intituling', tests=['is_bold', 'is_right_aligned']),
+    Match(string=u'Table of Contents', open='body,table', close='paragraph,intituling,indent', tests=['is_bold']),
+    Match(string=u'Contents', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string=u'INDEX *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string=u'JUDGMENT PARTS *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string=u'Outline *\n', open='body,table', close='paragraph,intituling,indent', tests=['is_bold', 'is_center_aligned']),
+    Match(string=u'[', open='table,row,entry', close='paragraph,intituling,indent',
         tests=['is_right_aligned', 'is_body', Not('is_table'), Not('is_quote'), Not('is_left_indented')], post_action=close_entry),
-    Match(string='[1] *\n', open='body,table,row,entry', close='paragraph,intituling,indent',
+    Match(string=u'[1] *\n', open='body,table,row,entry', close='paragraph,intituling,indent',
         tests=['is_body', Not('is_table'), Not('is_quote'), 'is_full_width']),
-    Match(string='%%* *\n', open='body,table,row,entry', close='paragraph,intituling,indent',
+    Match(string=u'%%* *\n', open='body,table,row,entry', close='paragraph,intituling,indent',
         tests=['is_body', Not('is_table'), Not('is_footer'), 'has_adjacent_chunks', 'is_right_aligned']),
 
 ]
@@ -290,7 +294,7 @@ class DocState(object):
         self.bbox = bbox
 
     def new_line(self, bbox):
-        self.state.step('\n')
+        self.state.step(u'\n')
         self.has_new_line = True
         self.prev_line_bbox = self.line_bbox
         self.line_bbox = bbox
@@ -515,7 +519,7 @@ class DocState(object):
 
     def is_footer(self):
         correct_size = (self.size and self.size <= self.thresholds['footer_size'])
-        return correct_size and (not self.is_quote() or self.out == self.footer)
+        return (correct_size and not self.is_quote()) or  self.out == self.footer
 
     def is_body(self):
         return not self.is_footer() and not self.is_intituling()
@@ -625,7 +629,8 @@ class DocState(object):
                 self.handle_new_line()
             if self.has_new_chunk:
                 self.handle_new_chunk()
-        self.state.step(enc(text, 'utf-8'))
+        if text:
+            self.state.step(unicode(text))
         self.handle_style()
         self.buffer.write(enc(text, 'utf-8'))
         self.last_char = text

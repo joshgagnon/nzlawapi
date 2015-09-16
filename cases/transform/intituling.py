@@ -523,8 +523,13 @@ def matters_and_parties(soup):
     results += result
 
     result, start = parties(soup, start)
+    if not result and results:
+        # there are no parties, only matters, better add court file
+        for c in find_court_file(soup):
+            courtfile = soup.new_tag('court-file')
+            courtfile.string = c
+            results[-1].insert(0, courtfile)
     results += result
-
     while True:
         result, matter_end = matters(soup, start, courtfile=True)
         results += result

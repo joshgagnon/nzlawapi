@@ -64,19 +64,30 @@ def process_case(path, debug=False):
 
 
 def validate_case(case):
-    assert case.find('.//court-file') is not None
-    assert case.find('.//parties') is not None
-    assert case.find('.//full-citation') is not None
-    assert case.find('.//waistband') is not None
+    validation_errors = []
+    if case.find('.//court-file') is None:
+        validation_errors.append('No Court-file')
+    if case.find('.//parties') is None and case.find('.//matters') is None:
+        validation_errors.append('No Parties or Matters')
+
+    if case.find('.//full-citation') is None:
+        validation_errors.append('No full Citation')
+
+    elif len(case.find('.//full-citation').text) < 20:
+        validation_errors.append('Full Citation too short')
+    if  case.find('.//waistband') is None:
+        validation_errors.append('No Waistband')
     label = 1
     if case.find('body') is not None:
         for p in case.findall('body/paragraph'):
             # can reset to 1, in appendixes
             if p.find('label').text == '1':
                 label = 1
-            assert p.find('label').text == ('%d' % label)
+            if p.find('label').text != ('%d' % label):
+                validation_errors.append('Odd ordering of paragraphs')
+                break
             label += 1
-
+    return validation_errors
 
 
 if __name__ == '__main__':
@@ -94,9 +105,12 @@ if __name__ == '__main__':
     offset = 71
     for i, f in enumerate(listdir(config.CASE_DIR)[offset:]):
         if isfile(join(config.CASE_DIR, f)) and f.endswith('.pdf'):
-            #print 'OPENING: (%d) ' % (i + offset), f
-            result = process_case(join(config.CASE_DIR, f))
             try:
-                validate_case(etree.fromstring(result))
-            except AssertionError:
+                result = process_case(join(config.CASE_DIR, f))
+                errors = validate_case(etree.fromstring(result))
+                if errors:
+                    print 'Error: (%d) ' % (i + offset), f
+                    print errors
+            except Exception, e:
                 print 'Error: (%d) ' % (i + offset), f
+                print 'Cant process'
