@@ -171,8 +171,13 @@ def close_entry(doc):
 def close_blank(doc):
     doc.close_tag('blank')
 
+def close_para(doc):
+    doc.close_tag('paragraph')
+    doc.open_tag('paragraph')
+
 RULES = [
     Match(string=u'\n *[%%*] ', open='body,paragraph', close='intituling,table', tests=['is_left_aligned', Or(['is_intituling', 'is_table'])]),
+    Match(string=u'_______* *\n', open='', close='', tests=['is_left_aligned', 'is_body'], post_action=close_para),
     Match(string=u'\nREASONS *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string=u'REASONS OF THE COURT *\n', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
     Match(string=u'Introduction', open='body,paragraph', close='intituling', tests=['is_bold', 'is_intituling']),
@@ -360,8 +365,9 @@ class DocState(object):
             self.close_tag('underline')
         elif (item.bbox[0] < self.thresholds['judgment_border_width'][0] and
               item.bbox[2] > self.thresholds['judgment_border_width'][1]):
-            self.close_tag('intituling-field')
-            self.open_tag('intituling-field')
+            if self.is_intituling():
+                self.close_tag('intituling-field')
+                self.open_tag('intituling-field')
             self.open_tag('hline')
             self.out.write(' ')
             self.close_tag('hline')

@@ -34,7 +34,7 @@ def tweak_intituling_interface(soup):
     if not first_para.text or re.compile('^\s*\[1\]').match(first_para.text):
         last_line = soup.find('intituling').find_all('intituling-field')[-1]
         if last_line.find('strong') and not is_center(last_line) and not last_line.find('hline'):
-            soup.find('body').insert(0, last_line)
+            soup.find('body').insert(0, last_line.extract())
             last_line.name = 'paragraph'
     return soup
 
@@ -54,7 +54,6 @@ def generate_body(soup):
     if not body:
         return None
 
-
     for paragraph in body.contents[:]:
         number = number_reg.match(paragraph.text)
         if paragraph.name in ['table', 'image']:
@@ -71,6 +70,8 @@ def generate_body(soup):
             paragraph.name = 'signature-line'
         elif is_signature(paragraph):
             paragraph.name = 'signature-name'
+            for c in paragraph.find_all('indent'):
+                c.unwrap()
         elif paragraph.text.startswith('This page has been deliberately left blank'):
             paragraph.decompose()
         elif is_title(paragraph):
@@ -85,10 +86,12 @@ def generate_body(soup):
             paragraph.previous_sibling.append(paragraph.extract())
         else:
             # we must stitch this paragraph to the previous one
-            paragraph.previous_sibling.append(' ')
-            for child in paragraph.contents[:]:
-                paragraph.previous_sibling.append(child.extract())
-            paragraph.decompose()
+            prev = paragraph.previous_sibling
+            if prev.name == 'paragraph':
+                prev.append(u' ')
+                for child in paragraph.contents[:]:
+                    prev.append(child.extract())
+                paragraph.decompose()
 
     format_indents(soup)
     format_tables(soup)
@@ -106,7 +109,7 @@ def generate_body(soup):
             else:
                 if isinstance(child, NavigableString):
                     child.string = child.string.strip()
-                current.append(child)
+                current.append(child.extract())
         if len(current.contents):
             children.append(current.extract())
         # avoids a bug in bs4
@@ -114,8 +117,6 @@ def generate_body(soup):
         paragraph.attrs = {}
         for child in children:
             paragraph.append(child)
-
-   #body = BeautifulSoup(body.encode(), 'lxml-xml')
 
     for superscript in list(body.find_all('superscript')):
         if not len(superscript.contents):

@@ -75,7 +75,7 @@ def validate_case(case):
 
     elif len(case.find('.//full-citation').text) < 20:
         validation_errors.append('Full Citation too short')
-    if  case.find('.//waistband') is None:
+    if case.find('.//waistband') is None:
         validation_errors.append('No Waistband')
     label = 1
     if case.find('body') is not None:

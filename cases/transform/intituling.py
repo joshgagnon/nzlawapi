@@ -28,7 +28,7 @@ courtfile_num = re.compile('^((%s)( & )?)+$' % '|'.join(courtfile_variants))
 courtfile_num_std_embed = re.compile('(^|\s)%s($|\s)' % courtfile_variants[0])
 qualifier_pattern = re.compile('^\s*(AND BETWEEN|AND|BETWEEN)')
 # YEOH & ANOR V AL SAFFAF & ORS HC AK CIV 2005-404-00964 1 September 2005 starts with 'AND BETWEEN'
-start_qualifier_pattern = re.compile('^\s*(AND )?(BETWEEN)\s*$')
+start_qualifier_pattern = re.compile('^\s*(AND )?(BETWEEN)(\s|$)')
 matter_pattern = re.compile('^\s*(AND\s)?(IN THE MATTER|IN THE ESTATE|UNDER)(\sOF)?\s?')
 join_pattern = re.compile('^\s*AND(\s|$)')
 
@@ -81,7 +81,7 @@ def full_citation_lines(soup):
     for i, s in enumerate(strings):
         if not re.compile('[a-z0-9]', flags=re.IGNORECASE).match(s):
             continue
-        if len(s) > 20 and sum(1 for c in s if c.isupper()) > (len(s) / 2): #dangerous magic numbers
+        if len(s) > 20 and sum(1 for c in s if c.isupper()) >= (len(s) / 2): #dangerous magic numbers
             return strings[i:]
     return [strings[-1]]
 
@@ -111,7 +111,7 @@ def court_file_before(soup, el):
     results = []
     while el and not courtfile_num.match(el.text):
         el = el.previous_sibling
-    while el and courtfile_num.match(el.text) and is_bold(el):
+    while el and courtfile_num.match(el.text):# and is_bold(el):
         results.append(el.text)
         el = el.previous_sibling
     return results[::-1]
@@ -214,7 +214,7 @@ def get_band(start, reverse=False):
     el = start
     while el:
         if el.name == 'hline' or el.find('hline') or hline_like_reg.match(el.text):
-            if found:
+            if found and len(results):
                 break
             found = True
         elif found:
@@ -228,6 +228,7 @@ def get_band(start, reverse=False):
 
 def waistband(soup):
     titles = get_band(soup.find('hline').parent)
+
     parts = get_band(soup.find_all('intituling-field')[-1], reverse=True)
     parts = filter(lambda p: p not in titles, parts)
     if not parts:
@@ -238,7 +239,6 @@ def waistband(soup):
         title = soup.new_tag('title')
         title.string = t.text
         waistband.append(title)
-
     counter = 'A'
     for part in parts:
         text = part.text.strip()
@@ -300,8 +300,9 @@ def parties(soup, start):
     try:
         party_dicts, next_qualifier = find_parties(soup, start)
     except AttributeError:
+        #import traceback
+        #print traceback.format_exc()
         party_dicts, next_qualifier = find_versus(soup, start)
-
     results = []
 
     for party_dict in party_dicts:
@@ -340,6 +341,7 @@ def case_change_indices(segments):
 
 
 def find_parties(soup, start):
+    found = [False]
     party_dict = {'plantiffs': [], 'defendants': [], 'thirdparties': [], 'court-file': None}
     parties = [copy.deepcopy(party_dict)]
 
@@ -360,6 +362,7 @@ def find_parties(soup, start):
         name = ' '.join([n.text for n in name])
         descriptor = ' '.join([d.text for d in descriptor])
         group = get_group(descriptor)
+        found[0] = True
         parties[-1][group].append({
             'qualifier': qualifier,
             'value': name,
@@ -391,6 +394,7 @@ def find_parties(soup, start):
                 'courtfile': courtfiles
             })
             qualifier = None
+        found[0] = True
         parties[-1][group][-1]['descriptor'] = descriptor
 
 
@@ -399,8 +403,10 @@ def find_parties(soup, start):
     thirdparty_pattern = re.compile('.*(Third [Pp]arty|Third [Pp]arties|interested party)')
 
     next_qualifier = find_intituling(start, start_qualifier_pattern)
+    if not next_qualifier:
+        raise AttributeError
     parties[-1]['court-file'] = court_file_before(soup, next_qualifier)
-    while qualifier_pattern.match(next_qualifier.text):
+    while next_qualifier and qualifier_pattern.match(next_qualifier.text):
         remainder_text = re.sub(qualifier_pattern, '', next_qualifier.text).strip()
         segments = []
         if len(remainder_text):
@@ -415,11 +421,11 @@ def find_parties(soup, start):
 
         more_left = bool(len(remainder_text))
         use_left = not more_left
-
         segments += find_until(next_qualifier, more_left=more_left, use_left=use_left)
+        #  see ALESCO NEW ZEALAND LIMITED V COMMISSIONER OF INLAND REVENUE HC AK CIV 2009-404- 2145 15 April 2011
+        # has name running onto next line
         next_qualifier = segments[-1].next_sibling
-
-        if courtfile_num.match(next_qualifier.text) and not is_bold(next_qualifier):
+        if next_qualifier and courtfile_num.match(next_qualifier.text) and is_bold(next_qualifier) == is_bold(segments[-1]):
             parties[-1]['court-file'] = []
             segments = [segments[0]] + find_until(segments[0], use_left=False, more_equal_left=True)
             next_qualifier = segments[-1].next_sibling
@@ -434,19 +440,20 @@ def find_parties(soup, start):
             for seg in indexsplit(segments, *splits):
                 add_persons(qualifier_text, seg)
 
-        if not qualifier_pattern.match(next_qualifier.text) and courtfile_num.match(next_qualifier.text):
+        if next_qualifier and not qualifier_pattern.match(next_qualifier.text) and courtfile_num.match(next_qualifier.text):
             parties += [copy.deepcopy(party_dict)]
             court_files = []
             while courtfile_num.match(next_qualifier.text):
                 court_files += [next_qualifier.text]
                 next_qualifier = next_qualifier.next_sibling
             parties[-1]['court-file'] = court_files
-    return parties, next_qualifier
+
+    return parties if found[0] else [], next_qualifier
 
 
 def find_versus(soup, start):
     """ If find_parties fails, assume this """
-    start = find_intituling(start, re.compile('^\s*v\s*$'))
+    start = find_intituling(start, re.compile('^\s*[vV]\s*$'))
     if not start:
         return [], start
     parties = {
@@ -530,6 +537,7 @@ def matters_and_parties(soup):
             courtfile.string = c
             results[-1].insert(0, courtfile)
     results += result
+
     while True:
         result, matter_end = matters(soup, start, courtfile=True)
         results += result
@@ -538,7 +546,6 @@ def matters_and_parties(soup):
         if start == matter_end and party_end == matter_end:
             break
         start = party_end
-    results += result
 
     return results
 
