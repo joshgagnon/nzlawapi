@@ -10,7 +10,6 @@ module.exports = React.createClass({
         Actions.tourStart();
     },
     render: function(){
-        console.log(this.props)
         return <div className="user-controls">
             <ReportIssue />
             <a href="#" onClick={this.handleTourStart}>Tour</a>

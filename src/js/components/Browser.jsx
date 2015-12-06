@@ -80,7 +80,7 @@ var PageDialog = React.createClass({
 
 function getLoggedIn(){
     try{
-        JSON.parse(document.getElementById("data").textContent).logged_in;
+        return JSON.parse(document.getElementById("data").textContent).logged_in;
     }
     catch(e){
         return false;

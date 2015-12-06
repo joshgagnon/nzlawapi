@@ -10,6 +10,7 @@
 	  pointer-events:auto;
 	  font-size:20px;
 	  color:$gray-light;
+      line-height: 34px;
 	  display:none;
 	  &:hover{
 	  	color:$gray;
@@ -30,4 +31,5 @@
 
 .input-group button{
 	line-height:20px;
+        height: 34px;
 }
