@@ -20,8 +20,8 @@ DB = 'catalex_browser'
 
 ES_SERVER = {"host": "localhost", "port": 9200}
 
-USERS_LOGIN_URL = 'https://users.catalex.nz/browser-login'
-USERS_LOGOUT_URL = 'https://users.catalex.nz/auth/logout'
+USERS_LOGIN_URL = 'https://localhost:8000/browser-login'
+USERS_LOGOUT_URL = 'http://localhost:8000/auth/logout'
 
 MAX_SESSIONS_PER_USER = 2
 

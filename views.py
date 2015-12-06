@@ -43,21 +43,23 @@ def login():
             # User might be already logged in with this device/IP, ignore
             db.rollback()
     # If this takes us over login limit, delete old sessions
-    max_sessions = current_app.config.get('MAX_SESSIONS_PER_USER')
-    with db.cursor() as cur:
-        cur.execute('SELECT COUNT(*) FROM user_logins WHERE user_id = %(user_id)s', {'user_id': user_id})
-        result = cur.fetchone()
-        if result[0] > max_sessions:
-            # This deletes ALL above max_sessions, not just oldest
-            cur.execute("""
-                DELETE FROM user_logins WHERE user_id = %(user_id)s AND access_hash NOT IN (
-                    SELECT access_hash FROM user_logins WHERE user_id = %(user_id)s ORDER BY access_time DESC LIMIT %(max_sessions)s
-                )
-            """, {
-                'user_id': user_id,
-                'max_sessions': max_sessions
-            })
-            db.commit()
+    if False:
+        # DISABLED
+        max_sessions = current_app.config.get('MAX_SESSIONS_PER_USER')
+        with db.cursor() as cur:
+            cur.execute('SELECT COUNT(*) FROM user_logins WHERE user_id = %(user_id)s', {'user_id': user_id})
+            result = cur.fetchone()
+            if result[0] > max_sessions:
+                # This deletes ALL above max_sessions, not just oldest
+                cur.execute("""
+                    DELETE FROM user_logins WHERE user_id = %(user_id)s AND access_hash NOT IN (
+                        SELECT access_hash FROM user_logins WHERE user_id = %(user_id)s ORDER BY access_time DESC LIMIT %(max_sessions)s
+                    )
+                """, {
+                    'user_id': user_id,
+                    'max_sessions': max_sessions
+                })
+                db.commit()
 
     return redirect('/')
 
@@ -68,12 +70,12 @@ def logout():
     return redirect(current_app.config.get('USERS_LOGOUT_URL'))
 
 
+#@require_auth
 @Base.route('/')
 @Base.route('/open_article/<sub>')
 @Base.route('/open_article/<sub>/<subsub>')
 @Base.route('/edit_published/<sub>')
 @Base.route('/case_preview', methods=['GET'])
-@require_auth
 def browser(**args):
     return render_template('browser.html')
 
