@@ -1,5 +1,4 @@
 from binascii import b2a_hex
-from PIL import Image, ImageChops
 import StringIO
 from pdfminer.image import BMPWriter
 from pdfminer.pdftypes import LITERALS_DCT_DECODE
@@ -9,6 +8,7 @@ from io import BytesIO
 
 
 def export_image(image):
+    from PIL import Image, ImageChops
     stream = image.stream
     (width, height) = image.srcsize
     filters = stream.get_filters()
