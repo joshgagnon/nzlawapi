@@ -69,7 +69,8 @@ def logout():
     try:
         del session['user_id']
     except: pass
-    return redirect(current_app.config.get('USERS_LOGOUT_URL'))
+    return redirect('/')
+    #return redirect(current_app.config.get('USERS_LOGOUT_URL'))
 
 
 #@require_auth
