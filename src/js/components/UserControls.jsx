@@ -10,11 +10,13 @@ module.exports = React.createClass({
         Actions.tourStart();
     },
     render: function(){
+        console.log(this.props)
         return <div className="user-controls">
             <ReportIssue />
             <a href="#" onClick={this.handleTourStart}>Tour</a>
-            <a href="https://users.catalex.nz">Account</a>
-            <a href="/logout">Logout</a>
+            { !this.props.loggedIn && <a href="https://users.catalex.nz">Login</a> }
+            { this.props.loggedIn && <a href="https://users.catalex.nz">Account</a> }
+            { this.props.loggedIn && <a href="/logout">Logout</a> }
         </div>
     },
 });

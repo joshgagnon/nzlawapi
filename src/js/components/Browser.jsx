@@ -78,6 +78,14 @@ var PageDialog = React.createClass({
     }
 });
 
+function getLoggedIn(){
+    try{
+        JSON.parse(document.getElementById("data").textContent).logged_in;
+    }
+    catch(e){
+        return false;
+    }
+}
 
 
 var Browser = React.createClass({
@@ -101,6 +109,7 @@ var Browser = React.createClass({
             views: ViewerStore.getDefaultData(),
             browser: BrowserStore.getInitialState().browser,
             print: Immutable.List(),
+            loggedIn: getLoggedIn(),
             width: null
         };
     },
@@ -112,7 +121,6 @@ var Browser = React.createClass({
         }.bind(this), 0)
 
         if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
-
             Actions.newPage({query: this.context.router.getCurrentQuery(), title: this.context.router.getCurrentQuery().title}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
@@ -435,7 +443,7 @@ var Browser = React.createClass({
                 { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
                 <Banner renderDropdown={this.renderDropdown} extraClasses={ this.showLocation() ? ' expanded' : null}>
                     { this.renderForm() }
-                    <UserControls />
+                    <UserControls loggedIn={this.state.loggedIn}/>
                 </Banner>
             <MQ minWidth={768} maxWidth={991}>
                 { this.renderDropdown() }

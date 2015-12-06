@@ -3,7 +3,7 @@ from hashlib import sha256
 from flask import Blueprint, render_template, request, redirect, current_app, session
 from security.auth import require_auth
 from db import get_db
-
+import json
 
 Base = Blueprint('base', __name__, template_folder='templates')
 
@@ -77,7 +77,8 @@ def logout():
 @Base.route('/edit_published/<sub>')
 @Base.route('/case_preview', methods=['GET'])
 def browser(**args):
-    return render_template('browser.html')
+    return render_template('browser.html', json_data=json.dumps({'logged_in': 'user_id' in session}))
+
 
 @Base.route('/published/<int:id>')
 def published(id):
