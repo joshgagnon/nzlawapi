@@ -27,7 +27,9 @@ server.py
 
 
 
-
+# deployment
+gulp --production
+sudo systemctl restart browser
 
 
 
