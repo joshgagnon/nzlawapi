@@ -135,7 +135,7 @@ var Browser = React.createClass({
             Actions.fetchPublished(this.context.router.getCurrentParams().edit_id);
         }
         else{
-            Actions.loadPrevious();
+            Actions.loadPrevious(['browser']);
         }
         this._window_listener = EventListener.listen(window, 'resize', this.checkWidth);
          this.checkWidth();

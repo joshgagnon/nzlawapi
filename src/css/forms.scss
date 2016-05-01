@@ -25,6 +25,9 @@
 	}
 	input[type="text"].form-control:focus + span.form-control-clear{
 		display:inline-block;
+        i {
+            line-height: 34px;
+        }
 	}
 
 }
