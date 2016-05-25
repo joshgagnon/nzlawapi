@@ -440,7 +440,7 @@ var Browser = React.createClass({
         }
         return (<div className={parentClass}>
                 <BrowserModals />
-                { this.state.browser.get('page_dialog') ? <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} /> : null }
+                { active && this.state.browser.get('page_dialog') &&  <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />  }
                 <Banner renderDropdown={this.renderDropdown} extraClasses={ this.showLocation() ? ' expanded' : null}>
                     { this.renderForm() }
                     <UserControls loggedIn={this.state.loggedIn}/>

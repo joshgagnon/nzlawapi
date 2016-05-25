@@ -28,7 +28,7 @@ server.py
 
 
 # deployment
-gulp --production
+NODE_ENV=production gulp
 sudo systemctl restart browser
 
 
