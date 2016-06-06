@@ -77,6 +77,8 @@ def logout():
 @Base.route('/')
 @Base.route('/open_article/<sub>')
 @Base.route('/open_article/<sub>/<subsub>')
+@Base.route('/open_definition/<sub>', strict_slashes=False)
+@Base.route('/open_definition/<sub>/<subsub>', strict_slashes=False)
 @Base.route('/edit_published/<sub>')
 @Base.route('/case_preview', methods=['GET'])
 def browser(**args):

@@ -28,9 +28,9 @@ server.py
 
 
 # deployment
+git pull
 NODE_ENV=production gulp
-sudo systemctl restart browser
-
+sudo service browser restart
 
 
 

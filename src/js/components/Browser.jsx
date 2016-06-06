@@ -130,6 +130,12 @@ var Browser = React.createClass({
                 id: this.context.router.getCurrentParams().id}}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
+        else if(this.context.router.getCurrentParams().definition_ids){
+            Actions.newPage({
+            page_type: constants.PAGE_TYPES.DEFINITION,
+            query_string: '/definition/'+this.context.router.getCurrentParams().definition_ids}, 'tab-0');
+            Actions.loadPrevious(['browser']);
+        }
         else if(this.context.router.getCurrentParams().edit_id){
             Actions.loadPrevious(['browser'], {browser: {print_mode: true, split_mode: false}});
             Actions.fetchPublished(this.context.router.getCurrentParams().edit_id);
