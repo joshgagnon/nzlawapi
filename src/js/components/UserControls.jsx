@@ -13,8 +13,8 @@ module.exports = React.createClass({
         return <div className="user-controls">
             <ReportIssue />
             <a href="#" onClick={this.handleTourStart}>Tour</a>
-            { !this.props.loggedIn && <a href="https://users.catalex.nz">Login</a> }
-            { this.props.loggedIn && <a href="https://users.catalex.nz">Account</a> }
+            { !this.props.loggedIn && <a href={this.props.loginUrl}>Login</a> }
+            { this.props.loggedIn && <a href={this.props.accountUrl}>Account</a> }
             { this.props.loggedIn && <a href="/logout">Logout</a> }
         </div>
     },

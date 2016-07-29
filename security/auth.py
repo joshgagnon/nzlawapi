@@ -27,6 +27,7 @@ def require_auth(f):
                 })
                 db.commit()
 
+                # we disabled forcing logins
                 if False:
                     if cur.rowcount == 0:# and not current_app.config.get('NO_AUTH'):
                         # This session either didn't originate on this device/IP or has been dropped due to other active sessions.
@@ -38,11 +39,8 @@ def require_auth(f):
                             return jsonify({'error': 'Please log in to use this functionality'}), 403
 
             return f(*args, **kwargs)
-        #if request_wants_json():
+
         return jsonify({'error': 'Please log in or create an account to use this functionality'}), 403
-        #return redirect(current_app.config.get('USERS_LOGIN_URL'))
-        # can't do this pokemon style
-        #except Exception, e:
-        #    return jsonify(error=str(e)), 500
+
 
     return wrapper

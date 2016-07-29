@@ -78,13 +78,21 @@ var PageDialog = React.createClass({
     }
 });
 
+var DATA = {}
+try{
+    DATA = JSON.parse(document.getElementById("data").textContent) || {};
+ }catch(e){};
+
 function getLoggedIn(){
-    try{
-        return JSON.parse(document.getElementById("data").textContent).logged_in;
-    }
-    catch(e){
-        return false;
-    }
+    return DATA.logged_in || false;
+}
+
+function getLoginUrl(){
+    return DATA.login_url || '#';
+}
+
+function getAccountUrl(){
+    return DATA.account_url || '#';
 }
 
 
@@ -110,6 +118,8 @@ var Browser = React.createClass({
             browser: BrowserStore.getInitialState().browser,
             print: Immutable.List(),
             loggedIn: getLoggedIn(),
+            loginUrl: getLoginUrl(),
+            accountUrl: getAccountUrl(),
             width: null
         };
     },
@@ -449,7 +459,7 @@ var Browser = React.createClass({
                 { active && this.state.browser.get('page_dialog') &&  <PageDialog page={active} viewer_id={'tab-0'} view={this.state.views.get('tab-0')} />  }
                 <Banner renderDropdown={this.renderDropdown} extraClasses={ this.showLocation() ? ' expanded' : null}>
                     { this.renderForm() }
-                    <UserControls loggedIn={this.state.loggedIn}/>
+                    <UserControls loggedIn={this.state.loggedIn} loginUrl={this.state.loginUrl} accountUrl={this.state.accountUrl}/>
                 </Banner>
             <MQ minWidth={768} maxWidth={991}>
                 { this.renderDropdown() }
