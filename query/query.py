@@ -6,7 +6,7 @@ from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
 from db import get_db
 import psycopg2
-from flask.ext.cors import  cross_origin
+from flask_cors import  cross_origin
 
 Query = Blueprint('query', __name__, template_folder='templates')
 
