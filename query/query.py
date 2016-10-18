@@ -6,7 +6,7 @@ from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from util import CustomException
 from db import get_db
 import psycopg2
-
+from flask.ext.cors import  cross_origin
 
 Query = Blueprint('query', __name__, template_folder='templates')
 
@@ -101,6 +101,7 @@ def case_file(filename):
 
 
 @Query.route('/query')
+@cross_origin()
 def query():
     args = request.args
     query_type = args.get('doc_type')
@@ -125,6 +126,7 @@ from cases.transform_case import process_case, validate_case
 from util import tohtml, xslt
 import os
 from lxml import etree
+
 @Query.route('/case_preview', methods=['POST'])
 def case_preview():
     file = request.files['file']

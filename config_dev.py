@@ -2,7 +2,7 @@ import os
 home = os.path.expanduser("~")
 
 IP = '0.0.0.0'
-PORT = 3000
+PORT = 3001
 DEBUG = True
 CASE_DIR = os.path.join(home, 'legislation_archive/justice')
 ACT_DIR = os.path.join(home, 'legislation_archive/legislation.govt.nz/subscribe')
@@ -26,13 +26,15 @@ OAUTH_ACCESS_TOKEN_URL = 'http://localhost:8000/oauth/access_token'
 USER_RESOURCE_URL = 'http://localhost:8000/api/user'
 USER_LOGOUT_URL = 'http://localhost:8000/auth/logout'
 
+OAUTH_CLIENT_ID = 'Ci2p9dIgic61zkEwzC6q'
+OAUTH_CLIENT_SECRET = 'JOIQnhYD8DvzBswPm27z'
+
+
 MAX_SESSIONS_PER_USER = 2
 
 SESSION_SECRET = 'secret_here'
 SSO_SHARED_SECRET = 'put_secret_here'
 
-OAUTH_CLIENT_ID = 'Ci2p9dIgic61zkEwzC6q'
-OAUTH_CLIENT_SECRET = 'JOIQnhYD8DvzBswPm27z'
 
 USE_SKELETON = True
 #NO_AUTH = True
