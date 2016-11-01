@@ -5,7 +5,7 @@ from security.auth import require_auth
 from db import get_db
 import json
 import requests
-
+from flask_cors import  cross_origin
 
 Base = Blueprint('base', __name__, template_folder='templates')
 
@@ -94,6 +94,7 @@ def browser(**args):
                                                  }))
 
 @Base.route('/touch', methods=['GET'])
+@cross_origin
 def touch(**args):
     return jsonify({'status': 'success'})
 
