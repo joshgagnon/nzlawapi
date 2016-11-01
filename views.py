@@ -94,7 +94,7 @@ def browser(**args):
                                                  }))
 
 @Base.route('/touch', methods=['GET'])
-@cross_origin
+@cross_origin()
 def touch(**args):
     return jsonify({'status': 'success'})
 
