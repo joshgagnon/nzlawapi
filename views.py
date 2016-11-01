@@ -1,9 +1,8 @@
 import hmac
 from hashlib import sha256
-from flask import Blueprint, render_template, request, redirect, current_app, session
+from flask import Blueprint, render_template, request, redirect, current_app, session, jsonify
 from security.auth import require_auth
 from db import get_db
-import json
 import json
 import requests
 
@@ -93,6 +92,10 @@ def browser(**args):
                                                 'login_url': current_app.config.get('USERS_LOGIN_URL'),
                                                 'account_url': current_app.config.get('ACCOUNT_URL')
                                                  }))
+
+@Base.route('/touch', methods=['GET'])
+def touch(**args):
+    return jsonify({'status': 'success'})
 
 
 @Base.route('/published/<int:id>')

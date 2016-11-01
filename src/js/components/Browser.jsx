@@ -187,6 +187,7 @@ var Browser = React.createClass({
     submit: function(e){
         e.preventDefault();
         this.fetch();
+        this.setState({show_location: false});
     },
     submitJumpTo: function(e){
         var page_type = constants.PAGE_TYPES.INSTRUMENT;
@@ -198,6 +199,7 @@ var Browser = React.createClass({
         var title = this.state.search_query + ' ' + this.state.jump_to;
         this.open({query: query, title: title, page_type: page_type}, 'tab-0',
             {position: {location: Utils.splitLocation(this.state.jump_to)}});
+        this.setState({show_location: false});
 
     },
     submitFocus: function(e){
@@ -211,6 +213,7 @@ var Browser = React.createClass({
         var title = this.state.search_query + ' '+this.state.focus;
 
         this.open({query: query, title: title, page_type: page_type}, 'tab-0');
+        this.setState({show_location: false});
     },
     fetch: function(){
         if(!this.state.search_query){
