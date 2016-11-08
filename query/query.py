@@ -81,6 +81,7 @@ def get_definition(ids, exids):
 
 
 @Query.route('/definitions/<string:term>')
+@cross_origin()
 def query_definitions(term):
     offset = request.args.get('offset', '0')  # TODO: Use this
     with get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
