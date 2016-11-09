@@ -26,6 +26,7 @@ def article_auto_complete():
 
 @Query.route('/definition/<string:ids>')
 @Query.route('/definition/<string:ids>/<string:exids>')
+@cross_origin()
 def get_definition_route(ids, exids=None):
     try:
         return jsonify(get_definition(ids.split(';'), exids.split(';') if exids else None))
@@ -35,6 +36,7 @@ def get_definition_route(ids, exids=None):
 
 @Query.route('/link/<string:key>')
 @Query.route('/link/<string:doc_type>/<string:key>')
+@cross_origin()
 def get_link_route(doc_type=None, key=None):
     if doc_type is None or doc_type == 'instrument':
         return jsonify(query_instrument({'find': 'preview', 'id': key}))
@@ -58,6 +60,7 @@ def get_contents_route(document_id):
 
 
 @Query.route('/summary/<int:document_id>')
+@cross_origin()
 def get_summary_route(document_id):
     return jsonify(get_summary(document_id))
 
