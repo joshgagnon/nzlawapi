@@ -56,7 +56,7 @@ def run(db, config):
                 if document and (document.get('stale')):
                     document_id = document.get('id')
                     cur.execute("""delete from instruments where id = %(id)s """, {'id': document.get('id')})
-                    cur.execute("""update from document set skeleton=null, processed_document=null, contents=null where id = %(id)s """, {'id': document.get('id')})
+                    cur.execute("""update document set skeleton=null, processed_document=null, contents=null where id = %(id)s """, {'id': document.get('id')})
                     # delete_instrument_es(document.get('id'))
                     current_app.logger.info('removed %s %d' % (updated, document.get('id')))
                 # we have found newer
