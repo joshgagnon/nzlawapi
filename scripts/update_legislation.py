@@ -53,7 +53,7 @@ def run(db, config):
                     {'path': path, 'updated': updated})
                 document = cur.fetchone()
                 document_id = None
-                if document and (document.get('stale')) and False:
+                if document and (document.get('stale')):
                     document_id = document.get('id')
                     cur.execute("""delete from instruments where id = %(id)s """, {'id': document.get('id')})
                     cur.execute("""update document set skeleton=null, processed_document=null, contents=null where id = %(id)s """, {'id': document.get('id')})
