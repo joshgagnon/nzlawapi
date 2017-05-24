@@ -27,7 +27,8 @@ def login():
     }
     response = requests.post(current_app.config.get('OAUTH_ACCESS_TOKEN_URL'), data=params)
     data = response.json()
-
+    if 'access_token' not in data:
+        return redirect('/')
     response = requests.get(current_app.config.get('USER_RESOURCE_URL'), params={'access_token': data['access_token']})
     data = response.json()
     session['user_id'] = data['id']
