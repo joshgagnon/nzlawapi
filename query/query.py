@@ -10,6 +10,7 @@ from flask_cors import  cross_origin
 
 Query = Blueprint('query', __name__, template_folder='templates')
 
+SITE = 'https://browser.catalex.nz';
 
 @Query.route('/article_auto_complete')
 def article_auto_complete():
@@ -21,7 +22,16 @@ def article_auto_complete():
                order by  base_score asc, position(%(query)s in lower(name)), char_length(name) asc, refs desc,  year desc
             limit 50;
             """, {'query': request.args.get('query').lower()})
-        return jsonify({'results': cur.fetchall()})
+        if not request.args.get('format') == 'opensearch':
+            return jsonify({'results': cur.fetchall()})
+        else:
+            results = cur.fetchall()
+            return jsonify([
+                           request.args.get('query'),
+                           [r['name'] for r in results],
+                           ['' for r in results],
+                           ['%s/query?doc_type=instrument&find=full&document_id=%d' % (SITE, r['id']) for r in results]
+                           ])
 
 
 @Query.route('/definition/<string:ids>')
