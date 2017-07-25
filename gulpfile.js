@@ -107,6 +107,11 @@ gulp.task('fonts', function() {
     .pipe(gulp.dest('./build/fonts'))
 });
 
+gulp.task('static', function() {
+  return gulp.src('./src/static/*')
+    .pipe(gulp.dest('./build/static/'))
+});
+
 gulp.task('sass-prod', function() { 
     return sass('./src/css/style.scss',
           //  "sourcemap=none": true, //hack to allow autoprefixer to work
@@ -151,8 +156,8 @@ gulp.task('dev-manifest', function(){
 
 
 if(process.env.NODE_ENV === 'production'){
-  gulp.task('default', ['js-prod', 'sass-prod', 'fonts', 'images', 'libs'])
+  gulp.task('default', ['js-prod', 'sass-prod', 'fonts', 'images', 'libs', 'static'])
 }
 else{
-  gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images', 'libs', 'dev-manifest'])
+  gulp.task('default', ['watch', 'js', 'sass', 'fonts', 'images', 'libs', 'dev-manifest', 'static'])
 }
