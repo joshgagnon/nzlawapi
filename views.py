@@ -5,6 +5,7 @@ from security.auth import require_auth
 from db import get_db
 import json
 import requests
+import psycopg2
 from flask_cors import  cross_origin
 
 Base = Blueprint('base', __name__, template_folder='templates')
@@ -80,7 +81,6 @@ def logout():
 
 #@require_auth
 @Base.route('/')
-@Base.route('/search')
 @Base.route('/open_article/<sub>')
 @Base.route('/open_article/<sub>/<subsub>')
 @Base.route('/open_definition/<sub>', strict_slashes=False)
@@ -94,6 +94,31 @@ def browser(**args):
                                                 'login_url': current_app.config.get('USERS_LOGIN_URL'),
                                                 'account_url': current_app.config.get('ACCOUNT_URL')
                                                  }))
+
+@Base.route('/search')
+def smart_search(**args):
+    # attempt to find a single result, and if so, redirect
+    if request.args.get('try_exact'):
+        db = get_db()
+        with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("""
+                select name, id, type, find, query  from titles
+                   where name = %(query)s
+                """, {'query': request.args.get('query')})
+
+            results = cur.fetchall()
+            if len(results) == 1:
+                return redirect('/open_article/instrument/%d' % results[0]['id'])
+
+
+    return render_template('browser.html',
+                           json_data=json.dumps({
+                                                'logged_in': 'user_id' in session,
+                                                'login_url': current_app.config.get('USERS_LOGIN_URL'),
+                                                'account_url': current_app.config.get('ACCOUNT_URL')
+                                                 }))
+
+
 
 @Base.route('/touch', methods=['GET'])
 @cross_origin()

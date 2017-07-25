@@ -10,7 +10,6 @@ from flask_cors import  cross_origin
 
 Query = Blueprint('query', __name__, template_folder='templates')
 
-SITE = 'https://browser.catalex.nz';
 
 @Query.route('/article_auto_complete')
 def article_auto_complete():
@@ -28,9 +27,7 @@ def article_auto_complete():
             results = cur.fetchall()
             return jsonify([
                            request.args.get('query'),
-                           [r['name'] for r in results],
-                           ['' for r in results],
-                           ['%s/query?doc_type=instrument&find=full&document_id=%d' % (SITE, r['id']) for r in results]
+                           [r['name'] for r in results]
                            ])
 
 
