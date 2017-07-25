@@ -16,7 +16,7 @@ REPROCESS_DOCS = False
 DB_USER = 'josh'
 DB_PW = ''
 DB_HOST = '127.0.0.1'
-DB = 'catalex_browser'
+DB = 'catalex_browser_live'
 
 ES_SERVER = {"host": "localhost", "port": 9200}
 LAW_BROWSER_LOGIN_URL = 'http://localhost:3000/login'
@@ -35,6 +35,6 @@ MAX_SESSIONS_PER_USER = 2
 SESSION_SECRET = 'secret_here'
 SSO_SHARED_SECRET = 'put_secret_here'
 
-
+UPDATE_LEGISLATION_LOG_FILE='/tmp/browser.log'
 USE_SKELETON = True
 #NO_AUTH = True

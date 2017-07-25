@@ -80,6 +80,7 @@ def logout():
 
 #@require_auth
 @Base.route('/')
+@Base.route('/search')
 @Base.route('/open_article/<sub>')
 @Base.route('/open_article/<sub>/<subsub>')
 @Base.route('/open_definition/<sub>', strict_slashes=False)

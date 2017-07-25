@@ -129,9 +129,15 @@ var Browser = React.createClass({
             this.setState(this.__state);
             this.__state = {};
         }.bind(this), 0)
-
-        if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
-            Actions.newPage({query: this.context.router.getCurrentQuery(), title: this.context.router.getCurrentQuery().title}, 'tab-0');
+        if((this.context.router.getCurrentQuery() || {}).search){
+            Actions.newPage({
+                page_type: constants.PAGE_TYPES.SEARCH,
+                query: this.context.router.getCurrentQuery(), title: this.context.router.getCurrentQuery().title}, 'tab-0');
+            Actions.loadPrevious(['browser']);
+        }
+        else if(this.context.router.getCurrentParams().query === 'query' && !_.isEmpty(this.context.router.getCurrentQuery())){
+            Actions.newPage({
+                query: this.context.router.getCurrentQuery(), title: this.context.router.getCurrentQuery().title}, 'tab-0');
             Actions.loadPrevious(['browser']);
         }
         else if(this.context.router.getCurrentParams().doc_type){

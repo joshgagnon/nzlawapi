@@ -26,6 +26,7 @@ var App = React.createClass({
 
 var routes = (
   <ReactRouter.Route name="app" path="/" handler={App} >
+    <ReactRouter.Route name="search" path="search"  handler={Browser}/>
     <ReactRouter.Route name="open_article" path="/open_article/:query" handler={Browser}/>
     <ReactRouter.Route name="open_article_subtype" path="/open_article/:doc_type/:id" handler={Browser}/>
     <ReactRouter.Route name="open_definition" path="/open_definition/:definition_ids/" handler={Browser}/>
