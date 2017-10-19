@@ -30,6 +30,7 @@ var routes = (
     <ReactRouter.Route name="open_article" path="/open_article/:query" handler={Browser}/>
     <ReactRouter.Route name="open_article_subtype" path="/open_article/:doc_type/:id" handler={Browser}/>
     <ReactRouter.Route name="open_definition" path="/open_definition/:definition_ids/" handler={Browser}/>
+    <ReactRouter.Route name="open_definition_sub" path="/open_definition/:definition_top_id/:definition_ids/" handler={Browser}/>
     <ReactRouter.Route name="published" path="/published/:id" handler={PublishedView}/>
     <ReactRouter.Route name="edit_published" path="/edit_published/:edit_id" handler={Browser}/>
     <ReactRouter.Route name="case_preview" path="/case_preview" handler={CasePreview}/>
