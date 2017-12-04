@@ -40,6 +40,7 @@ var AutoComplete = React.createClass({
                     });
                 });
         }, 250);
+        React.findDOMNode(this.refs.search).focus();
     },
     onChange: function(event) {
         /* if typing, it means no autocomplete article was selected */
@@ -229,7 +230,7 @@ var AutoComplete = React.createClass({
         return (
             <div className="autocomplete input-group">
                 <div className="input-group has-clear">
-                    <input className={"form-control "+(this.props.className||'')} type="text" placeholder="Search..." ref="search" value={this.props.search_value.search_query}
+                    <input className={"form-control "+(this.props.className||'')} type="text"  placeholder="Search for legislation or keywords..." ref="search" value={this.props.search_value.search_query}
                         onChange={this.onChange} onBlur={this.onBlur} onFocus={this.onFocus} onKeyDown={this.onKeyDown} {...but_children}/>
                             <ClearInput clear={this.clearSearch} />
                            { this.props.children }
