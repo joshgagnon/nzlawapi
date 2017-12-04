@@ -35,6 +35,22 @@ function collect(connect, monitor) {
   };
 }
 
+var WelcomePage = React.createClass({
+    handleTourStart: function(e){
+        e.preventDefault();
+        Actions.tourStart();
+    },
+    render: function(){
+        return <div className="legislation-result text-center">
+        <h3>Welcome to CataLex Law Browser</h3>
+        <br/>
+        <p>To find a specific piece of legislation or search for a keyword, start typing in the search field above.</p>
+        <p>Learn about the other features of Law Browser by taking the tour <a href="#" onClick={this.handleTourStart}>here</a>.</p>
+        </div>
+    }
+})
+
+
 var LoadUnknown = React.createClass({
     request: function(){
         Actions.requestPage(this.props.page.get('id'));
@@ -161,7 +177,7 @@ var TabView = React.createClass({
                 </div>
         }
         else{
-            return <div className="results-empty"/>
+            return <div className={classes} ><WelcomePage /></div>
         }
     },
     render: function(){
