@@ -46,6 +46,54 @@ var WelcomePage = React.createClass({
         <br/>
         <p>To find a specific piece of legislation or search for a keyword, start typing in the search field above.</p>
         <p>Learn about the other features of Law Browser by taking the tour <a href="#" onClick={this.handleTourStart}>here</a>.</p>
+        <div className="products col-md-4 col-md-offset-4">
+        <h4>Other CataLex Services</h4>
+        <a href="https://users.catalex.nz/good-companies-login" className="section">
+            <span className="with-icon">
+                <i className="fa fa-briefcase"></i>
+
+                <span className="title">
+                    <span className="main-title">Good Companies</span>
+                    <span className="sub-title">Maintain legally compliant companies</span>
+                </span>
+            </span>
+        </a>
+
+        <a href="https://users.catalex.nz/sign-login" className="section">
+                <span className="with-icon">
+                    <i className="fa fa-pencil" aria-hidden="true"></i>
+
+                    <span className="title">
+                        <span className="main-title">CataLex Sign</span>
+                        <span className="sub-title">Sign legal documents online</span>
+                    </span>
+                </span>
+            </a>
+
+        <a href="http://workingdays.catalex.nz/" className="section">
+            <span className="with-icon">
+                <i className="fa fa-calendar"></i>
+
+                <span className="title">
+                    <span className="main-title">Working Days</span>
+                    <span className="sub-title">Calculate legal deadlines</span>
+                </span>
+            </span>
+        </a>
+
+        <a href="https://concat.catalex.nz/" className="section">
+            <span className="with-icon">
+                <i className="fa fa-copy"></i>
+
+                <span className="title">
+                    <span className="main-title">ConCat</span>
+                    <span className="sub-title">Combine PDF documents</span>
+                </span>
+            </span>
+        </a>
+        </div>
+
+
         </div>
     }
 })

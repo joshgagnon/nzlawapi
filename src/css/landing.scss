@@ -1,0 +1,54 @@
+.products{
+    margin-top: 2em;
+    h4{
+        color: $deep-red;
+    }
+    .section{
+        margin:4px;
+        background-color:white;
+         border: 1px solid $panel-inner-border;
+         padding: 12px;
+         margin-bottom:12px;
+         display:block;
+         border-radius: 4px;
+         color: $deep-red;
+         transition: color 300ms ease-in;
+         &:hover{
+            text-decoration: none;
+            color: darken($deep-red, 10%);
+         }
+
+         .with-icon{
+            text-align:left;
+            display:table;
+            width: 100%;
+            & > *{
+                display: table-cell;
+                vertical-align:middle;
+            }
+            .fa{
+                font-size:2em;
+                text-align: center;
+                width:2em;
+            }
+         }
+         .main-title{
+            font-size:1.2em;
+            color: $gray-darker;
+            display:block;
+         }
+         .sub-title{
+            color: $gray-light;
+            font-style: italic;
+            display:block;
+         }
+
+
+    }
+    .section.summary{
+        border-radius:0;
+        margin:0;
+        border:none;
+         border-bottom: 1px solid $panel-inner-border;
+    }
+}
