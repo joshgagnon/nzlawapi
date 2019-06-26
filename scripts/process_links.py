@@ -29,7 +29,8 @@ def id_lookup(db):
                     for el in etree.fromstring(result['document'], parser=p).findall('.//*[@id]'):
                         new_id = el.attrib.get('id')
                         id_results.append( (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0]))
-                
+                except:
+                    continue
             results = cur.fetchmany(1)
             if len(id_results) > 100000:
                 args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
