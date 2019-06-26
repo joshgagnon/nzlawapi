@@ -180,7 +180,7 @@ def query_instrument(args):
     govt_location = args.get('govt_location')
     if args.get('id', args.get('document_id')):
         doc_id = args.get('id', args.get('document_id'))
-        if isinstance(doc_id, basestring) and doc_id.startswith('DLM'):
+        if isinstance(doc_id, basestring) and not doc_id.isdigit():
             govt_id = doc_id
             doc_id = find_document_id_by_govt_id(doc_id)
             instrument = get_instrument_object(doc_id)
