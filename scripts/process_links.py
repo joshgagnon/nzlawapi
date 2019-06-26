@@ -13,6 +13,7 @@ import logging
 p = etree.XMLParser(huge_tree=True)
 
 def id_lookup(db):
+    upsert = " ON CONFLICT DO NOTHING"
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" delete from id_lookup""")
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
@@ -34,12 +35,12 @@ def id_lookup(db):
             results = cur.fetchmany(1)
             if len(id_results) > 100000:
                 args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
-                out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str)
+                out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str + upsert)
                 id_results[:] = []
 
         if len(id_results):
             args_str = ','.join(cur.mogrify("(%s,%s,%s)", x) for x in id_results)
-            out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str)
+            out.execute("INSERT INTO id_lookup(govt_id, parent_id, repr) VALUES " + args_str + upsert)
             id_results[:] = []
     db.commit()
 
