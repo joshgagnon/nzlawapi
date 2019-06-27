@@ -13,7 +13,7 @@ import logging
 p = etree.XMLParser(huge_tree=True)
 
 def id_lookup(db):
-    upsert = " ON CONFLICT (id_lookup_uniq) DO NOTHING"
+    upsert = "" #" ON CONFLICT (id_lookup_uniq) DO NOTHING"
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" delete from id_lookup""")
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
@@ -21,6 +21,7 @@ def id_lookup(db):
         results = cur.fetchmany(1)
         count = 0
         id_results = []
+        completed = {}
         while len(results):
             for result in results:
                 if count % 10 == 0:
@@ -29,7 +30,10 @@ def id_lookup(db):
                 try:
                     for el in etree.fromstring(result['document'], parser=p).findall('.//*[@id]'):
                         new_id = el.attrib.get('id')
-                        id_results.append( (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0]))
+                        if (new_id, result['id']) not in completed:
+                            entry = (new_id, result['id'], generate_path_string(el, title=unicode(result['title'].decode('utf-8')))[0])
+                            id_results.append( entry )
+                            completed[(new_id, result['id'])] = True
                 except:
                     continue
             results = cur.fetchmany(1)
