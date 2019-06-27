@@ -13,7 +13,7 @@ import logging
 p = etree.XMLParser(huge_tree=True)
 
 def id_lookup(db):
-    upsert = " ON CONFLICT DO NOTHING"
+    upsert = " ON CONFLICT (id_lookup_uniq) DO NOTHING"
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
         cur.execute(""" delete from id_lookup""")
     with db.cursor(cursor_factory=extras.RealDictCursor, name="law_cursor") as cur, db.cursor() as out:
