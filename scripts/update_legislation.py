@@ -42,11 +42,15 @@ def run(db, config):
         link = el.find('link')
         print link.attrib['href']
         updated = el.xpath('updated')[0].text
-        link = link.attrib['href'].replace('http://www.legislation.govt.nz', '')
+        original_link = link.attrib['href']
+        link = link.replace('http://www.legislation.govt.nz', '')
         interested = re.match(r'/(act|regulation|bill|sop)/', link)
         if interested:
-            filename = el.xpath('id')[0].text.split(':')[2]
-            path = '/'.join(link.attrib['href'].split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
+            page_response = urllib2.urlopen(original_link)
+            page_response_string = response.read()
+            page_tree = etree.fromstring(page_response_string, parser)
+            filename = page_tree.xpath('//li[@class="downloadPdf"]')[0].attrib['href'].split('/')[-1].replace('.pdf', '')
+            path = '/'.join(link.split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
             # look for path in db
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
                 current_app.logger.debug('checking %s' % path)
