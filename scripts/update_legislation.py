@@ -45,6 +45,7 @@ def run(db, config):
         if interested:
             filename = el.xpath('id')[0].text.split(':')[2]
             path = '/'.join(link.attrib['href'].split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
+            print 'Found %s' % path
             # look for path in db
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
                 current_app.logger.debug('checking %s' % path)
