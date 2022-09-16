@@ -1,5 +1,9 @@
 #CELERY START
 
+pip install pdfminer==20140328
+pip install pattern flask flask_cors requests psycopg2 lxml
+pip install  pattern==2.6 nltk==3.4.5 elasticsearch
+
 CONFIG_FILE=dev.py celery -A celeries  worker -l info --concurrency=4 -Ofair
 
 # QUICK WGSI START FOR DEV
