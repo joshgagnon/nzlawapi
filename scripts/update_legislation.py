@@ -48,6 +48,7 @@ def run(db, config):
         if interested:
             page_response = urllib2.urlopen(original_link)
             page_response_string = response.read()
+            print page_response_string
             page_tree = etree.fromstring(page_response_string, html_parser)
             filename = page_tree.xpath('//a[@id="ctl00_Cnt_documentNavigationHeader_linkPdfDownload"]')[0].attrib['href'].split('/')[-1].replace('.pdf', '')
             path = '/'.join(link.split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
