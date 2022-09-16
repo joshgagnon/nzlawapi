@@ -40,12 +40,12 @@ def run(db, config):
     updated_ids = []
     for el in doc.xpath('//entry'):
         link = el.find('link')
+        print link.attrib['href']
         updated = el.xpath('updated')[0].text
         interested = re.match(r'^/(act|regulation|bill|sop)/', link.attrib['href'])
         if interested:
             filename = el.xpath('id')[0].text.split(':')[2]
             path = '/'.join(link.attrib['href'].split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
-            print 'Found %s' % path
             # look for path in db
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
                 current_app.logger.debug('checking %s' % path)
