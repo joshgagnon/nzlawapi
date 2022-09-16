@@ -43,7 +43,7 @@ def run(db, config):
         print link.attrib['href']
         updated = el.xpath('updated')[0].text
         original_link = link.attrib['href']
-        link = link.replace('http://www.legislation.govt.nz', '')
+        link = original_link.replace('http://www.legislation.govt.nz', '')
         interested = re.match(r'/(act|regulation|bill|sop)/', link)
         if interested:
             page_response = urllib2.urlopen(original_link)
