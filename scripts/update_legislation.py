@@ -42,7 +42,8 @@ def run(db, config):
         link = el.find('link')
         print link.attrib['href']
         updated = el.xpath('updated')[0].text
-        interested = re.match(r'^/(act|regulation|bill|sop)/', link.attrib['href'])
+        link = link.attrib['href'].replace('http://www.legislation.govt.nz', '')
+        interested = re.match(r'/(act|regulation|bill|sop)/', link)
         if interested:
             filename = el.xpath('id')[0].text.split(':')[2]
             path = '/'.join(link.attrib['href'].split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
