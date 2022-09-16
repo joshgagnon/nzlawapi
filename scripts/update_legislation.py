@@ -18,7 +18,7 @@ url = "http://www.legislation.govt.nz/atom.aspx?search=ad_act@bill@regulation@de
 
 resource_url = "http://www.legislation.govt.nz/subscribe"
 parser=etree.XMLParser(resolve_entities=False, huge_tree=True)
-
+html_parser = etree.HTMLParser()
 def run(db, config):
     from acts.links import analyze_new_links
     from acts.queries import get_unprocessed_instrument, get_instrument_object
@@ -48,8 +48,8 @@ def run(db, config):
         if interested:
             page_response = urllib2.urlopen(original_link)
             page_response_string = response.read()
-            page_tree = etree.fromstring(page_response_string, parser)
-            filename = page_tree.xpath('//li[@class="downloadPdf"]')[0].attrib['href'].split('/')[-1].replace('.pdf', '')
+            page_tree = etree.fromstring(page_response_string, html_parser)
+            filename = page_tree.xpath('//a[@id="ctl00_Cnt_documentNavigationHeader_linkPdfDownload"]')[0].attrib['href'].split('/')[-1].replace('.pdf', '')
             path = '/'.join(link.split('/')[1:-1] + ['%s%s' % (filename, '.xml')])
             # look for path in db
             with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
