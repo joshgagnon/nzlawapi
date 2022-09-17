@@ -40,13 +40,11 @@ def run(db, config):
     updated_ids = []
     for el in doc.xpath('//entry'):
         link = el.find('link')
-        print link.attrib['href']
         updated = el.xpath('updated')[0].text
         original_link = link.attrib['href']
         link = original_link.replace('http://www.legislation.govt.nz', '')
         interested = re.match(r'/(act|regulation|bill|sop)/', link)
         if interested:
-            print 'getting %s' % original_link
             page_response = urllib2.urlopen(original_link)
             page_response_string = page_response.read()
             page_tree = etree.fromstring(page_response_string, html_parser)
