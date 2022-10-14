@@ -102,18 +102,18 @@ def refs_and_subs(db, do_references, do_subordinates):
             documents = cur.fetchmany(100)
     db.commit()
     with db.cursor(cursor_factory=extras.RealDictCursor) as cur:
-        # lets make the interpretation act the parent of everything
+        # lets make the legislation act the parent of everything
 
         cur.execute("""
             INSERT INTO subordinates (parent_id, child_id)
             SELECT
-                (select govt_id from instruments where title = 'Interpretation Act 1999' AND version = 19) as parent_id,
+                (select govt_id from instruments where title = 'Legislation Act 2019' order by version desc limit 1) as parent_id,
                 id as child_id  FROM instruments WHERE
-                title != 'Interpretation Act 1999'
+                title != 'Legislation Act 2019'
                 """)
         cur.execute("""
             INSERT INTO subordinates (parent_id, child_id)
-                (select null as parent_id, id as child_id from instruments where title = 'Interpretation Act 1999' AND version = 19)
+                (select null as parent_id, id as child_id from instruments where title = 'Legislation Act 2019' AND version = 19)
                 """)
 
     links.fix_cycles(db)

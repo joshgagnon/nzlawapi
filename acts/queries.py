@@ -448,7 +448,7 @@ def get_summary(document_id):
         cur.execute(""" select i.title, i.id from subordinates s
             join newest n on s.parent_id = n.govt_id
             join instruments i on n.id = i.id where s.child_id = %(document_id)s
-            and title != 'Interpretation Act 1999' """,
+            and title != 'Legislation Act 2019' """,
             {'document_id': document_id})
 
         parent = cur.fetchone()
@@ -458,7 +458,7 @@ def get_summary(document_id):
             join instruments ii  on ii.id = n.id
             where i.id = %(document_id)s
             and ii.type = 'regulation'
-            and i.title != 'Interpretation Act 1999'
+            and i.title != 'Legislation Act 2019'
             order by ii.year desc """,
             {'document_id': document_id})
         subordinate = cur.fetchall()

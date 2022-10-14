@@ -348,13 +348,13 @@ def analyze_new_links(row, db=None):
             out.execute("""INSERT INTO amendments(note_id, target_document_id, source_govt_id,
                 amendment_date, unknown_source_text) VALUES """ + args_str)
 
-    if title != 'Interpretation Act 1999':  # lol
+    if title != 'Legislation Act 2019':  # lol
         with db.cursor() as out:
             # i really don't like this, think of a better way
             out.execute("""
                 INSERT INTO subordinates (parent_id, child_id) values
 
-                    ((select i.govt_id as parent_id from newest n join instruments i on i.id=n.id where i.title = 'Interpretation Act 1999'), %(child_id)s)
+                    ((select i.govt_id as parent_id from newest n join instruments i on i.id=n.id where i.title = 'Legislation Act 2019'), %(child_id)s)
                 """, {'child_id': document_id})
 
     with db.cursor() as out:

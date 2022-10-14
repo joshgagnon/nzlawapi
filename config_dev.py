@@ -16,7 +16,7 @@ REPROCESS_DOCS = False
 DB_USER = 'josh'
 DB_PW = ''
 DB_HOST = '127.0.0.1'
-DB = 'catalex_browser_live'
+DB = 'browser_2022'
 
 ES_SERVER = {"host": "localhost", "port": 9200}
 LAW_BROWSER_LOGIN_URL = 'http://localhost:3000/login'
