@@ -36,7 +36,7 @@
     "jquery": "^2.1.1",
     "lodash": "^3.3.0",
     "promise": "^6.1.0",
-    "react": "0.13.x",
+    "react": "0.14.x",
     "react-bootstrap": "^0.18.0",
     "react-dnd": "^1.1.1",
     "react-responsive": "git://github.com/motiz88/react-responsive.git",
