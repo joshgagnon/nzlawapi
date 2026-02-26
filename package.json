@@ -9,7 +9,7 @@
   "dependencies": {
     "autoprefixer-core": "^4.0.2",
     "bluebird": "^2.9.14",
-    "bn.js": "0.15.2",
+    "bn.js": "5.2.3",
     "bootstrap": "^3.3.1",
     "bootstrap-sass": "^3.3.3",
     "browserify": "^7.0.0",
